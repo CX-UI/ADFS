@@ -1,0 +1,726 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BKDRHash	nova.h	/^static inline unsigned long BKDRHash(const char *str, int length)$/;"	f
+BLOCK_OFF	nova.h	146;"	d
+BM_1G	nova.h	/^	BM_1G,$/;"	e	enum:bm_type
+BM_2M	nova.h	/^	BM_2M,$/;"	e	enum:bm_type
+BM_4K	nova.h	/^	BM_4K = 0,$/;"	e	enum:bm_type
+CACHELINE_ALIGN	nova_def.h	176;"	d
+CACHELINE_MASK	nova_def.h	175;"	d
+CACHELINE_SIZE	nova_def.h	174;"	d
+CACHE_ALIGN	nova.h	818;"	d
+CPUID_MASK	bbuild.c	257;"	d	file:
+Countstats	stats.c	/^u64 Countstats[TIMING_NUM];$/;"	v
+DATA	nova.h	/^	DATA,$/;"	e	enum:alloc_type
+DIR_LOG	nova.h	/^	DIR_LOG,$/;"	e	enum:nova_entry_type
+DT2IF	dir.c	22;"	d	file:
+ENTRY_LOC	nova.h	148;"	d
+EXTEND_THRESHOLD	nova.h	196;"	d
+FILE_WRITE	nova.h	/^	FILE_WRITE = 1,$/;"	e	enum:nova_entry_type
+FREE_BATCH	nova.h	135;"	d
+IF2DT	dir.c	23;"	d	file:
+INVALID_CPU	nova.h	133;"	d
+INVALID_MASK	nova.h	145;"	d
+IOstats	stats.c	/^u64 IOstats[STATS_NUM];$/;"	v
+IS_MAP_WRITE	nova.h	250;"	d
+LAST_ENTRY	nova.h	187;"	d
+LINK_CHANGE	nova.h	/^	LINK_CHANGE,$/;"	e	enum:nova_entry_type
+LOG	nova.h	/^	LOG = 1,$/;"	e	enum:alloc_type
+MAX_PGOFF	bbuild.c	769;"	d	file:
+META_BLK_SHIFT	nova_def.h	65;"	d
+MMAP_ADDR	nova.h	251;"	d
+MMAP_WRITE_BIT	nova.h	249;"	d
+NEXT_PAGE	nova.h	/^	NEXT_PAGE,$/;"	e	enum:nova_entry_type
+NOVA_ASSERT	nova.h	53;"	d
+NOVA_BLOCKNODE_INO	nova_def.h	162;"	d
+NOVA_BLOCK_TYPE_1G	nova_def.h	62;"	d
+NOVA_BLOCK_TYPE_2M	nova_def.h	61;"	d
+NOVA_BLOCK_TYPE_4K	nova_def.h	60;"	d
+NOVA_BLOCK_TYPE_MAX	nova_def.h	63;"	d
+NOVA_CLEAR_STATS	nova.h	125;"	d
+NOVA_DBGMASK_MMAP4K	nova.h	76;"	d
+NOVA_DBGMASK_MMAPHUGE	nova.h	75;"	d
+NOVA_DBGMASK_MMAPVERBOSE	nova.h	77;"	d
+NOVA_DBGMASK_MMAPVVERBOSE	nova.h	78;"	d
+NOVA_DBGMASK_TRANSACTION	nova.h	80;"	d
+NOVA_DBGMASK_VERBOSE	nova.h	79;"	d
+NOVA_DEFAULT_BLOCK_TYPE	nova_def.h	72;"	d
+NOVA_DEF_BLOCK_SIZE_4K	nova_def.h	52;"	d
+NOVA_DIR_LOG_REC_LEN	nova.h	217;"	d
+NOVA_DIR_PAD	nova.h	215;"	d
+NOVA_DIR_ROUND	nova.h	216;"	d
+NOVA_END_TIMING	stats.h	125;"	d
+NOVA_EOFBLOCKS_FL	nova.h	111;"	d
+NOVA_FAST_MOUNT_FIELD_SIZE	nova_def.h	157;"	d
+NOVA_FL_INHERITED	nova.h	113;"	d
+NOVA_FL_USER_VISIBLE	nova.h	121;"	d
+NOVA_I	nova.h	/^static inline struct nova_inode_info *NOVA_I(struct inode *inode)$/;"	f
+NOVA_INODELIST1_INO	nova_def.h	165;"	d
+NOVA_INODELIST_INO	nova_def.h	163;"	d
+NOVA_INODETABLE_INO	nova_def.h	161;"	d
+NOVA_INODE_BITS	nova_def.h	55;"	d
+NOVA_INODE_SIZE	nova_def.h	54;"	d
+NOVA_LARGE_INODE_TABLE_SIZE	nova.h	103;"	d
+NOVA_LARGE_INODE_TABLE_THREASHOLD	nova.h	105;"	d
+NOVA_LINK_MAX	nova_def.h	50;"	d
+NOVA_LITEJOURNAL_INO	nova_def.h	164;"	d
+NOVA_MOUNT_DAX	nova_def.h	38;"	d
+NOVA_MOUNT_ERRORS_CONT	nova_def.h	39;"	d
+NOVA_MOUNT_ERRORS_PANIC	nova_def.h	41;"	d
+NOVA_MOUNT_ERRORS_RO	nova_def.h	40;"	d
+NOVA_MOUNT_FORMAT	nova_def.h	44;"	d
+NOVA_MOUNT_HUGEIOREMAP	nova_def.h	43;"	d
+NOVA_MOUNT_HUGEMMAP	nova_def.h	42;"	d
+NOVA_MOUNT_MOUNTING	nova_def.h	45;"	d
+NOVA_MOUNT_POSIX_ACL	nova_def.h	37;"	d
+NOVA_MOUNT_PROTECT	nova_def.h	35;"	d
+NOVA_MOUNT_XATTR_USER	nova_def.h	36;"	d
+NOVA_NAME_LEN	nova_def.h	57;"	d
+NOVA_NORMAL_INODE_START	nova_def.h	170;"	d
+NOVA_OTHER_FLMASK	nova.h	120;"	d
+NOVA_PRINT_FREE_LISTS	nova.h	129;"	d
+NOVA_PRINT_LOG	nova.h	126;"	d
+NOVA_PRINT_LOG_BLOCKNODE	nova.h	127;"	d
+NOVA_PRINT_LOG_PAGES	nova.h	128;"	d
+NOVA_PRINT_TIMING	nova.h	124;"	d
+NOVA_REG_FLMASK	nova.h	118;"	d
+NOVA_ROOT_INO	nova_def.h	160;"	d
+NOVA_ROOT_INO_START	nova_def.h	167;"	d
+NOVA_SB	nova.h	/^static inline struct nova_sb_info *NOVA_SB(struct super_block *sb)$/;"	f
+NOVA_SB_SIZE	nova_def.h	118;"	d
+NOVA_SB_STATIC_SIZE	nova_def.h	154;"	d
+NOVA_START_TIMING	stats.h	122;"	d
+NOVA_STATS_ADD	stats.h	136;"	d
+NOVA_SUPER_MAGIC	nova_def.h	26;"	d
+Opt_blocksize	super.c	/^	Opt_gid, Opt_blocksize, Opt_wprotect,$/;"	e	enum:__anon2	file:
+Opt_bpi	super.c	/^	Opt_bpi, Opt_init, Opt_mode, Opt_uid,$/;"	e	enum:__anon2	file:
+Opt_dbgmask	super.c	/^	Opt_dbgmask, Opt_err$/;"	e	enum:__anon2	file:
+Opt_err	super.c	/^	Opt_dbgmask, Opt_err$/;"	e	enum:__anon2	file:
+Opt_err_cont	super.c	/^	Opt_err_cont, Opt_err_panic, Opt_err_ro,$/;"	e	enum:__anon2	file:
+Opt_err_panic	super.c	/^	Opt_err_cont, Opt_err_panic, Opt_err_ro,$/;"	e	enum:__anon2	file:
+Opt_err_ro	super.c	/^	Opt_err_cont, Opt_err_panic, Opt_err_ro,$/;"	e	enum:__anon2	file:
+Opt_gid	super.c	/^	Opt_gid, Opt_blocksize, Opt_wprotect,$/;"	e	enum:__anon2	file:
+Opt_init	super.c	/^	Opt_bpi, Opt_init, Opt_mode, Opt_uid,$/;"	e	enum:__anon2	file:
+Opt_mode	super.c	/^	Opt_bpi, Opt_init, Opt_mode, Opt_uid,$/;"	e	enum:__anon2	file:
+Opt_uid	super.c	/^	Opt_bpi, Opt_init, Opt_mode, Opt_uid,$/;"	e	enum:__anon2	file:
+Opt_wprotect	super.c	/^	Opt_gid, Opt_blocksize, Opt_wprotect,$/;"	e	enum:__anon2	file:
+PAGE_SHIFT_1G	nova.h	51;"	d
+PAGE_SHIFT_2M	nova.h	50;"	d
+PAGE_TAIL	nova.h	188;"	d
+PERSISTENT_BARRIER	nova_def.h	/^static inline void PERSISTENT_BARRIER(void)$/;"	f
+PERSISTENT_MARK	nova_def.h	/^static inline void PERSISTENT_MARK(void)$/;"	f
+RANGENODE_PER_PAGE	nova.h	301;"	d
+READDIR_END	nova.h	132;"	d
+RESERVED_BLOCKS	nova.h	374;"	d
+SET_ATTR	nova.h	/^	SET_ATTR,$/;"	e	enum:nova_entry_type
+SHARED_CPU	nova.h	134;"	d
+STATS_NUM	stats.h	/^	STATS_NUM,$/;"	e	enum:stats_category
+TIMING_NUM	stats.h	/^	TIMING_NUM,$/;"	e	enum:timing_category
+TYPE_CREATE	nova.h	/^	TYPE_CREATE = 0,$/;"	e	enum:nova_new_inode_type
+TYPE_MKDIR	nova.h	/^	TYPE_MKDIR$/;"	e	enum:nova_new_inode_type
+TYPE_MKNOD	nova.h	/^	TYPE_MKNOD,$/;"	e	enum:nova_new_inode_type
+TYPE_SYMLINK	nova.h	/^	TYPE_SYMLINK,$/;"	e	enum:nova_new_inode_type
+Timingstats	stats.c	/^u64 Timingstats[TIMING_NUM];$/;"	v
+Timingstring	stats.c	/^const char *Timingstring[TIMING_NUM] = $/;"	v
+X86_FEATURE_CLFLUSHOPT	nova_def.h	179;"	d
+X86_FEATURE_CLWB	nova_def.h	180;"	d
+X86_FEATURE_PCOMMIT	nova_def.h	178;"	d
+_LINUX_NOVA_DEF_H	nova_def.h	21;"	d
+__NOVA_H	nova.h	18;"	d
+__NOVA_JOURNAL_H__	journal.h	23;"	d
+__WPROTECT_H	wprotect.h	22;"	d
+__nova_build_blocknode_map	bbuild.c	/^static int __nova_build_blocknode_map(struct super_block *sb,$/;"	f	file:
+__nova_memlock_range	wprotect.h	/^__nova_memlock_range(void *p, unsigned long len)$/;"	f
+__nova_memunlock_range	wprotect.h	/^__nova_memunlock_range(void *p, unsigned long len)$/;"	f
+_mm_clflush	nova_def.h	195;"	d
+_mm_clflushopt	nova_def.h	197;"	d
+_mm_clwb	nova_def.h	199;"	d
+_mm_pcommit	nova_def.h	201;"	d
+add_dentry_t	stats.h	/^	add_dentry_t,$/;"	e	enum:timing_category
+addr	bbuild.c	/^	u64 addr[512];$/;"	m	struct:task_ring	file:
+addrs	journal.h	/^	u64 addrs[4];$/;"	m	struct:nova_lite_journal_entry
+alloc_bm	bbuild.c	/^static int alloc_bm(struct super_block *sb, unsigned long initsize)$/;"	f	file:
+alloc_data_count	nova.h	/^	unsigned long	alloc_data_count;$/;"	m	struct:free_list
+alloc_data_pages	nova.h	/^	unsigned long	alloc_data_pages;$/;"	m	struct:free_list
+alloc_log_count	nova.h	/^	unsigned long	alloc_log_count;$/;"	m	struct:free_list
+alloc_log_pages	nova.h	/^	unsigned long	alloc_log_pages;$/;"	m	struct:free_list
+alloc_steps	stats.h	/^	alloc_steps,$/;"	e	enum:stats_category
+alloc_type	nova.h	/^enum alloc_type {$/;"	g
+allocate_resources	bbuild.c	/^static int allocate_resources(struct super_block *sb, int cpus)$/;"	f	file:
+allocated	nova.h	/^	int allocated;$/;"	m	struct:inode_map
+append_dir_entry_t	stats.h	/^	append_dir_entry_t,$/;"	e	enum:timing_category
+append_file_entry_t	stats.h	/^	append_file_entry_t,$/;"	e	enum:timing_category
+append_link_change_t	stats.h	/^	append_link_change_t,$/;"	e	enum:timing_category
+append_setattr_t	stats.h	/^	append_setattr_t,$/;"	e	enum:timing_category
+arch_has_clwb	nova_def.h	/^static inline bool arch_has_clwb(void)$/;"	f
+arch_has_pcommit	nova_def.h	/^static inline bool arch_has_pcommit(void)$/;"	f
+array	bbuild.c	/^	u64 *array;$/;"	m	struct:task_ring	file:
+assign_t	stats.h	/^	assign_t,$/;"	e	enum:timing_category
+atime	nova.h	/^	__le32	atime;$/;"	m	struct:nova_setattr_logentry
+attr	nova.h	/^	u8	attr;$/;"	m	struct:nova_setattr_logentry
+bitmap	nova.h	/^	unsigned long *bitmap;$/;"	m	struct:single_scan_bm
+bitmap_size	nova.h	/^	unsigned long bitmap_size;$/;"	m	struct:single_scan_bm
+blk_type_to_shift	inode.c	/^unsigned int blk_type_to_shift[NOVA_BLOCK_TYPE_MAX] = {12, 21, 30};$/;"	v
+blk_type_to_size	inode.c	/^uint32_t blk_type_to_size[NOVA_BLOCK_TYPE_MAX] = {0x1000, 0x200000, 0x40000000};$/;"	v
+block	nova.h	/^	__le64	block;$/;"	m	struct:nova_file_write_entry
+block_end	nova.h	/^	unsigned long	block_end;$/;"	m	struct:free_list
+block_free_tree	nova.h	/^	struct rb_root	block_free_tree;$/;"	m	struct:free_list	typeref:struct:free_list::rb_root
+block_start	nova.h	/^	unsigned long	block_start;$/;"	m	struct:free_list
+blocksize	nova.h	/^	unsigned long	blocksize;$/;"	m	struct:nova_sb_info
+bm_type	nova.h	/^enum bm_type {$/;"	g
+bpi	nova.h	/^	unsigned long	bpi;$/;"	m	struct:nova_sb_info
+cache_tree	nova.h	/^	struct radix_tree_root cache_tree;	\/* Mmap cache tree root *\/$/;"	m	struct:nova_inode_info_header	typeref:struct:nova_inode_info_header::radix_tree_root
+check_eof_blocks	nova.h	/^static inline void check_eof_blocks(struct super_block *sb,$/;"	f
+check_invalid_t	stats.h	/^	check_invalid_t,$/;"	e	enum:timing_category
+clear_opt	nova.h	99;"	d
+copy_to_nvmm_t	stats.h	/^	copy_to_nvmm_t,$/;"	e	enum:timing_category
+cow_write_bytes	stats.h	/^	cow_write_bytes,$/;"	e	enum:stats_category
+cow_write_t	stats.h	/^	cow_write_t,$/;"	e	enum:timing_category
+cpus	nova.h	/^	int cpus;$/;"	m	struct:nova_sb_info
+create_t	stats.h	/^	create_t,$/;"	e	enum:timing_category
+create_trans_t	stats.h	/^	create_trans_t,$/;"	e	enum:timing_category
+ctime	nova.h	/^	__le32	ctime;$/;"	m	struct:nova_link_change_entry
+ctime	nova.h	/^	__le32	ctime;$/;"	m	struct:nova_setattr_logentry
+curr_log_entry_invalid	inode.c	/^static bool curr_log_entry_invalid(struct super_block *sb,$/;"	f	file:
+curr_page_invalid	inode.c	/^static bool curr_page_invalid(struct super_block *sb,$/;"	f	file:
+dax_get_block_t	stats.h	/^	dax_get_block_t,$/;"	e	enum:timing_category
+dax_read_t	stats.h	/^	dax_read_t,$/;"	e	enum:timing_category
+de_len	nova.h	/^	__le16	de_len;                 \/* length of this dentry *\/$/;"	m	struct:nova_dentry
+delete_dir_tree_t	stats.h	/^	delete_dir_tree_t,$/;"	e	enum:timing_category
+delete_file_tree_t	stats.h	/^	delete_file_tree_t,$/;"	e	enum:timing_category
+destroy_inodecache	super.c	/^static void destroy_inodecache(void)$/;"	f	file:
+destroy_rangenode_cache	super.c	/^static void destroy_rangenode_cache(void)$/;"	f	file:
+dev	nova_def.h	/^	} dev;			\/* device inode *\/$/;"	m	struct:nova_inode	typeref:struct:nova_inode::__anon1
+direct_IO_t	stats.h	/^	direct_IO_t,$/;"	e	enum:timing_category
+do_dax_mapping_read	dax.c	/^do_dax_mapping_read(struct file *filp, char __user *buf,$/;"	f	file:
+entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_dentry
+entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_link_change_entry
+entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_setattr_logentry
+evict_inode_t	stats.h	/^	evict_inode_t,$/;"	e	enum:timing_category
+exit_nova_fs	super.c	/^static void __exit exit_nova_fs(void)$/;"	f	file:
+failure_thread_func	bbuild.c	/^static int failure_thread_func(void *data)$/;"	f	file:
+fast_checked_pages	stats.h	/^	fast_checked_pages,$/;"	e	enum:stats_category
+fast_gc_pages	stats.h	/^	fast_gc_pages,$/;"	e	enum:stats_category
+fast_gc_t	stats.h	/^	fast_gc_t,$/;"	e	enum:timing_category
+file_type	nova.h	/^	u8	file_type;              \/* file type *\/$/;"	m	struct:nova_dentry
+find_cache_t	stats.h	/^	find_cache_t,$/;"	e	enum:timing_category
+finish_wq	bbuild.c	/^wait_queue_head_t finish_wq;$/;"	v
+finished	bbuild.c	/^int *finished;$/;"	v
+first_inode_range	nova.h	/^	struct nova_range_node *first_inode_range;$/;"	m	struct:inode_map	typeref:struct:inode_map::nova_range_node
+first_node	nova.h	/^	struct nova_range_node *first_node;$/;"	m	struct:free_list	typeref:struct:free_list::nova_range_node
+flags	nova.h	/^	__le32	flags;$/;"	m	struct:nova_link_change_entry
+free_bm	bbuild.c	/^static void free_bm(struct super_block *sb)$/;"	f	file:
+free_curr_page	inode.c	/^static void free_curr_page(struct super_block *sb, struct nova_inode *pi,$/;"	f	file:
+free_data_count	nova.h	/^	unsigned long	free_data_count;$/;"	m	struct:free_list
+free_data_t	stats.h	/^	free_data_t,$/;"	e	enum:timing_category
+free_inode_log_t	stats.h	/^	free_inode_log_t,$/;"	e	enum:timing_category
+free_inode_t	stats.h	/^	free_inode_t,$/;"	e	enum:timing_category
+free_list	nova.h	/^struct free_list {$/;"	s
+free_lists	nova.h	/^	struct free_list *free_lists;$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::free_list
+free_log_count	nova.h	/^	unsigned long	free_log_count;$/;"	m	struct:free_list
+free_log_t	stats.h	/^	free_log_t,$/;"	e	enum:timing_category
+free_resources	bbuild.c	/^static void free_resources(struct super_block *sb)$/;"	f	file:
+freed	nova.h	/^	int freed;$/;"	m	struct:inode_map
+freed_data_pages	nova.h	/^	unsigned long	freed_data_pages;$/;"	m	struct:free_list
+freed_log_pages	nova.h	/^	unsigned long	freed_log_pages;$/;"	m	struct:free_list
+fsync_t	stats.h	/^	fsync_t,$/;"	e	enum:timing_category
+generation	nova.h	/^	__le32	generation;$/;"	m	struct:nova_link_change_entry
+get_cpuid	bbuild.c	/^static int get_cpuid(struct nova_sb_info *sbi, unsigned long blocknr)$/;"	f	file:
+get_nvmm	nova.h	/^static inline unsigned long get_nvmm(struct super_block *sb,$/;"	f
+gid	nova.h	/^	__le32	gid;$/;"	m	struct:nova_setattr_logentry
+gid	nova.h	/^	kgid_t		gid;    \/* Mount gid for root directory *\/$/;"	m	struct:nova_sb_info
+global_bm	bbuild.c	/^struct scan_bitmap *global_bm[64];$/;"	v	typeref:struct:scan_bitmap
+goto_next_page	nova.h	/^static inline bool goto_next_page(struct super_block *sb, u64 curr_p)$/;"	f
+header	nova.h	/^	struct nova_inode_info_header header;$/;"	m	struct:nova_inode_info	typeref:struct:nova_inode_info::nova_inode_info_header
+high_dirty	nova.h	/^	unsigned long high_dirty;	\/* Mmap dirty high range *\/$/;"	m	struct:nova_inode_info_header
+i_atime	nova_def.h	/^	__le32	i_atime;	\/* Access time *\/$/;"	m	struct:nova_inode
+i_blk_type	nova_def.h	/^	u8	i_blk_type;	\/* data block size this inode uses *\/$/;"	m	struct:nova_inode
+i_blocks	nova_def.h	/^	__le64	i_blocks;$/;"	m	struct:nova_inode
+i_ctime	nova_def.h	/^	__le32	i_ctime;	\/* Inode modification time *\/$/;"	m	struct:nova_inode
+i_flags	nova_def.h	/^	__le32	i_flags;	\/* Inode flags *\/$/;"	m	struct:nova_inode
+i_generation	nova_def.h	/^	__le32	i_generation;	\/* File version (for NFS) *\/$/;"	m	struct:nova_inode
+i_gid	nova_def.h	/^	__le32	i_gid;		\/* Group Id *\/$/;"	m	struct:nova_inode
+i_links_count	nova_def.h	/^	__le16	i_links_count;	\/* Links count *\/$/;"	m	struct:nova_inode
+i_mode	nova.h	/^	unsigned short i_mode;		\/* Dir or file? *\/$/;"	m	struct:nova_inode_info_header
+i_mode	nova_def.h	/^	__le16	i_mode;		\/* File mode *\/$/;"	m	struct:nova_inode
+i_mtime	nova_def.h	/^	__le32	i_mtime;	\/* Inode b-tree Modification time *\/$/;"	m	struct:nova_inode
+i_rsvd	nova_def.h	/^	__le16	i_rsvd;		\/* reserved. used to be checksum *\/$/;"	m	struct:nova_inode
+i_size	nova.h	/^	unsigned long i_size;$/;"	m	struct:nova_inode_info_header
+i_size	nova_def.h	/^	__le64	i_size;		\/* Size of data in bytes *\/$/;"	m	struct:nova_inode
+i_uid	nova_def.h	/^	__le32	i_uid;		\/* Owner Uid *\/$/;"	m	struct:nova_inode
+i_xattr	nova_def.h	/^	__le64	i_xattr;	\/* Extended attribute block *\/$/;"	m	struct:nova_inode
+init_inodecache	super.c	/^static int __init init_inodecache(void)$/;"	f	file:
+init_nova_fs	super.c	/^static int __init init_nova_fs(void)$/;"	f	file:
+init_once	super.c	/^static void init_once(void *foo)$/;"	f	file:
+init_rangenode_cache	super.c	/^static int __init init_rangenode_cache(void)$/;"	f	file:
+init_t	stats.h	/^	init_t,$/;"	e	enum:timing_category
+initsize	nova.h	/^	unsigned long	initsize;$/;"	m	struct:nova_sb_info
+ino	nova.h	/^	__le64	ino;                    \/* inode no pointed to by this entry *\/$/;"	m	struct:nova_dentry
+ino	nova.h	/^	unsigned long ino;$/;"	m	struct:nova_inode_info_header
+inode_inuse_tree	nova.h	/^	struct rb_root	inode_inuse_tree;$/;"	m	struct:inode_map	typeref:struct:inode_map::rb_root
+inode_map	nova.h	/^struct inode_map {$/;"	s
+inode_maps	nova.h	/^	struct inode_map	*inode_maps;$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::inode_map
+inode_table	nova.h	/^struct inode_table {$/;"	s
+inode_table_mutex	nova.h	/^	struct mutex inode_table_mutex;$/;"	m	struct:inode_map	typeref:struct:inode_map::mutex
+inodes_used_count	bbuild.c	/^	int inodes_used_count;$/;"	m	struct:task_ring	file:
+invalid	nova.h	/^	u8	invalid;		\/* Invalid now? *\/$/;"	m	struct:nova_dentry
+invalid_pages	nova.h	/^	__le32	invalid_pages;$/;"	m	struct:nova_file_write_entry
+ioremap_t	stats.h	/^	ioremap_t,$/;"	e	enum:timing_category
+is_dir_init_entry	nova.h	/^static inline int is_dir_init_entry(struct super_block *sb,$/;"	f
+is_last_entry	nova.h	/^static inline bool is_last_entry(u64 curr_p, size_t size)$/;"	f
+journal_head	nova.h	/^	__le64 journal_head;$/;"	m	struct:ptr_pair
+journal_locks	nova.h	/^	spinlock_t *journal_locks;$/;"	m	struct:nova_sb_info
+journal_tail	nova.h	/^	__le64 journal_tail;$/;"	m	struct:ptr_pair
+last_link_change	nova.h	/^	u64 last_link_change;		\/* Last link change entry *\/$/;"	m	struct:nova_inode_info_header
+last_setattr	nova.h	/^	u64 last_setattr;		\/* Last setattr entry *\/$/;"	m	struct:nova_inode_info_header
+link_t	stats.h	/^	link_t,$/;"	e	enum:timing_category
+link_trans_t	stats.h	/^	link_trans_t,$/;"	e	enum:timing_category
+links	nova.h	/^	__le16	links;$/;"	m	struct:nova_link_change_entry
+links_count	nova.h	/^	__le16	links_count;$/;"	m	struct:nova_dentry
+log_head	nova.h	/^	__le64 log_head;$/;"	m	struct:inode_table
+log_head	nova_def.h	/^	__le64	log_head;	\/* Log head pointer *\/$/;"	m	struct:nova_inode
+log_pages	nova.h	/^	unsigned long log_pages;	\/* Num of log pages *\/$/;"	m	struct:nova_inode_info_header
+log_tail	nova_def.h	/^	__le64	log_tail;	\/* Log tail pointer *\/$/;"	m	struct:nova_inode
+lookup_t	stats.h	/^	lookup_t,$/;"	e	enum:timing_category
+low_dirty	nova.h	/^	unsigned long low_dirty;	\/* Mmap dirty low range *\/$/;"	m	struct:nova_inode_info_header
+map_id	nova.h	/^	unsigned long map_id;$/;"	m	struct:nova_sb_info
+measure_timing	super.c	/^int measure_timing = 0;$/;"	v
+memcpy_r_nvmm_t	stats.h	/^	memcpy_r_nvmm_t,$/;"	e	enum:timing_category
+memcpy_to_pmem_nocache	nova.h	/^static inline int memcpy_to_pmem_nocache(void *dst, const void *src,$/;"	f
+memcpy_w_nvmm_t	stats.h	/^	memcpy_w_nvmm_t,$/;"	e	enum:timing_category
+memcpy_w_wb_t	stats.h	/^	memcpy_w_wb_t,$/;"	e	enum:timing_category
+memset_nt	nova.h	/^static inline void memset_nt(void *dest, uint32_t dword, size_t length)$/;"	f
+mkdir_t	stats.h	/^	mkdir_t,$/;"	e	enum:timing_category
+mknod_t	stats.h	/^	mknod_t,$/;"	e	enum:timing_category
+mmap_fault_t	stats.h	/^	mmap_fault_t,$/;"	e	enum:timing_category
+mmap_pages	nova.h	/^	unsigned long mmap_pages;	\/* Num of mmap pages *\/$/;"	m	struct:nova_inode_info_header
+mode	nova.h	/^	__le16	mode;$/;"	m	struct:nova_setattr_logentry
+mode	nova.h	/^	umode_t		mode;   \/* Mount mode for root directory *\/$/;"	m	struct:nova_sb_info
+mount_t	stats.h	/^	mount_t,$/;"	e	enum:timing_category
+mtime	nova.h	/^	__le32	mtime;			\/* For both mtime and ctime *\/$/;"	m	struct:nova_dentry
+mtime	nova.h	/^	__le32	mtime;$/;"	m	struct:nova_file_write_entry
+mtime	nova.h	/^	__le32	mtime;$/;"	m	struct:nova_setattr_logentry
+name	nova.h	/^	char	name[NOVA_NAME_LEN + 1];	\/* File name *\/$/;"	m	struct:nova_dentry
+name_len	nova.h	/^	u8	name_len;               \/* length of the dentry name *\/$/;"	m	struct:nova_dentry
+need_thorough_gc	inode.c	/^static int need_thorough_gc(struct super_block *sb,$/;"	f	file:
+new_data_blocks_t	stats.h	/^	new_data_blocks_t,$/;"	e	enum:timing_category
+new_init_t	stats.h	/^	new_init_t,$/;"	e	enum:timing_category
+new_log_blocks_t	stats.h	/^	new_log_blocks_t,$/;"	e	enum:timing_category
+new_nova_inode_t	stats.h	/^	new_nova_inode_t,$/;"	e	enum:timing_category
+new_vfs_inode_t	stats.h	/^	new_vfs_inode_t,$/;"	e	enum:timing_category
+next_generation	nova.h	/^	atomic_t	next_generation;$/;"	m	struct:nova_sb_info
+next_lite_journal	journal.c	/^static u64 next_lite_journal(u64 curr_p)$/;"	f	file:
+next_log_page	nova.h	/^static inline u64 next_log_page(struct super_block *sb, u64 curr_p)$/;"	f
+next_page	nova.h	/^	__le64	next_page;$/;"	m	struct:nova_inode_page_tail
+node	nova.h	/^	struct rb_node node;$/;"	m	struct:nova_range_node	typeref:struct:nova_range_node::rb_node
+nova-y	Makefile	/^nova-y := balloc.o bbuild.o dax.o dir.o file.o inode.o ioctl.o journal.o namei.o stats.o super.o symlink.o sysfs.o wprotect.o$/;"	m
+nova_add_dentry	dir.c	/^int nova_add_dentry(struct dentry *dentry, u64 ino, int inc_link,$/;"	f
+nova_alloc_block_free_lists	balloc.c	/^int nova_alloc_block_free_lists(struct super_block *sb)$/;"	f
+nova_alloc_blocknode	super.c	/^inline struct nova_range_node *nova_alloc_blocknode(struct super_block *sb)$/;"	f
+nova_alloc_blocks_in_free_list	balloc.c	/^static unsigned long nova_alloc_blocks_in_free_list(struct super_block *sb,$/;"	f	file:
+nova_alloc_inode	super.c	/^static struct inode *nova_alloc_inode(struct super_block *sb)$/;"	f	file:
+nova_alloc_inode_node	super.c	/^inline struct nova_range_node *nova_alloc_inode_node(struct super_block *sb)$/;"	f
+nova_alloc_range_node	super.c	/^struct nova_range_node *nova_alloc_range_node(struct super_block *sb)$/;"	f	file:
+nova_alloc_unused_inode	inode.c	/^static int nova_alloc_unused_inode(struct super_block *sb, int cpuid,$/;"	f	file:
+nova_allocate_inode_log_pages	inode.c	/^int nova_allocate_inode_log_pages(struct super_block *sb,$/;"	f
+nova_aops_dax	inode.c	/^const struct address_space_operations nova_aops_dax = {$/;"	v	typeref:struct:address_space_operations
+nova_append_dir_init_entries	dir.c	/^int nova_append_dir_init_entries(struct super_block *sb,$/;"	f
+nova_append_dir_inode_entry	dir.c	/^static u64 nova_append_dir_inode_entry(struct super_block *sb,$/;"	f	file:
+nova_append_file_write_entry	inode.c	/^u64 nova_append_file_write_entry(struct super_block *sb, struct nova_inode *pi,$/;"	f
+nova_append_link_change_entry	namei.c	/^int nova_append_link_change_entry(struct super_block *sb,$/;"	f
+nova_append_one_log_page	inode.c	/^static u64 nova_append_one_log_page(struct super_block *sb,$/;"	f	file:
+nova_append_range_node_entry	bbuild.c	/^static u64 nova_append_range_node_entry(struct super_block *sb,$/;"	f	file:
+nova_append_setattr_entry	inode.c	/^static u64 nova_append_setattr_entry(struct super_block *sb,$/;"	f	file:
+nova_apply_link_change_entry	namei.c	/^void nova_apply_link_change_entry(struct nova_inode *pi,$/;"	f
+nova_apply_setattr_entry	inode.c	/^void nova_apply_setattr_entry(struct super_block *sb, struct nova_inode *pi,$/;"	f
+nova_assign_write_entry	inode.c	/^int nova_assign_write_entry(struct super_block *sb,$/;"	f
+nova_backing_option	nova.h	/^	unsigned int	nova_backing_option;$/;"	m	struct:nova_sb_info
+nova_block_symlink	symlink.c	/^int nova_block_symlink(struct super_block *sb, struct nova_inode *pi,$/;"	f
+nova_build_blocknode_map	bbuild.c	/^static int nova_build_blocknode_map(struct super_block *sb,$/;"	f	file:
+nova_calc_checksum	nova.h	/^static inline int nova_calc_checksum(u8 *data, int n)$/;"	f
+nova_can_set_blocksize_hint	file.c	/^static inline int nova_can_set_blocksize_hint(struct inode *inode,$/;"	f	file:
+nova_can_skip_full_scan	bbuild.c	/^static bool nova_can_skip_full_scan(struct super_block *sb)$/;"	f	file:
+nova_check_dentry_match	dir.c	/^static int nova_check_dentry_match(struct super_block *sb,$/;"	f	file:
+nova_check_integrity	super.c	/^int nova_check_integrity(struct super_block *sb,$/;"	f
+nova_check_size	super.c	/^static bool nova_check_size(struct super_block *sb, unsigned long size)$/;"	f	file:
+nova_cleanup_incomplete_write	dax.c	/^static int nova_cleanup_incomplete_write(struct super_block *sb,$/;"	f	file:
+nova_clear_IO_stats	stats.c	/^static void nova_clear_IO_stats(void)$/;"	f	file:
+nova_clear_bit	nova.h	96;"	d
+nova_clear_last_page_tail	inode.c	/^static void nova_clear_last_page_tail(struct super_block *sb,$/;"	f	file:
+nova_clear_stats	stats.c	/^void nova_clear_stats(void)$/;"	f
+nova_clear_timing_stats	stats.c	/^static void nova_clear_timing_stats(void)$/;"	f	file:
+nova_coalesce_log_pages	inode.c	/^static int nova_coalesce_log_pages(struct super_block *sb,$/;"	f	file:
+nova_commit_lite_transaction	journal.c	/^void nova_commit_lite_transaction(struct super_block *sb, u64 tail, int cpu)$/;"	f
+nova_compat_ioctl	ioctl.c	/^long nova_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)$/;"	f
+nova_copy_partial_block	dax.c	/^static inline int nova_copy_partial_block(struct super_block *sb,$/;"	f	file:
+nova_count_free_blocks	balloc.c	/^unsigned long nova_count_free_blocks(struct super_block *sb)$/;"	f
+nova_cow_file_write	dax.c	/^ssize_t nova_cow_file_write(struct file *filp,$/;"	f
+nova_create	namei.c	/^static int nova_create(struct inode *dir, struct dentry *dentry, umode_t mode,$/;"	f	file:
+nova_create_lite_transaction	journal.c	/^u64 nova_create_lite_transaction(struct super_block *sb,$/;"	f
+nova_dax_fault	dax.c	/^static int nova_dax_fault(struct vm_area_struct *vma, struct vm_fault *vmf)$/;"	f	file:
+nova_dax_file_mmap	dax.c	/^int nova_dax_file_mmap(struct file *file, struct vm_area_struct *vma)$/;"	f
+nova_dax_file_operations	file.c	/^const struct file_operations nova_dax_file_operations = {$/;"	v	typeref:struct:file_operations
+nova_dax_file_read	dax.c	/^ssize_t nova_dax_file_read(struct file *filp, char __user *buf,$/;"	f
+nova_dax_file_write	dax.c	/^ssize_t nova_dax_file_write(struct file *filp, const char __user *buf,$/;"	f
+nova_dax_get_block	dax.c	/^int nova_dax_get_block(struct inode *inode, sector_t iblock,$/;"	f
+nova_dax_get_blocks	dax.c	/^static int nova_dax_get_blocks(struct inode *inode, sector_t iblock,$/;"	f	file:
+nova_dax_mem_protect	wprotect.c	/^int nova_dax_mem_protect(struct super_block *sb, void *vaddr,$/;"	f
+nova_dax_pfn_mkwrite	dax.c	/^static int nova_dax_pfn_mkwrite(struct vm_area_struct *vma,$/;"	f	file:
+nova_dax_pmd_fault	dax.c	/^static int nova_dax_pmd_fault(struct vm_area_struct *vma, unsigned long addr,$/;"	f	file:
+nova_dax_vm_ops	dax.c	/^static const struct vm_operations_struct nova_dax_vm_ops = {$/;"	v	typeref:struct:vm_operations_struct	file:
+nova_dbg	nova.h	68;"	d
+nova_dbg1	nova.h	69;"	d
+nova_dbg_mmap4k	nova.h	82;"	d
+nova_dbg_mmapv	nova.h	84;"	d
+nova_dbg_mmapvv	nova.h	86;"	d
+nova_dbg_trans	nova.h	92;"	d
+nova_dbg_verbose	nova.h	89;"	d
+nova_dbgmask	super.c	/^unsigned int nova_dbgmask = 0;$/;"	v
+nova_dbgv	nova.h	91;"	d
+nova_delete_cache_tree	inode.c	/^static int nova_delete_cache_tree(struct super_block *sb,$/;"	f	file:
+nova_delete_dir_tree	dir.c	/^void nova_delete_dir_tree(struct super_block *sb,$/;"	f
+nova_delete_file_tree	inode.c	/^int nova_delete_file_tree(struct super_block *sb,$/;"	f
+nova_delete_free_lists	balloc.c	/^void nova_delete_free_lists(struct super_block *sb)$/;"	f
+nova_dentry	nova.h	/^struct nova_dentry {$/;"	s
+nova_destroy_blocknode_tree	bbuild.c	/^static void nova_destroy_blocknode_tree(struct super_block *sb, int cpu)$/;"	f	file:
+nova_destroy_blocknode_trees	bbuild.c	/^static void nova_destroy_blocknode_trees(struct super_block *sb)$/;"	f	file:
+nova_destroy_inode	super.c	/^static void nova_destroy_inode(struct inode *inode)$/;"	f	file:
+nova_destroy_inode_trees	bbuild.c	/^static void nova_destroy_inode_trees(struct super_block *sb)$/;"	f	file:
+nova_destroy_range_node_tree	bbuild.c	/^static void nova_destroy_range_node_tree(struct super_block *sb,$/;"	f	file:
+nova_dir_inode_operations	namei.c	/^const struct inode_operations nova_dir_inode_operations = {$/;"	v	typeref:struct:inode_operations
+nova_dir_operations	dir.c	/^const struct file_operations nova_dir_operations = {$/;"	v	typeref:struct:file_operations
+nova_direct_IO	inode.c	/^static ssize_t nova_direct_IO(struct kiocb *iocb, struct iov_iter *iter,$/;"	f	file:
+nova_dirty_inode	inode.c	/^void nova_dirty_inode(struct inode *inode, int flags)$/;"	f
+nova_empty_dir	namei.c	/^static int nova_empty_dir(struct inode *inode)$/;"	f	file:
+nova_entry_type	nova.h	/^enum nova_entry_type {$/;"	g
+nova_err	nova.h	70;"	d
+nova_error_mng	super.c	/^void nova_error_mng(struct super_block *sb, const char *fmt, ...)$/;"	f
+nova_evict_inode	inode.c	/^void nova_evict_inode(struct inode *inode)$/;"	f
+nova_export_ops	super.c	/^static const struct export_operations nova_export_ops = {$/;"	v	typeref:struct:export_operations	file:
+nova_export_ops	super.c	/^static const struct export_operations nova_export_ops;$/;"	v	typeref:struct:export_operations	file:
+nova_extend_inode_log	inode.c	/^static u64 nova_extend_inode_log(struct super_block *sb, struct nova_inode *pi,$/;"	f	file:
+nova_failure_insert_inodetree	bbuild.c	/^static int nova_failure_insert_inodetree(struct super_block *sb,$/;"	f	file:
+nova_failure_recovery	bbuild.c	/^int nova_failure_recovery(struct super_block *sb)$/;"	f
+nova_failure_recovery_crawl	bbuild.c	/^static int nova_failure_recovery_crawl(struct super_block *sb)$/;"	f	file:
+nova_failure_update_inodetree	bbuild.c	/^static inline int nova_failure_update_inodetree(struct super_block *sb,$/;"	f	file:
+nova_fh_to_dentry	super.c	/^static struct dentry *nova_fh_to_dentry(struct super_block *sb,$/;"	f	file:
+nova_fh_to_parent	super.c	/^static struct dentry *nova_fh_to_parent(struct super_block *sb,$/;"	f	file:
+nova_file_inode_operations	file.c	/^const struct inode_operations nova_file_inode_operations = {$/;"	v	typeref:struct:inode_operations
+nova_file_write_entry	nova.h	/^struct nova_file_write_entry {$/;"	s
+nova_fill_super	super.c	/^static int nova_fill_super(struct super_block *sb, void *data, int silent)$/;"	f	file:
+nova_find_dentry	dir.c	/^struct nova_dentry *nova_find_dentry(struct super_block *sb,$/;"	f
+nova_find_free_slot	balloc.c	/^int nova_find_free_slot(struct nova_sb_info *sbi,$/;"	f
+nova_find_next_dentry_addr	dir.c	/^static u64 nova_find_next_dentry_addr(struct super_block *sb,$/;"	f	file:
+nova_find_next_entry	inode.c	/^struct nova_file_write_entry *nova_find_next_entry(struct super_block *sb,$/;"	f
+nova_find_next_zero_bit	nova.h	97;"	d
+nova_find_nvmm_block	nova.h	/^static inline u64 nova_find_nvmm_block(struct super_block *sb,$/;"	f
+nova_find_range_node	balloc.c	/^static int nova_find_range_node(struct nova_sb_info *sbi,$/;"	f	file:
+nova_find_region	inode.c	/^unsigned long nova_find_region(struct inode *inode, loff_t *offset, int hole)$/;"	f
+nova_flush	file.c	/^static int nova_flush(struct file *file, fl_owner_t id)$/;"	f	file:
+nova_flush_buffer	nova_def.h	/^static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)$/;"	f
+nova_follow_link	symlink.c	/^static const char *nova_follow_link(struct dentry *dentry, void **cookie)$/;"	f	file:
+nova_free_blocknode	super.c	/^inline void nova_free_blocknode(struct super_block *sb,$/;"	f
+nova_free_blocks	balloc.c	/^static int nova_free_blocks(struct super_block *sb, unsigned long blocknr,$/;"	f	file:
+nova_free_contiguous_data_blocks	inode.c	/^static inline int nova_free_contiguous_data_blocks(struct super_block *sb,$/;"	f	file:
+nova_free_contiguous_log_blocks	inode.c	/^static int nova_free_contiguous_log_blocks(struct super_block *sb,$/;"	f	file:
+nova_free_data_blocks	balloc.c	/^int nova_free_data_blocks(struct super_block *sb, struct nova_inode *pi,$/;"	f
+nova_free_dram_resource	inode.c	/^static int nova_free_dram_resource(struct super_block *sb,$/;"	f	file:
+nova_free_inode	inode.c	/^static int nova_free_inode(struct inode *inode,$/;"	f	file:
+nova_free_inode_log	inode.c	/^void nova_free_inode_log(struct super_block *sb, struct nova_inode *pi)$/;"	f
+nova_free_inode_node	super.c	/^inline void nova_free_inode_node(struct super_block *sb,$/;"	f
+nova_free_inuse_inode	inode.c	/^static int nova_free_inuse_inode(struct super_block *sb, unsigned long ino)$/;"	f	file:
+nova_free_log_blocks	balloc.c	/^int nova_free_log_blocks(struct super_block *sb, struct nova_inode *pi,$/;"	f
+nova_free_range_node	super.c	/^inline void nova_free_range_node(struct nova_range_node *node)$/;"	f
+nova_fs_type	super.c	/^static struct file_system_type nova_fs_type = {$/;"	v	typeref:struct:file_system_type	file:
+nova_fsync	file.c	/^int nova_fsync(struct file *file, loff_t start, loff_t end, int datasync)$/;"	f
+nova_gc_assign_dentry	inode.c	/^static int nova_gc_assign_dentry(struct super_block *sb,$/;"	f	file:
+nova_gc_assign_file_entry	inode.c	/^int nova_gc_assign_file_entry(struct super_block *sb,$/;"	f
+nova_gc_assign_new_entry	inode.c	/^static int nova_gc_assign_new_entry(struct super_block *sb,$/;"	f	file:
+nova_get_IO_stats	stats.c	/^void nova_get_IO_stats(void)$/;"	f
+nova_get_addr_off	nova.h	/^nova_get_addr_off(struct nova_sb_info *sbi, void *addr)$/;"	f
+nova_get_append_head	inode.c	/^u64 nova_get_append_head(struct super_block *sb, struct nova_inode *pi,$/;"	f
+nova_get_basic_inode	nova.h	/^static inline struct nova_inode *nova_get_basic_inode(struct super_block *sb,$/;"	f
+nova_get_block	nova.h	/^static inline void *nova_get_block(struct super_block *sb, u64 block)$/;"	f
+nova_get_block_info	super.c	/^static int nova_get_block_info(struct super_block *sb,$/;"	f	file:
+nova_get_block_off	nova.h	/^nova_get_block_off(struct super_block *sb, unsigned long blocknr,$/;"	f
+nova_get_blocknr	nova.h	/^nova_get_blocknr(struct super_block *sb, u64 block, unsigned short btype)$/;"	f
+nova_get_cache_addr	nova.h	/^static inline unsigned long nova_get_cache_addr(struct super_block *sb,$/;"	f
+nova_get_candidate_free_list	balloc.c	/^static int nova_get_candidate_free_list(struct super_block *sb)$/;"	f	file:
+nova_get_entry_type	nova.h	/^static inline u8 nova_get_entry_type(void *p)$/;"	f
+nova_get_free_list	nova.h	/^struct free_list *nova_get_free_list(struct super_block *sb, int cpu)$/;"	f
+nova_get_inode	nova.h	/^static inline struct nova_inode *nova_get_inode(struct super_block *sb,$/;"	f
+nova_get_inode_address	inode.c	/^int nova_get_inode_address(struct super_block *sb, u64 ino,$/;"	f
+nova_get_inode_by_ino	nova.h	/^static inline struct nova_inode *nova_get_inode_by_ino(struct super_block *sb,$/;"	f
+nova_get_inode_flags	inode.c	/^static void nova_get_inode_flags(struct inode *inode, struct nova_inode *pi)$/;"	f	file:
+nova_get_inode_table	nova.h	/^struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)$/;"	f
+nova_get_journal_pointers	nova.h	/^struct ptr_pair *nova_get_journal_pointers(struct super_block *sb, int cpu)$/;"	f
+nova_get_last_blocknr	inode.c	/^unsigned long nova_get_last_blocknr(struct super_block *sb,$/;"	f
+nova_get_link	symlink.c	/^static const char *nova_get_link(struct dentry *dentry, struct inode *inode, void **cookie)$/;"	f	file:
+nova_get_nova_log_pages	stats.c	/^int nova_get_nova_log_pages(struct super_block *sb,$/;"	f
+nova_get_numblocks	nova.h	/^nova_get_numblocks(unsigned short btype)$/;"	f
+nova_get_parent	namei.c	/^struct dentry *nova_get_parent(struct dentry *child)$/;"	f
+nova_get_pfn	nova.h	/^static inline unsigned long nova_get_pfn(struct super_block *sb, u64 block)$/;"	f
+nova_get_redund_super	nova.h	/^static inline struct nova_super_block *nova_get_redund_super(struct super_block *sb)$/;"	f
+nova_get_super	nova.h	/^static inline struct nova_super_block *nova_get_super(struct super_block *sb)$/;"	f
+nova_get_timing_stats	stats.c	/^void nova_get_timing_stats(void)$/;"	f
+nova_get_write_entry	nova.h	/^nova_get_write_entry(struct super_block *sb,$/;"	f
+nova_getattr	inode.c	/^int nova_getattr(struct vfsmount *mnt, struct dentry *dentry,$/;"	f
+nova_handle_head_tail_blocks	dax.c	/^static void nova_handle_head_tail_blocks(struct super_block *sb,$/;"	f	file:
+nova_i_callback	super.c	/^static void nova_i_callback(struct rcu_head *head)$/;"	f	file:
+nova_iget	inode.c	/^struct inode *nova_iget(struct super_block *sb, unsigned long ino)$/;"	f
+nova_info	nova.h	72;"	d
+nova_init	super.c	/^static struct nova_inode *nova_init(struct super_block *sb,$/;"	f	file:
+nova_init_blockmap	balloc.c	/^void nova_init_blockmap(struct super_block *sb, int recovery)$/;"	f
+nova_init_blockmap_from_inode	bbuild.c	/^static int nova_init_blockmap_from_inode(struct super_block *sb)$/;"	f	file:
+nova_init_header	bbuild.c	/^void nova_init_header(struct super_block *sb,$/;"	f
+nova_init_inode_inuse_list	inode.c	/^int nova_init_inode_inuse_list(struct super_block *sb)$/;"	f
+nova_init_inode_list_from_inode	bbuild.c	/^static int nova_init_inode_list_from_inode(struct super_block *sb)$/;"	f	file:
+nova_init_inode_table	inode.c	/^int nova_init_inode_table(struct super_block *sb)$/;"	f
+nova_ino	nova_def.h	/^	__le64	nova_ino;	\/* nova inode number *\/$/;"	m	struct:nova_inode
+nova_inode	nova_def.h	/^struct nova_inode {$/;"	s
+nova_inode_blk_shift	nova.h	/^static inline unsigned int nova_inode_blk_shift (struct nova_inode *pi)$/;"	f
+nova_inode_blk_size	nova.h	/^static inline uint32_t nova_inode_blk_size (struct nova_inode *pi)$/;"	f
+nova_inode_by_name	namei.c	/^static ino_t nova_inode_by_name(struct inode *dir, struct qstr *entry,$/;"	f	file:
+nova_inode_cachep	super.c	/^static struct kmem_cache *nova_inode_cachep;$/;"	v	typeref:struct:kmem_cache	file:
+nova_inode_info	nova.h	/^struct nova_inode_info {$/;"	s
+nova_inode_info_header	nova.h	/^struct nova_inode_info_header {$/;"	s
+nova_inode_log_fast_gc	inode.c	/^static int nova_inode_log_fast_gc(struct super_block *sb,$/;"	f	file:
+nova_inode_log_page	nova.h	/^struct	nova_inode_log_page {$/;"	s
+nova_inode_log_thorough_gc	inode.c	/^static int nova_inode_log_thorough_gc(struct super_block *sb,$/;"	f	file:
+nova_inode_page_tail	nova.h	/^struct nova_inode_page_tail {$/;"	s
+nova_insert_blocknode_map	bbuild.c	/^static int nova_insert_blocknode_map(struct super_block *sb,$/;"	f	file:
+nova_insert_blocktree	balloc.c	/^inline int nova_insert_blocktree(struct nova_sb_info *sbi,$/;"	f
+nova_insert_dir_radix_tree	dir.c	/^static int nova_insert_dir_radix_tree(struct super_block *sb,$/;"	f	file:
+nova_insert_inodetree	balloc.c	/^inline int nova_insert_inodetree(struct nova_sb_info *sbi,$/;"	f
+nova_insert_range_node	balloc.c	/^static int nova_insert_range_node(struct nova_sb_info *sbi,$/;"	f	file:
+nova_ioctl	ioctl.c	/^long nova_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)$/;"	f
+nova_is_mounting	nova.h	/^static inline int nova_is_mounting(struct super_block *sb)$/;"	f
+nova_is_protected	wprotect.h	/^static inline int nova_is_protected(struct super_block *sb)$/;"	f
+nova_is_wprotected	wprotect.h	/^static inline int nova_is_wprotected(struct super_block *sb)$/;"	f
+nova_link	namei.c	/^static int nova_link(struct dentry *dest_dentry, struct inode *dir,$/;"	f	file:
+nova_link_change_entry	nova.h	/^struct nova_link_change_entry {$/;"	s
+nova_lite_journal_entry	journal.h	/^struct nova_lite_journal_entry {$/;"	s
+nova_lite_journal_hard_init	journal.c	/^int nova_lite_journal_hard_init(struct super_block *sb)$/;"	f
+nova_lite_journal_soft_init	journal.c	/^int nova_lite_journal_soft_init(struct super_block *sb)$/;"	f
+nova_lite_transaction_for_new_inode	namei.c	/^static void nova_lite_transaction_for_new_inode(struct super_block *sb,$/;"	f	file:
+nova_lite_transaction_for_time_and_link	namei.c	/^static void nova_lite_transaction_for_time_and_link(struct super_block *sb,$/;"	f	file:
+nova_llseek	file.c	/^static loff_t nova_llseek(struct file *file, loff_t offset, int origin)$/;"	f	file:
+nova_lookup	namei.c	/^static struct dentry *nova_lookup(struct inode *dir, struct dentry *dentry,$/;"	f	file:
+nova_lookup_hole_in_range	inode.c	/^static int nova_lookup_hole_in_range(struct super_block *sb,$/;"	f	file:
+nova_mask_flags	nova.h	/^static inline __le32 nova_mask_flags(umode_t mode, __le32 flags)$/;"	f
+nova_max_size	super.c	/^static loff_t nova_max_size(int bits)$/;"	f	file:
+nova_memcpy_atomic	nova.h	/^static inline void nova_memcpy_atomic (void *dst, const void *src, u8 size)$/;"	f
+nova_memlock_block	wprotect.h	/^static inline void nova_memlock_block(struct super_block *sb, void *bp)$/;"	f
+nova_memlock_inode	wprotect.h	/^static inline void nova_memlock_inode(struct super_block *sb,$/;"	f
+nova_memlock_range	wprotect.h	/^static inline void nova_memlock_range(struct super_block *sb, void *p,$/;"	f
+nova_memlock_super	wprotect.h	/^static inline void nova_memlock_super(struct super_block *sb,$/;"	f
+nova_memunlock_block	wprotect.h	/^static inline void nova_memunlock_block(struct super_block *sb, void *bp)$/;"	f
+nova_memunlock_inode	wprotect.h	/^static inline void nova_memunlock_inode(struct super_block *sb,$/;"	f
+nova_memunlock_range	wprotect.h	/^static inline void nova_memunlock_range(struct super_block *sb, void *p,$/;"	f
+nova_memunlock_super	wprotect.h	/^static inline void nova_memunlock_super(struct super_block *sb,$/;"	f
+nova_mkdir	namei.c	/^static int nova_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)$/;"	f	file:
+nova_mknod	namei.c	/^static int nova_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,$/;"	f	file:
+nova_mount	super.c	/^static struct dentry *nova_mount(struct file_system_type *fs_type,$/;"	f	file:
+nova_new_blocks	balloc.c	/^static int nova_new_blocks(struct super_block *sb, unsigned long *blocknr,$/;"	f	file:
+nova_new_data_blocks	balloc.c	/^inline int nova_new_data_blocks(struct super_block *sb, struct nova_inode *pi,$/;"	f
+nova_new_inode_type	nova.h	/^enum nova_new_inode_type {$/;"	g
+nova_new_log_blocks	balloc.c	/^inline int nova_new_log_blocks(struct super_block *sb, struct nova_inode *pi,$/;"	f
+nova_new_nova_inode	inode.c	/^u64 nova_new_nova_inode(struct super_block *sb, u64 *pi_addr)$/;"	f
+nova_new_vfs_inode	inode.c	/^struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,$/;"	f
+nova_nfs_get_inode	super.c	/^static struct inode *nova_nfs_get_inode(struct super_block *sb,$/;"	f	file:
+nova_notify_change	inode.c	/^int nova_notify_change(struct dentry *dentry, struct iattr *attr)$/;"	f
+nova_open	file.c	/^static int nova_open(struct inode *inode, struct file *filp)$/;"	f	file:
+nova_parse_options	super.c	/^static int nova_parse_options(char *options, struct nova_sb_info *sbi,$/;"	f	file:
+nova_print_IO_stats	stats.c	/^static void nova_print_IO_stats(struct super_block *sb)$/;"	f	file:
+nova_print_alloc_stats	stats.c	/^static void nova_print_alloc_stats(struct super_block *sb)$/;"	f	file:
+nova_print_curr_log_page	stats.c	/^void nova_print_curr_log_page(struct super_block *sb, u64 curr)$/;"	f
+nova_print_dentry	stats.c	/^static inline size_t nova_print_dentry(struct super_block *sb,$/;"	f	file:
+nova_print_file_write_entry	stats.c	/^static inline void nova_print_file_write_entry(struct super_block *sb,$/;"	f	file:
+nova_print_free_lists	stats.c	/^void nova_print_free_lists(struct super_block *sb)$/;"	f
+nova_print_inode_log	stats.c	/^void nova_print_inode_log(struct super_block *sb, struct inode *inode)$/;"	f
+nova_print_inode_log_pages	stats.c	/^void nova_print_inode_log_pages(struct super_block *sb, struct inode *inode)$/;"	f
+nova_print_link_change_entry	stats.c	/^static inline void nova_print_link_change_entry(struct super_block *sb,$/;"	f	file:
+nova_print_lite_transaction	journal.c	/^void nova_print_lite_transaction(struct nova_lite_journal_entry *entry)$/;"	f
+nova_print_log_entry	stats.c	/^static u64 nova_print_log_entry(struct super_block *sb, u64 curr)$/;"	f	file:
+nova_print_nova_log	stats.c	/^void nova_print_nova_log(struct super_block *sb,$/;"	f
+nova_print_nova_log_pages	stats.c	/^void nova_print_nova_log_pages(struct super_block *sb,$/;"	f
+nova_print_set_attr_entry	stats.c	/^static inline void nova_print_set_attr_entry(struct super_block *sb,$/;"	f	file:
+nova_print_timing_stats	stats.c	/^void nova_print_timing_stats(struct super_block *sb)$/;"	f
+nova_proc_root	sysfs.c	/^struct proc_dir_entry *nova_proc_root;$/;"	v	typeref:struct:proc_dir_entry
+nova_put_super	super.c	/^static void nova_put_super(struct super_block *sb)$/;"	f	file:
+nova_range_node	nova.h	/^struct nova_range_node {$/;"	s
+nova_range_node_cachep	super.c	/^static struct kmem_cache *nova_range_node_cachep;$/;"	v	typeref:struct:kmem_cache	file:
+nova_range_node_lowhigh	nova.h	/^struct nova_range_node_lowhigh {$/;"	s
+nova_rbtree_compare_rangenode	balloc.c	/^static inline int nova_rbtree_compare_rangenode(struct nova_range_node *curr,$/;"	f	file:
+nova_read_inode	inode.c	/^static int nova_read_inode(struct super_block *sb, struct inode *inode,$/;"	f	file:
+nova_readdir	dir.c	/^static int nova_readdir(struct file *file, struct dir_context *ctx)$/;"	f	file:
+nova_readlink	symlink.c	/^static int nova_readlink(struct dentry *dentry, char __user *buffer, int buflen)$/;"	f	file:
+nova_reassign_file_tree	dax.c	/^int nova_reassign_file_tree(struct super_block *sb,$/;"	f
+nova_rebuild_dir_inode_tree	dir.c	/^int nova_rebuild_dir_inode_tree(struct super_block *sb,$/;"	f
+nova_rebuild_dir_time_and_size	dir.c	/^static inline void nova_rebuild_dir_time_and_size(struct super_block *sb,$/;"	f	file:
+nova_rebuild_file_inode_tree	inode.c	/^int nova_rebuild_file_inode_tree(struct super_block *sb,$/;"	f
+nova_rebuild_file_time_and_size	inode.c	/^static inline void nova_rebuild_file_time_and_size(struct super_block *sb,$/;"	f	file:
+nova_rebuild_inode	bbuild.c	/^int nova_rebuild_inode(struct super_block *sb, struct nova_inode_info *si,$/;"	f
+nova_recover_inode_pages	bbuild.c	/^static int nova_recover_inode_pages(struct super_block *sb,$/;"	f	file:
+nova_recover_lite_journal	journal.c	/^static int nova_recover_lite_journal(struct super_block *sb,$/;"	f	file:
+nova_recover_lite_journal_entry	journal.c	/^static void nova_recover_lite_journal_entry(struct super_block *sb,$/;"	f	file:
+nova_recovery	bbuild.c	/^int nova_recovery(struct super_block *sb)$/;"	f
+nova_remount	super.c	/^int nova_remount(struct super_block *sb, int *mntflags, char *data)$/;"	f
+nova_remove_dentry	dir.c	/^int nova_remove_dentry(struct dentry *dentry, int dec_link, u64 tail,$/;"	f
+nova_remove_dir_radix_tree	dir.c	/^static int nova_remove_dir_radix_tree(struct super_block *sb,$/;"	f	file:
+nova_rename	namei.c	/^static int nova_rename(struct inode *old_dir,$/;"	f	file:
+nova_replay_add_dentry	dir.c	/^inline int nova_replay_add_dentry(struct super_block *sb,$/;"	f
+nova_replay_remove_dentry	dir.c	/^inline int nova_replay_remove_dentry(struct super_block *sb,$/;"	f
+nova_ring_setattr_entry	bbuild.c	/^static void nova_ring_setattr_entry(struct super_block *sb,$/;"	f	file:
+nova_rmdir	namei.c	/^static int nova_rmdir(struct inode *dir, struct dentry *dentry)$/;"	f	file:
+nova_root_check	super.c	/^static void nova_root_check(struct super_block *sb, struct nova_inode *root_pi)$/;"	f	file:
+nova_save_blocknode_mappings_to_log	bbuild.c	/^void nova_save_blocknode_mappings_to_log(struct super_block *sb)$/;"	f
+nova_save_free_list_blocknodes	bbuild.c	/^static u64 nova_save_free_list_blocknodes(struct super_block *sb, int cpu,$/;"	f	file:
+nova_save_inode_list_to_log	bbuild.c	/^void nova_save_inode_list_to_log(struct super_block *sb)$/;"	f
+nova_save_range_nodes_to_log	bbuild.c	/^static u64 nova_save_range_nodes_to_log(struct super_block *sb,$/;"	f	file:
+nova_sb_info	nova.h	/^struct nova_sb_info {$/;"	s
+nova_search_inodetree	balloc.c	/^inline int nova_search_inodetree(struct nova_sb_info *sbi,$/;"	f
+nova_seq_clear_stats	sysfs.c	/^ssize_t nova_seq_clear_stats(struct file *filp, const char __user *buf,$/;"	f
+nova_seq_timing_fops	sysfs.c	/^static const struct file_operations nova_seq_timing_fops = {$/;"	v	typeref:struct:file_operations	file:
+nova_seq_timing_open	sysfs.c	/^static int nova_seq_timing_open(struct inode *inode, struct file *file)$/;"	f	file:
+nova_seq_timing_show	sysfs.c	/^static int nova_seq_timing_show(struct seq_file *seq, void *v)$/;"	f	file:
+nova_set_bit	nova.h	95;"	d
+nova_set_blocksize	super.c	/^static void nova_set_blocksize(struct super_block *sb, unsigned long size)$/;"	f	file:
+nova_set_blocksize_hint	file.c	/^int nova_set_blocksize_hint(struct super_block *sb, struct inode *inode,$/;"	f
+nova_set_entry_type	nova.h	/^static inline void nova_set_entry_type(void *p, enum nova_entry_type type)$/;"	f
+nova_set_file_bm	bbuild.c	/^static int nova_set_file_bm(struct super_block *sb,$/;"	f	file:
+nova_set_inode_flags	inode.c	/^void nova_set_inode_flags(struct inode *inode, struct nova_inode *pi,$/;"	f
+nova_set_next_page_address	nova.h	/^static inline void nova_set_next_page_address(struct super_block *sb,$/;"	f
+nova_set_next_page_flag	inode.c	/^static void nova_set_next_page_flag(struct super_block *sb, u64 curr_p)$/;"	f	file:
+nova_set_ring_array	bbuild.c	/^static int nova_set_ring_array(struct super_block *sb,$/;"	f	file:
+nova_setattr_logentry	nova.h	/^struct nova_setattr_logentry {$/;"	s
+nova_setsize	inode.c	/^static void nova_setsize(struct inode *inode, loff_t oldsize, loff_t newsize)$/;"	f	file:
+nova_show_options	super.c	/^static int nova_show_options(struct seq_file *seq, struct dentry *root)$/;"	f	file:
+nova_sops	super.c	/^static struct super_operations nova_sops = {$/;"	v	typeref:struct:super_operations	file:
+nova_sops	super.c	/^static struct super_operations nova_sops;$/;"	v	typeref:struct:super_operations	file:
+nova_special_inode_operations	namei.c	/^const struct inode_operations nova_special_inode_operations = {$/;"	v	typeref:struct:inode_operations
+nova_statfs	super.c	/^int nova_statfs(struct dentry *d, struct kstatfs *buf)$/;"	f
+nova_super_block	nova_def.h	/^struct nova_super_block {$/;"	s
+nova_symlink	namei.c	/^static int nova_symlink(struct inode *dir, struct dentry *dentry,$/;"	f	file:
+nova_symlink_inode_operations	symlink.c	/^const struct inode_operations nova_symlink_inode_operations = {$/;"	v	typeref:struct:inode_operations
+nova_sync_super	wprotect.h	/^static inline void nova_sync_super(struct nova_super_block *ps)$/;"	f
+nova_sysfs_exit	sysfs.c	/^void nova_sysfs_exit(struct super_block *sb)$/;"	f
+nova_sysfs_init	sysfs.c	/^void nova_sysfs_init(struct super_block *sb)$/;"	f
+nova_traverse_dir_inode_log	bbuild.c	/^static int nova_traverse_dir_inode_log(struct super_block *sb,$/;"	f	file:
+nova_traverse_file_inode_log	bbuild.c	/^static int nova_traverse_file_inode_log(struct super_block *sb,$/;"	f	file:
+nova_truncate_file_blocks	inode.c	/^static void nova_truncate_file_blocks(struct inode *inode, loff_t start,$/;"	f	file:
+nova_undo_lite_journal_entry	journal.c	/^static void nova_undo_lite_journal_entry(struct super_block *sb,$/;"	f	file:
+nova_unlink	namei.c	/^static int nova_unlink(struct inode *dir, struct dentry *dentry)$/;"	f	file:
+nova_update_4K_map	bbuild.c	/^static void nova_update_4K_map(struct super_block *sb,$/;"	f	file:
+nova_update_inode	inode.c	/^static void nova_update_inode(struct inode *inode, struct nova_inode *pi)$/;"	f	file:
+nova_update_setattr_entry	inode.c	/^static void nova_update_setattr_entry(struct inode *inode,$/;"	f	file:
+nova_update_tail	nova.h	/^static inline void nova_update_tail(struct nova_inode *pi, u64 new_tail)$/;"	f
+nova_warn	nova.h	71;"	d
+nova_write_inode	inode.c	/^int nova_write_inode(struct inode *inode, struct writeback_control *wbc)$/;"	f
+nova_writeable	wprotect.c	/^int nova_writeable(void *vaddr, unsigned long size, int rw)$/;"	f
+nova_zero_cache_tree	inode.c	/^static int nova_zero_cache_tree(struct super_block *sb,$/;"	f	file:
+num	bbuild.c	/^	int num;$/;"	m	struct:task_ring	file:
+num_blocknode	nova.h	/^	unsigned long	num_blocknode;$/;"	m	struct:free_list
+num_blocks	nova.h	/^	unsigned long	num_blocks;$/;"	m	struct:nova_sb_info
+num_free_blocks	nova.h	/^	unsigned long	num_free_blocks;$/;"	m	struct:free_list
+num_inodes	nova.h	/^	unsigned long	num_inodes;$/;"	m	struct:nova_sb_info
+num_pages	nova.h	/^	__le32	num_pages;$/;"	m	struct:nova_file_write_entry
+num_range_node_inode	nova.h	/^	unsigned long	num_range_node_inode;$/;"	m	struct:inode_map
+padding	nova.h	/^	__le32	padding;$/;"	m	struct:nova_file_write_entry
+padding	nova.h	/^	char padding[LAST_ENTRY];$/;"	m	struct:nova_inode_log_page
+padding	nova.h	/^	u64		padding[8];	\/* Cache line break *\/$/;"	m	struct:free_list
+padding	nova.h	/^	u8	padding;$/;"	m	struct:nova_link_change_entry
+padding	nova_def.h	/^	__le32	padding;$/;"	m	struct:nova_inode
+padding1	nova.h	/^	__le64	padding1;$/;"	m	struct:nova_inode_page_tail
+padding2	nova.h	/^	__le64	padding2;$/;"	m	struct:nova_inode_page_tail
+padding3	nova.h	/^	__le64	padding3;$/;"	m	struct:nova_inode_page_tail
+paddings	nova.h	/^	__le64	paddings[2];$/;"	m	struct:nova_link_change_entry
+page_tail	nova.h	/^	struct nova_inode_page_tail page_tail;$/;"	m	struct:nova_inode_log_page	typeref:struct:nova_inode_log_page::nova_inode_page_tail
+partial_block_t	stats.h	/^	partial_block_t,$/;"	e	enum:timing_category
+per_list_blocks	nova.h	/^	unsigned long per_list_blocks;$/;"	m	struct:nova_sb_info
+pgoff	nova.h	/^	__le64	pgoff;$/;"	m	struct:nova_file_write_entry
+phys_addr	nova.h	/^	phys_addr_t	phys_addr;$/;"	m	struct:nova_sb_info
+pi_addr	nova.h	/^	unsigned long pi_addr;$/;"	m	struct:nova_inode_info_header
+pr_fmt	nova.h	63;"	d
+pr_fmt	nova.h	64;"	d
+proc_dirname	sysfs.c	/^const char *proc_dirname = "fs\/NOVA";$/;"	v
+ptr_pair	nova.h	/^struct ptr_pair {$/;"	s
+range_high	nova.h	/^	__le64 range_high;$/;"	m	struct:nova_range_node_lowhigh
+range_high	nova.h	/^	unsigned long range_high;$/;"	m	struct:nova_range_node
+range_low	nova.h	/^	__le64 range_low;$/;"	m	struct:nova_range_node_lowhigh
+range_low	nova.h	/^	unsigned long range_low;$/;"	m	struct:nova_range_node
+rdev	nova_def.h	/^		__le32 rdev;	\/* major\/minor # *\/$/;"	m	struct:nova_inode::__anon1
+read_bytes	stats.h	/^	read_bytes,$/;"	e	enum:stats_category
+readdir_t	stats.h	/^	readdir_t,$/;"	e	enum:timing_category
+rebuild_dir_t	stats.h	/^	rebuild_dir_t,$/;"	e	enum:timing_category
+rebuild_file_t	stats.h	/^	rebuild_file_t,$/;"	e	enum:timing_category
+recovery_t	stats.h	/^	recovery_t,$/;"	e	enum:timing_category
+remove_dentry_t	stats.h	/^	remove_dentry_t,$/;"	e	enum:timing_category
+rename_t	stats.h	/^	rename_t,$/;"	e	enum:timing_category
+reserved_blocks	nova.h	/^	unsigned long	reserved_blocks;$/;"	m	struct:nova_sb_info
+rmdir_t	stats.h	/^	rmdir_t,$/;"	e	enum:timing_category
+s_bdev	nova.h	/^	struct block_device *s_bdev;$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::block_device
+s_blocksize	nova_def.h	/^	__le32		s_blocksize;        \/* blocksize in bytes *\/$/;"	m	struct:nova_super_block
+s_inodes_used_count	nova.h	/^	unsigned long	s_inodes_used_count;$/;"	m	struct:nova_sb_info
+s_lock	nova.h	/^	spinlock_t s_lock;$/;"	m	struct:free_list
+s_lock	nova.h	/^	struct mutex 	s_lock;	\/* protects the SB's buffer-head *\/$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::mutex
+s_magic	nova_def.h	/^	__le32		s_magic;            \/* magic signature *\/$/;"	m	struct:nova_super_block
+s_mount_opt	nova.h	/^	unsigned long	s_mount_opt;$/;"	m	struct:nova_sb_info
+s_mtime	nova_def.h	/^	__le32		s_mtime;            \/* mount time *\/$/;"	m	struct:nova_super_block
+s_num_free_blocks	nova_def.h	/^	__le64		s_num_free_blocks;$/;"	m	struct:nova_super_block
+s_padding16	nova_def.h	/^	__le16		s_padding16;$/;"	m	struct:nova_super_block
+s_padding32	nova_def.h	/^	__le32		s_padding32;$/;"	m	struct:nova_super_block
+s_proc	nova.h	/^	struct proc_dir_entry *s_proc;$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::proc_dir_entry
+s_size	nova_def.h	/^	__le64		s_size;             \/* total size of fs in bytes *\/$/;"	m	struct:nova_super_block
+s_start_dynamic	nova_def.h	/^	__le64		s_start_dynamic;$/;"	m	struct:nova_super_block
+s_sum	nova_def.h	/^	__le16		s_sum;              \/* checksum of this sb *\/$/;"	m	struct:nova_super_block
+s_volume_name	nova_def.h	/^	char		s_volume_name[16];  \/* volume name *\/$/;"	m	struct:nova_super_block
+s_wtime	nova_def.h	/^	__le32		s_wtime;            \/* write time *\/$/;"	m	struct:nova_super_block
+sb	nova.h	/^	struct super_block *sb;$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::super_block
+scan_bitmap	nova.h	/^struct scan_bitmap {$/;"	s
+scan_bm_1G	nova.h	/^	struct single_scan_bm scan_bm_1G;$/;"	m	struct:scan_bitmap	typeref:struct:scan_bitmap::single_scan_bm
+scan_bm_2M	nova.h	/^	struct single_scan_bm scan_bm_2M;$/;"	m	struct:scan_bitmap	typeref:struct:scan_bitmap::single_scan_bm
+scan_bm_4K	nova.h	/^	struct single_scan_bm scan_bm_4K;$/;"	m	struct:scan_bitmap	typeref:struct:scan_bitmap::single_scan_bm
+set_bm	bbuild.c	/^inline void set_bm(unsigned long bit, struct scan_bitmap *bm,$/;"	f
+set_default_opts	super.c	/^static inline void set_default_opts(struct nova_sb_info *sbi)$/;"	f	file:
+set_opt	nova.h	100;"	d
+set_scan_bm	bbuild.c	/^static inline void set_scan_bm(unsigned long bit,$/;"	f	file:
+setattr_t	stats.h	/^	setattr_t,$/;"	e	enum:timing_category
+shared_free_list	nova.h	/^	struct free_list shared_free_list;$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::free_list
+single_scan_bm	nova.h	/^struct single_scan_bm {$/;"	s
+size	nova.h	/^	__le64	size;$/;"	m	struct:nova_dentry
+size	nova.h	/^	__le64	size;$/;"	m	struct:nova_file_write_entry
+size	nova.h	/^	__le64	size;$/;"	m	struct:nova_setattr_logentry
+stats_category	stats.h	/^enum stats_category {$/;"	g
+support_clwb	super.c	/^int support_clwb = 0;$/;"	v
+support_pcommit	super.c	/^int support_pcommit = 0;$/;"	v
+symlink_t	stats.h	/^	symlink_t,$/;"	e	enum:timing_category
+task_ring	bbuild.c	/^struct task_ring {$/;"	s	file:
+task_rings	bbuild.c	/^static struct task_ring *task_rings;$/;"	v	typeref:struct:task_ring	file:
+test_opt	nova.h	101;"	d
+thorough_checked_pages	stats.h	/^	thorough_checked_pages,$/;"	e	enum:stats_category
+thorough_gc_pages	stats.h	/^	thorough_gc_pages,$/;"	e	enum:stats_category
+thorough_gc_t	stats.h	/^	thorough_gc_t,$/;"	e	enum:timing_category
+threads	bbuild.c	/^static struct task_struct **threads;$/;"	v	typeref:struct:task_struct	file:
+timing_category	stats.h	/^enum timing_category {$/;"	g
+timing_t	stats.h	/^typedef struct timespec timing_t;$/;"	t	typeref:struct:timespec
+tokens	super.c	/^static const match_table_t tokens = {$/;"	v	file:
+tree	nova.h	/^	struct radix_tree_root tree;	\/* Dir name entry tree root *\/$/;"	m	struct:nova_inode_info_header	typeref:struct:nova_inode_info_header::radix_tree_root
+uid	nova.h	/^	__le32	uid;$/;"	m	struct:nova_setattr_logentry
+uid	nova.h	/^	kuid_t		uid;    \/* Mount uid for root directory *\/$/;"	m	struct:nova_sb_info
+unlink_t	stats.h	/^	unlink_t,$/;"	e	enum:timing_category
+update_tail_t	stats.h	/^	update_tail_t,$/;"	e	enum:timing_category
+valid	nova_def.h	/^	u8	valid;		\/* Is this inode valid? *\/$/;"	m	struct:nova_inode
+valid_bytes	nova.h	/^	unsigned long valid_bytes;	\/* For thorough GC *\/$/;"	m	struct:nova_inode_info_header
+values	journal.h	/^	u64 values[4];$/;"	m	struct:nova_lite_journal_entry
+vfs_inode	nova.h	/^	struct inode vfs_inode;$/;"	m	struct:nova_inode_info	typeref:struct:nova_inode_info::inode
+virt_addr	nova.h	/^	void		*virt_addr;$/;"	m	struct:nova_sb_info
+wait_to_finish	bbuild.c	/^static void wait_to_finish(int cpus)$/;"	f	file:
+wprotect_disable	wprotect.c	/^static inline void wprotect_disable(void)$/;"	f	file:
+wprotect_enable	wprotect.c	/^static inline void wprotect_enable(void)$/;"	f	file:
+write_breaks	stats.h	/^	write_breaks,$/;"	e	enum:stats_category
+zeroed_page	nova.h	/^	void *zeroed_page;$/;"	m	struct:nova_sb_info
