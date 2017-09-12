@@ -22,6 +22,15 @@
 #define DT2IF(dt) (((dt) << 12) & S_IFMT)
 #define IF2DT(sif) (((sif) & S_IFMT) >> 12)
 
+/*
+* 2017/09/12
+* init dir_zone*/
+int dafs_init_dir_zone(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dir_zone *dir_zone;
+}
+
 struct nova_dentry *nova_find_dentry(struct super_block *sb,
 	struct nova_inode *pi, struct inode *inode, const char *name,
 	unsigned long name_len)

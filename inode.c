@@ -88,7 +88,8 @@ int nova_init_inode_table(struct super_block *sb)
 		inode_table = nova_get_inode_table(sb, i);
 		if (!inode_table)
 			return -EINVAL;
-
+    
+        //每个inode table都对应一个log
 		allocated = nova_new_log_blocks(sb, pi, &blocknr, 1, 1);
 		nova_dbg_verbose("%s: allocate log @ 0x%lx\n", __func__,
 							blocknr);
