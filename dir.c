@@ -30,6 +30,52 @@ int dafs_init_dir_zone(struct super_block *sb)
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dir_zone *dir_zone;
 }
+/*
+*2017/09/12
+* merge zone
+* 1.small zone or cold zone will merge together
+* 2.subdirectory has more files will take place of parent dir to be root dir**/
+int dafs_merge_dir_zone(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+
+}
+
+/*
+* 2017/09/12
+* new zone
+* 1.big enough direcotries will becomes a new zone
+* 2.hot enough e.g frequently renames & chmod dir will becomes new zone*/
+int dafs_new_dir_zone(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+}
+
+/*
+* 2012/09/12
+* change zone
+* conditions for self-adaption within zones*/
+int dafs_change_condition(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+}
+
+/*
+* 2017/09/12
+* find correct directory entries
+* using hash*/
+struct dafs_dentry *dafs_find_dir_entry(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+}
+
+/*
+* 2017/09/12
+* find the correct zone in B-tree*/
+struct dafs_dir_zone *dafs_find_dir_zone(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+}
 
 struct nova_dentry *nova_find_dentry(struct super_block *sb,
 	struct nova_inode *pi, struct inode *inode, const char *name,

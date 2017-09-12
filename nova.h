@@ -532,15 +532,21 @@ struct inode_table {
 
 /*
  * 2017/09/12
- * struct dir_zone*/
-struct dir_zone{
-    __le64 log_head         /*directory log for deep dir*/
+ * struct dir_zone
+ * learn in f2fs*/
+struct dafs_dir_zone{
+    __le32 dz_n;             /* not used*/
+    __le32 root_len;
+    __le64 zone_bitmap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
+    __le64 log_head;         /*directory log for deep dir*/
     __le64 dz_no;           /*directory zone NO*/
     __le64 bm_head;         /*zone bit map address*/
     __le64 dz_root;         /*root directory of this zone*/
     __le64 dz_size;         /*zone size*/
+    char root_path[NOVA_PATH_LEN];      /*root path name*/
+    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];
     // next is same attributes in this zone
-};
+}__attribute((__packed__));
 
 /*
  * 2017/09/12
@@ -564,6 +570,15 @@ struct dafs_dentry{
 
 }__attribute((__packed__));
 
+/*
+ * 2017/09/12 
+ * Btree entry in DRAM
+ * learn in betrfs*/
+ struct zone_tree_entry{
+    uint32_t root_len;
+    uint64_t dz_no;
+    char root_path[NOVA_PATH_LEN];
+ }
 static inline
 struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)
 {
