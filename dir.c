@@ -36,7 +36,7 @@ struct nova_dentry *nova_find_dentry(struct super_block *sb,
 
 	return direntry;
 }
-
+//
 static int nova_insert_dir_radix_tree(struct super_block *sb,
 	struct nova_inode_info_header *sih, const char *name,
 	int namelen, struct nova_dentry *direntry)
