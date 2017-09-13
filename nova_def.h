@@ -55,6 +55,7 @@
 #define NOVA_INODE_BITS   7
 
 #define NOVA_NAME_LEN 255
+#define NOVA_PATH_LEN 255
 
 /* NOVA supported data blocks */
 #define NOVA_BLOCK_TYPE_4K     0
