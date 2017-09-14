@@ -161,9 +161,9 @@ struct nova_super_block {
  * 2017/09/13
  * zone entries in directory zone table block*/
 struct dafs_dzt_block{
-    __u8 bt_zone_bitmap[SIZE_BT_BITMAP];
+    __u8 dzt_bitmap[SIZE_DZT_BITMAP;               /*not decided the size of bitmap*/
     __u8 reserved[SIZE_OF_RESERVED];
-    struct dafs_zone_bt_entry[DAFS_BT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
+    struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
 }__attribute((__packed__));
 
 /*
@@ -171,13 +171,14 @@ struct dafs_dzt_block{
  * struct dir_zone
  * learn in f2fs*/
 struct dafs_dir_zone_entry{
+    __le8 zone_bitmap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
     __le32 dz_n;             /* not used*/
     __le32 root_len;
-    __le64 zone_bitmap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
+    //__le64 zone_bitmap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
     __le64 log_head;         /*directory log for deep dir*/
     __le64 dz_no;           /*directory zone NO*/
-    __le64 bm_head;         /*zone bit map address*/
-    __le64 dz_root;         /*root directory of this zone*/
+    //__le64 bm_head;         /*zone bit map address*/
+    //__le64 dz_root;         /*root directory of this zone*/
     __le64 dz_size;         /*zone size*/
     char root_path[DAFS_PATH_LEN];      /*root path name*/
     struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];
@@ -191,7 +192,7 @@ struct dafs_dentry{
     u8 entry_type;          
     u8 name_len;            /*length of the dentry name*/
     u8 file_type;           /* file type */
-    u8 invalid;             /* invalid or? not used here */
+    //u8 invalid;             /* invalid or? not used here */
     __le16 links_count;         /* links */
     __le16 de_len;          /* length of this dentry. not used here */
     __le32 mtime;
@@ -213,10 +214,12 @@ struct dafs_dentry{
  struct dafs_dzt_entry{
      //__u8 invalid;          /* invalid or not */     
      __le32 root_len;         /*root diretory name length*/
+     //__le32 dzt_amount;       /*number of entries been taken*/
+     __le64 dzt_eno;          /*dzt entry Id */
      __le64 dz_no;            /* zone number */
      __le64 dz_addr;          /* zone addr */
-     __le64 child_dzt_addr[CHILD_PER_DZT_ENTRY];     /*child dzt number in this table */      
-     //char root_path[DAFS_PATH_LEN];
+     __le64 child_dzt_eno[CHILD_PER_DZT_ENTRY];     /*child dzt number in this table */      
+     char path_name[DAFS_PATH_LEN];
  }__attribute(__packed__);
 
 static inline

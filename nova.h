@@ -336,16 +336,19 @@ struct nova_inode_info {
 * zone entries for copy-on-write Btree*/
 struct dzt_entry_info{
     uint32_t root_len;
+    uint64_t dzt_eno;
     uint64_t dz_no;
-    char root_path[NOVA_PATH_LEN];
+    uint64_t dz_addr;
+    uint64_t child_dzt_eno[CHILD_PER_DZT_ENTRY];
+    //char root_path[DAFS_PATH_LEN];
 };
 
 /*
 * 2017/09/13
 * directory zone entry Btree list*/
-struct dzt__bt_entry{
+struct dzt_entry{
     struct list_head list;           /*for B-tree lists*/
-    struct bt_entry_info be;
+    struct dzt_entry_info *d_entry_info;
 };
 
 enum bm_type {
