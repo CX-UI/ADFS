@@ -22,43 +22,6 @@
 #define DT2IF(dt) (((dt) << 12) & S_IFMT)
 #define IF2DT(sif) (((sif) & S_IFMT) >> 12)
 
-/*
-* 2017/09/12
-* init dir_zone*/
-int dafs_init_dir_zone(struct super_block *sb)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dafs_dir_zone *dir_zone;
-}
-/*
-*2017/09/12
-* merge zone
-* 1.small zone or cold zone will merge together
-* 2.subdirectory has more files will take place of parent dir to be root dir**/
-int dafs_merge_dir_zone(struct super_block *sb)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-
-}
-
-/*
-* 2017/09/12
-* new zone
-* 1.big enough direcotries will becomes a new zone
-* 2.hot enough e.g frequently renames & chmod dir will becomes new zone*/
-int dafs_new_dir_zone(struct super_block *sb)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-}
-
-/*
-* 2012/09/12
-* change zone
-* conditions for self-adaption within zones*/
-int dafs_change_condition(struct super_block *sb)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-}
 
 /*
 * 2017/09/12
