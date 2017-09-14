@@ -331,6 +331,23 @@ struct nova_inode_info {
 	struct inode vfs_inode;
 };
 
+/*
+* 2017/09/13
+* zone entries for copy-on-write Btree*/
+struct dzt_entry_info{
+    uint32_t root_len;
+    uint64_t dz_no;
+    char root_path[NOVA_PATH_LEN];
+};
+
+/*
+* 2017/09/13
+* directory zone entry Btree list*/
+struct dzt__bt_entry{
+    struct list_head list;           /*for B-tree lists*/
+    struct bt_entry_info be;
+};
+
 enum bm_type {
 	BM_4K = 0,
 	BM_2M,
@@ -530,55 +547,6 @@ struct inode_table {
 	__le64 log_head;
 };
 
-/*
- * 2017/09/12
- * struct dir_zone
- * learn in f2fs*/
-struct dafs_dir_zone{
-    __le32 dz_n;             /* not used*/
-    __le32 root_len;
-    __le64 zone_bitmap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
-    __le64 log_head;         /*directory log for deep dir*/
-    __le64 dz_no;           /*directory zone NO*/
-    __le64 bm_head;         /*zone bit map address*/
-    __le64 dz_root;         /*root directory of this zone*/
-    __le64 dz_size;         /*zone size*/
-    char root_path[NOVA_PATH_LEN];      /*root path name*/
-    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];
-    // next is same attributes in this zone
-}__attribute((__packed__));
-
-/*
- * 2017/09/12
- * dafs dir_struct*/
-struct dafs_dentry{
-    u8 entry_type;          
-    u8 name_len;            /*length of the dentry name*/
-    u8 file_type;           /* file type */
-    u8 invalid;             /* invalid or? not used here */
-    __le16 links_count;         /* links */
-    __le16 de_len;          /* length of this dentry. not used here */
-    __le32 mtime;
-    __le32 vroot;           /* root dir or ? */
-    __le32 path_len;        /* length of the dir path */
-    __le64 ino;             /* inode number*/
-    __le64 size;
-    __le64 zone_no;         /* root dir records zone number */
-    __le64 sub_pos;         /* sub file position*/
-    char path[NOVA_PATH_LEN+1];          /* partial path name for lookup*/
-    char name[NOVA_NAME_LEN+1];          /* file name*/
-
-}__attribute((__packed__));
-
-/*
- * 2017/09/12 
- * Btree entry in DRAM
- * learn in betrfs*/
- struct zone_tree_entry{
-    uint32_t root_len;
-    uint64_t dz_no;
-    char root_path[NOVA_PATH_LEN];
- }
 static inline
 struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)
 {

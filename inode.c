@@ -645,6 +645,9 @@ static void nova_update_inode(struct inode *inode, struct nova_inode *pi)
 	nova_memlock_inode(inode->i_sb, pi);
 }
 
+/*
+ * 2017/09/13
+ * rb tree allocate free node**/
 static int nova_alloc_unused_inode(struct super_block *sb, int cpuid,
 	unsigned long *ino)
 {

@@ -28,7 +28,7 @@
 int dafs_init_dir_zone(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dir_zone *dir_zone;
+    struct dafs_dir_zone *dir_zone;
 }
 /*
 *2017/09/12
@@ -91,7 +91,7 @@ struct nova_dentry *nova_find_dentry(struct super_block *sb,
 
 	return direntry;
 }
-//
+
 static int nova_insert_dir_radix_tree(struct super_block *sb,
 	struct nova_inode_info_header *sih, const char *name,
 	int namelen, struct nova_dentry *direntry)

@@ -55,8 +55,13 @@
 #define NOVA_INODE_BITS   7
 
 #define NOVA_NAME_LEN 255
-#define NOVA_PATH_LEN 255
 
+/*DAFS define*/
+#define DAFS_PATH_LEN 255
+#define DAFS_BT_ENTRIES_IN_BLOCK 128-1
+
+
+#define DAFS_PATH_LEN 255
 /* NOVA supported data blocks */
 #define NOVA_BLOCK_TYPE_4K     0
 #define NOVA_BLOCK_TYPE_2M     1
@@ -152,6 +157,70 @@ struct nova_super_block {
 	__le64		s_num_free_blocks;
 } __attribute((__packed__));
 
+/*
+ * 2017/09/13
+ * zone entries in directory zone table block*/
+struct dafs_dzt_block{
+    __u8 bt_zone_bitmap[SIZE_BT_BITMAP];
+    __u8 reserved[SIZE_OF_RESERVED];
+    struct dafs_zone_bt_entry[DAFS_BT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
+}__attribute((__packed__));
+
+/*
+ * 2017/09/12
+ * struct dir_zone
+ * learn in f2fs*/
+struct dafs_dir_zone_entry{
+    __le32 dz_n;             /* not used*/
+    __le32 root_len;
+    __le64 zone_bitmap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
+    __le64 log_head;         /*directory log for deep dir*/
+    __le64 dz_no;           /*directory zone NO*/
+    __le64 bm_head;         /*zone bit map address*/
+    __le64 dz_root;         /*root directory of this zone*/
+    __le64 dz_size;         /*zone size*/
+    char root_path[DAFS_PATH_LEN];      /*root path name*/
+    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];
+    // next is same attributes in this zone
+}__attribute((__packed__));
+
+/*
+ * 2017/09/12
+ * dafs dir_struct*/
+struct dafs_dentry{
+    u8 entry_type;          
+    u8 name_len;            /*length of the dentry name*/
+    u8 file_type;           /* file type */
+    u8 invalid;             /* invalid or? not used here */
+    __le16 links_count;         /* links */
+    __le16 de_len;          /* length of this dentry. not used here */
+    __le32 mtime;
+    __le32 vroot;           /* root dir or ? */
+    __le32 path_len;        /* length of the dir path */
+    __le64 ino;             /* inode number*/
+    __le64 size;
+    __le64 zone_no;         /* root dir records zone number */
+    __le64 sub_pos;         /* sub file position*/
+    char path[DAFS_PATH_LEN+1];          /* partial path name for lookup*/
+    char name[NOVA_NAME_LEN+1];          /* file name*/
+
+}__attribute((__packed__));
+
+/*
+ * 2017/09/12 
+ * directory zone table entry in DRAM
+ * learn in betrfs*/
+ struct dafs_dzt_entry{
+     //__u8 invalid;          /* invalid or not */     
+     __le32 root_len;         /*root diretory name length*/
+     __le64 dz_no;            /* zone number */
+     __le64 dz_addr;          /* zone addr */
+     __le64 child_dzt_addr[CHILD_PER_DZT_ENTRY];     /*child dzt number in this table */      
+     //char root_path[DAFS_PATH_LEN];
+ }__attribute(__packed__);
+
+static inline
+struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)
 #define NOVA_SB_STATIC_SIZE(ps) ((u64)&ps->s_start_dynamic - (u64)ps)
 
 /* the above fast mount fields take total 32 bytes in the super block */
