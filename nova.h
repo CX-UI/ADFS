@@ -339,18 +339,34 @@ struct dzt_entry_info{
     uint64_t dzt_eno;
     uint64_t dz_no;
     uint64_t dz_addr;
-    uint64_t child_dzt_eno[CHILD_PER_DZT_ENTRY];
+    uint64_t hash_name;
+    struct list_head child_list;
+    //uint64_t child_dzt_eno[CHILD_PER_DZT_ENTRY];
+    //uint64_t hash_path_name;
     //char root_path[DAFS_PATH_LEN];
 };
 
 /*
 * 2017/09/13
 * directory zone entry Btree list*/
-struct dzt_entry{
-    struct list_head list;           /*for B-tree lists*/
+struct dzt_entry {
+    //struct list_head list;           /*for B-tree lists*/
+    uint64_t hash_path_name;
     struct dzt_entry_info *d_entry_info;
 };
 
+/*
+ * dzt manager for radix_tree in DRAM */
+struct dzt_manager {
+    struct radix_tree_root dzt_root;
+};
+
+/* use for dzt_block operations */
+struct dzt_ptr {
+    const void *bitmap;
+    unsinged long max;
+    struct dafs_dzt_entry *dzt_entry;
+};
 enum bm_type {
 	BM_4K = 0,
 	BM_2M,
@@ -466,6 +482,9 @@ struct nova_sb_info {
 	/* Shared free block list */
 	unsigned long per_list_blocks;
 	struct free_list shared_free_list;
+
+    /* dzt info not decided yet*/
+    struct dzt_manager *dzt_m_info;
 };
 
 static inline struct nova_sb_info *NOVA_SB(struct super_block *sb)

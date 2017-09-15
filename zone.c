@@ -22,8 +22,8 @@ struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)
 }
 
 /*
-*init dir zone table */
-int dafs_init_dzt(struct super_block *sb)
+*build dir zone table for first time run*/
+int dafs_build_dzt_block(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dzt_block *dzt_block;
@@ -36,8 +36,9 @@ int dafs_init_dzt(struct super_block *sb)
     dzt_block-> dzt_entry[0].dzt_eno = 0;
     dzt_block-> dzt_entry[0].dz_no = 0;
     dzt_block-> dzt_entry[0].dz_addr = ROOT_ZONE_ADDR;            //not decided yet
+    dzt_block-> dzt_entry[0].hash_name = NULL;                  //not decided yet
     dzt_block-> dzt_entry[0].child_dzt_addr = NULL;            // init NULL
-    dzt_block-> dzt_entry[0].path_name = "/";    
+    // dzt_block-> dzt_entry[0].path_name = "/";    
     dzt_block->dzt_bitmap[0] = (1 << 0) | (1 << 1); 
 
     /*alloc zone area*/
@@ -47,8 +48,8 @@ int dafs_init_dzt(struct super_block *sb)
     /*append . and .. into new zone*/
     dafs_init_dir_zone(sbi, dzt_block->dzt_entry[0].path_name);
     
-    /*build b-tree*/ 
-    dafs_new_dir_zone(sbi, dzt_block->dzt_entry[0]);
+    /*build radix search tree*/ 
+    dafs_build_dzt(sbi, dzt_block->dzt_entry[0]);
 
     return ret;
 }
@@ -124,9 +125,12 @@ int dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dzt_entry_info *entry_info;
-    struct dzt_entry *dzt_entry;
+    struct dzt_manager *dzt_m;
+    int ret = 0;
+    //struct dzt_entry *dzt_entry;
 
-    dzt_entry = kzalloc(sizeof(struct dzt_entry), GFP_KERNEL);  //move dzt entry into DRAM B-tree
+    /*take into acount when to destroy this entry*/
+    dzt_entry = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);  //move dzt entry into DRAM B-tree
     
     if(!dzt_entry)
         return -ENOMEM;
@@ -134,9 +138,97 @@ int dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
     entry_info->dzt_eno = le64_to_cpu(dafs_dzt_entry->dzt_eno);
     entry_info->dz_no = le64_to_cpu(dafs_dzt_entry->dz_no);
     entry_info->dz_addr = le64_to_cpu(dafs_dzt_entry->dz_addr);
+    entry_info->hash_name = le64_to_cpu(dafs_dzt_entry->hash_name);
+
+    INIT_LIST_HEAD(&entry_info->child_list);
+
+    dzt_m = kzalloc(sizeof(struct dzt_manager), GFP_KERNEL);
+
+    if(!dzt_m)
+        return -ENOMEM;
     
+    INIT_RADIX_TREE(&dzt_m->dzt_root);
+
+    make_dzt_tree(entry_info);
+    
+    return ret;
 }
 
+/*
+ * init dzt tree
+ * scant dzt_bit_map and init dzt tree*/
+int dafs_init_dzt(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dafs_dzt_entry *dzt_entry;
+    struct dafs_dzt_block *dzt_blk;
+    struct dzt_ptr *dzt_p;
+
+    struct dzt_entry_info *dzt_ei;
+    unsigned long bit_pos = 0;
+    int ret = 0;
+    //unsigned long max = DAFS_DZT_ENTRIES_IN_BLOCK;
+
+    dzt_blk = dafs_get_dzt_block(sbi);
+
+    dzt_p->bitmap = dzt_blk->dzt_bitmap;
+    dzt_p->max = DAFS_DZT_ENTRIES_IN_BLOCK;
+    dzt_p->dzt_entry = dzt_blk->dzt_entry;
+
+    while(bit_pos < dzt_p->max){
+        if(!test_bit_le(bit_pos, dzt_p->bitmap)){
+            bit_pos++;
+            continue;
+        }
+
+        dzt_entry = dzt_p->dzt_entry[bit_pos];
+
+        dzt_ei->root_len = le32_to_cpu(dzt_entry->root_len);
+        dzt_ei->dzt_eno = le64_to_cpu(dzt_entry->dzt_eno);
+        dzt_ei->dz_no = le64_to_cpu(dzt_entry->dz_no);
+        dzt_ei->dz_addr = le64_to_cpu(dzt_entry->dz_addr);
+        dzt_ei->hash_name = le64_to_cpu(dzt_entry->hash_name);
+
+        make_dzt_tree(dzt_ei);
+    }
+
+    return ret;
+}
+
+/*
+ * make radix tree by inserting*/
+int make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_ei)
+{
+    struct dzt_entry_info *dzt_entry_info;
+    struct dzt_manager *dzt_m = sbi->dzt_manager;
+    int ret = 0;
+
+    dzt_entry_info = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
+    dzt_entry_info->root_len = dzt_ei->root_len;
+    dzt_entry_info->dzt_eno = dzt_ei->dzt_eno;
+    dzt_entry_info->dz_no = dzt_ei->dz_no;
+    dzt_entry_info->dz_addr = dzt_ei->dz_addr;
+    dzt_entry_info->hash_name = dzt_ei->hash_name;
+
+    radix_tree_insert(&dzt_m->dzt_root, dzt_entry_info->hash_name, dzt_entry_info);
+
+    return ret;
+}
+
+/*
+ * destroy DRAM radix dzt tree*/
+int dafs_destroy_dzt(struct_sb_info *sbi)
+{
+    struct dzt_manager *dzt_m = sbi->dzt_manager;
+
+    /*destroy dzt_entries*/
+
+    /*free dzt_manager*/
+    kfree(dzt_m);
+
+    return 0;
+}
 /*
 * 2012/09/12
 * change zone
