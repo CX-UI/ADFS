@@ -244,6 +244,7 @@ struct nova_link_change_entry {
 enum alloc_type {
 	LOG = 1,
 	DATA,
+    ZONE,
 };
 
 #define	MMAP_WRITE_BIT	0x20UL	// mmaped for write
@@ -396,22 +397,28 @@ struct free_list {
 	/* Statistics */
 	unsigned long	alloc_log_count;
 	unsigned long	alloc_data_count;
+    unsigned long   alloc_zone_count;
 	unsigned long	free_log_count;
 	unsigned long	free_data_count;
+    unsigned long   free_zone_count;
 	unsigned long	alloc_log_pages;
 	unsigned long	alloc_data_pages;
+    unsigned long   alloc_zone_pages;
 	unsigned long	freed_log_pages;
 	unsigned long	freed_data_pages;
+    unsigned long   freed_zone_pages;
 
 	u64		padding[8];	/* Cache line break */
 };
 
 /*
  * The first block contains super blocks and reserved inodes;
+ * dafs The second block contains dzt entries.
  * The second block contains pointers to journal pages.
  * The third block contains pointers to inode tables.
  */
-#define	RESERVED_BLOCKS	3
+//#define	RESERVED_BLOCKS	3
+#define	RESERVED_BLOCKS	4
 
 struct inode_map {
 	struct mutex inode_table_mutex;
@@ -514,7 +521,8 @@ static inline struct nova_super_block *nova_get_redund_super(struct super_block 
 }
 
 /* If this is part of a read-modify-write of the block,
- * nova_memunlock_block() before calling! */
+ * nova_memunlock_block() before calling! 
+ * 得到了block的地址*/
 static inline void *nova_get_block(struct super_block *sb, u64 block)
 {
 	struct nova_super_block *ps = nova_get_super(sb);
@@ -530,6 +538,7 @@ nova_get_addr_off(struct nova_sb_info *sbi, void *addr)
 	return (u64)(addr - sbi->virt_addr);
 }
 
+/*返回的blocknr所在的块的偏移地址*/
 static inline u64
 nova_get_block_off(struct super_block *sb, unsigned long blocknr,
 		    unsigned short btype)
@@ -566,7 +575,7 @@ struct ptr_pair *nova_get_journal_pointers(struct super_block *sb, int cpu)
 }
 
 struct inode_table {
-	__le64 log_head;
+	__le64 log_head;   /* */
 };
 
 static inline
@@ -791,6 +800,7 @@ static inline struct nova_inode *nova_get_inode(struct super_block *sb,
 	return (struct nova_inode *)nova_get_block(sb, sih->pi_addr);
 }
 
+/* dafs*/
 static inline unsigned long
 nova_get_numblocks(unsigned short btype)
 {
@@ -798,7 +808,9 @@ nova_get_numblocks(unsigned short btype)
 
 	if (btype == NOVA_BLOCK_TYPE_4K) {
 		num_blocks = 1;
-	} else if (btype == NOVA_BLOCK_TYPE_2M) {
+    } else if (btype == DAFS_TYPE_512K) {
+        num_blocks = 128;
+    } else if (btype == NOVA_BLOCK_TYPE_2M) {
 		num_blocks = 512;
 	} else {
 		//btype == NOVA_BLOCK_TYPE_1G

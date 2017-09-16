@@ -89,13 +89,14 @@ int nova_init_inode_table(struct super_block *sb)
 		if (!inode_table)
 			return -EINVAL;
     
-        //每个inode table都对应一个log
+        //每个inode table都对应512blk
 		allocated = nova_new_log_blocks(sb, pi, &blocknr, 1, 1);
 		nova_dbg_verbose("%s: allocate log @ 0x%lx\n", __func__,
 							blocknr);
 		if (allocated != 1 || blocknr == 0)
-			return -ENOSPC;
+			return -ENOSPC;  
 
+        /* 起始地址log_head */
 		block = nova_get_block_off(sb, blocknr, NOVA_BLOCK_TYPE_2M);
 		inode_table->log_head = block;
 		nova_flush_buffer(inode_table, CACHELINE_SIZE, 0);

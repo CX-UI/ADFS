@@ -6,19 +6,21 @@
  ************************************************************************/
 
 #include <stdio.h>
+//#include <linux/slab.h>
 #include "nova.h"
 
 
 /*
 * dafs get dir_zonet_table
-* put dir zone table block addresss after journal block*/
+* put dir zone table block addresss before journal block
+* not decided journal pos yet*/
 static inline
 struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
 
     return (struct dafs_dzt_block *)((char *)nova_get_block(sb,
-         NOVA_DEF_BLOCK_SIZE_4K * 2));
+         NOVA_DEF_BLOCK_SIZE_4K));
 }
 
 /*
@@ -60,7 +62,7 @@ int dafs_build_dzt_block(struct super_block *sb)
 int dafs_init_dir_zone(struct super_block *sb, char *root_path, uint32_t path_len, uint64_t parent_ino)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dafs_dir_zone_entry *zone_entry;
+    struct dafs_zone_entry *zone_entry;
     
     zone_entry->root_len = path_len;
     zone_entry->log_head = NULL;               /*not decided*/
@@ -109,13 +111,70 @@ int dafs_merge_dir_zone(struct super_block *sb)
 }
 
 /*
-* 2017/09/12
-* alloc zone
+* alloc zone action
 * 1.big enough direcotries will becomes a new zone
 * 2.hot enough e.g frequently renames & chmod dir will becomes new zone*/
-int dafs_alloc_dir_zone(struct super_block *sb)
+int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_zone_entry *z_entry,\
+        struct dafs_dzt_entry *dzt_e, struct dzt_entry_info *dzt_ei)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
+    //struct dafs_dzt_entry *dzt_e;
+    //struct dzt_entry_info *dzt_ei;
+    struct dzt_manager *dzt_m = sbi->dzt_manager;
+    unsigned long zone_type = z_entry->zone_blk_type;
+    unsigned long blocknr;
+    uint64_t hash_name;
+    u64 block;
+    int i;
+    int allocated;
+    unsigned long bp;
+    int ret = 0;
+
+    allocated = nova_new_zone_blocks(sb, z_entry, &blocknr, 1, 1);
+    nova_dbg_verbose("%s: allocate zone @ 0x%lx\n", __func__,
+							blocknr);
+    if(allocated != 1 || blocknr == 0)
+        return -ENOMEM;
+
+    block = nova_get_block_off(sb, blocknr, DAFS_BLOCK_TYPE_512K);
+    
+    /*get zone address*/
+    bp = (unsigned long)nova_get_block(sb, block);
+    //hash_name = le64_to_cpu(z_entry->dz_root_hash);
+    dzt_e->dz_addr = bp;
+    dzt_ei->dz_addr = le64_to_cpu(dzt_e->dz_addr);
+    //not decided
+    make_dzt_entry_valid(sbi, dzt_e);
+
+    radix_tree_insert(&dzt_m->dzt_root, dzt_ei->hash_name, dzt_ei);
+    
+    dafs_init_dir_zone();
+    return ret;
+}    
+
+/*
+ * make dzt entry valid*/
+int make_dzt_entry_valid(struct_sb_info *sbi, struct dafs_dzt_entry *dzt_e)
+{
+    struct dafs_dzt_block *dzt_blk;
+    struct dzt_ptr *dzt_p;
+    unsigned long bit_pos;
+    int ret = 0;
+
+    bit_pos =le64_to_cpu( dzt_e->dzt_eno);
+
+    dzt_blk = dafs_get_dzt_block(sbi);
+
+    dzt_p->bitmap = dzt_blk->dzt_bitmap;
+    dzt_p->max = DAFS_DZT_ENTRIES_IN_BLOCK;
+    dzt_p->dzt_entry = dzt_blk->dzt_entry;
+
+    if(test_bit_le(bit_pos, dzt_p->bitmap))
+        return err;
+    else
+        set_bit(bit_pos, dzt_p->bitmap);
+
+    return ret;
 }
 
 /*

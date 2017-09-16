@@ -260,15 +260,17 @@ static bool nova_check_size(struct super_block *sb, unsigned long size)
 	unsigned long minimum_size, num_blocks;
 
 	/* space required for super block and root directory */
+    /* not decided 
+     * 指明了块的大小是4K*/
 	minimum_size = 2 << sb->s_blocksize_bits;
 
 	/* space required for inode table */
 	if (sbi->num_inodes > 0)
 		num_blocks = (sbi->num_inodes >>
-			(sb->s_blocksize_bits - NOVA_INODE_BITS)) + 1;
+			(sb->s_blocksize_bits - NOVA_INODE_BITS)) + 1;    //table 需要多少个blocks
 	else
 		num_blocks = 1;
-	minimum_size += (num_blocks << sb->s_blocksize_bits);
+	minimum_size += (num_blocks << sb->s_blocksize_bits);     //实际table需要的大小
 
 	if (size < minimum_size)
 	    return false;

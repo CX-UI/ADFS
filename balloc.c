@@ -439,6 +439,7 @@ static unsigned long nova_alloc_blocks_in_free_list(struct super_block *sb,
 
 	while (temp) {
 		step++;
+        //先找到一个node
 		curr = container_of(temp, struct nova_range_node, node);
 
 		curr_blocks = curr->range_high - curr->range_low + 1;
@@ -560,7 +561,10 @@ retry:
 	} else if (atype == DATA) {
 		free_list->alloc_data_count++;
 		free_list->alloc_data_pages += ret_blocks;
-	}
+    } else if (atype == ZONE){
+        free_list->alloc_zone_count++;
+        free_list->alloc_zone_pages += ret_blocks;
+    }
 
 	spin_unlock(&free_list->s_lock);
 
@@ -606,6 +610,21 @@ inline int nova_new_log_blocks(struct super_block *sb, struct nova_inode *pi,
 	NOVA_END_TIMING(new_log_blocks_t, alloc_time);
 	nova_dbgv("Inode %llu, alloc %d log blocks from %lu to %lu\n",
 			pi->nova_ino, allocated, *blocknr,
+			*blocknr + allocated - 1);
+	return allocated;
+}
+
+/* dafs new zone blocks */
+inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_zone_entry *z_e, unsigned long *blocknr, unsigned int num, int zero)
+{
+	int allocated;
+	timing_t alloc_time;
+	NOVA_START_TIMING(new_zone_blocks_t, alloc_time);
+	allocated = nova_new_blocks(sb, blocknr, num,
+					z_e->zone_blk_type, zero, ZONE);
+	NOVA_END_TIMING(new_zone_blocks_t, alloc_time);
+	nova_dbgv("Zone %llu, alloc %d zone blocks from %lu to %lu\n",
+			z_e->dz_no, allocated, *blocknr,
 			*blocknr + allocated - 1);
 	return allocated;
 }

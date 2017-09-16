@@ -733,7 +733,8 @@ static int alloc_bm(struct super_block *sb, unsigned long initsize)
 	struct nova_sb_info *sbi = NOVA_SB(sb);
 	struct scan_bitmap *bm;
 	int i;
-
+    
+    /*每个CPU都有一个bitmap*/
 	for (i = 0; i < sbi->cpus; i++) {
 		bm = kzalloc(sizeof(struct scan_bitmap), GFP_KERNEL);
 		if (!bm)
