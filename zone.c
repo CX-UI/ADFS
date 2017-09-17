@@ -121,7 +121,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e, \
 static inline void make_zone_ptr(struct zone_ptr *z_p, struct dafs_zone_entry *z_e){
 
     z_p->statemap = z_e->zone_statemap;
-    z_p->zone_max = NR_DENTRY_IN_ZONE;
+    z_p->zone_max = NR_DENTRY_IN_ZONE * 2;
     z_p->z_entry = z_e->dentry;
 }
 
@@ -296,7 +296,7 @@ int make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_ei)
 
 /*
  * destroy DRAM radix dzt tree*/
-int dafs_destroy_dzt(struct_sb_info *sbi)
+int dafs_destroy_dzt(struct nova_sb_info *sbi)
 {
     struct dzt_manager *dzt_m = sbi->dzt_manager;
 
@@ -307,6 +307,36 @@ int dafs_destroy_dzt(struct_sb_info *sbi)
 
     return 0;
 }
+
+/*
+* record mean frequency 
+* bring reference(&) in*/
+uint64_t dafs_rec_mf(struct dafs_zone_entry *z_e, struct dzt_entry_info *ei)
+{
+    struct zone_ptr *z_p;
+    unsigned long bitpos = 0;
+    uint64_t sum = ei->dz_sf;
+    uint64_t mean;
+    int i=0;
+
+    make_zone_ptr(&z_p, z_e);
+    while(bitpos < z_p->zone_max){
+        if(!test_bit_le(bitpos, z_p->statemap){
+            bit_pos++;
+            if(!test_bit_le(bitpos, z_p->statemap){
+                bitpos++;
+                i++;
+            }else
+                bitpos++;
+        }else
+            bitpos+=2;
+    }
+    
+    mean = sum/i;
+
+    return mean;            
+}
+
 /*
 * 2012/09/12
 * change zone
@@ -317,11 +347,28 @@ int dafs_change_condition(struct super_block *sb)
 }
 
 /*
+* split zone*/
+int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *dzt_ei,\ 
+                   struct dafs_zone_entry *z_e)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    //struct dafs_zone_entry *z_e;
+    struct zone_ptr *z_p;
+    struct dafs_dentry *dafs_de;
+    struct dafs_dzt_entry *dzt_e;
+    //struct dzt_entry_info *dzt_ei;
+    uint64_t mean;
+
+    mean = dafs_rec_mf(z_e, dzt_ei);
+
+}
+
+/*
 *2017/09/12
 * merge zone
 * 1.small zone or cold zone will merge together
 * 2.subdirectory has more files will take place of parent dir to be root dir**/
-int dafs_merge_dir_zone(struct super_block *sb)
+int dafs_merge_zone(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
 

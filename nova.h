@@ -343,6 +343,7 @@ struct dzt_entry_info{
     uint64_t dz_log_head;
     uint64_t dz_addr;
     uint64_t dz_size;
+    uint64_t dz_sf;
     uint64_t hash_name;
     struct list_head child_list;
     //uint64_t child_dzt_eno[CHILD_PER_DZT_ENTRY];
