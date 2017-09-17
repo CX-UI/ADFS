@@ -158,34 +158,6 @@ struct nova_super_block {
 	__le64		s_num_free_blocks;
 } __attribute((__packed__));
 
-/*
- * 2017/09/13
- * zone entries in directory zone table block*/
-struct dafs_dzt_block{
-    __u8 dzt_bitmap[SIZE_DZT_BITMAP;               /*not decided the size of bitmap*/
-    __u8 reserved[SIZE_OF_RESERVED];
-    struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
-}__attribute((__packed__));
-
-
-/*
- * 2017/09/12 
- * directory zone table entry in DRAM
- * learn in betrfs*/
- struct dafs_dzt_entry{
-     //__u8 invalid;          /* invalid or not */ 
-     __u8 zone_blk_type;
-     __le32 root_len;         /*root diretory name length*/
-     //__le32 dzt_amount;       /*number of entries been taken*/
-     __le64 dzt_eno;          /*dzt entry Id */
-     //__le64 dz_no;            /* zone number */
-     __le64 dz_log_head        /* logical start addr*/
-     __le64 dz_addr;          /* zone addr */
-     __le64 dz_size;
-     __le64 hash_name;
-     __le64 child_dzt_eno[CHILD_PER_DZT_ENTRY];     /*child dzt number in this table */      
-     //char path_name[DAFS_PATH_LEN];
- }__attribute(__packed__);
 
 static inline
 struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)

@@ -8,6 +8,7 @@
 #include <stdio.h>
 //#include <linux/slab.h>
 #include "nova.h"
+#include "nova_def.h"
 
 
 /*
@@ -130,7 +131,7 @@ static inline void make_zone_ptr(struct zone_ptr *z_p, struct dafs_zone_entry *z
 * 1.big enough direcotries will becomes a new zone
 * 2.hot enough e.g frequently renames & chmod dir will becomes new zone*/
 int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e,\
-                        struct dzt_entry_info *dzt_ei)
+                        struct dzt_entry_info *dzt_ei, char *root_path)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     //struct dafs_dzt_entry *dzt_e;
@@ -165,7 +166,9 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e,\
 
     radix_tree_insert(&dzt_m->dzt_root, dzt_ei->hash_name, dzt_ei);
     
-    dafs_init_dir_zone();
+    dafs_init_dir_zone(sb, dzt_e, root_path, );        //not decided
+
+    PERSISTENT_BARRIER();
     return ret;
 }    
 
@@ -324,3 +327,10 @@ int dafs_merge_dir_zone(struct super_block *sb)
 
 }
 
+/*
+ * inherit zone
+ * when parent is not stranger than childs */
+int dafs_inhe_zone(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+}
