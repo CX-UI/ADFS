@@ -20,16 +20,17 @@
  * struct dir_zone
  * learn in f2fs*/
 struct dafs_zone_entry{
-    u8 zone_blk_type;
-    u8 zone_bitmap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
-    __le32 dz_n;             /* not used*/
-    __le32 root_len;
+    //u8 zone_blk_type;         /* record in dzt*/
+    u8 zone_statemap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
+    //u8 cpu_id;               /* not decided */
+    //__le32 dz_n;             /* not used */
+    //__le32 root_len;       /* record in dzt */ 
     //__le64 zone_bitmap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
-    __le64 log_head;         /*directory log for deep dir*/
+    //__le64 log_head;         /*logical address*/
     __le64 dz_no;           /*directory zone NO*/
     //__le64 bm_head;         /*zone bit map address*/
     //__le64 dz_root_hash;         /*root directory of this zone*/
-    __le64 dz_size;         /*zone size*/
+    //__le64 dz_size;         /*zone size*/
     char root_path[DAFS_PATH_LEN];      /*root path name*/
     struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];
     // next is same attributes in this zone
@@ -38,9 +39,9 @@ struct dafs_zone_entry{
 /*
  * zone ptr to find response */
 struct zone_ptr {
-    const void *bitmap;
+    const void *statemap; /*pointer to 2-bit map*/
     unsigned long zone_max;
-    struct dafs_zone_entry; *z_entry;
+    struct dafs_zone_entry *z_entry;
 };
 
 
@@ -57,7 +58,7 @@ struct dafs_dentry{
     __le32 vroot;           /* root dir or ? */
     __le32 path_len;        /* length of the dir path */
     __le64 ino;             /* inode number*/
-    __le64 size;
+    __le64 size;            /* used in dentry */
     __le64 zone_no;         /* root dir records zone number */
     __le64 sub_pos;         /* sub file position*/
     char path[DAFS_PATH_LEN+1];          /* partial path name for lookup*/

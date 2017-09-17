@@ -59,15 +59,21 @@ int dafs_build_dzt_block(struct super_block *sb)
 /*
 * 2017/09/12
 * init dir_zone*/
-int dafs_init_dir_zone(struct super_block *sb, char *root_path, uint32_t path_len, uint64_t parent_ino)
+int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e, \
+                       char *root_path, uint64_t parent_ino, uint64_t size)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_zone_entry *zone_entry;
+    struct zone_ptr *z_p;
+    unsigned long bitpos = 0;
+    int i;
+
     
-    zone_entry->root_len = path_len;
-    zone_entry->log_head = NULL;               /*not decided*/
-    zone_entry->dz_no = NULL;
-    zone_entry->dz_size = DAFS_DEF_ZONE_SIZE;        /*default size is 512K*/
+    zone_entry->zone_blk_type = DAFS_BLOCK_TYPE_512K;         /* not decided */
+    //zone_entry->root_len = dzt_e-> root_len;
+    //zone_entry->log_head = NULL;               /*not decided*/
+    zone_entry->dz_no = dzt_e->dzt_eno;
+    //zone_entry->dz_size = DAFS_DEF_ZONE_SIZE;        /*default size is 512K*/
     zone_entry->root_path = root_path;
 
     /*sub  file "."*/
@@ -77,10 +83,10 @@ int dafs_init_dir_zone(struct super_block *sb, char *root_path, uint32_t path_le
     zone_entry->dentry[0].mtime = CURRENT_TIME_SEC.tv_sec;
     zone_entry->dentry[0].vroot = 0;
     zone_entry->dentry[0].path_len = 0;         //besides file name length and root dir
-    zone_entry->dentry[0].size = DAFS_DEF_ZONE_ENTRY_SIZE;
-    zone_entry->dentry[0].zone,no = NULL;          //not decided
-    zone_entry->dentry[0].subpos = NULL;
-    zone_entry->dentry[0].path = NULL;
+    //zone_entry->dentry[0].size = DAFS_DEF_ZONE_ENTRY_SIZE;
+    zone_entry->dentry[0].zone_no = dzt_e->dzt_eno;          //not decided
+    //zone_entry->dentry[0].subpos = NULL;
+    zone_entry->dentry[0].path = root_path;         /*not decided*/
     zone_entry->dentry[0].name = ".";
 
     /*sub file ".."*/
@@ -89,39 +95,48 @@ int dafs_init_dir_zone(struct super_block *sb, char *root_path, uint32_t path_le
     zone_entry->dentry[1].links_count = 2;
     zone_entry->dentry[1].mtime = CURRENT_TIME_SEC.tv_sec;
     zone_entry->dentry[1].vroot = 0;
-    zone_entry->dentry[1].path_len = 0;         //besides file name length and root dir
+    zone_entry->dentry[1].path_len = 0;         //besides file name length and root dir, not decided
     zone_entry->dentry[1].ino = parent_ino;
-    zone_entry->dentry[1].size = DAFS_DEF_ZONE_ENTRY_SIZE;
+    //zone_entry->dentry[1].size = DAFS_DEF_ZONE_ENTRY_SIZE;
     zone_entry->dentry[1].zone_no = NULL;          //not decided
-    zone_entry->dentry[1].subpos = NULL;
+    //zone_entry->dentry[1].subpos = NULL;
     zone_entry->dentry[1].path = NULL;
+    zone_entry->dentry[1].name = "..";
 
+    make_zone_ptr(&z_p, zone_entry);
     /*change 2-bitmap*/
-    
+    for(i=0;i<2;i++){
+        if(!test_bit_le(bit_pos, z_p->statemap))
+             set_bit(bit_pos++, z_p->statemap);
+        else{
+            clear_bit_le(bit_pos, z_p->statemap);
+            set_bit_le(bit_pos++, z_p->statemap);
+        }
+    }
 }
-/*
-*2017/09/12
-* merge zone
-* 1.small zone or cold zone will merge together
-* 2.subdirectory has more files will take place of parent dir to be root dir**/
-int dafs_merge_dir_zone(struct super_block *sb)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
 
+/*
+* make zone ptr to use statemap*/
+static inline void make_zone_ptr(struct zone_ptr *z_p, struct dafs_zone_entry *z_e){
+
+    z_p->statemap = z_e->zone_statemap;
+    z_p->zone_max = NR_DENTRY_IN_ZONE;
+    z_p->z_entry = z_e->dentry;
 }
+
 
 /*
 * alloc zone action
 * 1.big enough direcotries will becomes a new zone
 * 2.hot enough e.g frequently renames & chmod dir will becomes new zone*/
-int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_zone_entry *z_entry,\
-        struct dafs_dzt_entry *dzt_e, struct dzt_entry_info *dzt_ei)
+int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e,\
+                        struct dzt_entry_info *dzt_ei)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     //struct dafs_dzt_entry *dzt_e;
     //struct dzt_entry_info *dzt_ei;
     struct dzt_manager *dzt_m = sbi->dzt_manager;
-    unsigned long zone_type = z_entry->zone_blk_type;
+    unsigned long zone_type = dzt_e->zone_blk_type;
     unsigned long blocknr;
     uint64_t hash_name;
     u64 block;
@@ -130,7 +145,7 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_zone_entry *z_entry,
     unsigned long bp;
     int ret = 0;
 
-    allocated = nova_new_zone_blocks(sb, z_entry, &blocknr, 1, 1);
+    allocated = nova_new_zone_blocks(sb, dzt_e, &blocknr, 1, 1);
     nova_dbg_verbose("%s: allocate zone @ 0x%lx\n", __func__,
 							blocknr);
     if(allocated != 1 || blocknr == 0)
@@ -141,8 +156,10 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_zone_entry *z_entry,
     /*get zone address*/
     bp = (unsigned long)nova_get_block(sb, block);
     //hash_name = le64_to_cpu(z_entry->dz_root_hash);
-    dzt_e->dz_addr = bp;
-    dzt_ei->dz_addr = le64_to_cpu(dzt_e->dz_addr);
+    dzt_e->dz_addr = cpu_to_le32(bp);
+    dzt_e->dz_log_head = cpu_to_le64(block);
+    dzt_ei->dz_log_head = block;
+    dzt_ei->dz_addr = bp;
     //not decided
     make_dzt_entry_valid(sbi, dzt_e);
 
@@ -172,7 +189,7 @@ int make_dzt_entry_valid(struct_sb_info *sbi, struct dafs_dzt_entry *dzt_e)
     if(test_bit_le(bit_pos, dzt_p->bitmap))
         return err;
     else
-        set_bit(bit_pos, dzt_p->bitmap);
+        set_bit_le(bit_pos, dzt_p->bitmap);
 
     return ret;
 }
@@ -223,7 +240,6 @@ int dafs_init_dzt(struct super_block *sb)
     struct dafs_dzt_entry *dzt_entry;
     struct dafs_dzt_block *dzt_blk;
     struct dzt_ptr *dzt_p;
-
     struct dzt_entry_info *dzt_ei;
     unsigned long bit_pos = 0;
     int ret = 0;
@@ -295,5 +311,16 @@ int dafs_destroy_dzt(struct_sb_info *sbi)
 int dafs_change_condition(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
+}
+
+/*
+*2017/09/12
+* merge zone
+* 1.small zone or cold zone will merge together
+* 2.subdirectory has more files will take place of parent dir to be root dir**/
+int dafs_merge_dir_zone(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+
 }
 

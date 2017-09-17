@@ -615,16 +615,16 @@ inline int nova_new_log_blocks(struct super_block *sb, struct nova_inode *pi,
 }
 
 /* dafs new zone blocks */
-inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_zone_entry *z_e, unsigned long *blocknr, unsigned int num, int zero)
+inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero)
 {
 	int allocated;
 	timing_t alloc_time;
 	NOVA_START_TIMING(new_zone_blocks_t, alloc_time);
 	allocated = nova_new_blocks(sb, blocknr, num,
-					z_e->zone_blk_type, zero, ZONE);
+					dzt_e->zone_blk_type, zero, ZONE);
 	NOVA_END_TIMING(new_zone_blocks_t, alloc_time);
 	nova_dbgv("Zone %llu, alloc %d zone blocks from %lu to %lu\n",
-			z_e->dz_no, allocated, *blocknr,
+			dzt_e->dzt_no, allocated, *blocknr,
 			*blocknr + allocated - 1);
 	return allocated;
 }

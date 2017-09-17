@@ -336,10 +336,13 @@ struct nova_inode_info {
 * 2017/09/13
 * zone entries for copy-on-write Btree*/
 struct dzt_entry_info{
+    u8 zone_blk_type;
     uint32_t root_len;
     uint64_t dzt_eno;
-    uint64_t dz_no;
+    //uint64_t dz_no;
+    uint64_t dz_log_head;
     uint64_t dz_addr;
+    uint64_t dz_size;
     uint64_t hash_name;
     struct list_head child_list;
     //uint64_t child_dzt_eno[CHILD_PER_DZT_ENTRY];
