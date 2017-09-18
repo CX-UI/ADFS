@@ -342,7 +342,7 @@ struct dzt_entry_info{
     //uint64_t dz_no;
     uint64_t dz_log_head;
     uint64_t dz_addr;
-    uint64_t dz_size;
+    //uint64_t dz_size;
     uint64_t dz_sf;
     uint64_t hash_name;
     struct list_head child_list;

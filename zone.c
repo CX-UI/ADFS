@@ -11,6 +11,7 @@
 #include "nova_def.h"
 
 
+/*=================================================== set up system ========================================*/
 /*
 * dafs get dir_zonet_table
 * put dir zone table block addresss before journal block
@@ -162,7 +163,8 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e,\
     dzt_ei->dz_log_head = block;
     dzt_ei->dz_addr = bp;
     //not decided
-    make_dzt_entry_valid(sbi, dzt_e);
+    
+    make_dzt_entry_valid(sbi, dzt_e->dzt_eno);
 
     radix_tree_insert(&dzt_m->dzt_root, dzt_ei->hash_name, dzt_ei);
     
@@ -170,31 +172,36 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e,\
 
     PERSISTENT_BARRIER();
     return ret;
-}    
+}   
 
-/*
- * make dzt entry valid*/
-int make_dzt_entry_valid(struct_sb_info *sbi, struct dafs_dzt_entry *dzt_e)
+/*===================================build dzt when start up system ===========================================*/
+
+/* 
+* make dzt bitmap pointer*/
+void make_dzt_ptr(struct nova_sb_info *sbi, struct dzt_ptr *dzt_p)
 {
     struct dafs_dzt_block *dzt_blk;
-    struct dzt_ptr *dzt_p;
-    unsigned long bit_pos;
-    int ret = 0;
-
-    bit_pos =le64_to_cpu( dzt_e->dzt_eno);
+    //struct dzt_ptr *dzt_p;
 
     dzt_blk = dafs_get_dzt_block(sbi);
 
     dzt_p->bitmap = dzt_blk->dzt_bitmap;
     dzt_p->max = DAFS_DZT_ENTRIES_IN_BLOCK;
     dzt_p->dzt_entry = dzt_blk->dzt_entry;
+}
 
-    if(test_bit_le(bit_pos, dzt_p->bitmap))
-        return err;
-    else
-        set_bit_le(bit_pos, dzt_p->bitmap);
+/*
+ * make dzt entry valid*/
+void set_dzt_entry_valid(struct nova_sb_info *sbi, unsigned long bitpos)
+{
+    //struct dafs_dzt_block *dzt_blk;
+    struct dzt_ptr *dzt_p;
+    int ret = 0;
 
-    return ret;
+    make_dzt_ptr(sbi, dzt_p);
+
+    test_and_set_bit(bitpos, dzt_p->bitmap);
+
 }
 
 /*
@@ -209,7 +216,7 @@ int dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
     //struct dzt_entry *dzt_entry;
 
     /*take into acount when to destroy this entry*/
-    dzt_entry = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);  //move dzt entry into DRAM B-tree
+    //entry_info = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);  //move dzt entry into DRAM B-tree
     
     if(!dzt_entry)
         return -ENOMEM;
@@ -307,6 +314,75 @@ int dafs_destroy_dzt(struct nova_sb_info *sbi)
 
     return 0;
 }
+
+/*========================================== dzt adaption ===================================================*/
+
+/*
+* add dzt entries in DRAM*/
+int add_dzt_entry(struct_sb_info *sbi, struct dzt_entry_info *par_dei,\
+                 struct dafs_dentry *dafs_de, dafs_zone_entry *par_ze)
+{
+    struct dafs_dzt_entry *dzt_e;
+    struct dzt_entry_info *dzt_ei;
+    struct dafs_dzt_block *dzt_blk;
+    struct dzt_ptr *dzt_p;
+    uint32_t name_len;
+    unsigned long bitpos = 0;
+    char root_path[DAFS_PATH_LEN];
+    int ret = 0;
+
+    make_dzt_ptr(sbi, dzt_p);
+
+    /* modify dzt_eno, dz_log_head, dz_addr */
+    while(bitpos < dzt_p->max){
+        if(!test_bit(bitpos, dzt_p->bitmap))
+            break;
+        else
+            bitpos++;
+
+    }
+
+    if(bitpos==dzt_p->max)
+        goto ERR;                            //not decided, dzt is full
+    
+    memcpy(root_path[0],par_ze->root_path, par_dei->root_len);
+    memcpy(root_path[root_len+1], dafs_de->name, dafs_de->name_len);
+    name_len = strlen(root_path);
+
+    dzt_ei = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
+    dzt_ei->zone_blk_type = DAFS_BLOCK_TYPE_512K;
+    dzt_ei->name_len = name_len;
+    dzt_ei->dzt_eno = bitpos;
+    dzt_ei->hash_name = dafs_hash(root_path,name_len);       //not decided
+    
+    /*dzt_blk = dafs_get_dzt_block(sbi);
+    dzt_e = dzt_blk->dzt_entry[bitpos];
+    dzt_e->zoon_blk_type = cpu_to_le64(dzt_ei->zoon_blk_type);
+    dzt_e->root_len = cpu_to_le64(dzt_ei->root_len);
+    dzt_e->dzt_eno = cpu_to_le64(dzt_ei->dzt_eno);
+    dzt_e->dz_sf = cpu_to_le64(dzt_ei->dz_sf);*/
+
+
+    return ret;
+
+ERR: 
+    return err;
+}
+
+/*
+* append dzt_entry in NVM*/
+int append_dzt_entry(struct super_block)
+{
+    struct 
+}
+
+/*
+* hash algrithm*/
+uint64_t dafs_hash(){
+    //not decided
+}
+
+/*====================================== self adaption strategy==============================================*/
 
 /*
 * record mean frequency 
@@ -576,7 +652,7 @@ int dafs_split_zone(struct dzt_entry_info *dzt_ei, struct dafs_zone_entry *z_e,/
     struct zone_ptr *z_p;
 
     if(SPLIT_TYPE == POSITIVE_SPLIT){
-           
+
         goto ret;
     }else if(SPLIT_TYPE == NEGTIVE_SPLIT){
 

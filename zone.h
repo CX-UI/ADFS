@@ -68,7 +68,7 @@ struct dafs_dentry{
     __le64 f_s;             /* frequency statement */
     __le64 sub_num;         /* the number of subfiles */
     __le64 sub_pos;         /* sub file position*/
-    char path[DAFS_PATH_LEN+1];          /* partial path name for lookup*/
+    //char path[DAFS_PATH_LEN+1];          /* partial path name for lookup*/
     char name[NOVA_NAME_LEN+1];          /* file name*/
 
 }__attribute((__packed__));
