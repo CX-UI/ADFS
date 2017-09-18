@@ -199,10 +199,12 @@ ctime	nova.h	/^	__le32	ctime;$/;"	m	struct:nova_setattr_logentry
 curr_log_entry_invalid	inode.c	/^static bool curr_log_entry_invalid(struct super_block *sb,$/;"	f	file:
 curr_page_invalid	inode.c	/^static bool curr_page_invalid(struct super_block *sb,$/;"	f	file:
 d_entry_info	nova.h	/^    struct dzt_entry_info *d_entry_info;$/;"	m	struct:dzt_entry	typeref:struct:dzt_entry::dzt_entry_info
+d_f	zone.h	/^    __le64 d_f;             \/* dentry frenquency *\/$/;"	m	struct:dafs_dentry
 dafs_alloc_dir_zone	zone.c	/^int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e,\\$/;"	f
 dafs_build_dzt	zone.c	/^int dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \\$/;"	f
 dafs_build_dzt_block	zone.c	/^int dafs_build_dzt_block(struct super_block *sb)$/;"	f
 dafs_change_condition	zone.c	/^int dafs_change_condition(struct super_block *sb)$/;"	f
+dafs_check_zones	zone.c	/^int dafs_check_zones(struct super_block, struct dzt_entry_info *dzt_ei)$/;"	f
 dafs_dentry	zone.h	/^struct dafs_dentry{$/;"	s
 dafs_destroy_dzt	zone.c	/^int dafs_destroy_dzt(struct nova_sb_info *sbi)$/;"	f
 dafs_dzt_block	zone.h	/^struct dafs_dzt_block{$/;"	s
@@ -210,13 +212,13 @@ dafs_dzt_entry	zone.h	/^ struct dafs_dzt_entry {$/;"	s
 dafs_find_dir_entry	dir.c	/^struct dafs_dentry *dafs_find_dir_entry(struct super_block *sb)$/;"	f
 dafs_find_dir_zone	dir.c	/^struct dafs_dir_zone *dafs_find_dir_zone(struct super_block *sb)$/;"	f
 dafs_get_dzt_block	zone.c	/^struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)$/;"	f	file:
-dafs_inhe_zone	zone.c	/^int dafs_inhe_zone(struct super_block *sb)$/;"	f
+dafs_inh_zone	zone.c	/^int dafs_inh_zone(struct super_block *sb)$/;"	f
 dafs_init_dir_zone	zone.c	/^int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e, \\$/;"	f
 dafs_init_dzt	zone.c	/^int dafs_init_dzt(struct super_block *sb)$/;"	f
 dafs_merge_zone	zone.c	/^int dafs_merge_zone(struct super_block *sb)$/;"	f
 dafs_new_zone_blocks	balloc.c	/^inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero)$/;"	f
 dafs_rec_mf	zone.c	/^uint64_t dafs_rec_mf(struct dafs_zone_entry *z_e, struct dzt_entry_info *ei)$/;"	f
-dafs_split_zone	zone.c	/^int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *dzt_ei,\\ $/;"	f
+dafs_split_zone	zone.c	/^int dafs_split_zone(struct dzt_entry_info *dzt_ei, struct dafs_zone_entry *z_e,\/$/;"	f
 dafs_zone_entry	zone.h	/^struct dafs_zone_entry{$/;"	s
 dax_get_block_t	stats.h	/^	dax_get_block_t,$/;"	e	enum:timing_category
 dax_read_t	stats.h	/^	dax_read_t,$/;"	e	enum:timing_category
@@ -255,6 +257,7 @@ entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_setattr_logentry
 entry_type	zone.h	/^    u8 entry_type;          $/;"	m	struct:dafs_dentry
 evict_inode_t	stats.h	/^	evict_inode_t,$/;"	e	enum:timing_category
 exit_nova_fs	super.c	/^static void __exit exit_nova_fs(void)$/;"	f	file:
+f_s	zone.h	/^    __le64 f_s;             \/* frequency statement *\/$/;"	m	struct:dafs_dentry
 failure_thread_func	bbuild.c	/^static int failure_thread_func(void *data)$/;"	f	file:
 fast_checked_pages	stats.h	/^	fast_checked_pages,$/;"	e	enum:stats_category
 fast_gc_pages	stats.h	/^	fast_gc_pages,$/;"	e	enum:stats_category
@@ -766,6 +769,7 @@ scan_bm_2M	nova.h	/^	struct single_scan_bm scan_bm_2M;$/;"	m	struct:scan_bitmap	
 scan_bm_4K	nova.h	/^	struct single_scan_bm scan_bm_4K;$/;"	m	struct:scan_bitmap	typeref:struct:scan_bitmap::single_scan_bm
 set_bm	bbuild.c	/^inline void set_bm(unsigned long bit, struct scan_bitmap *bm,$/;"	f
 set_default_opts	super.c	/^static inline void set_default_opts(struct nova_sb_info *sbi)$/;"	f	file:
+set_dentry_state	zone.c	/^int set_dentry_state(struct dafs_zone_entry *z_e, struct dzt_entry_info dzt_ei,\\$/;"	f
 set_opt	nova.h	100;"	d
 set_scan_bm	bbuild.c	/^static inline void set_scan_bm(unsigned long bit,$/;"	f	file:
 setattr_t	stats.h	/^	setattr_t,$/;"	e	enum:timing_category
@@ -779,6 +783,7 @@ statemap	zone.h	/^    const void *statemap; \/*pointer to 2-bit map*\/$/;"	m	str
 stats_category	stats.h	/^enum stats_category {$/;"	g
 sub_num	zone.h	/^    __le64 sub_num;         \/* the number of subfiles *\/$/;"	m	struct:dafs_dentry
 sub_pos	zone.h	/^    __le64 sub_pos;         \/* sub file position*\/$/;"	m	struct:dafs_dentry
+sub_s	zone.h	/^    __le64 sub_s;           \/* subfile number state *\/$/;"	m	struct:dafs_dentry
 support_clwb	super.c	/^int support_clwb = 0;$/;"	v
 support_pcommit	super.c	/^int support_pcommit = 0;$/;"	v
 symlink_t	stats.h	/^	symlink_t,$/;"	e	enum:timing_category
@@ -814,4 +819,5 @@ zone_blk_type	zone.h	/^     __u8 zone_blk_type;$/;"	m	struct:dafs_dzt_entry
 zone_max	zone.h	/^    unsigned long zone_max;$/;"	m	struct:zone_ptr
 zone_no	zone.h	/^    __le64 zone_no;         \/* root dir records zone number *\/$/;"	m	struct:dafs_dentry
 zone_ptr	zone.h	/^struct zone_ptr {$/;"	s
+zone_set_statemap	zone.c	/^int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *dzt_ei,\\ $/;"	f
 zone_statemap	zone.h	/^    u8 zone_statemap[SIZE_OF_ZONE_BITMAP];         \/* state and validity for zone dentries*\/$/;"	m	struct:dafs_zone_entry

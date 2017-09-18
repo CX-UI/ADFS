@@ -319,17 +319,19 @@ uint64_t dafs_rec_mf(struct dafs_zone_entry *z_e, struct dzt_entry_info *ei)
     uint64_t mean;
     int i=0;
 
-    make_zone_ptr(&z_p, z_e);
+    make_zone_ptr(z_p, z_e);
     while(bitpos < z_p->zone_max){
-        if(!test_bit_le(bitpos, z_p->statemap){
+        if(!test_bit_le(bitpos, z_p->statemap)){
             bit_pos++;
-            if(!test_bit_le(bitpos, z_p->statemap){
+            if(test_bit_le(bitpos, z_p->statemap)){
                 bitpos++;
                 i++;
             }else
                 bitpos++;
-        }else
+        }else{
             bitpos+=2;
+            i++;
+        }
     }
     
     mean = sum/i;
@@ -347,8 +349,8 @@ int dafs_change_condition(struct super_block *sb)
 }
 
 /*
-* split zone*/
-int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *dzt_ei,\ 
+* set state in statemap for each zone*/
+int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *dzt_ei,\ 
                    struct dafs_zone_entry *z_e)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
@@ -357,10 +359,231 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *dzt_ei,\
     struct dafs_dentry *dafs_de;
     struct dafs_dzt_entry *dzt_e;
     //struct dzt_entry_info *dzt_ei;
+    unsigned long bitpos = 0;
     uint64_t mean;
+    int statement;
+    int id = 0;
+    int ret = 0;
+
+    make_zone_ptr(z_p, z_e);
 
     mean = dafs_rec_mf(z_e, dzt_ei);
 
+    while(bitpos < z_p->zone_max){
+        if((!test_bit_le(bitpos, z_p->statemap)) && (!test_bit_le(bitpos+1, z_p->statemap))){
+            bitpos+=2;
+            id++;
+
+        }else{      
+            dafs_de = z_e->dentry[id];
+            statement = set_dentry_state(z_e, dzt_ei, dafs_de);
+            
+            if(statement == STATEMAP_COLD){
+                test_and_clear_bit_le(bitpos, z_p->statemap);
+                bitpos++;
+                test_and_set_bit_le(bitpos, z_p->statemap);
+                bitpos++;
+
+            }else if(statement == STATEMAP_WARM){
+                test_and_set_bit_le(bitpos, z_p->statemap);
+                bitpos++:
+                test_and_clear_bit_le(bitpos, z_p->statemap);
+                bitpos++;
+
+            }else if(statement == STATEMAP_HOT){
+                test_and_set_bit_le(bitpos, z_p->statemap);
+                bitpos++:
+                test_and_set_bit_le(bitpos, z_p->statemap);
+                bitpos++;
+
+            }
+            id++;
+
+        }    
+        
+    }
+
+    return ret;
+    
+}
+
+/*
+* set dentry state
+* return statemap value*/
+int set_dentry_state(struct dafs_zone_entry *z_e, struct dzt_entry_info dzt_ei,\
+                     struct dafs_dentry *dafs_de)
+{
+    int statement = STATEMAP_COLD;
+    uint64_t mean;
+    uint64_t st_sub = STARDARD_SUBFILE_NUM;
+    uint64_t d_f;
+    uint64_t sub_s;
+    uint64_t f_s;
+    uint64_t sub_num;
+
+    mean = dafs_rec_mf(z_e, dzt_ei); 
+    d_f = le64_to_cpu(dafs_de->d_f);
+    
+    if(dafs_de->file_type == NORMAL_DIRECTORY ){                   //not decided, not including . and ..
+        sub_num = le64_to_cpu(dafs_de->sub_num);
+    }
+    else
+        sub_num = NULL;
+
+    if(!sub_num){
+        if(sub_num < st_sub)
+            sub_s = NUMBER_OF_SUBFILES_FEW;         //not decided
+        else 
+            sub_s = NUMBER_OF_SUBFILES_LARGE;
+    }
+    else
+        sub_s = NULL;
+
+    //sub_s = le64_to_cpu(dafs_de->sub_s);
+    //f_s = le64_to_cpu(dafs_de->f_s);
+
+    if(d_f < mean){
+        f_s = DENTRY_FREQUENCY_COLD;
+        dafs_de->f_s = cpu_to_le64(f_s);
+    }else{
+        f_s = DENTRY_FREQUENCY_WARM;
+        dafs_de->f_s = cpu_to_le64(f_s);
+    }
+    
+    if(!sub_s){
+        if(sub_s==NUMBER_OF_SUBFILES_FEW && f_s!= DENTRY_FREQUENCY_WRITE){
+
+            statement = STATEMAP_COLD;
+            dafs_de->prio = LEVEL_1;
+
+        }else if(sub_s==NUMBER_OF_SUBFILES_LARGE && f_s==DENTRY_FREQUENCY_COLD){
+            
+            statement = STATEMAP_WARM;
+            dafs_de->prio = LEVEL_2;
+
+        }else if(sub_s==NUMBER_OF_SUBFILES_FEW && f_S==DENTRY_FREQUENCY_WRITE){
+            
+            statement = STATEMAP_WARM;
+            dafs_de->prio = LEVEL_2;
+
+        }else if(sub_s==NUMBER_OF_SUBFILES_LARGE && f_s==DENTRY_FREQUENCY_WARM){
+            
+            statement = STATEMAP_HOT;
+            dafs_de->prio = LEVEL_3;
+
+        }else if(sub_s==NUMBER_OF_SUBFILES_LARGE && f_s==DENTRY_FREQUENCY_WRITE){
+            statement = STATEMAP_HOT;
+            dafs_DE->prio = LEVEL_4;
+        }
+    }else{
+        dafs_de->prio = LEVEL_0;
+        if (f_s==DENTRY_FREQUENCY_COLD)
+            statemap = STATEMAP_COLD;
+        else if (f_s==DENTRY_FREQUENCY_WARM)
+            statemap = STATEMAP_WARM;
+        else if (f_s==DENTRY_FREQUENCY_WRITE)
+            statemap = STATEMAP_HOT;
+    }   
+    
+    return statemap;
+}
+
+/*
+* check zones
+* 1. positive split
+* 2. negtive split
+* 3. merge
+* 4. inherit*/
+int dafs_check_zones(struct super_block, struct dzt_entry_info *dzt_ei)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dafs_zone_entry *z_e;
+    struct zone_ptr *z_p;
+    struct dafs_dentry *dafs_de;
+    unsigned long bitpos = 0;
+    uint64_t prio = NULL;
+    int hot_num = 0;
+    int cold_num = 0;
+    int warm_num = 0;
+    int id = 0;
+    int cd_no = NULL;          /**/
+    int hd = 0;                /* counter for positive split*/
+    int hd_no[NR_DENTRY_IN_ZONE] = NULL;          /* hot dentry NO, not decided how many */
+    int ret = 0;
+    int sp_id = 0;      /* impossible for pos_0 */
+    int i;
+
+
+    z_e = dzt_ei->dz_addr;
+    make_zone_ptr(z_p, z_e);
+
+    while(bitpos < z_p->zone_max){
+        if((!test_bit_le(bitpos, z_p->statemap))){
+            bitpos++;
+            if(!test_bit_le(bitpos, z_p->statemap)){
+                bitpos++;
+                id++;
+            }else{
+                bitpos++;
+                cold_num++;
+                id++;
+            }
+
+        }else{
+            bitpos++;
+            if(!test_bit_le(bitpos, z_p->statemap)){
+                bitpos++;
+                warm_num++;
+                id++;
+            }else{
+                bitpos++;
+                hot_num++;
+                dafs_de = z_e->dentry[id];
+                prio = le_to_cpu(dafs_de->prio);
+                if(prio == LEVEL_4){
+                    hd_no[hd] = id;
+                    hd++;
+                }    
+                id++;
+            }
+
+        }
+    }
+    if(warm_num = 0)
+        dafs_inh_zone();
+
+    else if(hot_num = 0){
+        if(check_zone_root())
+            dafs_merge_zone();           /* not decided*/
+
+    }else if(hd!=0){
+        for(i=0;i<hd;i++){
+            sp_id = hd_no[i];
+            dafs_split_zone(dzt_ei, z_e, id, POSITIVE_SPLIT);     /*not decided*/
+        }
+    }
+
+    return ret;
+}
+
+/*
+* split zone 
+* s_pos split pos*/
+int dafs_split_zone(struct dzt_entry_info *dzt_ei, struct dafs_zone_entry *z_e,/
+                    int s_pos, int SPLIT_TYPE)
+{
+    int ret = 0;
+    struct zone_ptr *z_p;
+
+    if(SPLIT_TYPE == POSITIVE_SPLIT){
+           
+        goto ret;
+    }else if(SPLIT_TYPE == NEGTIVE_SPLIT){
+
+    }
+
+ret:
+    return ret;
 }
 
 /*
@@ -377,7 +600,7 @@ int dafs_merge_zone(struct super_block *sb)
 /*
  * inherit zone
  * when parent is not stranger than childs */
-int dafs_inhe_zone(struct super_block *sb)
+int dafs_inh_zone(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
 }

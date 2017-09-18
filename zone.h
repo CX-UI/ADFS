@@ -63,6 +63,9 @@ struct dafs_dentry{
     __le64 zone_no;         /* root dir records zone number */
     __le64 par_z_no;        /* parent zone ino */
     __le64 prio;            /* level of priority to new a zone */
+    __le64 d_f;             /* dentry frenquency */
+    __le64 sub_s;           /* subfile number state */
+    __le64 f_s;             /* frequency statement */
     __le64 sub_num;         /* the number of subfiles */
     __le64 sub_pos;         /* sub file position*/
     char path[DAFS_PATH_LEN+1];          /* partial path name for lookup*/
