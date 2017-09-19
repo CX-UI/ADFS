@@ -32,7 +32,7 @@ struct dafs_zone_entry{
     //__le64 dz_root_hash;         /*root directory of this zone*/
     //__le64 dz_size;         /*zone size*/
     char root_path[DAFS_PATH_LEN];      /*root path name*/
-    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];
+    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];	
     // next is same attributes in this zone
 }__attribute((__packed__));
 
@@ -61,13 +61,13 @@ struct dafs_dentry{
     __le64 par_ino;         /* parent inode_ino */
     __le64 size;            /* used in dentry */
     __le64 zone_no;         /* root dir records zone number */
-    __le64 par_z_no;        /* parent zone ino */
+    //__le64 par_z_no;        /* parent zone ino */
     __le64 prio;            /* level of priority to new a zone */
     __le64 d_f;             /* dentry frenquency */
     __le64 sub_s;           /* subfile number state */
     __le64 f_s;             /* frequency statement */
     __le64 sub_num;         /* the number of subfiles */
-    __le64 sub_pos;         /* sub file position*/
+    __le64 sub_pos[NR_DENTRY_IN_ZONE];         /* sub file position*/
     //char path[DAFS_PATH_LEN+1];          /* partial path name for lookup*/
     char name[NOVA_NAME_LEN+1];          /* file name*/
 
@@ -75,10 +75,12 @@ struct dafs_dentry{
 
 /*
  * 2017/09/13
- * zone entries in directory zone table block*/
+ * zone entries in directory zone table block
+ * 是不是应该在dram中保留一份*/
 struct dafs_dzt_block{
     __u8 dzt_bitmap[SIZE_DZT_BITMAP];               /*not decided the size of bitmap*/
     __u8 reserved[SIZE_OF_RESERVED];
+    __le64 dzt_tail_pos;
     struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
 }__attribute((__packed__));
 
