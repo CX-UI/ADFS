@@ -571,6 +571,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
     unsigned long  j,k,old_id;
     unsigned long ch_len;
     unsigned long new_id = ch_pos;  /* ch_pos initalized as 0*/
+    unsigned long bitpos = 0;
     unsigned long i;
 
     ch_len = par_ze->sub_num;
@@ -601,7 +602,8 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             /*set this file's pos in its par_ze*/
             par_ze->sub_pos[i] = new_id;
             /*atomic*/
-            set_bit_le(new_id, z_p->statemap);
+            bitpos = new_id *2 +1;
+            set_bit_le(bitpos, z_p->statemap);
 
             new_id++;
 
@@ -629,7 +631,8 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             }
             
             par_ze->sub_pos[i] = new_id;
-            set_bit_le(new_id,z_p->statemap);
+            bitpos = new_id *2 +1;
+            set_bit_le(bitpos, z_p->statemap);
             new_id++;
 
         }else if(old_ze->file_type == NORMAL_DIRECTORY){
@@ -656,7 +659,8 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             }
             
             par_ze->sub_pos[i] = new_id;
-            set_bit_le(new_id,z_p->statemap);
+            bitpos = new_id *2 +1;
+            set_bit_le(bitpos, z_p->statemap);
             new_id++;
             
             memcpy(sub_no[0],old_ze->sub_pos,old_ze->sub_num);
@@ -670,7 +674,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
 }
 
 /*
-* reset statemap*/
+* reset statemap when split merge inherit finished*/
 void reset_statemap(struct super_block *sb, struct zone_ptr *z_p, struct dafs_zone_entry *z_e,\
                   struct dzt_entry_info *dzt_par_ei,  unsigned long ch_pos)
 {
@@ -1035,17 +1039,7 @@ ret:
     return ret;
 }
 
-/*
-* reset statemap*/
-void reset_statemap(struct super_block *sb, struct zone_ptr *z_p, struct dafs_zone_entry *z_e,\
-                   unsigned long ch_pos )
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dafs_dentry *dafs_de;
-    unsigned long bitpos;
 
-    dafs_de = z_e->dentry[ch_pos];
-}
 /*
 *2017/09/12
 * merge zone
