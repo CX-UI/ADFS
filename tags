@@ -147,13 +147,16 @@ _mm_clflushopt	nova_def.h	207;"	d
 _mm_clwb	nova_def.h	209;"	d
 _mm_pcommit	nova_def.h	211;"	d
 add_dentry_t	stats.h	/^	add_dentry_t,$/;"	e	enum:timing_category
+add_dzt_entry	zone.c	/^struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei,\\$/;"	f
 addr	bbuild.c	/^	u64 addr[512];$/;"	m	struct:task_ring	file:
 addrs	journal.h	/^	u64 addrs[4];$/;"	m	struct:nova_lite_journal_entry
 alloc_bm	bbuild.c	/^static int alloc_bm(struct super_block *sb, unsigned long initsize)$/;"	f	file:
 alloc_data_count	nova.h	/^	unsigned long	alloc_data_count;$/;"	m	struct:free_list
 alloc_data_pages	nova.h	/^	unsigned long	alloc_data_pages;$/;"	m	struct:free_list
+alloc_dzt_entry	zone.c	/^uint64_t alloc_dzt_entry(struct super_block *sb)$/;"	f
 alloc_log_count	nova.h	/^	unsigned long	alloc_log_count;$/;"	m	struct:free_list
 alloc_log_pages	nova.h	/^	unsigned long	alloc_log_pages;$/;"	m	struct:free_list
+alloc_mi_zone	zone.c	/^struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_entry *n_dzt_e,\\$/;"	f
 alloc_steps	stats.h	/^	alloc_steps,$/;"	e	enum:stats_category
 alloc_type	nova.h	/^enum alloc_type {$/;"	g
 alloc_zone_count	nova.h	/^    unsigned long   alloc_zone_count;$/;"	m	struct:free_list
@@ -161,6 +164,7 @@ alloc_zone_pages	nova.h	/^    unsigned long   alloc_zone_pages;$/;"	m	struct:fre
 allocate_resources	bbuild.c	/^static int allocate_resources(struct super_block *sb, int cpus)$/;"	f	file:
 allocated	nova.h	/^	int allocated;$/;"	m	struct:inode_map
 append_dir_entry_t	stats.h	/^	append_dir_entry_t,$/;"	e	enum:timing_category
+append_dzt_entry	zone.c	/^struct dafs_dzt_entry *append_dzt_entry(struct super_block *sb, struct dzt_entry_info *dzt_ei)$/;"	f
 append_file_entry_t	stats.h	/^	append_file_entry_t,$/;"	e	enum:timing_category
 append_link_change_t	stats.h	/^	append_link_change_t,$/;"	e	enum:timing_category
 append_setattr_t	stats.h	/^	append_setattr_t,$/;"	e	enum:timing_category
@@ -192,6 +196,7 @@ copy_to_nvmm_t	stats.h	/^	copy_to_nvmm_t,$/;"	e	enum:timing_category
 cow_write_bytes	stats.h	/^	cow_write_bytes,$/;"	e	enum:stats_category
 cow_write_t	stats.h	/^	cow_write_t,$/;"	e	enum:timing_category
 cpus	nova.h	/^	int cpus;$/;"	m	struct:nova_sb_info
+cpy_new_zentry	zone.c	/^static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *new_z_e,\\$/;"	f	file:
 create_t	stats.h	/^	create_t,$/;"	e	enum:timing_category
 create_trans_t	stats.h	/^	create_trans_t,$/;"	e	enum:timing_category
 ctime	nova.h	/^	__le32	ctime;$/;"	m	struct:nova_link_change_entry
@@ -204,7 +209,7 @@ dafs_alloc_dir_zone	zone.c	/^int dafs_alloc_dir_zone(struct super_block *sb, str
 dafs_build_dzt	zone.c	/^int dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \\$/;"	f
 dafs_build_dzt_block	zone.c	/^int dafs_build_dzt_block(struct super_block *sb)$/;"	f
 dafs_change_condition	zone.c	/^int dafs_change_condition(struct super_block *sb)$/;"	f
-dafs_check_zones	zone.c	/^int dafs_check_zones(struct super_block, struct dzt_entry_info *dzt_ei)$/;"	f
+dafs_check_zones	zone.c	/^int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)$/;"	f
 dafs_dentry	zone.h	/^struct dafs_dentry{$/;"	s
 dafs_destroy_dzt	zone.c	/^int dafs_destroy_dzt(struct nova_sb_info *sbi)$/;"	f
 dafs_dzt_block	zone.h	/^struct dafs_dzt_block{$/;"	s
@@ -212,13 +217,14 @@ dafs_dzt_entry	zone.h	/^ struct dafs_dzt_entry {$/;"	s
 dafs_find_dir_entry	dir.c	/^struct dafs_dentry *dafs_find_dir_entry(struct super_block *sb)$/;"	f
 dafs_find_dir_zone	dir.c	/^struct dafs_dir_zone *dafs_find_dir_zone(struct super_block *sb)$/;"	f
 dafs_get_dzt_block	zone.c	/^struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)$/;"	f	file:
+dafs_hash	zone.c	/^uint64_t dafs_hash(){$/;"	f
 dafs_inh_zone	zone.c	/^int dafs_inh_zone(struct super_block *sb)$/;"	f
 dafs_init_dir_zone	zone.c	/^int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e, \\$/;"	f
 dafs_init_dzt	zone.c	/^int dafs_init_dzt(struct super_block *sb)$/;"	f
 dafs_merge_zone	zone.c	/^int dafs_merge_zone(struct super_block *sb)$/;"	f
 dafs_new_zone_blocks	balloc.c	/^inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero)$/;"	f
 dafs_rec_mf	zone.c	/^uint64_t dafs_rec_mf(struct dafs_zone_entry *z_e, struct dzt_entry_info *ei)$/;"	f
-dafs_split_zone	zone.c	/^int dafs_split_zone(struct dzt_entry_info *dzt_ei, struct dafs_zone_entry *z_e,\/$/;"	f
+dafs_split_zone	zone.c	/^int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\\$/;"	f
 dafs_zone_entry	zone.h	/^struct dafs_zone_entry{$/;"	s
 dax_get_block_t	stats.h	/^	dax_get_block_t,$/;"	e	enum:timing_category
 dax_read_t	stats.h	/^	dax_read_t,$/;"	e	enum:timing_category
@@ -226,7 +232,7 @@ de_len	nova.h	/^	__le16	de_len;                 \/* length of this dentry *\/$/;
 de_len	zone.h	/^    __le16 de_len;          \/* length of this dentry. not used here *\/$/;"	m	struct:dafs_dentry
 delete_dir_tree_t	stats.h	/^	delete_dir_tree_t,$/;"	e	enum:timing_category
 delete_file_tree_t	stats.h	/^	delete_file_tree_t,$/;"	e	enum:timing_category
-dentry	zone.h	/^    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];$/;"	m	struct:dafs_zone_entry	typeref:struct:dafs_zone_entry::dafs_dentry
+dentry	zone.h	/^    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];	$/;"	m	struct:dafs_zone_entry	typeref:struct:dafs_zone_entry::dafs_dentry
 destroy_inodecache	super.c	/^static void destroy_inodecache(void)$/;"	f	file:
 destroy_rangenode_cache	super.c	/^static void destroy_rangenode_cache(void)$/;"	f	file:
 dev	nova_def.h	/^	} dev;			\/* device inode *\/$/;"	m	struct:nova_inode	typeref:struct:nova_inode::__anon1
@@ -238,7 +244,6 @@ dz_log_head	nova.h	/^    uint64_t dz_log_head;$/;"	m	struct:dzt_entry_info
 dz_no	zone.h	/^    __le64 dz_no;           \/*directory zone NO*\/$/;"	m	struct:dafs_zone_entry
 dz_sf	nova.h	/^    uint64_t dz_sf;$/;"	m	struct:dzt_entry_info
 dz_sf	zone.h	/^     __le64 dz_sf;         \/* newly added dir zone sum frequency *\/$/;"	m	struct:dafs_dzt_entry
-dz_size	nova.h	/^    uint64_t dz_size;$/;"	m	struct:dzt_entry_info
 dz_size	zone.h	/^     __le64 dz_size;$/;"	m	struct:dafs_dzt_entry
 dzt_bitmap	zone.h	/^    __u8 dzt_bitmap[SIZE_DZT_BITMAP];               \/*not decided the size of bitmap*\/$/;"	m	struct:dafs_dzt_block
 dzt_eno	nova.h	/^    uint64_t dzt_eno;$/;"	m	struct:dzt_entry_info
@@ -251,6 +256,7 @@ dzt_m_info	nova.h	/^    struct dzt_manager *dzt_m_info;$/;"	m	struct:nova_sb_inf
 dzt_manager	nova.h	/^struct dzt_manager {$/;"	s
 dzt_ptr	nova.h	/^struct dzt_ptr {$/;"	s
 dzt_root	nova.h	/^    struct radix_tree_root dzt_root;$/;"	m	struct:dzt_manager	typeref:struct:dzt_manager::radix_tree_root
+dzt_tail_pos	zone.h	/^    __le64 dzt_tail_pos;$/;"	m	struct:dafs_dzt_block
 entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_dentry
 entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_link_change_entry
 entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_setattr_logentry
@@ -352,7 +358,7 @@ log_pages	nova.h	/^	unsigned long log_pages;	\/* Num of log pages *\/$/;"	m	stru
 log_tail	nova_def.h	/^	__le64	log_tail;	\/* Log tail pointer *\/$/;"	m	struct:nova_inode
 lookup_t	stats.h	/^	lookup_t,$/;"	e	enum:timing_category
 low_dirty	nova.h	/^	unsigned long low_dirty;	\/* Mmap dirty low range *\/$/;"	m	struct:nova_inode_info_header
-make_dzt_entry_valid	zone.c	/^int make_dzt_entry_valid(struct_sb_info *sbi, struct dafs_dzt_entry *dzt_e)$/;"	f
+make_dzt_ptr	zone.c	/^void make_dzt_ptr(struct nova_sb_info *sbi, struct dzt_ptr *dzt_p)$/;"	f
 make_dzt_tree	zone.c	/^int make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_ei)$/;"	f
 make_zone_ptr	zone.c	/^static inline void make_zone_ptr(struct zone_ptr *z_p, struct dafs_zone_entry *z_e){$/;"	f	file:
 map_id	nova.h	/^	unsigned long map_id;$/;"	m	struct:nova_sb_info
@@ -363,6 +369,7 @@ memcpy_to_pmem_nocache	nova.h	/^static inline int memcpy_to_pmem_nocache(void *d
 memcpy_w_nvmm_t	stats.h	/^	memcpy_w_nvmm_t,$/;"	e	enum:timing_category
 memcpy_w_wb_t	stats.h	/^	memcpy_w_wb_t,$/;"	e	enum:timing_category
 memset_nt	nova.h	/^static inline void memset_nt(void *dest, uint32_t dword, size_t length)$/;"	f
+migrate_zone_entry	zone.c	/^int migrate_zone_entry(struct zone_ptr *z_p, unsigned long ch_pos, struct dafs_dzt_entry *dzt_ne\\$/;"	f
 mkdir_t	stats.h	/^	mkdir_t,$/;"	e	enum:timing_category
 mknod_t	stats.h	/^	mknod_t,$/;"	e	enum:timing_category
 mmap_fault_t	stats.h	/^	mmap_fault_t,$/;"	e	enum:timing_category
@@ -714,9 +721,7 @@ padding3	nova.h	/^	__le64	padding3;$/;"	m	struct:nova_inode_page_tail
 paddings	nova.h	/^	__le64	paddings[2];$/;"	m	struct:nova_link_change_entry
 page_tail	nova.h	/^	struct nova_inode_page_tail page_tail;$/;"	m	struct:nova_inode_log_page	typeref:struct:nova_inode_log_page::nova_inode_page_tail
 par_ino	zone.h	/^    __le64 par_ino;         \/* parent inode_ino *\/$/;"	m	struct:dafs_dentry
-par_z_no	zone.h	/^    __le64 par_z_no;        \/* parent zone ino *\/$/;"	m	struct:dafs_dentry
 partial_block_t	stats.h	/^	partial_block_t,$/;"	e	enum:timing_category
-path	zone.h	/^    char path[DAFS_PATH_LEN+1];          \/* partial path name for lookup*\/$/;"	m	struct:dafs_dentry
 path_len	zone.h	/^    __le32 path_len;        \/* length of the dir path *\/$/;"	m	struct:dafs_dentry
 per_list_blocks	nova.h	/^	unsigned long per_list_blocks;$/;"	m	struct:nova_sb_info
 pgoff	nova.h	/^	__le64	pgoff;$/;"	m	struct:nova_file_write_entry
@@ -741,6 +746,7 @@ remove_dentry_t	stats.h	/^	remove_dentry_t,$/;"	e	enum:timing_category
 rename_t	stats.h	/^	rename_t,$/;"	e	enum:timing_category
 reserved	zone.h	/^    __u8 reserved[SIZE_OF_RESERVED];$/;"	m	struct:dafs_dzt_block
 reserved_blocks	nova.h	/^	unsigned long	reserved_blocks;$/;"	m	struct:nova_sb_info
+reset_statemap	zone.c	/^void reset_statemap(struct super_block *sb, struct zone_ptr *z_p, struct dafs_zone_entry *z_e,\\$/;"	f
 rmdir_t	stats.h	/^	rmdir_t,$/;"	e	enum:timing_category
 root_len	nova.h	/^    uint32_t root_len;$/;"	m	struct:dzt_entry_info
 root_len	zone.h	/^     __le32 root_len;         \/*root diretory name length*\/$/;"	m	struct:dafs_dzt_entry
@@ -770,6 +776,7 @@ scan_bm_4K	nova.h	/^	struct single_scan_bm scan_bm_4K;$/;"	m	struct:scan_bitmap	
 set_bm	bbuild.c	/^inline void set_bm(unsigned long bit, struct scan_bitmap *bm,$/;"	f
 set_default_opts	super.c	/^static inline void set_default_opts(struct nova_sb_info *sbi)$/;"	f	file:
 set_dentry_state	zone.c	/^int set_dentry_state(struct dafs_zone_entry *z_e, struct dzt_entry_info dzt_ei,\\$/;"	f
+set_dzt_entry_valid	zone.c	/^void set_dzt_entry_valid(struct nova_sb_info *sbi, unsigned long bitpos)$/;"	f
 set_opt	nova.h	100;"	d
 set_scan_bm	bbuild.c	/^static inline void set_scan_bm(unsigned long bit,$/;"	f	file:
 setattr_t	stats.h	/^	setattr_t,$/;"	e	enum:timing_category
@@ -782,7 +789,7 @@ size	zone.h	/^    __le64 size;            \/* used in dentry *\/$/;"	m	struct:da
 statemap	zone.h	/^    const void *statemap; \/*pointer to 2-bit map*\/$/;"	m	struct:zone_ptr
 stats_category	stats.h	/^enum stats_category {$/;"	g
 sub_num	zone.h	/^    __le64 sub_num;         \/* the number of subfiles *\/$/;"	m	struct:dafs_dentry
-sub_pos	zone.h	/^    __le64 sub_pos;         \/* sub file position*\/$/;"	m	struct:dafs_dentry
+sub_pos	zone.h	/^    __le64 sub_pos[NR_DENTRY_IN_ZONE];         \/* sub file position*\/$/;"	m	struct:dafs_dentry
 sub_s	zone.h	/^    __le64 sub_s;           \/* subfile number state *\/$/;"	m	struct:dafs_dentry
 support_clwb	super.c	/^int support_clwb = 0;$/;"	v
 support_pcommit	super.c	/^int support_pcommit = 0;$/;"	v
