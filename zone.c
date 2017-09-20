@@ -458,8 +458,10 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
                                      struct dzt_entry_info *n_dzt_e, struct dafs_zone_entry *par_ze,\
                                      struct dzt_entry_info *par_dzt_ei, unsigned long sp_id)
 {
+    struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_zone_entry *new_ze;
     struct dafs_dentry *dafs_rde;
+    struct dzt_manager *dzt_m = sbi->dzt_manager;
     unsigned long blocknr;
     unsigned long par_root_len, name_len;
     int allocated;
@@ -504,6 +506,9 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
 
     /* migrate*/
     migrate_zone_entry(sp_id, n_dzt_e, par_ze, new_ze);
+
+    make_dzt_entry_valid(sbi, n_dzt_e->dzt_eno);
+    radix_tree_insert(&dzt_m->dzt_root, n_dzt_ei->hash_name, n_dzt_ei);
 
     return new_ze;
 }
