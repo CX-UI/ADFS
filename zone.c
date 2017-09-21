@@ -320,17 +320,19 @@ int dafs_destroy_dzt(struct nova_sb_info *sbi)
     return 0;
 }
 
-/*========================================== dzt adaption ===================================================*/
+/*======================================= dzt&zone adaption =================================================*/
 
 /*
-* add dzt entries in DRAM*/
+* add dzt entries in DRAM
+* used in split*/
 struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei,\
-                 struct dafs_dentry *dafs_rde)
+                 struct dafs_zone_entry *par_ze, unsigned long sp_id)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dzt_entry *new_dzt_e;
     struct dzt_entry_info *new_dzt_ei;
     struct dzt_manager *dzt_m = sbi->dzt_manager;
+    struct dafs_dentry *dafs_rde;
     //struct dafs_dzt_block *dzt_blk;
     //struct dzt_ptr *dzt_p;
     uint32_t name_len;
@@ -350,12 +352,16 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     //root_path[root_len]='/'
     //memcpy(root_path[root_len+1], dafs_de->name, dafs_de->name_len);
 
+    dafs_rde = par_ze->dentry[sp_id];
     name_len = par_dei->root_len + 1 + dafs_rde-> name_len;
 
     new_dzt_ei = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
     new_dzt_ei->zone_blk_type = DAFS_BLOCK_TYPE_512K;
     new_dzt_ei->name_len = name_len;
     new_dzt_ei->dzt_eno = eno_pos;
+    new_dzt_ei->pdz_addr = par_dei->dz_addr;
+    new_dzt_ei->rden_pos = sp_id;
+    new_dzt_ei->dz_sf = dafs_rde->d_f;
     new_dzt_ei->hash_name = dafs_hash(root_path,name_len);       //not decided
     
 
@@ -434,6 +440,8 @@ struct dafs_dzt_entry *append_dzt_entry(struct super_block *sb, struct dzt_entry
     dzt_e->zoon_blk_type = cpu_to_le64(dzt_ei->zoon_blk_type);
     dzt_e->root_len = cpu_to_le64(dzt_ei->root_len);
     dzt_e->dzt_eno = cpu_to_le64(dzt_ei->dzt_eno);
+    dzt_e->pdz_addr = cpu_to_le64(dzt_ei->pdz_addr);
+    dzt_e->rden_pos = cpu_to_le64(dzt_ei->rden_pos);
     dzt_e->dz_sf = cpu_to_le64(dzt_ei->dz_sf);
     dzt_e->hash_name = cpu_to_le64(dzt_ei->hash_name);
     /* not decided sub files */
@@ -451,6 +459,29 @@ struct dafs_dzt_entry *append_dzt_entry(struct super_block *sb, struct dzt_entry
 uint64_t dafs_hash(){
     //not decided
 }
+
+/*
+* delete dzt_entry in DRAM
+* not used in inherit
+* rdei root dzt_entry_info*/
+struct dzt_entry_info *delete_dzt_entry(struct super_block *sb, struct dzt_entry_info *old_rdei)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sbi);
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dzt_ptr *dzt_p;
+    unsigned long hash_name;
+    unsigned long ch_pos;
+
+    make_dzt_ptr(sbi, dzt_p);
+    ch_pos = old_rdei->dzt_eno;
+    hash_name = old_rdei->hash_name;
+    radix_tree_delete(&dzt_m->dzt_root, hash_name);
+    test_and_clear_bit(ch_pos, dzt_p->bitmap);
+
+    return old_rdei;
+}
+
+
 
 /*
 * allocate and initalize for migrate zone*/
@@ -541,6 +572,7 @@ int migrate_zone_entry(struct zone_ptr *z_p, unsigned long ch_pos, struct dafs_d
 
     /* modify root dentry */
     dafs_rde->file_type = ROOT_DIRECTORY;
+    dafs_rde->mtime = CURRENT_TIME_SEC.tv_sec;
     dafs_rde->vroot = 1;
     dafs_rde->zoon_no = dzt_ne->dzt_eno;
     dafs_rde->sub_pos = NULL;
@@ -562,8 +594,8 @@ int migrate_zone_entry(struct zone_ptr *z_p, unsigned long ch_pos, struct dafs_d
 * ch_no is an array records subfile_id
 * ch_pos is the star pos for copy*/
 static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *new_z_e,\
-                                 struct dafs_zone_dentry *old_z_e, unsigned long old_len,
-                                 struct dafs_dentry *par_ze, unsigned long *ch_no, unsigned long ch_pos)
+                                 struct dafs_zone_entry *old_z_e, unsigned long old_len,
+                                 struct dafs_dentry *par_ze, unsigned long ch_no[], unsigned long ch_pos)
 {
     struct dafs_dentry *new_ze, *old_ze;
     //unsigned long old_len = r_ze->name_len;
@@ -576,12 +608,12 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
 
     ch_len = par_ze->sub_num;
     for(i=0;i<ch_len;i++){
-        old_id = ch_pos[i];
+        old_id = ch_no[i];
         old_ze = old_z_e->dentry[old_id];
         new_ze = new_z_e->dentry[new_id];
         if(old_ze->file_type == NORMAL_FILE){
             new_ze->entry_type = old_ze->entry_type;
-            new_ze->name_len = old_ze->name_len-old_len-1;
+            new_ze->name_len = old_ze->name_len-old_len;
             new_ze->file_type = old_ze->file_type;
             new_ze->links_count = old_ze ->links_count;
             new_ze->mtime = CURRENT_TIME_SEC.tv_sec;
@@ -591,7 +623,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             new_ze->par_ino = old_ze->par_ino;
             new_ze->size = old_ze->size;
             new_ze->prio = LEVEL_0;
-            new_ze->d_f = 0;
+            new_ze->d_f = 0;            //not decided
             //new_ze->sub_s = old_ze->sub_s;
             new_ze->f_s = DENTRY_FREQUENCY_COLD;
 
@@ -609,7 +641,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
 
         }else if(old_ze->file_type == ROOT_DIRECTORY){
             new_ze->entry_type = old_ze->entry_type;
-            new_ze->name_len = old_ze->name_len-old_len-1;
+            new_ze->name_len = old_ze->name_len-old_len;
             new_ze->file_type = old_ze->file_type;
             new_ze->links_count = old_ze ->links_count;
             new_ze->mtime = CURRENT_TIME_SEC.tv_sec;
@@ -638,7 +670,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
         }else if(old_ze->file_type == NORMAL_DIRECTORY){
                     
             new_ze->entry_type = old_ze->entry_type;
-            new_ze->name_len = old_ze->name_len-old_len-1;
+            new_ze->name_len = old_ze->name_len-old_len;
             new_ze->file_type = old_ze->file_type;
             new_ze->links_count = old_ze ->links_count;
             new_ze->mtime = CURRENT_TIME_SEC.tv_sec;
@@ -672,6 +704,250 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
     } 
     
 }
+/* merge dentry
+* startpos used in par_zone*/
+static void merge_zone_dentry(struct dafs_zone_entry *cur_ze, struct dafs_zone_entry *par_ze,\
+                            struct dafs_dentry *dafs_orde, struct dzt_entry_info *cur_rdei)
+{
+    struct zone_ptr *cur_p;
+    struct zone_ptr *par_p;
+    struct dafs_dentry *cur_de,par_de;
+    unsigned long bitpos = 0;
+    unsigned long startpos = 0;
+    unsigned long  id, par_id, ch_pos;
+    unsigned long cpy_no[NR_DENTRY_IN_ZONE];
+    unsigned long count = 0;
+    make_zone_ptr(cur_p, cur_ze);
+    make_zone_ptr(par_p, par_ze);
+
+
+    for(id = 0; id<cur_p->NR_DENTRY_IN_ZONE; id++){
+        if(test_bit_le(bitpos, cur_p->statemap)||test_bit_le(bitpos+1, cur_p)){
+            cur_de = cur_ze->dentry[id];
+            if(cur_de->par_ino == dafs_orde->ino){
+                cpy_no[count] = id;
+                counter++;
+            }
+        }else{
+            bitpos+=2;
+        }
+    }
+    cpy_merge_dentry(cur_p, par_p, cpy_no, cur_ze, par_ze, 0, dafs_orde, dafs_orde, cur_rdei);
+
+}
+
+/* cpt dentries when merging
+* start id on des zone*/
+static void cpy_merge_dentry(struct zone_ptr *src_p, struct zone_ptr *des_p, unsigned long ch_no[],\
+            struct dafs_zone_entry *src_ze, struct dafs_zone_entry *des_ze, unsigned long start_id,\
+            struct dafs_dentry *old_rde, struct dafs_dentry *par_de, struct dzt_entry_info *cur_rdei)
+{
+    struct dafs_dentry *src_de, *des_de;
+    unsigned long i, des_id,src_id, des_pos,src_pos, sub_num,name_len;
+    char name[NOVA_NAME_LEN];
+    unsigned long sub_no[NR_DENTRY_IN_ZONE];
+
+    //des_id = start_id;
+    sub_num = par_de->sub_num;
+    for(i=0;i<sub_num;i++){
+        src_id = ch_no[i];
+        src_de = src_ze->dentry[src_id];
+        des_id = find_invalid_id(des_p, start_id);
+        des_de = des_ze->dentry[des_id];
+        name_len = old_rde->name_len;
+        memcpy(name[0],old_rde->name, name_len);
+        memcpy(name[name_len],src_de->name, src_de->name_len);
+
+        if(src_de->file_type == NORMAL_FILE){
+            des_de->entry_type = src_de->entry_type;
+            des_de->namelen = src_de->namelen + namelen;
+            des_de->file_type = src_de->file_type;
+            des_de->links_count = src_de->links_count;
+            des_de->mtime = CURRENT_TIME_SEC.tv_sec;
+            des_de->vroot = src_de->vroot;
+            des_de->path_len = src_de->path_len + name_len;
+            des_de->ino = src_de->ino;
+            des_de->par_ino = src_de->par_ino;
+            des_de->size = src_de->size;
+            des_de->prio = LEVEL_0;
+            des_de->d_f = src_de->d_f;
+            des_de->f_s = DENTRY_FREQUENCY_COLD;
+            des_de->name = name;
+
+            src_pos = src_id *2;
+            des_pos = des_id*2;
+            if(!test_bit_le(src_pos, src_p->statemap)){
+                src_pos++;
+                des_pos++;
+                clear_bit_le(src_pos, src_p->statemap);
+                set_bit_le(des_pos, des_p->statemap);
+            }else{
+                clear_bit_le(src_pos, src_p->statemap);
+                //set_bit_le(des_pos, des_p->statemap);
+                src_pos++;
+                des_pos++;
+                if(test_bit_le(src_pos, src_p->statemap)){
+                    clear_bit_le(src_pos, src_p->statemap);
+                    set_bit_le(des_pos, des_p->statemap);
+                }else{
+                    set_bit_len(des_pos, des_p->statemap);
+                }
+            }
+
+            cur_rdei->dz_sf -= des_de->d_f;
+
+        }else if(src_de->file_type == ROOT_DIRECTORY){
+            
+            des_de->entry_type = src_de->entry_type;
+            des_de->namelen = src_de->namelen + namelen;
+            des_de->file_type = src_de->file_type;
+            des_de->links_count = src_de->links_count;
+            des_de->mtime = CURRENT_TIME_SEC.tv_sec;
+            des_de->vroot = src_de->vroot;
+            des_de->path_len = src_de->path_len + name_len;
+            des_de->ino = src_de->ino;
+            des_de->par_ino = src_de->par_ino;
+            des_de->size = src_de->size;
+            des_de->zone_no = src_de->zone_no;
+            des_de->prio = LEVEL_0;
+            des_de->d_f = src_de->d_f;
+            des_de->sub_s = src_de->sub_s;
+            des_de->f_s = DENTRY_FREQUENCY_COLD;
+            des_de->sub_num = src_de->sub_num;
+            des_de->name = name;
+
+            src_pos = src_id *2;
+            des_pos = des_id*2;
+            if(!test_bit_le(src_pos, src_p->statemap)){
+                src_pos++;
+                des_pos++;
+                clear_bit_le(src_pos, src_p->statemap);
+                set_bit_le(des_pos, des_p->statemap);
+            }else{
+                clear_bit_le(src_pos, src_p->statemap);
+                //set_bit_le(des_pos, des_p->statemap);
+                src_pos++;
+                des_pos++;
+                if(test_bit_le(src_pos, src_p->statemap)){
+                    clear_bit_le(src_pos, src_p->statemap);
+                    set_bit_le(des_pos, des_p->statemap);
+                }else{
+                    set_bit_le(des_pos, des_p->statemap)
+                }
+            }
+            cur_rdei->dz_sf -= src_de->d_f;
+
+        }else if(src_de->file_type == NORMAL_DIRECTORY){
+            
+            des_de->entry_type = src_de->entry_type;
+            des_de->namelen = src_de->namelen + namelen;
+            des_de->file_type = src_de->file_type;
+            des_de->links_count = src_de->links_count;
+            des_de->mtime = CURRENT_TIME_SEC.tv_sec;
+            des_de->vroot = src_de->vroot;
+            des_de->path_len = src_de->path_len + name_len;
+            des_de->ino = src_de->ino;
+            des_de->par_ino = src_de->par_ino;
+            des_de->size = src_de->size;
+            des_de->prio = LEVEL_0;
+            des_de->d_f = 0;
+            des_de->sub_s = src_de->sub_s;
+            des_de->f_s = DENTRY_FREQUENCY_COLD;
+            des_de->sub_num = src_de->sub_num;
+            des_de->name = name;
+
+            src_pos = src_id *2;
+            des_pos = des_id*2;
+            if(!test_bit_le(src_pos, src_p->statemap)){
+                src_pos++;
+                des_pos++;
+                clear_bit_le(src_pos, src_p->statemap);
+                set_bit_le(des_pos, des_p->statemap);
+            }else{
+                clear_bit_le(src_pos, src_p->statemap);
+                //set_bit_le(des_pos, des_p->statemap);
+                src_pos++;
+                des_pos++;
+                if(test_bit_le(src_pos, src_p->statemap)){
+                    clear_bit_le(src_pos, src_p->statemap);
+                    set_bit_le(des_pos, des_p->statemap);
+                }else{
+                    set_bit_le(des_pos, des_p->statemap);
+                }
+            }
+
+            cur_rdei->dz_sf -= src_de->d_f;
+            des_id++;
+            memcpy(sub_no[0], src_de->sub_pos, src_de->sub_num);
+            cpy_merge_dentry(src_p, des_p, sub_no, src_ze, des_ze, des_id, old_rde, src_de);
+        }else if(src_de->file_type == INHE_ROOT_DIRECTORY){
+            
+            des_de->entry_type = src_de->entry_type;
+            des_de->namelen = src_de->namelen + namelen;
+            des_de->file_type = ROOT_DIRECTORY;
+            des_de->links_count = src_de->links_count;
+            des_de->mtime = CURRENT_TIME_SEC.tv_sec;
+            des_de->vroot = 1;
+            des_de->path_len = src_de->path_len + name_len;
+            des_de->ino = src_de->ino;
+            des_de->par_ino = src_de->par_ino;
+            des_de->size = src_de->size;
+            des_de->zone_no = src_de->zone_no;
+            des_de->prio = LEVEL_0;
+            des_de->d_f = src_de->d_f;
+            des_de->sub_s = src_de->sub_s;
+            des_de->f_s = DENTRY_FREQUENCY_COLD;
+            des_de->sub_num = src_de->sub_num;
+            des_de->name = name;
+
+            src_pos = src_id *2;
+            des_pos = des_id*2;
+            if(!test_bit_le(src_pos, src_p->statemap)){
+                src_pos++;
+                des_pos++;
+                clear_bit_le(src_pos, src_p->statemap);
+                set_bit_le(des_pos, des_p->statemap);
+            }else{
+                clear_bit_le(src_pos, src_p->statemap);
+                //set_bit_le(des_pos, des_p->statemap);
+                src_pos++;
+                des_pos++;
+                if(test_bit_le(src_pos, src_p->statemap)){
+                    clear_bit_le(src_pos, src_p->statemap);
+                    set_bit_le(des_pos, des_p->statemap);
+                }else{
+                    set_bit_le(des_pos, des_p->statemap);
+                }
+            }
+
+            cur_rdei->dz_sf -= src_de->d_f;
+            cur_rdei->rden_pos = des_pos;
+        }
+    }
+}
+
+/*find invalid dentry in zone
+* start pos = start dentry id*/
+static unsigned long find_invalid_id(struct zone_ptr *z_p, unsigned long start_pos)
+{
+    struct dafs_dentry *dafs_de;
+    unsigned long bitpos = start_pos;
+    for(bitpos;bitpos<NR_DENTRY_IN_ZONE;bitpos++){
+        if(test_bit_le(start_pos, z_p->statemap)){
+            start_pos+=2;
+            continue;
+        }else{
+            start_id++;
+            if(test_bit_le(start_pos, z_p, z_p->statemap)){
+                start_pos++;
+            }else{
+                break;
+            }
+        }
+    }
+
+    return bitpos;
+}
 
 /*
 * reset statemap when split merge inherit finished*/
@@ -696,7 +972,7 @@ void reset_statemap(struct super_block *sb, struct zone_ptr *z_p, struct dafs_zo
     
     for(i=0;i<ch_len;i++){
         bitpos = ch_no[i];
-        dzt_par_ei->dz_sf -= z_e->dentry[bitpos]->d_f;
+        dzt_par_ei->dz_sfi -= z_e->dentry[bitpos]->d_f;
         test_and_clear_bit_le(bitpos, z_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, z_p->statemap);
@@ -920,6 +1196,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     int ret = 0;
     unsigned long sp_id = 0;      /* impossible for pos_0 */
     int i;
+    unsigned long inh_id = 0;
 
 
     z_e = dzt_ei->dz_addr;
@@ -952,10 +1229,11 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 
         }
     }
-    if(warm_num = 0)
-        dafs_inh_zone();
-
-    else if(hot_num = 0){
+    if(warm_num == 0 && hot_num ==1){
+        inh_id = hd_np[0];
+        dafs_inh_zone(sb, dzt_ei, inh_id, z_e);
+    
+    } else if(hot_num == 0){
         if(check_zone_root())
             dafs_merge_zone();           /* not decided*/
 
@@ -990,7 +1268,7 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
                     struct dafs_zone_entry *par_ze, unsigned long sp_id, int SPLIT_TYPE)
 {
     struct zone_ptr *z_p;
-    struct dafs_dentry *dafs_rde;
+    //struct dafs_dentry *dafs_rde;
     struct dzt_entry_info *new_dzt_ei;
     struct dafs_zone_entry *new_ze;
     int bitpos = 0;
@@ -998,8 +1276,8 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
     int ne_id = 0;
 
     if(SPLIT_TYPE == POSITIVE_SPLIT){
-        dafs_rde = par_ze->dentry[sp_id];
-        new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, dafs_rde);
+        //dafs_rde = par_ze->dentry[sp_id];
+        new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, par_ze, sp_id);
         new_dzt_e = append_dzt_entry(sb, new_dzt_ei);
         new_ze = alloc_mi_zone(sb, new_dzt_e, new_dzt_ei, par_ze, par_dzt_ei, sp_id);
         goto ret;
@@ -1053,8 +1331,56 @@ int dafs_merge_zone(struct super_block *sb)
 
 /*
  * inherit zone
- * when parent is not stranger than childs */
-int dafs_inh_zone(struct super_block *sb)
+ * when parent is not stranger than childs 
+ * nr_pos >> new root pos
+ * or_pos >> old root pos*/
+int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struct unsigned long *nr_pos,
+                 struct dafs_zone_entry *cur_ze)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dafs_zone_entry *par_ze;
+    struct dafs_dentry *dafs_orde, *dafs_nrde;
+    struct dzt_ptr *dzt_p;
+    struct zone_ptr *z_cp, *z_pp;
+    unsigned long hash_name, cur_namelen;
+    unsigned long ch_pos, or_pos;
+
+    /*delete eni from radix tree*/
+    make_dzt_ptr(sbi, dzt_p);
+    ch_pos = cur_rdei->dzt_eno;
+    hash_name = cur_rdei->hash_name;
+    radix_tree_delete(&dzt_m->dzt_root, hash_name);
+    test_and_clear_bit(ch_pos, dzt_p->bitmap);
+
+    /*find old root dentry and modify*/
+    par_ze = cur_rdei->pdz_addr;
+    or_pos = cur_rdei->rden_pos;
+    dafs_orde = par_ze->dentry[or_pos];
+    dafs_orde->file_type = NORMAL_DIRECTORY;
+    dafs_orde->mtime = CURRENT_TIME_SEC.tv_sec;
+    dafs_orde->vroot = 0;
+    dafs_orde->zone_no = NULL;
+    
+    make_zone_ptr(z_cp, cur_ze);
+    make_zone_ptr(z_pp, par_ze);
+
+    /*modify new root dentry, atomic finished*/
+    dafs_nrde = cur_ze->dentry[nr_pos];
+    dafs_nrde->file_type = INHE_ROOT_DIRECTORY;
+    dafs_nrde->zoon_no = cpu_to_le64(cur_rdei->dzt_eno);
+
+    /* modify zone_entry*/
+    cur_namelen = cur_rdei->root_len;
+    memcpy(cur_ze->root_path[root_len], dafs_nrde->name, dafs_nrde->name_len);
+
+    /* migrate dentries and modify dafs_entry_info*/
+    cur_rdei->root_len = cur_rdei->root_len + dafs_nrde->name_len;
+    cur_rdei->hash_name = hash(root_path);    //not decided
+    merge_zone_dentry(cur_ze, par_ze, dafs_orde, cur_rdei);
+
+    /* insert cur_rdei and make dirty*/
+    radix_tree_insert(&dzt_m->dzt_root, cur_rdei->hash_name, cur_rdei);
+    radix_tree_tag_set(&dzt_m->dzt_root, cur_rdei->hash_name, 1);
+
 }

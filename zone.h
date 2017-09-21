@@ -98,6 +98,8 @@ struct dafs_dzt_block{
      __le64 dz_log_head        /* logical start addr*/
      __le64 dz_addr;          /* zone addr */
      __le64 dz_size;
+     __le64 pdz_addr;      /* parent zone address*/
+     __le64 rden_pos;      /* root dentry */
      __le64 dz_sf;         /* newly added dir zone sum frequency */
      __le64 hash_name;
      __le64 child_dzt_eno[CHILD_PER_DZT_ENTRY];     /*child dzt number in this table */      
