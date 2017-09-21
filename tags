@@ -222,7 +222,7 @@ dafs_hash	zone.c	/^uint64_t dafs_hash(){$/;"	f
 dafs_inh_zone	zone.c	/^int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struct unsigned long *nr_pos,$/;"	f
 dafs_init_dir_zone	zone.c	/^int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e, \\$/;"	f
 dafs_init_dzt	zone.c	/^int dafs_init_dzt(struct super_block *sb)$/;"	f
-dafs_merge_zone	zone.c	/^int dafs_merge_zone(struct super_block *sb)$/;"	f
+dafs_merge_zone	zone.c	/^int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struct dafs_zone_entry *cur_ze)$/;"	f
 dafs_new_zone_blocks	balloc.c	/^inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero)$/;"	f
 dafs_rec_mf	zone.c	/^uint64_t dafs_rec_mf(struct dafs_zone_entry *z_e, struct dzt_entry_info *ei)$/;"	f
 dafs_split_zone	zone.c	/^int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\\$/;"	f

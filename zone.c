@@ -1323,9 +1323,39 @@ ret:
 * merge zone
 * 1.small zone or cold zone will merge together
 * 2.subdirectory has more files will take place of parent dir to be root dir**/
-int dafs_merge_zone(struct super_block *sb)
+int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struct dafs_zone_entry *cur_ze)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dafs_dentry *dafs_orde, *dafs_nrde;
+    struct dafs_zone_entry *par_ze;
+    //struct zone_ptr *src_p, *des_p;
+    struct dzt_ptr *dzt_p;
+    unsigned long hash_name, ch_pos, or_pos;
+
+    /*delete entry info*/
+    hash_name = cur_rdei->hash_name;
+    radix_tree_delete(&dzt_m->dzt_root, hash_name);
+    make_dzt_ptr(sbi, dzt_p);
+    ch_pos = cur_rdei->dzt_eno;
+    test_and_clear_bit(ch_pos, dzt_p->bitmap);
+
+    /* find and modify old_root dentry*/
+    par_ze = cur_rdei->pdz_addr;
+    or_pos = cur_rdei->rden_pos;
+    dafs_orde = par_ze->dentry[or_pos];
+    dafs_orde->file_type = NORMAL_DIRECTORY;
+    dafs_orde->mtime = CURRENT_TIME_SEC.tv_sec;
+    dafs_orde->vroot = 0;
+    dafs_orde->zone_no = NULL;
+
+    /*merge, cur_rdei is not used*/
+    merge_zone_dentry(cur_ze, par_ze, dafs_orde, cur_rdei);
+
+    /*reset statemap*/
+
+    /* kfree */
+    kfree(cur_rdei);
 
 }
 
@@ -1342,7 +1372,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struc
     struct dafs_zone_entry *par_ze;
     struct dafs_dentry *dafs_orde, *dafs_nrde;
     struct dzt_ptr *dzt_p;
-    struct zone_ptr *z_cp, *z_pp;
+    //struct zone_ptr *z_cp, *z_pp;
     unsigned long hash_name, cur_namelen;
     unsigned long ch_pos, or_pos;
 
@@ -1362,8 +1392,8 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struc
     dafs_orde->vroot = 0;
     dafs_orde->zone_no = NULL;
     
-    make_zone_ptr(z_cp, cur_ze);
-    make_zone_ptr(z_pp, par_ze);
+    //make_zone_ptr(z_cp, cur_ze);
+    //make_zone_ptr(z_pp, par_ze);
 
     /*modify new root dentry, atomic finished*/
     dafs_nrde = cur_ze->dentry[nr_pos];
@@ -1379,8 +1409,13 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struc
     cur_rdei->hash_name = hash(root_path);    //not decided
     merge_zone_dentry(cur_ze, par_ze, dafs_orde, cur_rdei);
 
+    /* reset statemap in des zone*/
+
     /* insert cur_rdei and make dirty*/
     radix_tree_insert(&dzt_m->dzt_root, cur_rdei->hash_name, cur_rdei);
     radix_tree_tag_set(&dzt_m->dzt_root, cur_rdei->hash_name, 1);
+
+    /* make valid*/
+    test_and_set_bit_le(ch_pos, dzt_p->bitmap);
 
 }
