@@ -528,8 +528,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     dafs_rde = par_ze->dentry[sp_id];
     par_root_len = par_dzt_ei->root_len;
     memcpy(root_path[0], par_ze->root_path, par_root_len);
-    root_path[root_len]='/';
-    memcpy(root_path[par_root_len+1], dafs_rde->name, dafs_rde->name_len);
+    memcpy(root_path[par_root_len], dafs_rde->name, dafs_rde->name_len);
     name_len = par_root_len + dafs_rde->name_len;
     memcpy(new_ze->root_path[0], root, name_len);
 
@@ -628,8 +627,8 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             new_ze->f_s = DENTRY_FREQUENCY_COLD;
 
             for(k = 0;k<new_ze->name_len;k++){
-                old_len++;
                 new_ze->name[k] = old_ze->name[old_len];
+                old_len++:
             }
             /*set this file's pos in its par_ze*/
             par_ze->sub_pos[i] = new_id;
@@ -658,8 +657,8 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             new_ze->sub_num = old_ze->sub_num;
 
             for(k = 0;k<new_ze->name_len;k++){
-                old_len++;
                 new_ze->name[k] = old_ze->name[old_len];
+                old_len++;
             }
             
             par_ze->sub_pos[i] = new_id;
@@ -686,8 +685,8 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             new_ze->sub_num = old_ze->sub_num;
             
             for(k = 0;k<new_ze->name_len;k++){
-                old_len++;
                 new_ze->name[k] = old_ze->name[old_len];
+                old_len++;
             }
             
             par_ze->sub_pos[i] = new_id;
