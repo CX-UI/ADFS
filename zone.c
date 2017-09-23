@@ -706,7 +706,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
 /* merge dentry
 * startpos used in par_zone*/
 static void merge_zone_dentry(struct dafs_zone_entry *cur_ze, struct dafs_zone_entry *par_ze,\
-                            struct dafs_dentry *dafs_orde, struct dzt_entry_info *cur_rdei)
+                            struct dafs_dentry *dafs_orde)
 {
     struct zone_ptr *cur_p;
     struct zone_ptr *par_p;
@@ -731,20 +731,38 @@ static void merge_zone_dentry(struct dafs_zone_entry *cur_ze, struct dafs_zone_e
             bitpos+=2;
         }
     }
-    cpy_merge_dentry(cur_p, par_p, cpy_no, cur_ze, par_ze, 0, dafs_orde, dafs_orde, cur_rdei);
+    cpy_merge_dentry(cur_p, par_p, cpy_no, cur_ze, par_ze, 0, dafs_orde, dafs_orde);
 
 }
 
 /* cpt dentries when merging
 * start id on des zone*/
-static void cpy_merge_dentry(struct zone_ptr *src_p, struct zone_ptr *des_p, unsigned long ch_no[],\
-            struct dafs_zone_entry *src_ze, struct dafs_zone_entry *des_ze, unsigned long start_id,\
-            struct dafs_dentry *old_rde, struct dafs_dentry *par_de, struct dzt_entry_info *cur_rdei)
+static void cpy_merge_dentry(struct super_bolck *sb,struct zone_ptr *src_p, struct zone_ptr *des_p,\
+    unsigned long ch_no[], struct dafs_zone_entry *src_ze, struct dafs_zone_entry *des_ze,unsigned long\
+    start_id, struct dafs_dentry *old_rde, struct dafs_dentry *par_de)
 {
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dafs_dentry *src_de, *des_de;
+    struct dafs_dzt_block *dzt_blk;
+    struct dzt_entry_info *src_ei, *des_ei;
+    struct dafs_dzt_entry *src_e, *des_e;
     unsigned long i, des_id,src_id, des_pos,src_pos, sub_num,name_len;
     char name[NOVA_NAME_LEN];
     unsigned long sub_no[NR_DENTRY_IN_ZONE];
+    unsigned long hash_name;
+    unsigned long dzt_no;
+
+    /* get src_ei and des_ei*/
+    dzt_blk = dafs_get_dzt_block(sb);
+    dzt_no = src_ze->dz_no;
+    src_e = dzt_blk->dzt_entry[dzt_no];
+    hash_name = le64_to_cpu(src_e->hash_name);
+    src_ei = radix_tree_lookup(&dzt_m->dzt_root, hash_name);
+    dzt_no = des_ze->dz_no;
+    des_e = dzt_blk->dzt_entry[dzt_no];
+    hash_name = le64_to_cpu(des_e->hash_name);
+    des_ei = radix_tree_lookup(&dzt_m->dzt_root, hash_name);
 
     //des_id = start_id;
     sub_num = par_de->sub_num;
@@ -793,7 +811,8 @@ static void cpy_merge_dentry(struct zone_ptr *src_p, struct zone_ptr *des_p, uns
                 }
             }
 
-            cur_rdei->dz_sf -= des_de->d_f;
+            src_ei->dz_sf -= src_de->d_f;
+            des_ei->dz_sf += des_de->d_f;
 
         }else if(src_de->file_type == ROOT_DIRECTORY){
             
@@ -834,7 +853,8 @@ static void cpy_merge_dentry(struct zone_ptr *src_p, struct zone_ptr *des_p, uns
                     set_bit_le(des_pos, des_p->statemap)
                 }
             }
-            cur_rdei->dz_sf -= src_de->d_f;
+            src_ei->dz_sf -= src_de->d_f;
+            des_ei->dz_sf += des_de->d_f;
 
         }else if(src_de->file_type == NORMAL_DIRECTORY){
             
@@ -875,10 +895,13 @@ static void cpy_merge_dentry(struct zone_ptr *src_p, struct zone_ptr *des_p, uns
                 }
             }
 
-            cur_rdei->dz_sf -= src_de->d_f;
+            src_ei->dz_sf -= src_de->d_f;
+            des_ei->dz_sf += des_de->d_f;
+
             des_id++;
             memcpy(sub_no[0], src_de->sub_pos, src_de->sub_num);
             cpy_merge_dentry(src_p, des_p, sub_no, src_ze, des_ze, des_id, old_rde, src_de);
+
         }else if(src_de->file_type == INHE_ROOT_DIRECTORY){
             
             des_de->entry_type = src_de->entry_type;
@@ -919,8 +942,9 @@ static void cpy_merge_dentry(struct zone_ptr *src_p, struct zone_ptr *des_p, uns
                 }
             }
 
-            cur_rdei->dz_sf -= src_de->d_f;
-            cur_rdei->rden_pos = des_pos;
+            src_ei->dz_sf -= src_de->d_f;
+            des_ei->dz_sf += des_de->d_f;
+            src_ei->rden_pos = des_pos;
         }
     }
 }
@@ -946,6 +970,34 @@ static unsigned long find_invalid_id(struct zone_ptr *z_p, unsigned long start_p
     }
 
     return bitpos;
+}
+
+/*
+* reset statemap v1.1
+* seperate reset statemap on zone and set dentry statement */
+void reset statemap(struct super_bolck *sb, struct dafs_zone_entry *dafs_ze, strcut dzt_entry_info *dzt_ei)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dafs_dentry *dafs_de;
+    struct zone_ptr *z_p;
+    unsigned long bitpos, ch_id, statement;
+
+    bitpos = 0;
+    ch_id = 0;
+    make_zone_ptr(z_p, dafs_ze);
+    for(bitpos; bit<z_p->zone_max; bitpos++){
+        if((!test_bit_le(bitpos, z_p->statemap))&&(!test_bit_le(bitpos, z_p->statemap))){
+            bitpos+=2;
+            ch_id++;
+        }else{
+            /*reset dentry state*/
+            set_dentry_state(dafs_ze, dzt_ei, z_e->dentry[ch_id]);
+        }
+    }
+
+    /*reset zone statemap*/
+    zone_set_statemap(sb, dzt_ei, dafs_ze);
+
 }
 
 /*
@@ -1093,10 +1145,10 @@ int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *dzt_ei,\
 /*
 * set dentry state
 * return statemap value*/
-int set_dentry_state(struct dafs_zone_entry *z_e, struct dzt_entry_info dzt_ei,\
+unsigned long set_dentry_state(struct dafs_zone_entry *z_e, struct dzt_entry_info dzt_ei,\
                      struct dafs_dentry *dafs_de)
 {
-    int statement = STATEMAP_COLD;
+    unsigned long statement = STATEMAP_COLD;
     uint64_t mean;
     uint64_t st_sub = STARDARD_SUBFILE_NUM;
     uint64_t d_f;
@@ -1349,7 +1401,7 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, str
     dafs_orde->zone_no = NULL;
 
     /*merge, cur_rdei is not used*/
-    merge_zone_dentry(cur_ze, par_ze, dafs_orde, cur_rdei);
+    merge_zone_dentry(cur_ze, par_ze, dafs_ordei);
 
     /*reset statemap*/
 
@@ -1406,7 +1458,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struc
     /* migrate dentries and modify dafs_entry_info*/
     cur_rdei->root_len = cur_rdei->root_len + dafs_nrde->name_len;
     cur_rdei->hash_name = hash(root_path);    //not decided
-    merge_zone_dentry(cur_ze, par_ze, dafs_orde, cur_rdei);
+    merge_zone_dentry(cur_ze, par_ze, dafs_orde, cur_dei);
 
     /* reset statemap in des zone*/
 
