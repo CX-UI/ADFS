@@ -720,7 +720,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
 /* merge dentry
 * startpos used in par_zone*/
 static void merge_zone_dentry(struct dafs_zone_entry *cur_ze, struct dafs_zone_entry *par_ze,\
-                            struct dafs_dentry *dafs_orde)
+                            struct dafs_dentry *dafs_orde,unsigned long MERGE_TYPE)
 {
     struct zone_ptr *cur_p;
     struct zone_ptr *par_p;
@@ -745,7 +745,7 @@ static void merge_zone_dentry(struct dafs_zone_entry *cur_ze, struct dafs_zone_e
             bitpos+=2;
         }
     }
-    cpy_merge_dentry(cur_p, par_p, cpy_no, cur_ze, par_ze, 0, dafs_orde, dafs_orde);
+    cpy_merge_dentry(cur_p, par_p, cpy_no, cur_ze, par_ze, 0, dafs_orde, dafs_orde,MERGE_TYPE);
 
 }
 
@@ -753,7 +753,7 @@ static void merge_zone_dentry(struct dafs_zone_entry *cur_ze, struct dafs_zone_e
 * start id on des zone*/
 static void cpy_merge_dentry(struct super_bolck *sb,struct zone_ptr *src_p, struct zone_ptr *des_p,\
     unsigned long ch_no[], struct dafs_zone_entry *src_ze, struct dafs_zone_entry *des_ze,unsigned long\
-    start_id, struct dafs_dentry *old_rde, struct dafs_dentry *par_de)
+    start_id, struct dafs_dentry *old_rde, struct dafs_dentry *par_de,unsigned long MERGETYPE)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
@@ -825,9 +825,10 @@ static void cpy_merge_dentry(struct super_bolck *sb,struct zone_ptr *src_p, stru
                 }
             }
 
-            src_ze->dz_sf -= src_de->d_f;
-            des_ze->dz_sf += des_de->d_f;
-
+            if(MERGE_TYPE==INHERIT){
+                src_ze->dz_sf -= src_de->d_f;
+                des_ze->dz_sf += des_de->d_f;
+            }
         }else if(src_de->file_type == ROOT_DIRECTORY){
             
             des_de->entry_type = src_de->entry_type;
@@ -868,8 +869,10 @@ static void cpy_merge_dentry(struct super_bolck *sb,struct zone_ptr *src_p, stru
                 }
             }
             
-            src_ze->dz_sf -= src_de->d_f;
-            des_ze->dz_sf += des_de->d_f;
+            if(MERGE_TYPE==INHERIT){
+                src_ze->dz_sf -= src_de->d_f;
+                des_ze->dz_sf += des_de->d_f;
+            }
 
         }else if(src_de->file_type == NORMAL_DIRECTORY){
             
@@ -910,12 +913,14 @@ static void cpy_merge_dentry(struct super_bolck *sb,struct zone_ptr *src_p, stru
                 }
             }
 
-            src_ze->dz_sf -= src_de->d_f;
-            des_ze->dz_sf += des_de->d_f;
+            if(MERGE_TYPE==INHERIT){
+                src_ze->dz_sf -= src_de->d_f;
+                des_ze->dz_sf += des_de->d_f;
+            }
 
             des_id++;
             memcpy(sub_no[0], src_de->sub_pos, src_de->sub_num);
-            cpy_merge_dentry(src_p, des_p, sub_no, src_ze, des_ze, des_id, old_rde, src_de);
+            cpy_merge_dentry(src_p, des_p, sub_no, src_ze, des_ze, des_id, old_rde, src_de, MERGE_TYPE);
 
         }else if(src_de->file_type == INHE_ROOT_DIRECTORY){
             
@@ -961,6 +966,9 @@ static void cpy_merge_dentry(struct super_bolck *sb,struct zone_ptr *src_p, stru
             des_ze->dz_sf += des_de->d_f;
             src_ei->rden_pos = des_pos;
         }
+    }
+    if(MERGE_TYPE==INHERIT){
+        des_ze->dz_sf += src_ze->dz_sf;
     }
 }
 
@@ -1349,7 +1357,7 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, str
     dafs_orde->zone_no = NULL;
 
     /*merge, cur_rdei is not used*/
-    merge_zone_dentry(cur_ze, par_ze, dafs_orde);
+    merge_zone_dentry(cur_ze, par_ze, dafs_orde,MERGE);
 
     /*reset statemap*/
     zone_set_statemap(sb, par_ze); 
@@ -1407,7 +1415,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struc
     /* migrate dentries and modify dafs_entry_info*/
     cur_rdei->root_len = cur_rdei->root_len + dafs_nrde->name_len;
     cur_rdei->hash_name = hash(root_path);    //not decided
-    merge_zone_dentry(cur_ze, par_ze, dafs_orde);
+    merge_zone_dentry(cur_ze, par_ze, dafs_orde,INHERIT);
 
     /* reset statemap in des zone*/
     zone_set_statemap(sb, cur_ze);
