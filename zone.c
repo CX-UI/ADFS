@@ -211,7 +211,7 @@ void set_dzt_entry_valid(struct nova_sb_info *sbi, unsigned long bitpos)
 }
 
 /*
-* build dzt b-tree*/
+* build dzt radix-tree*/
 int dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
                      *dafs_dzt_entry)
 {
@@ -573,7 +573,8 @@ int migrate_zone_entry(struct zone_ptr *z_p, unsigned long ch_pos, struct dafs_d
     memcpy(ch_no[0],dafs_rde->sub_pos, dafs_rde->sub_num);
     ch_len = dafs_rde->sub_num;
 
-    /* modify root dentry */
+    /* modify root dentry 
+    * not change rde sub_state*/
     dafs_rde->file_type = ROOT_DIRECTORY;
     dafs_rde->mtime = CURRENT_TIME_SEC.tv_sec;
     dafs_rde->vroot = 1;
@@ -1235,12 +1236,13 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
         }
     }
     if(warm_num == 0 && hot_num ==1){
-        inh_id = hd_np[0];
-        dafs_inh_zone(sb, dzt_ei, inh_id, z_e);
+        if(check_zone_rlarge(dzt_ei)!= NUMBER_OF_SUBFILES_LARGE)
+            inh_id = hd_np[0];
+            dafs_inh_zone(sb, dzt_ei, inh_id, z_e);
     
     } else if(hot_num == 0){
-        if(check_zone_root())
-            dafs_merge_zone();           /* not decided*/
+        if(check_zone_rlarge(dzt_ei)!=NUMBER_OF_SUBFILES_LARGE)
+            dafs_merge_zone(sb, dzt_ei, z_e);           /* not decided*/
 
     }else if(hd!=0){
         for(i=0;i<hot_num;i++){
@@ -1263,6 +1265,21 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 
 RET: 
     return ret;
+}
+
+/*
+* check if zone directory size is large for merge and inherit */
+static void check_zone_rlarge(struct dzt_entry_info *cur_ei)
+{
+    struct dafs_dentry *dafs_rde;
+    struct dafs_zone_entry *par_ze;
+    unsigned long sub_s;
+
+    par_ze = cur_ei->pdz_addr;
+    dafs_rde = par_ze->dentry[cur_ei->rden_pos];
+
+    sub_s = le64_to_cpu(dafs_rde->sub_s);
+    return sub_s;
 }
 
 /*

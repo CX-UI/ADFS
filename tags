@@ -189,6 +189,7 @@ bpi	nova.h	/^	unsigned long	bpi;$/;"	m	struct:nova_sb_info
 cache_tree	nova.h	/^	struct radix_tree_root cache_tree;	\/* Mmap cache tree root *\/$/;"	m	struct:nova_inode_info_header	typeref:struct:nova_inode_info_header::radix_tree_root
 check_eof_blocks	nova.h	/^static inline void check_eof_blocks(struct super_block *sb,$/;"	f
 check_invalid_t	stats.h	/^	check_invalid_t,$/;"	e	enum:timing_category
+check_zone_rlarge	zone.c	/^static void check_zone_rlarge(struct dzt_entry_info *cur_ei)$/;"	f	file:
 child_dzt_eno	zone.h	/^     __le64 child_dzt_eno[CHILD_PER_DZT_ENTRY];     \/*child dzt number in this table *\/      $/;"	m	struct:dafs_dzt_entry
 child_list	nova.h	/^    struct list_head child_list;$/;"	m	struct:dzt_entry_info	typeref:struct:dzt_entry_info::list_head
 clear_opt	nova.h	99;"	d
@@ -196,7 +197,7 @@ copy_to_nvmm_t	stats.h	/^	copy_to_nvmm_t,$/;"	e	enum:timing_category
 cow_write_bytes	stats.h	/^	cow_write_bytes,$/;"	e	enum:stats_category
 cow_write_t	stats.h	/^	cow_write_t,$/;"	e	enum:timing_category
 cpus	nova.h	/^	int cpus;$/;"	m	struct:nova_sb_info
-cpy_merge_dentry	zone.c	/^static void cpy_merge_dentry(struct zone_ptr *src_p, struct zone_ptr *des_p, unsigned long ch_no[],\\$/;"	f	file:
+cpy_merge_dentry	zone.c	/^static void cpy_merge_dentry(struct super_bolck *sb,struct zone_ptr *src_p, struct zone_ptr *des_p,\\$/;"	f	file:
 cpy_new_zentry	zone.c	/^static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *new_z_e,\\$/;"	f	file:
 create_t	stats.h	/^	create_t,$/;"	e	enum:timing_category
 create_trans_t	stats.h	/^	create_trans_t,$/;"	e	enum:timing_category
@@ -224,7 +225,7 @@ dafs_init_dir_zone	zone.c	/^int dafs_init_dir_zone(struct super_block *sb, struc
 dafs_init_dzt	zone.c	/^int dafs_init_dzt(struct super_block *sb)$/;"	f
 dafs_merge_zone	zone.c	/^int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struct dafs_zone_entry *cur_ze)$/;"	f
 dafs_new_zone_blocks	balloc.c	/^inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero)$/;"	f
-dafs_rec_mf	zone.c	/^uint64_t dafs_rec_mf(struct dafs_zone_entry *z_e, struct dzt_entry_info *ei)$/;"	f
+dafs_rec_mf	zone.c	/^uint64_t dafs_rec_mf(struct dafs_zone_entry *z_e)$/;"	f
 dafs_split_zone	zone.c	/^int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\\$/;"	f
 dafs_zone_entry	zone.h	/^struct dafs_zone_entry{$/;"	s
 dax_get_block_t	stats.h	/^	dax_get_block_t,$/;"	e	enum:timing_category
@@ -244,12 +245,11 @@ dz_addr	nova.h	/^    uint64_t dz_addr;$/;"	m	struct:dzt_entry_info
 dz_addr	zone.h	/^     __le64 dz_addr;          \/* zone addr *\/$/;"	m	struct:dafs_dzt_entry
 dz_log_head	nova.h	/^    uint64_t dz_log_head;$/;"	m	struct:dzt_entry_info
 dz_no	zone.h	/^    __le64 dz_no;           \/*directory zone NO*\/$/;"	m	struct:dafs_zone_entry
-dz_sf	nova.h	/^    uint64_t dz_sf;$/;"	m	struct:dzt_entry_info
-dz_sf	zone.h	/^     __le64 dz_sf;         \/* newly added dir zone sum frequency *\/$/;"	m	struct:dafs_dzt_entry
+dz_sf	zone.h	/^    __le64 dz_sf;           \/* sum of frequency*\/$/;"	m	struct:dafs_zone_entry
 dz_size	zone.h	/^     __le64 dz_size;$/;"	m	struct:dafs_dzt_entry
 dzt_bitmap	zone.h	/^    __u8 dzt_bitmap[SIZE_DZT_BITMAP];               \/*not decided the size of bitmap*\/$/;"	m	struct:dafs_dzt_block
 dzt_eno	nova.h	/^    uint64_t dzt_eno;$/;"	m	struct:dzt_entry_info
-dzt_eno	zone.h	/^     __le64 dzt_eno;          \/*dzt entry Id *\/$/;"	m	struct:dafs_dzt_entry
+dzt_eno	zone.h	/^     __le64 dzt_eno;          \/*dzt entry Id *\/	$/;"	m	struct:dafs_dzt_entry
 dzt_entry	nova.h	/^    struct dafs_dzt_entry *dzt_entry;$/;"	m	struct:dzt_ptr	typeref:struct:dzt_ptr::dafs_dzt_entry
 dzt_entry	nova.h	/^struct dzt_entry {$/;"	s
 dzt_entry	zone.h	/^    struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      \/*128-1 entries in BT block*\/$/;"	m	struct:dafs_dzt_block	typeref:struct:dafs_dzt_block::dafs_dzt_entry
@@ -754,7 +754,6 @@ remove_dentry_t	stats.h	/^	remove_dentry_t,$/;"	e	enum:timing_category
 rename_t	stats.h	/^	rename_t,$/;"	e	enum:timing_category
 reserved	zone.h	/^    __u8 reserved[SIZE_OF_RESERVED];$/;"	m	struct:dafs_dzt_block
 reserved_blocks	nova.h	/^	unsigned long	reserved_blocks;$/;"	m	struct:nova_sb_info
-reset_statemap	zone.c	/^void reset_statemap(struct super_block *sb, struct zone_ptr *z_p, struct dafs_zone_entry *z_e,\\$/;"	f
 rmdir_t	stats.h	/^	rmdir_t,$/;"	e	enum:timing_category
 root_len	nova.h	/^    uint32_t root_len;$/;"	m	struct:dzt_entry_info
 root_len	zone.h	/^     __le32 root_len;         \/*root diretory name length*\/$/;"	m	struct:dafs_dzt_entry
@@ -783,7 +782,7 @@ scan_bm_2M	nova.h	/^	struct single_scan_bm scan_bm_2M;$/;"	m	struct:scan_bitmap	
 scan_bm_4K	nova.h	/^	struct single_scan_bm scan_bm_4K;$/;"	m	struct:scan_bitmap	typeref:struct:scan_bitmap::single_scan_bm
 set_bm	bbuild.c	/^inline void set_bm(unsigned long bit, struct scan_bitmap *bm,$/;"	f
 set_default_opts	super.c	/^static inline void set_default_opts(struct nova_sb_info *sbi)$/;"	f	file:
-set_dentry_state	zone.c	/^int set_dentry_state(struct dafs_zone_entry *z_e, struct dzt_entry_info dzt_ei,\\$/;"	f
+set_dentry_state	zone.c	/^unsigned long set_dentry_state(struct dafs_zone_entry *z_e, struct dafs_dentry *dafs_de)$/;"	f
 set_dzt_entry_valid	zone.c	/^void set_dzt_entry_valid(struct nova_sb_info *sbi, unsigned long bitpos)$/;"	f
 set_opt	nova.h	100;"	d
 set_scan_bm	bbuild.c	/^static inline void set_scan_bm(unsigned long bit,$/;"	f	file:
@@ -834,5 +833,5 @@ zone_blk_type	zone.h	/^     __u8 zone_blk_type;$/;"	m	struct:dafs_dzt_entry
 zone_max	zone.h	/^    unsigned long zone_max;$/;"	m	struct:zone_ptr
 zone_no	zone.h	/^    __le64 zone_no;         \/* root dir records zone number *\/$/;"	m	struct:dafs_dentry
 zone_ptr	zone.h	/^struct zone_ptr {$/;"	s
-zone_set_statemap	zone.c	/^int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *dzt_ei,\\ $/;"	f
+zone_set_statemap	zone.c	/^int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *z_e)$/;"	f
 zone_statemap	zone.h	/^    u8 zone_statemap[SIZE_OF_ZONE_BITMAP];         \/* state and validity for zone dentries*\/$/;"	m	struct:dafs_zone_entry

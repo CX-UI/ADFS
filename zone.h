@@ -94,7 +94,7 @@ struct dafs_dzt_block{
      __u8 zone_blk_type;
      __le32 root_len;         /*root diretory name length*/
      //__le32 dzt_amount;       /*number of entries been taken*/
-     __le64 dzt_eno;          /*dzt entry Id */
+     __le64 dzt_eno;          /*dzt entry Id */	
      //__le64 dz_no;            /* zone number */
      __le64 dz_log_head        /* logical start addr*/
      __le64 dz_addr;          /* zone addr */
