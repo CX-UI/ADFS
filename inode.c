@@ -128,11 +128,13 @@ int nova_get_inode_address(struct super_block *sb, u64 ino,
 	data_bits = blk_type_to_shift[pi->i_blk_type];
 	num_inodes_bits = data_bits - NOVA_INODE_BITS;
 
+    /* 这也算是做了一个hash*/
 	cpuid = ino % sbi->cpus;
 	internal_ino = ino / sbi->cpus;
 
 	inode_table = nova_get_inode_table(sb, cpuid);
 	superpage_count = internal_ino >> num_inodes_bits;
+    /*感觉是取低五位*/
 	index = internal_ino & ((1 << num_inodes_bits) - 1);
 
 	curr = inode_table->log_head;

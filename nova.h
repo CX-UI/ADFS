@@ -493,6 +493,8 @@ struct nova_sb_info {
 	struct free_list *free_lists;
 
 	/* Shared free block list */
+    /* 初始化的时候平均分配的，但是这些free list是共享的
+     * 除此之外，每个cpu会分配自己的空闲离岸边块*/
 	unsigned long per_list_blocks;
 	struct free_list shared_free_list;
 

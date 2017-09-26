@@ -525,6 +525,7 @@ static int nova_new_blocks(struct super_block *sb, unsigned long *blocknr,
 	if (num_blocks == 0)
 		return -EINVAL;
 
+    /*当前在哪个cpu上运行就使用哪个cpu*/
 	cpuid = smp_processor_id();
 
 retry:
