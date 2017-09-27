@@ -182,10 +182,12 @@ static u64 nova_append_dir_inode_entry(struct super_block *sb,
 
 	NOVA_START_TIMING(append_dir_entry_t, append_time);
 
+    /*得到log页*/
 	curr_p = nova_get_append_head(sb, pidir, sih, tail, size, &extended);
 	if (curr_p == 0)
 		BUG();
 
+    /*log 页上的entry起始地址*/
 	entry = (struct nova_dentry *)nova_get_block(sb, curr_p);
 	entry->entry_type = DIR_LOG;
 	entry->ino = cpu_to_le64(ino);
@@ -637,6 +639,7 @@ static int nova_readdir(struct file *file, struct dir_context *ctx)
 		return -EINVAL;
 	}
 
+    /*context使用在遍历目录项的时候，得用dir的偏移量来回调*/
 	pos = ctx->pos;
 
 	if (pos == 0) {
@@ -649,6 +652,7 @@ static int nova_readdir(struct file *file, struct dir_context *ctx)
 			goto out;
 	}
 
+    /*在log entry中遍*/
 	while (curr_p != pidir->log_tail) {
 		if (goto_next_page(sb, curr_p)) {
 			curr_p = next_log_page(sb, curr_p);
