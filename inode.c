@@ -986,6 +986,7 @@ u64 nova_new_nova_inode(struct super_block *sb, u64 *pi_addr)
 	timing_t new_inode_time;
 
 	NOVA_START_TIMING(new_nova_inode_t, new_inode_time);
+    /*决定Inode在哪个cpu上*/
 	map_id = sbi->map_id;
 	sbi->map_id = (sbi->map_id + 1) % sbi->cpus;
 
