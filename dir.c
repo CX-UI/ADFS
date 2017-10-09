@@ -437,7 +437,7 @@ int nova_rebuild_dir_inode_tree(struct super_block *sb,
 		}
 
 		addr = (void *)nova_get_block(sb, curr_p);
-		type = nova_get_entry_type(addr);
+        type = nova_get_entry_type(addr);
 		switch (type) {
 			case SET_ATTR:
 				attr_entry =
@@ -713,7 +713,7 @@ static int nova_readdir(struct file *file, struct dir_context *ctx)
 				nova_dbgv("Here: pos %llu\n", ctx->pos);
 				return 0;
 			}
-			prev_entry = entry;
+			//prev_entry = entry;
 			prev_child_pi = child_pi;
 		}
 		ctx->pos = pos;

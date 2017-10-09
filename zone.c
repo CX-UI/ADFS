@@ -32,28 +32,40 @@ int dafs_build_dzt_block(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dzt_block *dzt_block;
+    struct dzt_ptr * dzt_p;
+    char *name = '/'; 
     int ret = 0;
 
     /*init linux root directory '/' 
     * dir zone no is pos in bitmap*/
     dzt_block = dafs_get_dzt_block(sbi);
+
+    dzt_block-> dzt_entry[0].zone_blk_type = DAFS_BLOCK_TYPE_512K;
     dzt_block-> dzt_entry[0].root_len = 1;
     dzt_block-> dzt_entry[0].dzt_eno = 0;
-    dzt_block-> dzt_entry[0].dz_no = 0;
-    dzt_block-> dzt_entry[0].dz_addr = ROOT_ZONE_ADDR;            //not decided yet
-    dzt_block-> dzt_entry[0].hash_name = NULL;                  //not decided yet
-    dzt_block-> dzt_entry[0].child_dzt_addr = NULL;            // init NULL
+    //dzt_block-> dzt_entry[0].dz_no = 0;
+    //dzt_block-> dzt_entry[0].dz_addr = ROOT_ZONE_ADDR;            //not decided yet
+    dzt_block-> dzt_entry[0].pdz_addr = NULL;
+    dzt_block-> dzt_entry[0].rden_pos = NULL;
+    dzt_block-> dzt_entry[0].hash_name = cpu_to_le64(BKDRHash(name, 1));        
+    dzt_block-> dzt_entry[0].child_dzt_eno = NULL;            // init NULL not decided yet
     // dzt_block-> dzt_entry[0].path_name = "/";    
-    dzt_block->dzt_bitmap[0] = (1 << 0) | (1 << 1); 
+    //dzt_block->dzt_bitmap[0] = (1 << 0) | (1 << 1); 
 
-    /*alloc zone area*/
-    dafs_alloc_dir_zone(sbi, dzt_block->dzt_entry[0].dz_addr);
+    /*alloc zone area
+    * get zone addr*/
+    dafs_alloc_dir_zone(sbi, dzt_block->dzt_entry[0]);
     
+    /*make valid*/
+    make_dzt_ptr(sbi, dzt_p);
+    set_dzt_entry_valid(sbi, 0); 
+
     /*init dir_zone*/
     /*append . and .. into new zone*/
-    dafs_init_dir_zone(sbi, dzt_block->dzt_entry[0].path_name);
+    dafs_init_dir_zone(sbi, dzt_block->dzt_entry[0]);
     
-    /*build radix search tree*/ 
+    /*build radix search tree
+    * initialize entry info*/ 
     dafs_build_dzt(sbi, dzt_block->dzt_entry[0]);
 
     return ret;
@@ -61,50 +73,72 @@ int dafs_build_dzt_block(struct super_block *sb)
 
 /*
 * 2017/09/12
-* init dir_zone*/
-int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e, \
-                       char *root_path, uint64_t parent_ino, uint64_t size)
+* init dir_zone
+* 添加 . ..项
+* dafs_de 在create的时候创建的根目录
+* 此函数只在初始化根目录的时候有用
+* 其他zone不需要初始化直接迁移*/
+int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_zone_entry *zone_entry;
+    struct dafs_dentry *dafs_rde;
     struct zone_ptr *z_p;
     unsigned long bitpos = 0;
     int i;
 
-    
+    /*create root directory*/
+    dafs_rde->entry_type = DAFS_DIR_ENTRY;             /*not decided yet*/
+    dafs_rde->name_len = 1;
+    dafs_rde->file_type = ROOT_DIRECTORY;
+    dafs_rde->links_count = 0;
+    dafs_rde->mtime = CURRENT_TIME_SEC.tv_sec;
+    dafs_rde->vroot = 1;
+    dafs_rde->path_len = 1;
+    dafs_rde->ino = 0;      /*not decided*/
+    dafs_rde->par_ino = 0;   /*not decided*/
+    dafs_rde->size = DENTRY_SIZE; /*not decided*/
+    dafs_rde->zone_no = dzt_e->dzt_eno;
+    dafs_rde->prio = LEVEL_0;
+    dafs_rde->d_f = 0;
+    dafs_rde->sub_s = NULL;
+    dafs_rde->f_s = NULL;
+    dafs_rde->sub_num = 0;
+    dafs_rde->name = "/";
+
     //zone_entry->zone_blk_type = DAFS_BLOCK_TYPE_512K;         /* not decided */
     //zone_entry->root_len = dzt_e-> root_len;
     //zone_entry->log_head = NULL;               /*not decided*/
     zone_entry->dz_no = dzt_e->dzt_eno;
     zone_entry->dz_sf = 0;
     //zone_entry->dz_size = DAFS_DEF_ZONE_SIZE;        /*default size is 512K*/
-    zone_entry->root_path = root_path;
+    zone_entry->root_path = "/";
 
     /*sub  file "."*/
-    zone_entry->dentry[0].entry_type = DIRECTORY;      /*default file type*/
+    zone_entry->dentry[0].entry_type = DAFS_DIR_ENTRY;      /*not decided */
     zone_entry->dentry[0].name_len = 1;
     zone_entry->dentry[0].links_count = 1;
     zone_entry->dentry[0].mtime = CURRENT_TIME_SEC.tv_sec;
     zone_entry->dentry[0].vroot = 0;
-    //zone_entry->dentry[0].path_len = 0;         //besides file name length and root dir
-    //zone_entry->dentry[0].size = DAFS_DEF_ZONE_ENTRY_SIZE;
+    zone_entry->dentry[0].path_len = 1;         //besides file name length and root dir
+    zone_entry->dentry[0].size = DAFS_DEF_ZONE_ENTRY_SIZE;      //not decided
     zone_entry->dentry[0].zone_no = dzt_e->dzt_eno;          //not decided
     //zone_entry->dentry[0].subpos = NULL;
-    zone_entry->dentry[0].path = root_path;         /*not decided*/
+    //zone_entry->dentry[0].path = "/";         /*not decided*/
     zone_entry->dentry[0].name = ".";
 
     /*sub file ".."*/
-    zone_entry->dentry[1].entry_type = DIRECTORY;      /*default file type*/
+    zone_entry->dentry[1].entry_type = DAFS_DIR_ENTRY;      /*default file type*/
     zone_entry->dentry[1].name_len = 2;
     zone_entry->dentry[1].links_count = 2;
     zone_entry->dentry[1].mtime = CURRENT_TIME_SEC.tv_sec;
     zone_entry->dentry[1].vroot = 0;
-    zone_entry->dentry[1].path_len = 0;         //besides file name length and root dir, not decided
-    zone_entry->dentry[1].ino = parent_ino;
-    //zone_entry->dentry[1].size = DAFS_DEF_ZONE_ENTRY_SIZE;
+    zone_entry->dentry[1].path_len = 1;         //besides file name length and root dir, not decided
+    zone_entry->dentry[1].ino = dafs_de->par_ino;
+    zone_entry->dentry[1].size = DAFS_DEF_ZONE_ENTRY_SIZE;
     zone_entry->dentry[1].zone_no = NULL;          //not decided
     //zone_entry->dentry[1].subpos = NULL;
-    zone_entry->dentry[1].path = NULL;
+    //zone_entry->dentry[1].path = NULL;
     zone_entry->dentry[1].name = "..";
 
     make_zone_ptr(&z_p, zone_entry);
@@ -133,13 +167,12 @@ static inline void make_zone_ptr(struct zone_ptr *z_p, struct dafs_zone_entry *z
 * alloc zone action
 * 1.big enough direcotries will becomes a new zone
 * 2.hot enough e.g frequently renames & chmod dir will becomes new zone*/
-int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e,\
-                        struct dzt_entry_info *dzt_ei)
+int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     //struct dafs_dzt_entry *dzt_e;
     //struct dzt_entry_info *dzt_ei;
-    struct dzt_manager *dzt_m = sbi->dzt_manager;
+    //struct dzt_manager *dzt_m = sbi->dzt_manager;
     struct dafs_zone_entry *new_ze;
     unsigned long zone_type = dzt_e->zone_blk_type;
     unsigned long blocknr;
@@ -161,18 +194,17 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e,\
     /*get zone address*/
     bp = (unsigned long)nova_get_block(sb, block);
     //hash_name = le64_to_cpu(z_entry->dz_root_hash);
-    dzt_e->dz_addr = cpu_to_le32(bp);
-    dzt_e->dz_log_head = cpu_to_le64(block);
-    dzt_ei->dz_log_head = block;
-    dzt_ei->dz_addr = bp;
-    //not decided
+    dzt_e->dz_addr = cpu_to_le64(bp);
+    //dzt_e->dz_log_head = cpu_to_le64(block);
+    //dzt_ei->dz_log_head = block;
+    //dzt_ei->dz_addr = bp;
    
 
     /*not decided set root path and dz_no for new zone*/
 
-    make_dzt_entry_valid(sbi, dzt_e->dzt_eno);
+    //make_dzt_entry_valid(sbi, dzt_e->dzt_eno);
 
-    radix_tree_insert(&dzt_m->dzt_root, dzt_ei->hash_name, dzt_ei);
+    //radix_tree_insert(&dzt_m->dzt_root, dzt_ei->hash_name, dzt_ei);
     
     //dafs_init_dir_zone(sb, dzt_e, root_path, );        //not decided
 
@@ -211,14 +243,15 @@ void set_dzt_entry_valid(struct nova_sb_info *sbi, unsigned long bitpos)
 }
 
 /*
-* build dzt radix-tree*/
-int dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
+* build dzt radix-tree
+* 初始化entry_info*/
+static void dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
                      *dafs_dzt_entry)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dzt_entry_info *entry_info;
     struct dzt_manager *dzt_m;
-    int ret = 0;
+    //int ret = 0;
     //struct dzt_entry *dzt_entry;
 
     /*take into acount when to destroy this entry*/
@@ -226,9 +259,10 @@ int dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
     
     if(!dzt_entry)
         return -ENOMEM;
+    entry_info->zone_blk_type = DAFS_BLOCK_TYPE_512K; 
     entry_info->root_len = le32_to_cpu(dafs_dzt_entry->root_len);
     entry_info->dzt_eno = le64_to_cpu(dafs_dzt_entry->dzt_eno);
-    entry_info->dz_no = le64_to_cpu(dafs_dzt_entry->dz_no);
+    //entry_info->dz_no = le64_to_cpu(dafs_dzt_entry->dz_no);
     entry_info->dz_addr = le64_to_cpu(dafs_dzt_entry->dz_addr);
     entry_info->hash_name = le64_to_cpu(dafs_dzt_entry->hash_name);
 
@@ -243,7 +277,7 @@ int dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
 
     make_dzt_tree(entry_info);
     
-    return ret;
+    //return ret;
 }
 
 /*
@@ -289,22 +323,22 @@ int dafs_init_dzt(struct super_block *sb)
 
 /*
  * make radix tree by inserting*/
-int make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_ei)
+static void make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_ei)
 {
     struct dzt_entry_info *dzt_entry_info;
     struct dzt_manager *dzt_m = sbi->dzt_manager;
-    int ret = 0;
+    //int ret = 0;
 
     dzt_entry_info = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
+    dzt_entry_info->zone_blk_type = dzt_ei->zone_blk_type;
     dzt_entry_info->root_len = dzt_ei->root_len;
     dzt_entry_info->dzt_eno = dzt_ei->dzt_eno;
-    dzt_entry_info->dz_no = dzt_ei->dz_no;
+    //dzt_entry_info->dz_no = dzt_ei->dz_no;
     dzt_entry_info->dz_addr = dzt_ei->dz_addr;
     dzt_entry_info->hash_name = dzt_ei->hash_name;
 
     radix_tree_insert(&dzt_m->dzt_root, dzt_entry_info->hash_name, dzt_entry_info);
 
-    return ret;
 }
 
 /*

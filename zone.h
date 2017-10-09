@@ -54,7 +54,7 @@ struct dafs_dentry{
     u8 file_type;           /* file type */
     // u8 invalid;             /* invalid or? not used here */
     __le16 links_count;         /* links */
-    __le16 de_len;          /* length of this dentry. not used here */
+    //__le16 de_len;          /* length of this dentry. not used here */
     __le32 mtime;
     __le32 vroot;           /* root dir or ? */
     __le32 path_len;        /* length of the dir path */
@@ -96,9 +96,9 @@ struct dafs_dzt_block{
      //__le32 dzt_amount;       /*number of entries been taken*/
      __le64 dzt_eno;          /*dzt entry Id */	
      //__le64 dz_no;            /* zone number */
-     __le64 dz_log_head        /* logical start addr*/
+     //__le64 dz_log_head        /* logical start addr*/
      __le64 dz_addr;          /* zone addr */
-     __le64 dz_size;
+     //__le64 dz_size;
      __le64 pdz_addr;      /* parent zone address*/
      __le64 rden_pos;      /* root dentry */
     // __le64 dz_sf;         /* newly added dir zone sum frequency */

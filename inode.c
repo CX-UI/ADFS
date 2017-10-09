@@ -85,6 +85,7 @@ int nova_init_inode_table(struct super_block *sb)
 	pi->i_blk_type = NOVA_BLOCK_TYPE_2M;
 
 	for (i = 0; i < sbi->cpus; i++) {
+        /* inode_table结构体存在的位置*/
 		inode_table = nova_get_inode_table(sb, i);
 		if (!inode_table)
 			return -EINVAL;
@@ -96,8 +97,9 @@ int nova_init_inode_table(struct super_block *sb)
 		if (allocated != 1 || blocknr == 0)
 			return -ENOSPC;  
 
-        /* 起始地址log_head */
+        /* 起始偏移地址log_head */
 		block = nova_get_block_off(sb, blocknr, NOVA_BLOCK_TYPE_2M);
+        /* 填充结构体*/
 		inode_table->log_head = block;
 		nova_flush_buffer(inode_table, CACHELINE_SIZE, 0);
 	}
