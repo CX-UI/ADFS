@@ -770,7 +770,7 @@ static void merge_zone_dentry(struct dafs_zone_entry *cur_ze, struct dafs_zone_e
 
 
     for(id = 0; id<cur_p->NR_DENTRY_IN_ZONE; id++){
-        if(test_bit_le(bitpos, cur_p->statemap)||test_bit_le(bitpos+1, cur_p)){
+        if(test_bit_le(bitpos, cur_p->statemap)||test_bit_le(bitpos+1, cur_p->statemap)){
             cur_de = cur_ze->dentry[id];
             if(cur_de->par_ino == dafs_orde->ino){
                 cpy_no[count] = id;
