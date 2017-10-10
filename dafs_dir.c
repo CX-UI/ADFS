@@ -8,6 +8,7 @@
 #include<linux/fs.h>
 #include<linux/pagemap.h>
 #include<linux/path.h>
+#include<linux/string.h>
 #include "nova.h"
 #include "zone.h"
 
@@ -40,6 +41,36 @@ ERR:
     return ph;
 }
 
+/* find currect zone*/
+static inline struct dzt_entry_info *find_dzt(struct super_block *sb, char *phname)
+{
+    struct dzt_entry_info *dzt_ei, *dzt_ei_tem;
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_manager dzt_m = sbi->dzt_m_info;
+    u64 hashname;
+    u64 phlen;
+    u64 dzt_eno;
+    char *token, *tem, *rph="/";
+    char delim[] = "/";
+
+    hashname = BRDEHash(rph, 1);
+    dzt_ei = radix_tree_lookup(&dzt_m->dzt_root,hashname);
+    for(token = strsep(&phname, delim);token != NULL; token= strsep(&phname, delim) ){
+        if(!token){
+            strcat(tem, "/");
+            strcat(tem, token);
+            phlen = strlen(tem);
+            hashname = BKDRHash(tem, phlen);
+            dzt_ei_tem = radix_tree_lookup(&dzt_m->dzt_root, hashname);
+            if(!dzt_ei_tem)
+                goto END;
+            dzt_ei = dzt_ei_tem;
+        }
+    }
+
+END:
+    return dzt_ei;
+}
 /*dafs add dentry in the zone*/
 int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
 {
@@ -48,6 +79,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     const char *name = dentry->d_name.name;
     int namelen = dentry->d_name.len;
     struct dafs_dentry *direntry;
+    char *phname = NULL;
     unsigned short loglen;
     int ret;
     timing_t add_dentry_time;
