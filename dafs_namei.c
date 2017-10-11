@@ -51,6 +51,7 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
 	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 	NOVA_END_TIMING(create_t, create_time);
 	return err;
+
 out_err:
     nova_err(sb, "%s return %d\n", __func__, err);
 	NOVA_END_TIMING(create_t, create_time);
@@ -58,6 +59,244 @@ out_err:
 
 }
 
+/*dentry to get path name and dzt_ei*/
+static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\
+        struct dafs_dentry **res_entry)
+{
+    struct super_block *sb = dir->i_sb;
+    struct dafs_dentry *direntry;
+    
+    direntry = dafs_find_direntry(sb, dentry);
+    if(direntry == NULL)
+        return 0;
+    
+    *res_entry = direntry;
+    return direntry->ino;
+}
+
+static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
+        unsigned int flags)
+{
+    struct inode *inode = NULL;
+    struct dafs_dentry *de;
+    ino_t ino;
+    timing_t look_up_time;
+    
+	NOVA_START_TIMING(lookup_t, lookup_time);
+	if (dentry->d_name.len > NOVA_NAME_LEN) {
+		nova_dbg("%s: namelen %u exceeds limit\n",
+			__func__, dentry->d_name.len);
+		return ERR_PTR(-ENAMETOOLONG);
+	}
+
+	nova_dbg_verbose("%s: %s\n", __func__, dentry->d_name.name);
+    ino = dafs_inode_by_name(dir, dentry, &de);
+	nova_dbg_verbose("%s: ino %lu\n", __func__, ino);
+	if (ino) {
+        //根据ino得到整个inode的数据结构
+		inode = nova_iget(dir->i_sb, ino);
+		if (inode == ERR_PTR(-ESTALE) || inode == ERR_PTR(-ENOMEM)
+				|| inode == ERR_PTR(-EACCES)) {
+			nova_err(dir->i_sb,
+				  "%s: get inode failed: %lu\n",
+				  __func__, (unsigned long)ino);
+			return ERR_PTR(-EIO);
+		}
+	}
+
+	NOVA_END_TIMING(lookup_t, lookup_time);
+	return d_splice_alias(inode, dentry);
+}
+
+/* Returns new tail after append 
+ * 这个没有改动*/
+int dafs_append_link_change_entry(struct super_block *sb,
+	struct nova_inode *pi, struct inode *inode, u64 tail, u64 *new_tail)
+{
+	struct nova_inode_info *si = NOVA_I(inode);
+	struct nova_inode_info_header *sih = &si->header;
+	struct nova_link_change_entry *entry;
+	u64 curr_p;
+	int extended = 0;
+	size_t size = sizeof(struct nova_link_change_entry);
+	timing_t append_time;
+
+	NOVA_START_TIMING(append_link_change_t, append_time);
+	nova_dbg_verbose("%s: inode %lu attr change\n",
+				__func__, inode->i_ino);
+
+	curr_p = nova_get_append_head(sb, pi, sih, tail, size, &extended);
+	if (curr_p == 0)
+		return -ENOMEM;
+
+	entry = (struct nova_link_change_entry *)nova_get_block(sb, curr_p);
+	entry->entry_type = LINK_CHANGE;
+	entry->links = cpu_to_le16(inode->i_nlink);
+	entry->ctime = cpu_to_le32(inode->i_ctime.tv_sec);
+	entry->flags = cpu_to_le32(inode->i_flags);
+	entry->generation = cpu_to_le32(inode->i_generation);
+	nova_flush_buffer(entry, size, 0);
+	*new_tail = curr_p + size;
+	sih->last_link_change = curr_p;
+
+	NOVA_END_TIMING(append_link_change_t, append_time);
+	return 0;
+}
+
+/*没改*/
+static void dafs_lite_transaction_for_time_and_link(struct super_block *sb,
+	struct nova_inode *pi, struct nova_inode *pidir, u64 pi_tail,
+	u64 pidir_tail, int invalidate)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+	struct nova_lite_journal_entry entry;
+	u64 journal_tail;
+	int cpu;
+	timing_t trans_time;
+
+	NOVA_START_TIMING(link_trans_t, trans_time);
+
+	/* Commit a lite transaction */
+	memset(&entry, 0, sizeof(struct nova_lite_journal_entry));
+	entry.addrs[0] = (u64)nova_get_addr_off(sbi, &pi->log_tail);
+	entry.addrs[0] |= (u64)8 << 56;
+	entry.values[0] = pi->log_tail;
+
+	entry.addrs[1] = (u64)nova_get_addr_off(sbi, &pidir->log_tail);
+	entry.addrs[1] |= (u64)8 << 56;
+	entry.values[1] = pidir->log_tail;
+
+	if (invalidate) {
+		entry.addrs[2] = (u64)nova_get_addr_off(sbi, &pi->valid);
+		entry.addrs[2] |= (u64)1 << 56;
+		entry.values[2] = pi->valid;
+	}
+
+	cpu = smp_processor_id();
+	spin_lock(&sbi->journal_locks[cpu]);
+	journal_tail = nova_create_lite_transaction(sb, &entry, NULL, 1, cpu);
+
+	pi->log_tail = pi_tail;
+	nova_flush_buffer(&pi->log_tail, CACHELINE_SIZE, 0);
+	pidir->log_tail = pidir_tail;
+	nova_flush_buffer(&pidir->log_tail, CACHELINE_SIZE, 0);
+	if (invalidate) {
+		pi->valid = 0;
+		nova_flush_buffer(&pi->valid, CACHELINE_SIZE, 0);
+	}
+	PERSISTENT_BARRIER();
+
+	nova_commit_lite_transaction(sb, journal_tail, cpu);
+	spin_unlock(&sbi->journal_locks[cpu]);
+	NOVA_END_TIMING(link_trans_t, trans_time);
+}
+
+static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentry *dentry)
+{
+    struct super_block *sb = dir->i_sb;
+    struct inode *inode = dest_dentry->d_inode;
+    struct nova_inode *pi = nova_get_inode(sb, inode);
+    struct nova_inode *pidir;
+    u64 pidir_tail = 0, pi_tail = 0;
+    int err = -ENOMEM;
+    time_t link_time;
+
+    NOVA_START_TIMING(link_t, link_time);
+    
+	if (inode->i_nlink >= NOVA_LINK_MAX) {
+		err = -EMLINK;
+		goto out;
+	}
+
+	pidir = nova_get_inode(sb, dir);
+	if (!pidir) {
+		err = -EINVAL;
+		goto out;
+	}
+
+	ihold(inode);
+	nova_dbgv("%s: name %s, dest %s\n", __func__,
+			dentry->d_name.name, dest_dentry->d_name.name);
+	nova_dbgv("%s: inode %lu, dir %lu\n", __func__,
+			inode->i_ino, dir->i_ino);
+    /*增加一条硬链接就是新建了一个direntry但是inode早已存在的故事
+     * tail应该增加修改 not decided*/
+    err = dafs_add_dentry(dentry, inode->i_no, 0);
+	if (err) {
+		iput(inode);
+		goto out;
+	}
+
+	inode->i_ctime = CURRENT_TIME_SEC;
+	inc_nlink(inode);
+
+	err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
+	if (err) {
+		iput(inode);
+		goto out;
+	}
+
+	d_instantiate(dentry, inode);
+	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
+						pi_tail, pidir_tail, 0);
+
+out:
+	NOVA_END_TIMING(link_t, link_time);
+	return err;
+
+}
+
+static int dafs_unlink(struct inode *dir, struct dentry *dentry)
+{
+    struct inode *inode = dentry->d_inode;
+    struct super_block *sb = dir->i_sb;
+    int retval = -ENOMEM;
+    struct nova_inode *pi = nova_get_inode(sb, inode);
+    struct nova_inode *pidir;
+    u64 pidir_tail = 0, pi_tail = 0;
+    int invalidate = 0;
+    timing_t unlink_time;
+
+	NOVA_START_TIMING(unlink_t, unlink_time);
+
+	pidir = nova_get_inode(sb, dir);
+	if (!pidir)
+		goto out;
+
+	nova_dbgv("%s: %s\n", __func__, dentry->d_name.name);
+	nova_dbgv("%s: inode %lu, dir %lu\n", __func__,
+				inode->i_ino, dir->i_ino);
+    //注意更改tail
+    retval = dafs_remove_dentry(dentry);
+
+	if (retval)
+		goto out;
+
+	inode->i_ctime = dir->i_ctime;
+
+	if (inode->i_nlink == 1)
+		invalidate = 1;
+
+	if (inode->i_nlink) {
+		drop_nlink(inode);
+	}
+
+    /*not decided 返回值没有弄好*/
+    retval = nova_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
+	if (retval)
+		goto out;
+
+	nova_lite_transaction_for_time_and_link(sb, pi, pidir,
+					pi_tail, pidir_tail, invalidate);
+
+	NOVA_END_TIMING(unlink_t, unlink_time);
+	return 0;
+
+out:
+	nova_err(sb, "%s return %d\n", __func__, retval);
+	NOVA_END_TIMING(unlink_t, unlink_time);
+	return retval;
+}
 
 const struct inode_operations dafs_dir_inode_operations = {
     .create     = dafs_create,

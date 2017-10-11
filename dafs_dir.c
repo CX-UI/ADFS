@@ -74,6 +74,14 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, char *phst
 END:
     return dzt_ei;
 }
+
+/* set dentry pos in hash table*/
+int set_pos_htable()
+{
+    int ret;
+    return ret;
+}
+
 /*dafs add dentry in the zone
 * and initialize direntry without name*/
 int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
@@ -173,6 +181,115 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     NOVA_END_TIMING(add_dentry_t, add_entry_time);
     return ret;
 }
+
+/*look for dentry for each zone in its hash table*/
+unsigned long de_pos *lookup_in_hashtable()
+{
+    struct dafs_dentry *dafs_de;
+    return dafs_de;
+}
+
+struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry)
+{
+    struct dafs_dentry *direntry;
+    struct dzt_entry_info *dzt_ei;
+    struct dafs_zone_entry *dafs_ze;
+    unsigned long phlen;
+    unsigned long dzt_eno;
+    u64 ph_hash;
+    unsigned long de_pos;
+    char *phname = NULL;
+
+    phname = get_dentry_path(dentry);
+    dzt_ei = find_dzt(sb, &phname);
+    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    phlen = strlen(phname);
+    dzt_eno = dzt_ei->dzt_eno;
+    ph_hash = BKDRHash(phname, phlen);
+
+    /*lookup in hash table, not decided*/
+    de_pos = lookup_in_hashtable(ph_hash, phlen, dzt_eno);
+    direntry = dafs_ze->dentry[de_pos];
+
+    return direntry;
+}
+
+
+/* removes a directory entry pointing to the inode. assumes the inode has
+ * already been logged for consistency
+ * 只是先将对应的状态表显示无效
+ */
+int dafs_remove_dentry(struct dentry *dentry)
+{
+    struct inode *dir = dentry->d_parent->d_inode;
+    struct super_block *sb = dir->i_sb;
+    //struct nova_inode_info *si = NOVA_I(dir);
+    //struct nova_inode_info_header *sih = &si->header;
+    //struct nova_inode *pidir;
+    //struct qstr *entry = &dentry->d_name;
+    struct dafs_dentry *dafs_de;
+    struct dzt_entry_info *dzt_ei;
+    struct dafs_zone_entry *dafs_ze;
+    struct zone_ptr *z_p;
+    unsigned long phlen;
+    unsigned long dzt_eno;
+    unsigned long de_pos, bitpos;
+    u64 ph_hash;
+    char *phname = NULL;
+    //unsigned short loglen;
+	//u64 curr_tail, curr_entry;
+	timing_t remove_dentry_time;
+
+	NOVA_START_TIMING(remove_dentry_t, remove_dentry_time);
+
+	if (!dentry->d_name.len)
+		return -EINVAL;
+
+	pidir = nova_get_inode(sb, dir);
+
+	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
+
+    /*直接rm direntry就可以
+    * 先找到相应的dir*/    
+    phname = get_dentry_path(dentry);
+    dzt_ei = find_dzt(sb, &phname);
+    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    phlen = strlen(phname);
+    dzt_eno = dzt_ei->dzt_eno;
+    ph_hash = BKDRHash(phname, phlen);
+
+    /*lookup in hash table, not decided*/
+    de_pos = lookup_in_hashtable(ph_hash, phlen, dzt_eno);
+    bitpos = de_pos * 2;
+    /*not decided z_p是不是需要取地址*/
+    make_zone_ptr(z_p, dafs_ze);
+    test_and_clear_bit_le(bitpos, zone_p->statemap);
+	
+    NOVA_END_TIMING(remove_dentry_t, remove_dentry_time);
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const struct file_operations dafs_dir_operations = {
     .llseek      = generic_file_llseek,
