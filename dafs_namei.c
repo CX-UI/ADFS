@@ -31,7 +31,30 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
     if(ino == 0)
         goto out_err;
 
-    err = dafs_add_dentry(dentry, ino);
+    err = dafs_add_dentry(dentry, ino, 0);
+    if(err)
+        goto out_err;
+    
+	nova_dbgv("%s: %s\n", __func__, dentry->d_name.name);
+	nova_dbgv("%s: inode %llu, dir %lu\n", __func__, ino, dir->i_ino);
+	inode = nova_new_vfs_inode(TYPE_CREATE, dir, pi_addr, ino, mode,
+					0, 0, &dentry->d_name);
+
+	if (IS_ERR(inode))
+		goto out_err;
+
+	d_instantiate(dentry, inode);
+	unlock_new_inode(inode);
+
+    pi = nova_get_block(sb ,pi_addr);
+    //not decided 需要重新考量关于tail的所有的操作
+	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	NOVA_END_TIMING(create_t, create_time);
+	return err;
+out_err:
+    nova_err(sb, "%s return %d\n", __func__, err);
+	NOVA_END_TIMING(create_t, create_time);
+	return err;
 
 }
 

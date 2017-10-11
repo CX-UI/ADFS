@@ -74,11 +74,13 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, char *phst
 END:
     return dzt_ei;
 }
-/*dafs add dentry in the zone*/
+/*dafs add dentry in the zone
+* and initialize direntry without name*/
 int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
 {
     struct inode *dir = dentry->d_parent->d_inode;
     struct super_block *sb = dir->i_sb;
+    struct nova_inode *pidir;
     const char *name = dentry->d_name.name;
     int namelen = dentry->d_name.len;
     struct dafs_dentry *direntry;
@@ -87,9 +89,11 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     struct zone_ptr *zone_p;
     struct dafs_dentry *dafs_de;
     char *phname = NULL;
-    unsigned short loglen;
+    unsigned long phlen;
+    unsigned short delen;
+    unsigned short links_count;
     unsigned long bitpos = 0, cur_pos = 0;
-    int ret;
+    int ret = 0;
     timing_t add_dentry_time;
 
     
@@ -100,6 +104,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
 	NOVA_START_TIMING(add_dentry_t, add_dentry_time);
 	if (namelen == 0)
 		return -EINVAL;
+    
     phname = get_dentry_path(dentry);
     dzt_ei = find_dzt(sb, &phname);
     dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
@@ -112,12 +117,62 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
             break;
         }
     }
+
+    phlen = strlen(phname);
+    pidir = nova_get_inode(sb, dir);
+    dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
+    delen = DAFS_DIR_LEN(namelen + phlen); //not decided 
+
     /*get dentry on nvm*/
     dafs_de = dafs_ze->dentry[cur_pos];
     memset(dafs_de, 0, sizeof(dafs_de));
+    
+    dafs_de->entry_type = DAFS_DIR_ENTRY;
+    dafs_de->name_len = dentry->d_name.len;
+    dafs_de->file_type = 0;       //file_type是啥？ not decided
 
+    links_count = cpu_to_le16(dir->i_nlink);    
+	if (links_count == 0 && inc_link == -1)
+		links_count = 0;
+	else
+		links_count += inc_link;
+	dafs_de->links_count = cpu_to_le16(links_count);
+
+    dafs_de->de_len = cpu_to_le16(delen);  
+    dafs_de->mtime = cpu_to_le32(dir->i_mtime.tv_sec);
+    /*not root at first*/
+    dafs_de->vroot = 0;
+    //dafs_de->path_len =
+    dafs_de->ino = cpu_to_le64(ino);
+    //需要printk
+    dafs_de->par_ino = cpu_to_le64(dentry->d_parent->d_inode->ino);
+    
+    nova_dbg_verbose("dir ino 0x%llu is subfile of parent ino 0x%llu ", dafs_de->ino, dafs_de->par_ino);
+    
+    dafs_de->size = cpu_to_le64(dir->i_size);
+    dafs_de->zone_no = cpu_to_le64(dzt_ei->dzt_eno);
+    dafs_de->prio = LEVEL_0;
+    dafs_de->d_f = 0;
+    dafs_de->sub_s = 0;
+    dafs_de->f_s = 0;
+    dafs_de->sub_num = 0;
+    dafs_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
+    /*不存储名字字符在初始化的时候*/
+    dafs_de->name[dentry->d_name.len] = '\0';
+    dafs_de->f_name->f_namelen = cpu_to_le64(phlen);
+    /*那路径名称呢*/
+    dafs_de->f_name->f_name = cpu_to_le64(phname);
+   
+    nova_flush_buffer(dafs_de, de_len, 0);
+    
+    dir->i_blocks = pidir->i_blocks;
+
+    /*set pos in hash table for each zone*/
+    ret = set_pos_htable(phname ,phlen);
+
+    NOVA_END_TIMING(add_dentry_t, add_entry_time);
+    return ret;
 }
-
 
 const struct file_operations dafs_dir_operations = {
     .llseek      = generic_file_llseek,

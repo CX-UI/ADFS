@@ -54,13 +54,14 @@ struct dafs_dentry{
     u8 file_type;           /* file type */
     // u8 invalid;             /* invalid or? not used here */
     __le16 links_count;         /* links */
+    __le16 de_len;
     //__le16 de_len;          /* length of this dentry. not used here */
     __le32 mtime;
     __le32 vroot;           /* root dir or ? */
-    __le32 path_len;        /* length of the dir path */
+    //__le32 path_len;        /* length of the dir path */
     __le64 ino;             /* inode number*/
     __le64 par_ino;         /* parent inode_ino */
-    __le64 size;            /* used in dentry */
+    __le64 size;            /* inode_size */
     __le64 zone_no;         /* root dir records zone number */
     //__le64 par_z_no;        /* parent zone ino */
     __le64 prio;            /* level of priority to new a zone */
@@ -71,9 +72,14 @@ struct dafs_dentry{
     __le64 sub_pos[NR_DENTRY_IN_ZONE];         /* sub file position*/
     //char path[DAFS_PATH_LEN+1];          /* partial path name for lookup*/
     char name[NOVA_NAME_LEN+1];          /* file name*/
+    struct fulname f_name;
 
 }__attribute((__packed__));
 
+struct fulname{
+    __le64 f_namelen;
+    char f_name[NOVA_NAME_LEN+1];
+}
 /*
  * 2017/09/13
  * zone entries in directory zone table block

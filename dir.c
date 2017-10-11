@@ -166,6 +166,7 @@ void nova_delete_dir_tree(struct super_block *sb,
  * Note unlike append_file_write_entry(), this method returns the tail pointer
  * after append.
  */
+/*Nova不存储目录的名字字符串*/
 static u64 nova_append_dir_inode_entry(struct super_block *sb,
 	struct nova_inode *pidir, struct inode *dir,
 	u64 ino, struct dentry *dentry, unsigned short de_len, u64 tail,
@@ -216,6 +217,7 @@ static u64 nova_append_dir_inode_entry(struct super_block *sb,
 
 	nova_flush_buffer(entry, de_len, 0);
 
+    //dafs也不需要inode log记录dir的位置
 	*curr_tail = curr_p + de_len;
 
 	dir->i_blocks = pidir->i_blocks;
@@ -317,7 +319,7 @@ int nova_add_dentry(struct dentry *dentry, u64 ino, int inc_link,
 	curr_entry = nova_append_dir_inode_entry(sb, pidir, dir, ino,
 				dentry,	loglen, tail, inc_link,
 				&curr_tail);
-
+    /*我不需要获取direntry的地址并且插入radix树中*/
 	direntry = (struct nova_dentry *)nova_get_block(sb, curr_entry);
 	ret = nova_insert_dir_radix_tree(sb, sih, name, namelen, direntry);
 	*new_tail = curr_tail;
