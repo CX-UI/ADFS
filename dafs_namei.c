@@ -298,6 +298,97 @@ out:
 	return retval;
 }
 
+static int dafs_symlink(struct inode *dir, struct dentry *dentry, const char *symname)
+{
+    struct super_block *sb = dir->i_sb;
+    int err = -ENAMETOOLONG;
+    unsigned len = strlen(symname);
+    struct inode *inode;
+    u64 pi_addr = 0;
+    struct nova_inode *pidir, *pi;
+    u64 log_back = 0;
+    unsigned long name_blocknr = 0;
+    int allocated;
+    u64 tail = 0;
+    u64 ino;
+    timing_t symlink_time;
+    
+	NOVA_START_TIMING(symlink_t, symlink_time);
+	if (len + 1 > sb->s_blocksize)
+		goto out;
+
+	pidir = nova_get_inode(sb, dir);
+	if (!pidir)
+		goto out_fail1;
+ 
+	ino = nova_new_nova_inode(sb, &pi_addr);
+	if (ino == 0)
+		goto out_fail1;
+
+	nova_dbgv("%s: name %s, symname %s\n", __func__,
+				dentry->d_name.name, symname);
+	nova_dbgv("%s: inode %llu, dir %lu\n", __func__, ino, dir->i_ino);
+    err = dafs_add_dentry(dentry, ino ,0);
+
+	if (err)
+		goto out_fail1;
+
+	inode = nova_new_vfs_inode(TYPE_SYMLINK, dir, pi_addr, ino,
+					S_IFLNK|S_IRWXUGO, len, 0,
+					&dentry->d_name);
+	if (IS_ERR(inode)) {
+		err = PTR_ERR(inode);
+		goto out_fail1;
+	}
+
+	pi = nova_get_inode(sb, inode);
+	allocated = nova_allocate_inode_log_pages(sb, pi,
+						1, &log_block);
+	if (allocated != 1 || log_block == 0) {
+		err = allocated;
+		goto out_fail1;
+	}
+
+	allocated = nova_new_data_blocks(sb, pi, &name_blocknr,
+					1, 0, 1, 0);
+	if (allocated != 1 || name_blocknr == 0) {
+		err = allocated;
+		goto out_fail2;
+	}
+
+	pi->i_blocks = 2;
+	nova_block_symlink(sb, pi, inode, log_block, name_blocknr,
+				symname, len);
+	d_instantiate(dentry, inode);
+	unlock_new_inode(inode);
+
+	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+out:
+	NOVA_END_TIMING(symlink_t, symlink_time);
+	return err;
+
+out_fail2:
+	nova_free_log_blocks(sb, pi, log_block >> PAGE_SHIFT, 1);
+out_fail1:
+	nova_err(sb, "%s return %d\n", __func__, err);
+	goto out;
+}
+
+static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
+{
+    struct super_block *sb = dir->i_sb;
+    struct inode *inode;
+    struct nova_inode *pidir, *pi;
+    struct nova_inode_info *si;
+    struct nova_inode_info_header *sih = NULL;
+    u64 pi_addr = 0;
+    u64 tail = 0;
+    u64 ino;
+    int err = -EMLINK;
+    timing_t mkdir_time;
+    
+}
+
 const struct inode_operations dafs_dir_inode_operations = {
     .create     = dafs_create,
     .lookup     = dafs_lookup,
