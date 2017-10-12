@@ -906,8 +906,19 @@ static inline bool goto_next_page(struct super_block *sb, u64 curr_p)
 	return false;
 }
 
-static inline int is_dir_init_entry(struct super_block *sb,
+/*static inline int is_dir_init_entry(struct super_block *sb,
 	struct nova_dentry *entry)
+{
+	if (entry->name_len == 1 && strncmp(entry->name, ".", 1) == 0)
+		return 1;
+	if (entry->name_len == 2 && strncmp(entry->name, "..", 2) == 0)
+		return 1;
+
+	return 0;
+}*/
+/*use dafs*/
+static inline int is_dir_init_entry(struct super_block *sb,
+	struct dafs_dentry *entry)
 {
 	if (entry->name_len == 1 && strncmp(entry->name, ".", 1) == 0)
 		return 1;

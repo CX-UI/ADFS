@@ -381,8 +381,8 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     struct super_block *sb = dir->i_sb;
     struct inode *inode;
     struct nova_inode *pidir, *pi;
-    struct nova_inode_info *si;
-    struct nova_inode_info_header *sih = NULL;
+    //struct nova_inode_info *si;
+    //struct nova_inode_info_header *sih = NULL;
     u64 pi_addr = 0;
     u64 tail = 0;
     u64 ino;
@@ -436,6 +436,76 @@ out_err:
 //	clear_nlink(inode);
 	nova_err(sb, "%s return %d\n", __func__, err);
 	goto out;
+}
+
+/*to check this special dir is empty*/
+static int dafs_empty_dir(struct inode)
+{
+    struct super_block *sb = inode->i_sb;
+    struct dafs_dentry *dafs_de;
+
+}
+
+static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
+{
+    struct inode *inode = dentry->d_inode;
+    struct nova_dentry *de;
+    struct super_block *sb;
+    struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
+    u64 pidir_tail = 0, pi_tail = 0;
+    struct nova_inode_info *si = NOVA_I(inode);
+    struct nova_inode_info_header *sih = &si->header;
+    int err = -ENOTEMPTY;
+    timing_t rmdir_time;
+
+	NOVA_START_TIMING(rmdir_t, rmdir_time);
+	if (!inode)
+		return -ENOENT;
+
+	nova_dbgv("%s: name %s\n", __func__, dentry->d_name.name);
+	pidir = nova_get_inode(sb, dir);
+	if (!pidir)
+		return -EINVAL;
+
+    if(dafs_inode_by_name(dir, dentry, &de) == 0)
+        return -ENOENT;
+
+    if(!dafs_empty_dir(inode, dentry))
+        return err;
+    
+	nova_dbgv("%s: inode %lu, dir %lu, link %d\n", __func__,
+				inode->i_ino, dir->i_ino, dir->i_nlink);
+
+	if (inode->i_nlink != 2)
+		nova_dbg("empty directory %lu has nlink!=2 (%d), dir %lu",
+				inode->i_ino, inode->i_nlink, dir->i_ino);
+    
+    err = dafs_remove_dentry(dentry);
+
+	if (err)
+		goto end_rmdir;
+
+	/*inode->i_version++; */
+	clear_nlink(inode);
+	inode->i_ctime = dir->i_ctime;
+
+	if (dir->i_nlink)
+		drop_nlink(dir);
+	
+    err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
+	if (err)
+		goto end_rmdir;
+
+	nova_lite_transaction_for_time_and_link(sb, pi, pidir,
+						pi_tail, pidir_tail, 1);
+
+	NOVA_END_TIMING(rmdir_t, rmdir_time);
+	return err;
+
+end_rmdir:
+	nova_err(sb, "%s return %d\n", __func__, err);
+	NOVA_END_TIMING(rmdir_t, rmdir_time);
+	return err;
 }
 
 const struct inode_operations dafs_dir_inode_operations = {

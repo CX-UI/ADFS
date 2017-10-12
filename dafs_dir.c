@@ -60,6 +60,9 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, char *phst
         if(!token){
             strcat(tem, "/");
             strcat(tem, token);
+            /*避免zone的根目录被查到*/
+            if(!strcat(tem, phstr))
+                goto END;
             phlen = strlen(tem);
             hashname = BKDRHash(tem, phlen);
             dzt_ei_tem = radix_tree_lookup(&dzt_m->dzt_root, hashname);
@@ -218,10 +221,122 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *de
     return direntry;
 }
 
+/**递归删除dentry*/
+static void __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de,\
+                              struct dafs_zone_entry *dafs_ze, unsigned long de_pos)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dafs_dentry *dafs_de, *pde, *sde;
+    struct dzt_entry_info *dzt_ei;
+    struct dafs_zone_entry *dafs_ze;
+    struct zone_ptr *z_p;
+    struct dzt_ptr *dzt_p;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    unsigned long phlen;
+    unsigned long dzt_eno, dzt_rno;
+    unsigned long bitpos, par_id, par_pos, sub_p, sub_id, i;
+    char *tem;
+    u64 hashname;
+
+    strcat(tem, dafs_ze->root_path);
+    if(dafs_de->file_type == ROOT_DIRECTORY){
+
+        /*delete dir*/
+        bitpos = de_pos * 2;
+        /*not decided z_p是不是需要取地址*/
+        make_zone_ptr(z_p, dafs_ze);
+        test_and_clear_bit_le(bitpos, zone_p->statemap);
+	    bitpos++;
+        test_and_clear_bit_le(bitpos, zone_p->statemap);
+
+        dzt_rno = le64_to_cpu(dafs_de->dz_no);
+        strcat(tem, dafs_de->ful_name->f_name);
+        hashname = BKDRHash(tem, strlen(tem));
+
+        /*delete dzt on dram and nvm*/
+        radix_tree_delete(&dzt_m->dzt_root, hashname);
+        make_dzt_ptr(sbi, dzt_p);
+        test_and_clear_bit_le(dzt_rno, dzt_p->bitmap);
+
+        /*delete in par sub_pos*/
+        par_pos = 0;
+        for(par_id =0; par_id<NR_DENTRY_IN_ZONE; par_id++){
+            if(test_bit_le(par_pos, z_p->statemap)||test_bit_le(par_pos+1, z_p->statemap)){
+                pde = dafs_ze->dentry[par_id];
+                if(dafs_de->par_ino == pde->ino){
+                    /*not decided*/
+                    change_sub_pos();
+                    break;
+                }
+                par_pos += 2;
+            }else{
+                par_pos += 2;
+            }
+        }
+    }else if(dafs_de->file_type == NORMAL_DIRECTORY){
+        /*delete sub file*/
+        for(i=0;i<dafs_de->sub_num;i++){
+            sub_id = dafs_de->sub_pos[i];
+            sde = dafs_ze->dentry[sub_id];
+            __remove_direntry(sde, dafs_ze, sub_id);
+        }
+
+        /*delete dir itself*/
+        bitpos = de_pos * 2;
+        /*not decided z_p是不是需要取地址*/
+        make_zone_ptr(z_p, dafs_ze);
+        test_and_clear_bit_le(bitpos, zone_p->statemap);
+	    bitpos++;
+        test_and_clear_bit_le(bitpos, zone_p->statemap);
+        
+        /*delete in par sub_pos*/
+        par_pos = 0;
+        for(par_id =0; par_id<NR_DENTRY_IN_ZONE; par_id++){
+            if(test_bit_le(par_pos, z_p->statemap)||test_bit_le(par_pos+1, z_p->statemap)){
+                pde = dafs_ze->dentry[par_id];
+                if(dafs_de->par_ino == pde->ino){
+                    /*not decided*/
+                    change_sub_pos();
+                    break;
+                }
+                par_pos += 2;
+            }else{
+                par_pos += 2;
+            }
+        }
+    }else{
+        
+        /*delete dir itself*/
+        bitpos = de_pos * 2;
+        /*not decided z_p是不是需要取地址*/
+        make_zone_ptr(z_p, dafs_ze);
+        test_and_clear_bit_le(bitpos, zone_p->statemap);
+	    bitpos++;
+        test_and_clear_bit_le(bitpos, zone_p->statemap);
+
+        /*delete in par sub_pos*/
+        par_pos = 0;
+        for(par_id =0; par_id<NR_DENTRY_IN_ZONE; par_id++){
+            if(test_bit_le(par_pos, z_p->statemap)||test_bit_le(par_pos+1, z_p->statemap)){
+                pde = dafs_ze->dentry[par_id];
+                if(dafs_de->par_ino == pde->ino){
+                    /*not decided*/
+                    change_sub_pos();
+                    break;
+                }
+                par_pos += 2;
+            }else{
+                par_pos += 2;
+            }
+        }
+    }
+}
 
 /* removes a directory entry pointing to the inode. assumes the inode has
  * already been logged for consistency
  * 只是先将对应的状态表显示无效
+ * 检查是不是根节点
+ * 并不含有link的变化
  */
 int dafs_remove_dentry(struct dentry *dentry)
 {
@@ -231,13 +346,15 @@ int dafs_remove_dentry(struct dentry *dentry)
     //struct nova_inode_info_header *sih = &si->header;
     //struct nova_inode *pidir;
     //struct qstr *entry = &dentry->d_name;
+    struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dentry *dafs_de;
     struct dzt_entry_info *dzt_ei;
     struct dafs_zone_entry *dafs_ze;
     struct zone_ptr *z_p;
     unsigned long phlen;
     unsigned long dzt_eno;
-    unsigned long de_pos, bitpos;
+    unsigned long de_pos;
+    unsigned short links_count;
     u64 ph_hash;
     char *phname = NULL;
     //unsigned short loglen;
@@ -264,12 +381,11 @@ int dafs_remove_dentry(struct dentry *dentry)
 
     /*lookup in hash table, not decided*/
     de_pos = lookup_in_hashtable(ph_hash, phlen, dzt_eno);
-    bitpos = de_pos * 2;
-    /*not decided z_p是不是需要取地址*/
-    make_zone_ptr(z_p, dafs_ze);
-    test_and_clear_bit_le(bitpos, zone_p->statemap);
-	bitpos++;
-    test_and_clear_bit_le(bitpos, zone_p->statemap);
+
+    dafs_de = dafs_ze->dentry[de_pos];
+
+    __remove_direntry(dafs_de, dafs_ze, de_pos);
+    
     
     NOVA_END_TIMING(remove_dentry_t, remove_dentry_time);
 	return 0;
@@ -408,6 +524,47 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     return 0;
 }
 
+/*bug 应该检验一下状态图是否有效*/
+static int dafs_empty_dir(struct inode *inode, struct dentry *dentry)
+{
+    struct super_block *sb = inode->i_sb;
+    struct dafs_dentry *direntry, *denties[4];
+    struct dzt_entry_info *dzt_ei;
+    struct dafs_zone_entry *dafs_ze;
+    unsigned long phlen;
+    unsigned long dzt_eno;
+    u64 ph_hash;
+    unsigned long de_pos;
+    char *phname = NULL;
+    unsigned long nr_de;
+    int i;
+
+    phname = get_dentry_path(dentry);
+    dzt_ei = find_dzt(sb, &phname);
+    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    phlen = strlen(phname);
+    dzt_eno = dzt_ei->dzt_eno;
+    ph_hash = BKDRHash(phname, phlen);
+
+    /*lookup in hash table, not decided*/
+    de_pos = lookup_in_hashtable(ph_hash, phlen, dzt_eno);
+
+    direntry = dafs_ze->dentry[de_pos];
+    
+    nr_de = direntry->sub_num;
+    if(nr_de > 2)
+        return 0;
+
+    for(i = 0; i < nr_de, i++){
+        de_pos = direntry->sub_pos[i];
+        denties[i] = dafs_ze->dentry[de_pos];
+        if(!is_dir_init_entry(sb, denties[i]))
+            return 0;
+    }
+
+    return 1;
+
+}
 
 
 

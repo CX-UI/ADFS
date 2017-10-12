@@ -613,6 +613,7 @@ static int nova_rmdir(struct inode *dir, struct dentry *dentry)
 	if (dir->i_nlink)
 		drop_nlink(dir);
 
+    /*dafs not need*/
 	nova_delete_dir_tree(sb, sih);
 
 	err = nova_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
