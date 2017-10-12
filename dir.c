@@ -257,6 +257,7 @@ int nova_append_dir_init_entries(struct super_block *sb,
 	de_entry->mtime = CURRENT_TIME_SEC.tv_sec;
 	de_entry->size = sb->s_blocksize;
 	de_entry->links_count = 1;
+    /*dafs直接加到目录项的名称后面就行*/
 	strncpy(de_entry->name, ".\0", 2);
 	nova_flush_buffer(de_entry, NOVA_DIR_LOG_REC_LEN(1), 0);
 

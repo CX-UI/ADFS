@@ -167,11 +167,15 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     dafs_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
     /*不存储名字字符在初始化的时候*/
     dafs_de->name[dentry->d_name.len] = '\0';
-    dafs_de->f_name->f_namelen = cpu_to_le64(phlen);
+    dafs_de->ful_name->f_namelen = cpu_to_le64(phlen);
     /*那路径名称呢*/
-    dafs_de->f_name->f_name = cpu_to_le64(phname);
-   
+    dafs_de->ful_name->f_name = phname;
+    /*not decided是不是每次写到nvm都需要这个接口*/ 
     nova_flush_buffer(dafs_de, de_len, 0);
+    
+    /*make valid*/
+    bitpos++;
+    test_and_set_bit_le(bitpos, zone_p->statemap);
     
     dir->i_blocks = pidir->i_blocks;
 
@@ -264,11 +268,145 @@ int dafs_remove_dentry(struct dentry *dentry)
     /*not decided z_p是不是需要取地址*/
     make_zone_ptr(z_p, dafs_ze);
     test_and_clear_bit_le(bitpos, zone_p->statemap);
-	
+	bitpos++;
+    test_and_clear_bit_le(bitpos, zone_p->statemap);
+    
     NOVA_END_TIMING(remove_dentry_t, remove_dentry_time);
 	return 0;
 }
 
+/*append . and .. entries*/
+int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\ 
+                                u64 self_ino, u64 parent_ino)
+{
+    int allocated;
+    u64 new_block;
+    u64 curr_p;
+    u64 phhash;
+    char *phname;
+    unsigned long phlen;
+    unsigned long bitpos ,depos;
+    unsigned short delen;
+    struct dafs_zone_entry *dafs_ze;
+    struct dzt_entry_info *dafs_ei;
+    struct zone_ptr *zone_p;
+    struct dafs_dentry *dafs_de, *dafs_rde;
+	
+    if (pi->log_head) {
+		nova_dbg("%s: log head exists @ 0x%llx!\n",
+				__func__, pi->log_head);
+		return - EINVAL;
+	}
+    allocated = nova_allocate_inode_log_pages(sb, pi, 1, &new_block);
+	if (allocated != 1) {
+		nova_err(sb, "ERROR: no inode log page available\n");
+		return - ENOMEM;
+	}
+    /*虽然不需要将dentry加到log里面去但是还是要初始化一下log_h和log_t*/
+	pi->log_tail = pi->log_head = new_block;
+	pi->i_blocks = 1;
+	nova_flush_buffer(&pi->log_head, CACHELINE_SIZE, 0);
+
+    /*创建. ..并添加到父目录*/
+    /*find parent directory*/
+    phname = get_dentry_path(dentry);
+    phlen = strlen(phname);
+    dzt_ei = find_dzt(sb, &phname);
+    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    phhash = BKDRHash(phname, phlen);
+    //not decided
+    depos = lookup_in_hashtable(phhash, phlen, dzt_ei->dzt_eno);
+    dafs_rde = dafs_ze->dentry[depos];
+
+    make_zone_ptr(zone_p, dafs_ze);
+    while(bitpos<zone_p->zone_max){
+        if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
+            bitpos+=2;
+            cur_pos++;
+        }else{
+            break;
+        }
+    }
+    delen = DAFS_DIR_LEN(1+phlen+2);
+    dafs_de = dafs_ze->dentry[cur_pos];
+    dafs_de->entry_type = DAFS_DIR_ENTRY;
+    /*标示. ..文件*/
+    dafs_de->file_type = FIXED_FILE;
+    dafs_de->name_len = 1;
+    dafs_de->links_count = 1;
+    dafs_de->de_len = cpu_to_le16(delen);
+    dafs_de->mtime = CURRENT_TIME_SEC.tv_sec;
+    //dafs_de->size = sb->s_blocksize;
+    dafs_de->vroot = 0;
+    dafs_de->ino = cpu_to_le64(self_ino);
+    /*dir ino*/
+    dafs_de->parent_ino = cpu_to_le64(self_ino);
+    dafs_de->size = sb->s_blocksize;
+    dafs_de->zone_no = cpu_to_le64(dzt_ei->dzt_eno);
+    strncpy(dafs_de->name, ".\0", 2);
+    dafs_de->ful_name->f_namelen = cpu_to_le64(phlen + 2);
+    strcpy(dafs_de->ful_name->f_name, phname);
+    strcat(dafs_de->ful_name->f_name, "/.");
+    
+    nova_flush_buffer(dafs_de, delen, 0);
+    
+    /*change in dir*/
+    dafs_rde->sub_num +=1;
+    dafs_rde->sub_pos[0] = cpu_to_le64(cur_pos);
+    
+    /*make valid*/
+    bitpos++;
+    test_and_set_bit_le(bitpos, zone_p->statemap);
+    bitpos++;
+    cur_pos++;
+
+    /*set hash table with its position*/
+    set_pos_htable(dafs_de->ful_name->f_name,dafs_de->ful_name->f_namelen);
+
+    while(bitpos<zone_p->zone_max){
+        if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
+            bitpos+=2;
+            cur_pos++;
+        }else{
+            break;
+        }
+    }
+    delen = DAFS_DIR_LEN(2+phlen+3);
+    dafs_de = dafs_ze->dentry[cur_pos];
+    dafs_de->entry_type = DAFS_DIR_ENTRY;
+    /*标示. ..文件*/
+    dafs_de->file_type = FIXED_FILE;
+    dafs_de->name_len = 2;
+    dafs_de->links_count = 2;
+    dafs_de->de_len = cpu_to_le16(delen);
+    dafs_de->mtime = CURRENT_TIME_SEC.tv_sec;
+    //dafs_de->size = sb->s_blocksize;
+    dafs_de->vroot = 0;
+    dafs_de->ino = cpu_to_le64(parent_ino);
+    /*dir ino*/
+    dafs_de->parent_ino = cpu_to_le64(self_ino);
+    dafs_de->size = sb->s_blocksize;
+    dafs_de->zone_no = cpu_to_le64(dzt_ei->dzt_eno);
+    strncpy(dafs_de->name, "..\0", 2);
+    dafs_de->ful_name->f_namelen = cpu_to_le64(phlen + 3);
+    strcpy(dafs_de->ful_name->f_name, phname);
+    strcat(dafs_de->ful_name->f_name, "/..");
+    
+    nova_flush_buffer(dafs_de, delen, 0);
+    
+    dafs_rde->sub_num +=1;
+    dafs_rde->sub_pos[1] = cpu_to_le64(cur_pos);
+    
+    /*make valid*/
+    bitpos++;
+    test_and_set_bit_le(bitpos, zone_p->statemap);
+
+    /*set hash table with its position*/
+    set_pos_htable(dafs_de->ful_name->f_name,dafs_de->ful_name->f_namelen);
+    //不需要update tail
+    
+    return 0;
+}
 
 
 

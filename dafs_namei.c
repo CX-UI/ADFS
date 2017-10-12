@@ -23,6 +23,7 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
 
     NOVA_START_TIMING(create_t, create_time);
 
+    /*文件所在的目录的inode*/
     pidir = nova_get_inode(sb ,dir);
     if(!pidir)
         goto out_err;
@@ -48,6 +49,7 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
 
     pi = nova_get_block(sb ,pi_addr);
     //not decided 需要重新考量关于tail的所有的操作
+    //这个是目录于新建的文件之间的关系，not decided
 	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 	NOVA_END_TIMING(create_t, create_time);
 	return err;
@@ -387,6 +389,53 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     int err = -EMLINK;
     timing_t mkdir_time;
     
+    NOVA_START_TIMING(mkdir_t, mkdir_time);
+    if(dir->i_nlink >= NOVA_LINK_MAX)
+        goto out;
+    
+    ino = nova_new_nova_inode(sb, &pi_addr);
+	if (ino == 0)
+		goto out_err;
+
+	nova_dbgv("%s: name %s\n", __func__, dentry->d_name.name);
+	nova_dbgv("%s: inode %llu, dir %lu, link %d\n", __func__,
+				ino, dir->i_ino, dir->i_nlink);
+
+    /*.文件指向目录项*/
+    err = dafs_add_dentry(dentry, ino, 1);
+	if (err) {
+		nova_dbg("failed to add dir entry\n");
+		goto out_err;
+	}
+
+	inode = nova_new_vfs_inode(TYPE_MKDIR, dir, pi_addr, ino,
+					S_IFDIR | mode, sb->s_blocksize,
+					0, &dentry->d_name);
+	if (IS_ERR(inode)) {
+		err = PTR_ERR(inode);
+		goto out_err;
+	}
+
+	pi = nova_get_inode(sb, inode);
+    dafs_append_dir_init_entries(sb, pi, inode->i, dir->i_ino);
+   
+    //dafs不需要rebuild dir tree
+
+	pidir = nova_get_inode(sb, dir);
+	dir->i_blocks = pidir->i_blocks;
+	inc_nlink(dir);
+	d_instantiate(dentry, inode);
+	unlock_new_inode(inode);
+
+	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+out:
+	NOVA_END_TIMING(mkdir_t, mkdir_time);
+	return err;
+
+out_err:
+//	clear_nlink(inode);
+	nova_err(sb, "%s return %d\n", __func__, err);
+	goto out;
 }
 
 const struct inode_operations dafs_dir_inode_operations = {
