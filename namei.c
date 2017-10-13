@@ -661,12 +661,16 @@ static int nova_rename(struct inode *old_dir,
 			old_inode->i_ino, old_dir->i_ino, new_dir->i_ino,
 			new_inode ? new_inode->i_ino : 0);
 	NOVA_START_TIMING(rename_t, rename_time);
-
+    
+    /*new 存在*/
 	if (new_inode) {
 		err = -ENOTEMPTY;
+        /*old是文件夹，new是非空文件夹，out*/
 		if (S_ISDIR(old_inode->i_mode) && !nova_empty_dir(new_inode))
 			goto out;
+    /*new不存在*/
 	} else {
+        /*old是文件夹*/
 		if (S_ISDIR(old_inode->i_mode)) {
 			err = -EMLINK;
 			if (new_dir->i_nlink >= NOVA_LINK_MAX)
@@ -674,8 +678,10 @@ static int nova_rename(struct inode *old_dir,
 		}
 	}
 
+    /*文件夹要减少一个link*/
 	if (S_ISDIR(old_inode->i_mode)) {
 		dec_link = -1;
+        /*new inode不存在要增加一个link*/
 		if (!new_inode)
 			inc_link = 1;
 	}
@@ -689,7 +695,8 @@ static int nova_rename(struct inode *old_dir,
 						old_inode, 0, &old_pi_tail);
 	if (err)
 		goto out;
-
+    /*如果old是文件夹并且新旧父目录不共享inode的话
+    * 也就是说改变了父目录*/
 	if (S_ISDIR(old_inode->i_mode) && old_dir != new_dir) {
 		/* My father is changed. Update .. entry */
 		/* For simplicity, we use in-place update and journal it */

@@ -438,13 +438,6 @@ out_err:
 	goto out;
 }
 
-/*to check this special dir is empty*/
-static int dafs_empty_dir(struct inode)
-{
-    struct super_block *sb = inode->i_sb;
-    struct dafs_dentry *dafs_de;
-
-}
 
 static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 {
@@ -551,6 +544,81 @@ out_err:
 	nova_err(sb, "%s return %d\n", __func__, err);
 	NOVA_END_TIMING(mknod_t, mknod_time);
 	return err;
+}
+
+static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\ 
+        struct inode *new_dir, struct dentry *new_dentry)
+{
+    struct inode *old_inode = old_dentry->d_inode;
+    struct inode *new_inode = new_dentry->d_inode;
+    struct super_block *sb = old_inode->i_sb;
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct nova_inode *old_pi = NULL, *new_pi = NULL;
+    struct nova_inode *new_pidir = NULL, *old_pidir = NULL;
+    struct nova_lite_journal_entry entry, entry1;
+    struct nova_dentry *father_entry = NULL;
+    char *head_addr = NULL;
+    u64 old_tail = 0, new_tail = 0, new_pi_tail = 0, old_pi_tail = 0;
+    int err = -ENOMEM;
+    int entries = 0;
+    int cpu;
+    int change_parent = 0;
+    u64 journal_tail;
+    timeing_t rename_time;
+
+    
+	nova_dbgv("%s: rename %s to %s,\n", __func__,
+			old_dentry->d_name.name, new_dentry->d_name.name);
+	nova_dbgv("%s: %s inode %lu, old dir %lu, new dir %lu, new inode %lu\n",
+			__func__, S_ISDIR(old_inode->i_mode) ? "dir" : "normal",
+			old_inode->i_ino, old_dir->i_ino, new_dir->i_ino,
+			new_inode ? new_inode->i_ino : 0);
+	NOVA_START_TIMING(rename_t, rename_time);
+
+    /*检查rename的情况*/
+    if(new_inode){
+        err = -ENOMEM;
+        if(S_ISDIR(old_inode->i_mode) && !dafs_empty_dir(new_inode))
+            goto out;
+    } else {
+        if(S_ISDIR(old_inode->i_mode)){
+            err = -EMLINK;
+            if(new_dir->i_nlink >= NOVA_LINK_MAX)
+                goto out;
+        }
+    }
+
+    if(S_ISDIR(old_inode->i_mode)){
+        dec_link = -1;
+        if(!new_inode)
+            inc_link = 1;
+    }
+
+    /*change inode link entry*/
+	new_pidir = nova_get_inode(sb, new_dir);
+	old_pidir = nova_get_inode(sb, old_dir);
+
+	old_pi = nova_get_inode(sb, old_inode);
+	old_inode->i_ctime = CURRENT_TIME;
+	err = dafs_append_link_change_entry(sb, old_pi,
+						old_inode, 0, &old_pi_tail);
+    if(err)
+        goto out;
+
+    if(S_ISDIR(old_inode->i_mode) && old_dir != new_dir){
+         
+    }
+
+    if(new_inode){
+        /*first remove the old entry in the new directory*/
+        err = dafs_remove_dentry(new_dentry);
+        if (err)
+            goto out;
+    }
+
+    /*link into the new directory*/
+    err = dafs_add_dentry(new_dentry, old_inode->i_ino, inc_link);
+
 }
 
 const struct inode_operations dafs_dir_inode_operations = {
