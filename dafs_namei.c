@@ -508,6 +508,51 @@ end_rmdir:
 	return err;
 }
 
+static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,\ 
+        dev_t rdev)
+{
+    struct inode *inode = NULL;
+    int err = PTR_ERR(inode);
+    struct super_block *sb = dir->i_sb;
+    u64 pi_addr = 0;
+    struct nova_inode *pidir, *pi;
+    u64 tail = 0;
+    u64 ino;
+    timing_t mknod_time;
+    
+	NOVA_START_TIMING(mknod_t, mknod_time);
+
+	pidir = nova_get_inode(sb, dir);
+	if (!pidir)
+		goto out_err;
+
+	ino = nova_new_nova_inode(sb, &pi_addr);
+	if (ino == 0)
+		goto out_err;
+
+	nova_dbgv("%s: %s\n", __func__, dentry->d_name.name);
+	nova_dbgv("%s: inode %llu, dir %lu\n", __func__, ino, dir->i_ino);
+
+    err = dafs_add_dentry(dentry, ino, 0);
+
+	inode = nova_new_vfs_inode(TYPE_MKNOD, dir, pi_addr, ino, mode,
+					0, rdev, &dentry->d_name);
+	if (IS_ERR(inode))
+		goto out_err;
+
+	d_instantiate(dentry, inode);
+	unlock_new_inode(inode);
+
+	pi = nova_get_block(sb, pi_addr);
+	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	NOVA_END_TIMING(mknod_t, mknod_time);
+	return err;
+out_err:
+	nova_err(sb, "%s return %d\n", __func__, err);
+	NOVA_END_TIMING(mknod_t, mknod_time);
+	return err;
+}
+
 const struct inode_operations dafs_dir_inode_operations = {
     .create     = dafs_create,
     .lookup     = dafs_lookup,
