@@ -859,6 +859,7 @@ struct dentry *nova_get_parent(struct dentry *child)
 	return d_obtain_alias(inode);
 }
 
+
 const struct inode_operations nova_dir_inode_operations = {
 	.create		= nova_create,
 	.lookup		= nova_lookup,

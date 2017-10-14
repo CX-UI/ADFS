@@ -32,7 +32,7 @@ struct dafs_zone_entry{
     //__le64 bm_head;         /*zone bit map address*/
     //__le64 dz_root_hash;         /*root directory of this zone*/
     //__le64 dz_size;         /*zone size*/
-    char root_path[DAFS_PATH_LEN];      /*root path name*/
+    //char root_path[DAFS_PATH_LEN];      /*root path name not decided*/
     struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];	
     // next is same attributes in this zone
 }__attribute((__packed__));

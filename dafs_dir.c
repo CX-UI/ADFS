@@ -566,6 +566,179 @@ static int dafs_empty_dir(struct inode *inode, struct dentry *dentry)
 
 }
 
+/*add rename zone root dentry*/
+int add_rename_zone_dir(struct dentry *dentry, u64 ino, int inc_link, u64 dz_no)
+{
+    struct inode *dir = dentry->d_parent->d_inode;
+    struct super_block *sb = dir->i_sb;
+    struct nova_inode *pidir;
+    const char *name = dentry->d_name.name;
+    int namelen = dentry->d_name.len;
+    struct dafs_dentry *direntry;
+    struct dzt_entry_info *dzt_ei;
+    struct dafs_zone_entry *dafs_ze;
+    struct zone_ptr *zone_p;
+    struct dafs_dentry *dafs_de;
+    char *phname = NULL;
+    unsigned long phlen;
+    unsigned short delen;
+    unsigned short links_count;
+    unsigned long bitpos = 0, cur_pos = 0;
+    int ret = 0;
+    timing_t add_dentry_time;
+
+    
+	nova_dbg_verbose("%s: dir %lu new inode %llu\n",
+				__func__, dir->i_ino, ino);
+	nova_dbg_verbose("%s: %s %d\n", __func__, name, namelen);
+
+	NOVA_START_TIMING(add_dentry_t, add_dentry_time);
+	if (namelen == 0)
+		return -EINVAL;
+    
+    phname = get_dentry_path(dentry);
+    dzt_ei = find_dzt(sb, &phname);
+    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    make_zone_ptr(zone_p, dafs_ze);
+    while(bitpos<zone_p->zone_max){
+        if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
+            bitpos+=2;
+            cur_pos++;
+        }else{
+            break;
+        }
+    }
+
+    phlen = strlen(phname);
+    pidir = nova_get_inode(sb, dir);
+    dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
+    delen = DAFS_DIR_LEN(namelen + phlen); //not decided 
+
+    /*get dentry on nvm*/
+    dafs_de = dafs_ze->dentry[cur_pos];
+    memset(dafs_de, 0, sizeof(dafs_de));
+    
+    dafs_de->entry_type = DAFS_DIR_ENTRY;
+    dafs_de->name_len = dentry->d_name.len;
+    dafs_de->file_type = ROOT_DIRECTORY;       //file_type是啥？ not decided
+
+    links_count = cpu_to_le16(dir->i_nlink);    
+	if (links_count == 0 && inc_link == -1)
+		links_count = 0;
+	else
+		links_count += inc_link;
+	dafs_de->links_count = cpu_to_le16(links_count);
+
+    dafs_de->de_len = cpu_to_le16(delen);  
+    dafs_de->mtime = cpu_to_le32(dir->i_mtime.tv_sec);
+    /*not root at first*/
+    dafs_de->vroot = 1;
+    //dafs_de->path_len =
+    dafs_de->ino = cpu_to_le64(ino);
+    //需要printk
+    dafs_de->par_ino = cpu_to_le64(dentry->d_parent->d_inode->ino);
+    
+    nova_dbg_verbose("dir ino 0x%llu is subfile of parent ino 0x%llu ", dafs_de->ino, dafs_de->par_ino);
+    
+    dafs_de->size = cpu_to_le64(dir->i_size);
+    dafs_de->zone_no = cpu_to_le64(dz_no);
+    dafs_de->prio = LEVEL_0;
+    dafs_de->d_f = 0;
+    dafs_de->sub_s = 0;
+    dafs_de->f_s = 0;
+    dafs_de->sub_num = 0;
+    dafs_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
+    /*不存储名字字符在初始化的时候*/
+    dafs_de->name[dentry->d_name.len] = '\0';
+    dafs_de->ful_name->f_namelen = cpu_to_le64(phlen);
+    /*那路径名称呢*/
+    dafs_de->ful_name->f_name = phname;
+    /*not decided是不是每次写到nvm都需要这个接口*/ 
+    nova_flush_buffer(dafs_de, de_len, 0);
+    
+    /*make valid*/
+    bitpos++;
+    test_and_set_bit_le(bitpos, zone_p->statemap);
+    
+    dir->i_blocks = pidir->i_blocks;
+
+    /*set pos in hash table for each zone*/
+    ret = set_pos_htable(phname ,phlen);
+
+    NOVA_END_TIMING(add_dentry_t, add_entry_time);
+    return ret;
+}
+
+int add_rename_dir(struct dentry *dentry, struct dafs_dentry *re_de)
+{
+    struct dafs_dentry *old_de, *new_de;
+    struct dzt_entry_info *dzt_ei;
+    struct dafs_zone_entry *ze;
+    struct zone_ptr *z_p;
+    unsigned long sub_num;
+    char *phname=NULL;
+    unsigned long bitpos, cur_pos;
+    int i;
+
+    sub_num = le64_to_cpu(re_de->sub_num);
+
+    phname = get_dentry_path(dentry);
+    dzt_ei = find_dzt(sb, &phname);
+    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    make_zone_ptr(z_p, ze);
+
+    while(bitpos<zone_p->zone_max){
+        if(test_bit_le(bitpos, z_p->statemap)||test_bit_le(bitpos+1, z_p->statemap)){
+            bitpos+=2;
+            cur_pos++;
+        }else{
+            break;
+        }
+    }
+
+    /*fist add directory dentry*/
+    
+
+    for(i=0; i<sub_num, i++){
+        old_de =  
+    }
+}
+
+/*rename_s 是父文件夹是否变化的标志
+ * 0不变化父文件夹
+ * ch_link inc or dec links*/
+int __rename_dir_direntry(struct dentry *old_dentry, struct dentry *new_dentry,\ 
+        int ch_link, int rename_s)
+{
+    struct super_block *sb = old_dentry->d_sb;
+    struct dafs_dentry *old_de, *new_de;
+    struct dafs_zone_entry *ze;
+    struct zone_ptr *z_p;
+    struct inode *new_inode = new_dentry->d_inode;
+    struct inode *old_inode = old_dentry->d_inode;
+    u64 dz_no;
+    int err = -ENOENT;
+
+    if(rename_s == 0){
+        old_de = dafs_find_direntry(sb, old_dentry);
+        dz_no = le64_to_cpu(old_de->zone_no);
+        if(old_de->file_type == ROOT_DIRECTORY){
+            /*if new_dentry already exist, then delete it*/
+            if(new_inode){
+               err = dafs_remove_dentry(new_dentry);
+               if(err)
+                   return err;
+            }
+
+            err = add_rename_zone_dir(new_dentry, old_inode->i_ino, ch_link, dz_no);
+            /*防止zone被删除*/
+            old_de->file_type = NORMAL_FILE;
+            err = dafs_remove_dentry(old_dentry);
+        } else {
+                
+        }
+
+}
 
 
 

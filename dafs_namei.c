@@ -442,7 +442,7 @@ out_err:
 static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 {
     struct inode *inode = dentry->d_inode;
-    struct nova_dentry *de;
+    struct dafs_dentry *de;
     struct super_block *sb;
     struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
     u64 pidir_tail = 0, pi_tail = 0;
@@ -606,7 +606,7 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
         goto out;
 
     if(S_ISDIR(old_inode->i_mode) && old_dir != new_dir){
-         
+        __rename_dir_direntry(old_dentry, new_dentry, old_inode, new_inode, 0); 
     }
 
     if(new_inode){
@@ -620,6 +620,8 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
     err = dafs_add_dentry(new_dentry, old_inode->i_ino, inc_link);
 
 }
+
+
 
 const struct inode_operations dafs_dir_inode_operations = {
     .create     = dafs_create,
