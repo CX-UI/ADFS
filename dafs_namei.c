@@ -588,37 +588,34 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
         }
     }
 
+    /*change log entry not decided*/
+	
+
     if(S_ISDIR(old_inode->i_mode)){
-        dec_link = -1;
-        if(!new_inode)
-            inc_link = 1;
+
+        if(new_inode){
+            /*first remove the old entry in the new directory
+            * 新节点最多就是个空文件夹*/
+            err = dafs_remove_dentry(new_dentry);
+            if (err)
+                goto out;
+        }
+        err = __rename_dir_direntry(old_dentry, new_dentry); 
+    } else {
+        
+        if(new_inode){
+            /*first remove the old entry in the new directory*/
+            err = dafs_remove_dentry(new_dentry);
+            if (err)
+                goto out;
+        }
+
+        err =__rename_file_dentry(old_dentry, new_dentry);
     }
-
-    /*change inode link entry*/
-	new_pidir = nova_get_inode(sb, new_dir);
-	old_pidir = nova_get_inode(sb, old_dir);
-
-	old_pi = nova_get_inode(sb, old_inode);
-	old_inode->i_ctime = CURRENT_TIME;
-	err = dafs_append_link_change_entry(sb, old_pi,
-						old_inode, 0, &old_pi_tail);
-    if(err)
-        goto out;
-
-    if(S_ISDIR(old_inode->i_mode) && old_dir != new_dir){
-        __rename_dir_direntry(old_dentry, new_dentry, old_inode, new_inode, 0); 
-    }
-
-    if(new_inode){
-        /*first remove the old entry in the new directory*/
-        err = dafs_remove_dentry(new_dentry);
-        if (err)
-            goto out;
-    }
-
-    /*link into the new directory*/
-    err = dafs_add_dentry(new_dentry, old_inode->i_ino, inc_link);
-
+out:
+	nova_err(sb, "%s return %d\n", __func__, err);
+	NOVA_END_TIMING(rename_t, rename_time);
+	return err;
 }
 
 
