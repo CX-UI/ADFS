@@ -971,7 +971,7 @@ static struct dentry *nova_fh_to_parent(struct super_block *sb,
 static const struct export_operations nova_export_ops = {
 	.fh_to_dentry	= nova_fh_to_dentry,
 	.fh_to_parent	= nova_fh_to_parent,
-	.get_parent	= nova_get_parent,
+	.get_parent	= dafs_get_parent,
 };
 
 static int __init init_nova_fs(void)

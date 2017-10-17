@@ -50,6 +50,7 @@ struct nova_dentry *nova_find_dentry(struct super_block *sb,
 	unsigned long hash;
 
 	hash = BKDRHash(name, name_len);
+    //找到inode作为子节点所在的树
 	direntry = radix_tree_lookup(&sih->tree, hash);
 
 	return direntry;

@@ -10,6 +10,42 @@
 #include "nova.h"
 #include "zone.h"
 
+static void dafs_lite_transaction_for_new_inode(struct super_block *sb,
+	struct nova_inode *pi, struct nova_inode *pidir, u64 pidir_tail)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+	struct nova_lite_journal_entry entry;
+	int cpu;
+	u64 journal_tail;
+	timing_t trans_time;
+
+	NOVA_START_TIMING(create_trans_t, trans_time);
+
+	/* Commit a lite transaction */
+	memset(&entry, 0, sizeof(struct nova_lite_journal_entry));
+	entry.addrs[0] = (u64)nova_get_addr_off(sbi, &pidir->log_tail);
+	entry.addrs[0] |= (u64)8 << 56;
+	entry.values[0] = pidir->log_tail;
+
+	entry.addrs[1] = (u64)nova_get_addr_off(sbi, &pi->valid);
+	entry.addrs[1] |= (u64)1 << 56;
+	entry.values[1] = pi->valid;
+
+	cpu = smp_processor_id();
+	spin_lock(&sbi->journal_locks[cpu]);
+	journal_tail = nova_create_lite_transaction(sb, &entry, NULL, 1, cpu);
+
+	pidir->log_tail = pidir_tail;
+	nova_flush_buffer(&pidir->log_tail, CACHELINE_SIZE, 0);
+	pi->valid = 1;
+	nova_flush_buffer(&pi->valid, CACHELINE_SIZE, 0);
+	PERSISTENT_BARRIER();
+
+	nova_commit_lite_transaction(sb, journal_tail, cpu);
+	spin_unlock(&sbi->journal_locks[cpu]);
+	NOVA_END_TIMING(create_trans_t, trans_time);
+}
+
 static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, bool excl)
 {
     struct inode *inode = NULL;
@@ -50,7 +86,7 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
     pi = nova_get_block(sb ,pi_addr);
     //not decided 需要重新考量关于tail的所有的操作
     //这个是目录于新建的文件之间的关系，not decided
-	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 	NOVA_END_TIMING(create_t, create_time);
 	return err;
 
@@ -288,7 +324,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
 	if (retval)
 		goto out;
 
-	nova_lite_transaction_for_time_and_link(sb, pi, pidir,
+	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
 					pi_tail, pidir_tail, invalidate);
 
 	NOVA_END_TIMING(unlink_t, unlink_time);
@@ -364,7 +400,7 @@ static int dafs_symlink(struct inode *dir, struct dentry *dentry, const char *sy
 	d_instantiate(dentry, inode);
 	unlock_new_inode(inode);
 
-	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 out:
 	NOVA_END_TIMING(symlink_t, symlink_time);
 	return err;
@@ -427,7 +463,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	d_instantiate(dentry, inode);
 	unlock_new_inode(inode);
 
-	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
 	return err;
@@ -489,7 +525,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	if (err)
 		goto end_rmdir;
 
-	nova_lite_transaction_for_time_and_link(sb, pi, pidir,
+	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
 						pi_tail, pidir_tail, 1);
 
 	NOVA_END_TIMING(rmdir_t, rmdir_time);
@@ -537,7 +573,7 @@ static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,\
 	unlock_new_inode(inode);
 
 	pi = nova_get_block(sb, pi_addr);
-	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 	NOVA_END_TIMING(mknod_t, mknod_time);
 	return err;
 out_err:
@@ -618,7 +654,25 @@ out:
 	return err;
 }
 
+struct dentry *dafs_get_parent(struct dentry *child)
+{
+    struct inode *inode;
+    struct super_block *sb = child->d_inode->i_sb;
+    struct dafs_dentry *de;
+    ino_t ino;
+    
+    de = dafs_find_direntry(sb, child);
+    if(!de)
+        return ERR_PTR(-ENOENT);
+    ino = le64_to_cpu(de->ino);
 
+    if(ino)
+        inode = nova_iget(child->d_inode->i_sb, ino);
+    else 
+        return ERR_PTR(-ENOENT);
+
+    return d_obtain_alias(inode); 
+}
 
 const struct inode_operations dafs_dir_inode_operations = {
     .create     = dafs_create,
@@ -630,11 +684,11 @@ const struct inode_operations dafs_dir_inode_operations = {
     .rmdir      = dafs_rmdir,
     .mknod      = dafs_mknod,
     .rename     = dafs_rename,
-    .setattr    = dafs_notify_change,
+    .setattr    = nova_notify_change,
     .get_acl    = NULL,
 };
 
 const struct inode_operations dafs_special_inode_operations = {
-    .setattr    = dafs_notify_change,
+    .setattr    = nova_notify_change,
     .get_acl    = NULL,
 };

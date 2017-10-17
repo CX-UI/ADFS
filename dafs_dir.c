@@ -977,7 +977,6 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
 
 
 
-
 const struct file_operations dafs_dir_operations = {
     .llseek      = generic_file_llseek,
     .read        = generic_read_dir,
