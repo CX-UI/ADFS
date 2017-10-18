@@ -23,22 +23,6 @@
 #define IF2DT(sif) (((sif) & S_IFMT) >> 12)
 
 
-/*
-* 2017/09/12
-* find correct directory entries
-* using hash*/
-struct dafs_dentry *dafs_find_dir_entry(struct super_block *sb)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-}
-
-/*
-* 2017/09/12
-* find the correct zone in B-tree*/
-struct dafs_dir_zone *dafs_find_dir_zone(struct super_block *sb)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-}
 
 struct nova_dentry *nova_find_dentry(struct super_block *sb,
 	struct nova_inode *pi, struct inode *inode, const char *name,

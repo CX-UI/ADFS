@@ -961,19 +961,113 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     
 }
 
+static int dafs_readdir(struct file *file, struct dir_context *ctx)
+{
+    struct inode *inode = file_inode(file);
+    struct super_block *sb = inode->i_sb;
+    struct nova_inode *pidir;
+    struct nova_inode_info *si = NOVA_I(inode);
+    struct nova_inode_info_header *sih = &si->header;
+    struct nova_inode *child_pi;
+    struct nova_inode *prev_child_pi = NULL;
+    struct dentry *dentry = file->f_path.dentry; 
+    struct dafs_dentry *de = NULL;
+    struct dafs_dentry *f_de = NULL;
+    struct dzt_entry_info *ei;
+    struct dafs_zone_entry *ze;
+    unsigned short de_len;
+    u64 pi_addr;
+    unsigned long pos = 0, sub_num, n = 0;
+    ino_t ino;
+    void *addr;
+    u64 curr_p;
+    u8 type;
+    int ret;
+    char *phname;
+    timing_t readdir_time;
 
+    NOVA_START_TIMING(readdir_t, readdir_time);
+    pidir = nova_get_inode(sb ,inode);
+    
+	nova_dbgv("%s: ino %llu, size %llu, pos 0x%llx\n",
+			__func__, (u64)inode->i_ino,
+			pidir->i_size, ctx->pos);
 
+    phname = get_dentry_path(dentry);
+    ei = find_dzt(sb, &phname);
 
+    if(!ei){
+        nova_err("ei with dentry %lu not exist!\n", dentry->d_inode->i_ino);
+        BUG();
+        return EINVAL;
+    }
 
+    ze = cpu_to_le64(n_ei->dz_addr);
+	f_de = dafs_find_direntry(sb, dentry);
+    
+    sub_num = le64_to_cpu(f_de->sub_num);
 
+    pos = ctx->pos;
 
+    if(pos == READDIR_END){
+        goto out;
+    } 
 
+    while(n < sub_num){
+        pos = f_de->sub_pos[n];
+        if(!pos){
+            ctx->pos = READDIR_END;
+            goto out;
+        }
 
+        de = ze->dentry[pos];
+        type = nova_get_entry_type((void *)de);
+        if(type != DAFS_DIR_ENTRY){
+            nova_dbg ("unknown type\n");
+            BUG();
+            return -EINVAL;
+        }
 
+		nova_dbgv("pos %lu, type %d, ino %llu, "
+			"name %s, namelen %u, rec len %u\n", pos,
+			de->entry_type, le64_to_cpu(de->ino),
+			de->name, de->name_len,
+			le16_to_cpu(de->de_len));
 
+        if(de->ino>0){
+            ino = __le64_to_cpu(de->ino);
+            ret = nova_get_inode_address(sb, ino, &pi_addr, 0);
+            if(ret){
+				nova_dbg("%s: get child inode %lu address "
+					"failed %d\n", __func__, ino, ret);
+				ctx->pos = READDIR_END;
+				return ret;
+            }
 
+            child_pi = nova_get_block(sb, pi_addr);
+			nova_dbgv("ctx: ino %llu, name %s, "
+				"name_len %u, de_len %u\n",
+				(u64)ino, de->name, de->name_len,
+				de->de_len);
+			if (!dir_emit(ctx, de->name,
+				de->name_len, ino,
+				IF2DT(le16_to_cpu(_child_pi->i_mode)))) {
+				nova_dbgv("Here: pos %llu\n", ctx->pos);
+				return 0;
+			}
 
+        }
+        ctx->pos = pos;
+        n++;
 
+    }
+    
+out:
+	NOVA_END_TIMING(readdir_t, readdir_time);
+	nova_dbgv("%s return\n", __func__);
+	return 0;
+
+}
 
 
 
@@ -982,8 +1076,8 @@ const struct file_operations dafs_dir_operations = {
     .read        = generic_read_dir,
     .iterate     = dafs_readdir,
     .fsync       = noop_fsync,
-    .unlocked_ioctl = dafs_ioctl,
+    .unlocked_ioctl = nova_ioctl,
 #ifdef CONFIG_COMPAT
-    .compat_ioctl   = dafs_compat_ioctl,
+    .compat_ioctl   = nova_compat_ioctl,
 #endif
 };
