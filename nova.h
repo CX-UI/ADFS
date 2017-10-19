@@ -342,6 +342,7 @@ struct dzt_entry_info{
     //uint64_t dz_no;
     uint64_t dz_log_head;
     uint64_t dz_addr;
+    uint64_t ht_head;
     //uint64_t dz_size;
     uint64_t pdz_addr;
     uint64_t rden_pos;
@@ -404,15 +405,19 @@ struct free_list {
 	unsigned long	alloc_log_count;
 	unsigned long	alloc_data_count;
     unsigned long   alloc_zone_count;
+    unsigned long   alloc_htable_count;
 	unsigned long	free_log_count;
 	unsigned long	free_data_count;
     unsigned long   free_zone_count;
+    unsigned long   free_htable_count;
 	unsigned long	alloc_log_pages;
 	unsigned long	alloc_data_pages;
     unsigned long   alloc_zone_pages;
+    unsigned long   alloc_htable_pages;
 	unsigned long	freed_log_pages;
 	unsigned long	freed_data_pages;
     unsigned long   freed_zone_pages;
+    unsigned long   freed_htable_pages;
 
 	u64		padding[8];	/* Cache line break */
 };

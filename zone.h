@@ -28,6 +28,7 @@ struct dafs_zone_entry{
     //__le64 zone_bitmap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
     //__le64 log_head;         /*logical address*/
     __le64 dz_no;           /*directory zone NO*/
+    //__le64 hash_head;
     __le64 dz_sf;           /* sum of frequency*/
     //__le64 bm_head;         /*zone bit map address*/
     //__le64 dz_root_hash;         /*root directory of this zone*/
@@ -42,7 +43,7 @@ struct dafs_zone_entry{
 struct zone_ptr {
     const void *statemap; /*pointer to 2-bit map*/
     unsigned long zone_max;
-    struct dafs_zone_entry *z_entry;
+    struct dafs_dentry *z_entry;
 };
 
 
@@ -104,6 +105,7 @@ struct dafs_dzt_block{
      //__le64 dz_no;            /* zone number */
      //__le64 dz_log_head        /* logical start addr*/
      __le64 dz_addr;          /* zone addr */
+     __le64 ht_head;       /*record hash table head*/
      //__le64 dz_size;
      __le64 pdz_addr;      /* parent zone address*/
      __le64 rden_pos;      /* root dentry */
@@ -113,3 +115,21 @@ struct dafs_dzt_block{
      //char path_name[DAFS_PATH_LEN];
  }__attribute(__packed__);
 
+struct hash_table{
+    __u8 hash_map[NR_HASH_ENTRIES]; /*hash table bit map*/
+    //__u8 hash_key;            /* not necessary*/
+    __le64 hash_tail;        /* hash tail for next hash table address max is four*/
+    struct hash_entry hash_entry[NR_HASH_ENTRIES]; /*dentry name-pos pairs*/
+};
+
+struct ht_ptr{
+    const void *hash_map;
+    unsigned long  hash_max;
+    struct hash_entry *he;
+}
+
+struct hash_entry{
+    __le64 hd_name;         /* hash dafs_dentry name*/
+    __le64 name_len;
+    __le64 hd_pos;          /* dentry pos in zone*/
+};

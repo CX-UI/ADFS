@@ -183,7 +183,7 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
     unsigned long bp;
     int ret = 0;
 
-    allocated = nova_new_zone_blocks(sb, dzt_e, &blocknr, 1, 1);
+    allocated = dafs_new_zone_blocks(sb, dzt_e, &blocknr, 1, 1);
     nova_dbg_verbose("%s: allocate zone @ 0x%lx\n", __func__,
 							blocknr);
     if(allocated != 1 || blocknr == 0)
@@ -315,6 +315,7 @@ int dafs_init_dzt(struct super_block *sb)
         dzt_ei->dz_addr = le64_to_cpu(dzt_entry->dz_addr);
         dzt_ei->hash_name = le64_to_cpu(dzt_entry->hash_name);
 
+        /*not decided 不设置有效位么*/
         make_dzt_tree(dzt_ei);
     }
 
@@ -536,7 +537,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     int i;
 
 
-    allocated = nova_new_zone_blocks(sb, dzt_e, &blocknr, 1, 1);
+    allocated = dafs_new_zone_blocks(sb, dzt_e, &blocknr, 1, 1);
     
     if(allocated != 1 || blocknr == 0)
         return -ENOMEM;

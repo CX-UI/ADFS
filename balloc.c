@@ -565,6 +565,9 @@ retry:
     } else if (atype == ZONE){
         free_list->alloc_zone_count++;
         free_list->alloc_zone_pages += ret_blocks;
+    } else if (atype == HASH_TABLE){
+        free_list->alloc_htable_count++;
+        free_list->alloc_htable_page += ret_blocks;
     }
 
 	spin_unlock(&free_list->s_lock);
@@ -629,6 +632,7 @@ inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *d
 			*blocknr + allocated - 1);
 	return allocated;
 }
+
 
 unsigned long nova_count_free_blocks(struct super_block *sb)
 {
