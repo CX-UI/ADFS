@@ -81,12 +81,6 @@ END:
     return dzt_ei;
 }
 
-/* set dentry pos in hash table*/
-int set_pos_htable()
-{
-    int ret;
-    return ret;
-}
 
 /*dafs add dentry in the zone
 * and initialize direntry without name*/
@@ -240,7 +234,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
     unsigned long phlen;
     unsigned long dzt_eno, dzt_rno;
-    unsigned long bitpos, par_id, par_pos, sub_p, sub_id, i;
+    unsigned long bitpos, par_id, par_pos, sub_p, sub_id, i, j, k;
     char *tem;
     u64 hashname, d_hn, d_hlen;
     int ret;
@@ -276,8 +270,18 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
             if(test_bit_le(par_pos, z_p->statemap)||test_bit_le(par_pos+1, z_p->statemap)){
                 pde = dafs_ze->dentry[par_id];
                 if(dafs_de->par_ino == pde->ino){
-                    /*not decided*/
-                    change_sub_pos();
+                    /*change p_dentry pos*/
+                    for(j=0; j<pde->sub_num, j++){
+                        if(pde->sub_pos[j] = de_pos){
+                            k=j+1;
+                            while(k<sub_num) {
+                                pde->sub_pos[j] = pde->sub_pos[k];
+                                k++;
+                                j++;
+                            }
+                            pde->sub_num[j] = 0;
+                        }
+                    } 
                     break;
                 }
                 par_pos += 2;
@@ -312,8 +316,18 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
             if(test_bit_le(par_pos, z_p->statemap)||test_bit_le(par_pos+1, z_p->statemap)){
                 pde = dafs_ze->dentry[par_id];
                 if(dafs_de->par_ino == pde->ino){
-                    /*not decided*/
-                    change_sub_pos();
+                    /*change parent pos*/
+                    for(j=0; j<pde->sub_num, j++){
+                        if(pde->sub_pos[j] = de_pos){
+                            k=j+1;
+                            while(k<sub_num) {
+                                pde->sub_pos[j] = pde->sub_pos[k];
+                                k++;
+                                j++;
+                            }
+                            pde->sub_num[j] = 0;
+                        }
+                    } 
                     break;
                 }
                 par_pos += 2;
@@ -342,8 +356,17 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
             if(test_bit_le(par_pos, z_p->statemap)||test_bit_le(par_pos+1, z_p->statemap)){
                 pde = dafs_ze->dentry[par_id];
                 if(dafs_de->par_ino == pde->ino){
-                    /*not decided*/
-                    change_sub_pos();
+                    /*change parent pos*/
+                    for(j=0; j<pde->sub_num, j++){
+                        if(pde->sub_pos[j] = de_pos){
+                            k=j+1;
+                            while(k<sub_num) {
+                                pde->sub_pos[j] = pde->sub_pos[k];
+                                k++;
+                                j++;
+                            }
+                            pde->sub_num[j] = 0;
+                        }
                     break;
                 }
                 par_pos += 2;
