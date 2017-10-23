@@ -15,6 +15,61 @@
 #define DT2IF(dt) (((dt) << 12) & S_IFMT)
 #define IF2DT(sif) (((sif) & S_IFMT) >> 12)
 
+/*record dir operation in logs*/
+void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *des, int type)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dafs_dzt_block *dzt_blk;
+    struct dzt_ptr *dzt_p;
+    struct direntry_log *dlog;
+    struct dafs_dentry *src_de, *des_de;
+    struct dzt_entry_info *dzt_ei;
+    u64 src_dz, des_dz, src_hn, des_hn;
+    unsigned long bitpos = 0;
+    char *name, *phname, *des_name;
+
+    src_de = dafs_find_direntry(sb, src);
+    name = src_de->ful_name->f_name;
+    src_hn = BKDRHash(name, strlen(name));
+    src_dz = le64_to_cpu(src_de->zone_no);
+
+    if(!des) {
+        src_hn = 0;
+        src_dz = 0;
+    }
+    else {
+        phname = get_dentry_path(des);
+        des_name = phname;
+        dzt_ei = find_dzt(sb, phname);
+        des_dz = dzt_ei->dzt_eno;
+        des_hn = BKDRHash(des_name, strlen(des_name));
+
+    }
+
+    dzt_blk = dafs_get_dzt_block(sbi);
+    make_dzt_ptr(sbi, dzt_p);
+    test_and_set_bit_le(bitpos, dzt->bitmap);
+
+    /*not decided*/
+    dlog->type_d =  type;
+    dlog->src_dz_no = cpu_to_le64(src_dz);
+    dlog->src_hashname = cpu_to_le64(src_hn);
+    dlog->des_dz_no = cpu_to_le64(des_dz);
+    dlog->des_hashname = cpu_to_le64(des_hn);
+
+}
+
+/*delete dir operation log*/
+void delete_dir_log(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_ptr *dzt_p;
+    unsigned long bitpos = 0;
+
+    make_zone_ptr(sbi, dzt_p);
+    test_and_clear_bit_le(bitpos, dzt_p->bitmap);
+}
+
 /*get dentry path except filename*/
 static inline char* get_dentry_path(struct dentry *dentry)
 {
@@ -279,9 +334,10 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
                                 k++;
                                 j++;
                             }
-                            pde->sub_num[j] = 0;
+                            pde->sub_pos[j] = 0;
                         }
-                    } 
+                    }
+                    pde->sub_num--;
                     break;
                 }
                 par_pos += 2;
@@ -325,9 +381,10 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
                                 k++;
                                 j++;
                             }
-                            pde->sub_num[j] = 0;
+                            pde->sub_pos[j] = 0;
                         }
-                    } 
+                    }
+                    pde->sub_num --;
                     break;
                 }
                 par_pos += 2;
@@ -367,6 +424,8 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
                             }
                             pde->sub_num[j] = 0;
                         }
+                    }
+                    pde->sub_num--;
                     break;
                 }
                 par_pos += 2;
@@ -401,7 +460,7 @@ int dafs_remove_dentry(struct dentry *dentry)
     unsigned long dzt_eno;
     unsigned long de_pos;
     unsigned short links_count;
-    u64 ph_hash;
+    u64 ph_hash, de_addr;
     char *phname = NULL;
     int ret;
     //unsigned short loglen;
@@ -432,6 +491,10 @@ int dafs_remove_dentry(struct dentry *dentry)
         return -EINVAL;
 
     dafs_de = dafs_ze->dentry[de_pos];
+
+    /*
+    de_addr = le64_to_cpu(&dafs_de);
+    record_dir_log(sb, de_addr, 0, DIR_RMDIR);*/
 
     ret = __remove_direntry(sb, dafs_de, dafs_ze, dzt_ei, de_pos);
 
@@ -950,7 +1013,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     struct dafs_zone_entry *n_ze, *o_ze;
     struct dzt_entry_info *n_ei;
     struct zone_ptr *z_p;
-    char *n_phname, *name=new_dentry->d_name.name;
+    char *n_phname, *name=new_dentry->d_name.name, phname;
     unsigned long bitpos=0, cur_pos=0;
     int namelen = new_dentry->d_name.len;
     unsigned short de_len;
@@ -959,8 +1022,9 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
 
     o_de = dafs_find_direntry(sb, o_de);
 
-    n_phname = get_dentry_path(new_dentry);
-    n_ei = find_dzt(sb, &n_phname);
+    phname = get_dentry_path(new_dentry);
+    n_phname = phname;
+    n_ei = find_dzt(sb, &phname);
     n_ze = cpu_to_le64(n_ei->dz_addr);
     phlen = strlen(n_phname);
     make_zone_ptr(z_p, n_ze);
@@ -973,7 +1037,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
         }
     }
 
-    phlen = strlen(n_phname);
+    //phlen = strlen(n_phname);
     pidir = nova_get_inode(sb, dir);
     dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
     de_len = DAFS_DIR_LEN(namelen + phlen); //not decided 

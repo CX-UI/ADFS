@@ -479,11 +479,12 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 {
     struct inode *inode = dentry->d_inode;
     struct dafs_dentry *de;
-    struct super_block *sb;
+    struct super_block *sb = dir->i_sb;
     struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
     u64 pidir_tail = 0, pi_tail = 0;
     struct nova_inode_info *si = NOVA_I(inode);
     struct nova_inode_info_header *sih = &si->header;
+    struct dafs_dzt_block *dzt_blk;
     int err = -ENOTEMPTY;
     timing_t rmdir_time;
 
@@ -508,7 +509,9 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	if (inode->i_nlink != 2)
 		nova_dbg("empty directory %lu has nlink!=2 (%d), dir %lu",
 				inode->i_ino, inode->i_nlink, dir->i_ino);
-    
+
+    /*add log to dzt for suddenly shut down*/
+    record_dir_log(sb, dentry, NULL, DIR_RMDIR);
     err = dafs_remove_dentry(dentry);
 
 	if (err)
@@ -520,7 +523,11 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 
 	if (dir->i_nlink)
 		drop_nlink(dir);
-	
+
+    /*finish log make it invalid*/
+    delete_dir_log(sb);
+
+    /* not decided*/
     err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
 	if (err)
 		goto end_rmdir;
@@ -627,6 +634,8 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
     /*change log entry not decided*/
 	
 
+    /*record rename log*/
+    record_dir_log(sb, old_dentry, new_dentry, DIR_RENAME);
     if(S_ISDIR(old_inode->i_mode)){
 
         if(new_inode){
@@ -648,6 +657,9 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
 
         err =__rename_file_dentry(old_dentry, new_dentry);
     }
+    
+    /*make log invalid*/
+    delete_dir_log(sb);
 out:
 	nova_err(sb, "%s return %d\n", __func__, err);
 	NOVA_END_TIMING(rename_t, rename_time);

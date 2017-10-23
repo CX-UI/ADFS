@@ -15,6 +15,9 @@
 #include "nova_def.h"
 #include "nova.h"
 
+#define DIR_RENAME 0
+#define DIR_RMDIR  1
+#define DIR_CREATE 2
 
 /*
  * struct dir_zone
@@ -81,6 +84,17 @@ struct fulname{
     __le64 f_namelen;
     char f_name[NOVA_NAME_LEN+1];
 }
+
+
+/*dir behavior log*/
+struct direntry_log {
+    u8 type_d;     /*record dir behavior type*/
+    __le64 src_dz_no;  /* record src dz number*/
+    __le64 src_hashname;  /* record src dentry hashname*/
+    __le64 des_dz_no;
+    __le64 des_hashname;
+};
+
 /*
  * 2017/09/13
  * zone entries in directory zone table block
@@ -88,7 +102,8 @@ struct fulname{
 struct dafs_dzt_block{
     __u8 dzt_bitmap[SIZE_DZT_BITMAP];               /*not decided the size of bitmap*/
     __u8 reserved[SIZE_OF_RESERVED];
-    __le64 dzt_tail_pos;
+    //__le64 dzt_tail_pos;
+    struct direntry_log dlog;
     struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
 }__attribute((__packed__));
 
