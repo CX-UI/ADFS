@@ -361,13 +361,19 @@ static int nova_free_blocks(struct super_block *sb, unsigned long blocknr,
 block_found:
 	free_list->num_free_blocks += num_blocks;
 
-	if (log_page) {
+	if (log_page == 1) {
 		free_list->free_log_count++;
 		free_list->freed_log_pages += num_blocks;
-	} else {
+	} else if(log_page == 0){
 		free_list->free_data_count++;
 		free_list->freed_data_pages += num_blocks;
-	}
+    } else if (log_page == 2) {
+        free_list->free_zone_count++;
+        free_list->freed_zone_pages += num_blocks;
+    } else if (log_page == 3) {
+        free_list->free_htable_count++;
+        free_list->freed_htable_pages += num_blocks;
+    }
 
 out:
 	spin_unlock(&free_list->s_lock);
@@ -421,6 +427,59 @@ int nova_free_log_blocks(struct super_block *sb, struct nova_inode *pi,
 	NOVA_END_TIMING(free_log_t, free_time);
 
 	return ret;
+}
+
+/*free zone not decided*/
+int dafs_free_zone_blocks(struct super_block *sb, struct dzt_entry_info *dzt_ei,\
+        unsigned long blocknr, int num)
+{
+    int ret;
+    timing_t free_time;
+
+	nova_dbgv("zone %llu: free %d log block from %lu to %lu\n",
+			dzt_ei->dzt_eno, num, blocknr, blocknr + num - 1);
+
+	if (blocknr == 0) {
+		nova_dbg("%s: ERROR: %lu, %d\n", __func__, blocknr, num);
+		return -EINVAL;
+	}
+
+    NOVA_START_TIMING(free_log_t, free_time);
+    ret = nova_free_blocks(sb, blocknr, num, dzt_ei->zone_blk_type, 2);
+	
+	if (ret)
+		nova_err(sb, "Zone %llu: free %d log block from %lu to %lu "
+				"failed!\n", dzt_ei->dzt_eno, num, blocknr,
+				blocknr + num - 1);
+	NOVA_END_TIMING(free_log_t, free_time);
+    return ret;
+}
+
+/* free hash table blocks*/
+int dafs_free_htable_blocks(struct super_block *sb, unsigned short btype,\
+        unsigned long blocknr, int num)
+{
+    int ret;
+    timing_t free_time;
+
+	nova_dbgv("hash table : free %d log block from %lu to %lu\n",
+			 num, blocknr, blocknr + num - 1);
+
+	if (blocknr == 0) {
+		nova_dbg("%s: ERROR: %lu, %d\n", __func__, blocknr, num);
+		return -EINVAL;
+	}
+
+    NOVA_START_TIMING(free_log_t, free_time);
+    ret = nova_free_blocks(sb, blocknr, num, btype, 3);
+	
+	if (ret)
+		nova_err(sb, "Zone hash table: free %d log block from %lu to %lu "
+				"failed!\n",  num, blocknr,
+				blocknr + num - 1);
+	NOVA_END_TIMING(free_log_t, free_time);
+    return ret;
+    
 }
 
 static unsigned long nova_alloc_blocks_in_free_list(struct super_block *sb,
