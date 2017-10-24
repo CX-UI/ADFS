@@ -282,16 +282,18 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dentry *dafs_de, *pde, *sde;
-    //struct dzt_entry_info *dzt_ei;
+    /*ei need deleting*/
+    struct dzt_entry_info *ei;
     struct dafs_zone_entry *dafs_ze;
     struct zone_ptr *z_p;
     struct dzt_ptr *dzt_p;
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct hash_table *ht;
     unsigned long phlen;
     unsigned long dzt_eno, dzt_rno;
     unsigned long bitpos, par_id, par_pos, sub_p, sub_id, i, j, k;
     char *tem;
-    u64 hashname, d_hn, d_hlen;
+    u64 hashname, d_hn, d_hlen, tail, tem;
     int ret;
 
     strcat(tem, dafs_ze->root_path);
@@ -314,10 +316,23 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         strcat(tem, dafs_de->ful_name->f_name);
         hashname = BKDRHash(tem, strlen(tem));
 
-        /*delete dzt on dram and nvm*/
-        radix_tree_delete(&dzt_m->dzt_root, hashname);
+        /*delete dzt on dram and nvm
+         * ei free zone
+         * free hash table
+         * free zone
+         * free ei*/
+        ei = radix_tree_delete(&dzt_m->dzt_root, hashname);
+        tail = le64_to_cpu(ei->ht_head);
+        while(tail){
+            ht = (struct hash_table *)tail;
+            tem = le64_to_cpu(ht->hash_tail);
+            dafs_free_htable_blocks(sb, HTABLE_SIZE, tail>>PAGE_SHIFT, 1);
+            tail = tem;
+        }
         make_dzt_ptr(sbi, dzt_p);
         test_and_clear_bit_le(dzt_rno, dzt_p->bitmap);
+        dafs_free_zone_blocks(sb, ei, ei->dz_addr >> PAGE_SHIFT, 1);
+        kfree(ei);
 
         /*delete in par sub_pos*/
         par_pos = 0;

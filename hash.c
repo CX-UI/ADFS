@@ -18,7 +18,7 @@ int  get_hash_table(struct super_block *sb, u64 *h_addr)
 
     /*not decideds HTABLE_TYPE
      * HTABLE_TYPE 8 blks*/
-    allocated = nova_new_blocks(sb, &blocknr, 1, HTABLE_TYPE, 1, HASH_TABLE);
+    allocated = nova_new_blocks(sb, &blocknr, 1, HTABLE_SIZE, 1, HASH_TABLE);
 
     nova_dbg_verbose("%s: allocate zone @ 0x%lx\n", __func__,
 							blocknr);
@@ -26,8 +26,9 @@ int  get_hash_table(struct super_block *sb, u64 *h_addr)
         return -ENOMEM;
 
     block = nova_get_block_off(sb, blocknr, HTABLE_SIZE); 
-    bp = (unsigned long)nova_get_block(sb, block);
-    h_addr = bp;
+    //bp = (unsigned long)nova_get_block(sb, block);
+    /*偏移量*/
+    h_addr = block;
 
     PERSISTENT_BARRIER();
     return 0;
@@ -43,7 +44,7 @@ void make_ht_ptr(struct ht_ptr *ht_p, struct hash_table *ht)
 
 /* record dentry-pos pairs in hash table
  * ht_addr comes from dzt_ei*/
-int record_pos_htable(struct super_block *sb, u64 ht_addr, u64 hashname,\
+int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
         u64 namelen, u64 pos, int nr_table)
 {
     struct hash_table *ht;
@@ -54,9 +55,13 @@ int record_pos_htable(struct super_block *sb, u64 ht_addr, u64 hashname,\
     //int nr_table = 1;
     int key, i, offset;
     int buckets;
+    //unsigned long ht_addr;
 
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table *)nova_get_block(sb, block);  
     //ht_addr = dzt_ei->ht_head;
-    ht = (struct hash_table *)ht_addr;
+    //ht = (struct hash_table *)ht_addr;
     if(!ht)
         return -EINVAL;
     make_ht_ptr(ht_p, ht);
@@ -114,15 +119,17 @@ out:
  * &pos for position of dentry
  * nr_table for hash table level 
  * return 1 for found*/
-int lookup_in_hashtable(u64 ht_addr, u64 hashname, u64 namelen, int nr_table, int pos)
+int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, int pos)
 {
-    struct hash_table *ht = (struct hash_table *)ht_addr;
+    struct hash_table *ht;
     struct hash_entry *he;
     struct ht_ptr *ht_p;
     u64 h_pos, tail;
     int key, i, ret=0;
     u64 h_name, h_len;
 
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table *)nova_get_block(sb, block);  
     make_ht_ptr(ht_p, ht);
 
     switch(nr_table){
@@ -175,15 +182,17 @@ out:
 /*make invalid 
  * return 1 for invalid successfully
  * return 0 for fail invalid*/
-int make_invalid_htable(u64 ht_addr, u64 hashname, u64 namelen, int nr_table)
+int make_invalid_htable(u64 block, u64 hashname, u64 namelen, int nr_table)
 {
-    struct hash_table *ht = (struct hash_table *)ht_addr;
+    struct hash_table *ht;
     struct hash_entry *he;
     struct ht_ptr *ht_p;
     u64 h_pos, tail;
     int key, i, ret=0;
     u64 h_name, h_len;
 
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table *)nova_get_block(sb, block);  
     make_ht_ptr(ht_p, ht);
 
     switch(nr_table){

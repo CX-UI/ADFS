@@ -1391,6 +1391,7 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, str
     //struct zone_ptr *src_p, *des_p;
     struct dzt_ptr *dzt_p;
     unsigned long hash_name, ch_pos, or_pos;
+    u64 tail, tem;
 
     /*delete entry info*/
     hash_name = cur_rdei->hash_name;
@@ -1414,7 +1415,18 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, str
     /*reset statemap*/
     zone_set_statemap(sb, par_ze); 
 
-    /* kfree */
+    /* kfree redi
+     * free hash table
+     * free zone*/
+
+    tail = le64_to_cpu(cur_rdei->ht_head);
+    while(tail){
+        ht = (struct hash_table *)tail;
+        tem = le64_to_cpu(ht->hash_tail);
+        dafs_free_htable_blocks(sb, HTABLE_SIZE, tail>>PAGE_SHIFT, 1);
+        tail = tem;
+    }
+    dafs_free_zone_blocks(sb, cur_rdei, cur_rdei->dz_addr >> PAGE_SHIFT, 1);
     kfree(cur_rdei);
 
 }
