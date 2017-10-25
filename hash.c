@@ -35,11 +35,13 @@ int  get_hash_table(struct super_block *sb, u64 *h_addr)
 }
 
 /*make ptr of hash table */
-void make_ht_ptr(struct ht_ptr *ht_p, struct hash_table *ht)
+void make_ht_ptr(struct ht_ptr **ht_p, struct hash_table *ht)
 {
-    ht_p->hash_map = ht->hash_map;
-    ht_p->hash_max = NR_HASH_TABLE;
-    ht_p->he = ht->hash_entry;
+    struct ht_ptr *p;
+    p->hash_map = ht->hash_map;
+    p->hash_max = NR_HASH_TABLE;
+    p->he = ht->hash_entry;
+    *ht_p = p;
 }
 
 /* record dentry-pos pairs in hash table
@@ -64,7 +66,7 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
     //ht = (struct hash_table *)ht_addr;
     if(!ht)
         return -EINVAL;
-    make_ht_ptr(ht_p, ht);
+    make_ht_ptr(&ht_p, ht);
 
     switch(nr_table){
         case 1:
@@ -130,7 +132,7 @@ int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, int 
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table *)nova_get_block(sb, block);  
-    make_ht_ptr(ht_p, ht);
+    make_ht_ptr(&ht_p, ht);
 
     switch(nr_table){
         case 1:
@@ -193,7 +195,7 @@ int make_invalid_htable(u64 block, u64 hashname, u64 namelen, int nr_table)
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table *)nova_get_block(sb, block);  
-    make_ht_ptr(ht_p, ht);
+    make_ht_ptr(&ht_p, ht);
 
     switch(nr_table){
         case 1:

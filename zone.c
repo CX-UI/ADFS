@@ -57,7 +57,7 @@ int dafs_build_dzt_block(struct super_block *sb)
     dafs_alloc_dir_zone(sbi, dzt_block->dzt_entry[0]);
     
     /*make valid*/
-    make_dzt_ptr(sbi, dzt_p);
+    make_dzt_ptr(sbi, &dzt_p);
     set_dzt_entry_valid(sbi, 0); 
 
     /*init dir_zone*/
@@ -155,11 +155,13 @@ int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
 
 /*
 * make zone ptr to use statemap*/
-static inline void make_zone_ptr(struct zone_ptr *z_p, struct dafs_zone_entry *z_e){
-
-    z_p->statemap = z_e->zone_statemap;
-    z_p->zone_max = NR_DENTRY_IN_ZONE * 2;
-    z_p->z_entry = z_e->dentry;
+static inline void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e)
+{
+    struct zone_ptr *p;
+    p->statemap = z_e->zone_statemap;
+    p->zone_max = NR_DENTRY_IN_ZONE * 2;
+    p->z_entry = z_e->dentry;
+    *z_p = p;
 }
 
 
@@ -216,16 +218,17 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
 
 /* 
 * make dzt bitmap pointer*/
-void make_dzt_ptr(struct nova_sb_info *sbi, struct dzt_ptr *dzt_p)
+void make_dzt_ptr(struct nova_sb_info *sbi, struct dzt_ptr **dzt_p)
 {
     struct dafs_dzt_block *dzt_blk;
-    //struct dzt_ptr *dzt_p;
+    struct dzt_ptr *p;
 
     dzt_blk = dafs_get_dzt_block(sbi);
 
-    dzt_p->bitmap = dzt_blk->dzt_bitmap;
-    dzt_p->max = DAFS_DZT_ENTRIES_IN_BLOCK;
-    dzt_p->dzt_entry = dzt_blk->dzt_entry;
+    p->bitmap = dzt_blk->dzt_bitmap;
+    p->max = DAFS_DZT_ENTRIES_IN_BLOCK;
+    p->dzt_entry = dzt_blk->dzt_entry;
+    *dzt_p = p;
 }
 
 /*
@@ -236,7 +239,7 @@ void set_dzt_entry_valid(struct nova_sb_info *sbi, unsigned long bitpos)
     struct dzt_ptr *dzt_p;
     int ret = 0;
 
-    make_dzt_ptr(sbi, dzt_p);
+    make_dzt_ptr(sbi, &dzt_p);
 
     test_and_set_bit(bitpos, dzt_p->bitmap);
 
@@ -430,7 +433,7 @@ uint64_t alloc_dzt_entry(struct super_block *sb)
     dzt_blk = dafs_get_dzt_block(sbi);
     tail_pos = le64_to_cpu(dzt_blk->dzt_tail_pos);
 
-    make_dzt_ptr(sbi, dzt_p);
+    make_dzt_ptr(sbi, &dzt_p);
     if(!test_bit(tail_pos, dzt_p->bitmap)){
         // not decided  清空
         i = tail_pos;
@@ -508,7 +511,7 @@ struct dzt_entry_info *delete_dzt_entry(struct super_block *sb, struct dzt_entry
     unsigned long hash_name;
     unsigned long ch_pos;
 
-    make_dzt_ptr(sbi, dzt_p);
+    make_dzt_ptr(sbi, &dzt_p);
     ch_pos = old_rdei->dzt_eno;
     hash_name = old_rdei->hash_name;
     radix_tree_delete(&dzt_m->dzt_root, hash_name);
@@ -618,7 +621,7 @@ int migrate_zone_entry(struct zone_ptr *z_p, unsigned long ch_pos, struct dafs_d
     
     /*递归*/
 
-    make_zone_ptr(z_p, new_z_e);
+    make_zone_ptr(&z_p, new_z_e);
     cpy_new_zentry(z_p, new_z_e, old_z_e, old_namelen, dafs_rde, ch_no, 0);
     
     return ret;
@@ -766,8 +769,8 @@ static void merge_zone_dentry(struct dafs_zone_entry *cur_ze, struct dafs_zone_e
     unsigned long  id, par_id, ch_pos;
     unsigned long cpy_no[NR_DENTRY_IN_ZONE];
     unsigned long count = 0;
-    make_zone_ptr(cur_p, cur_ze);
-    make_zone_ptr(par_p, par_ze);
+    make_zone_ptr(&cur_p, cur_ze);
+    make_zone_ptr(&par_p, par_ze);
 
 
     for(id = 0; id<NR_DENTRY_IN_ZONE; id++){
@@ -1046,7 +1049,7 @@ uint64_t dafs_rec_mf(struct dafs_zone_entry *z_e)
     uint64_t mean;
     int i=0;
 
-    make_zone_ptr(z_p, z_e);
+    make_zone_ptr(&z_p, z_e);
     while(bitpos < z_p->zone_max){
         if(!test_bit_le(bitpos, z_p->statemap)){
             bit_pos++;
@@ -1091,7 +1094,7 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *z_e)
     int id = 0;
     int ret = 0;
 
-    make_zone_ptr(z_p, z_e);
+    make_zone_ptr(&z_p, z_e);
 
     mean = dafs_rec_mf(z_e);
 
@@ -1241,7 +1244,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 
 
     z_e = dzt_ei->dz_addr;
-    make_zone_ptr(z_p, z_e);
+    make_zone_ptr(&z_p, z_e);
 
     while(bitpos < z_p->zone_max){
         if((!test_bit_le(bitpos, z_p->statemap))){
@@ -1340,7 +1343,7 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
         goto ret;
 
     }else if(SPLIT_TYPE == NEGTIVE_SPLIT){
-        make_zone_ptr(z_p, par_ze);
+        make_zone_ptr(&z_p, par_ze);
         /* could split one time */
         while(bitpos<z_p->zone_max){
             if(test_bit_le(bitpos, z_p->statemap)){
@@ -1396,7 +1399,7 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, str
     /*delete entry info*/
     hash_name = cur_rdei->hash_name;
     radix_tree_delete(&dzt_m->dzt_root, hash_name);
-    make_dzt_ptr(sbi, dzt_p);
+    make_dzt_ptr(sbi, &dzt_p);
     ch_pos = cur_rdei->dzt_eno;
     test_and_clear_bit(ch_pos, dzt_p->bitmap);
 
@@ -1449,7 +1452,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struc
     unsigned long ch_pos, or_pos;
 
     /*delete eni from radix tree*/
-    make_dzt_ptr(sbi, dzt_p);
+    make_dzt_ptr(sbi, &dzt_p);
     ch_pos = cur_rdei->dzt_eno;
     hash_name = cur_rdei->hash_name;
     radix_tree_delete(&dzt_m->dzt_root, hash_name);

@@ -47,7 +47,7 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
     }
 
     dzt_blk = dafs_get_dzt_block(sbi);
-    make_dzt_ptr(sbi, dzt_p);
+    make_dzt_ptr(sbi, &dzt_p);
     test_and_set_bit_le(bitpos, dzt->bitmap);
 
     /*not decided*/
@@ -66,7 +66,7 @@ void delete_dir_log(struct super_block *sb)
     struct dzt_ptr *dzt_p;
     unsigned long bitpos = 0;
 
-    make_zone_ptr(sbi, dzt_p);
+    make_zone_ptr(sbi, &dzt_p);
     test_and_clear_bit_le(bitpos, dzt_p->bitmap);
 }
 
@@ -172,7 +172,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     phname = get_dentry_path(dentry);
     dzt_ei = find_dzt(sb, &phname);
     dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
-    make_zone_ptr(zone_p, dafs_ze);
+    make_zone_ptr(&zone_p, dafs_ze);
     while(bitpos<zone_p->zone_max){
         if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
             bitpos+=2;
@@ -304,7 +304,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         d_hn = BKDRHash(dafs_de->ful_name->f_name);
         bitpos = de_pos * 2;
         /*not decided z_p是不是需要取地址*/
-        make_zone_ptr(z_p, dafs_ze);
+        make_zone_ptr(&z_p, dafs_ze);
         test_and_clear_bit_le(bitpos, zone_p->statemap);
 	    bitpos++;
         test_and_clear_bit_le(bitpos, zone_p->statemap);
@@ -329,7 +329,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
             dafs_free_htable_blocks(sb, HTABLE_SIZE, tail>>PAGE_SHIFT, 1);
             tail = tem;
         }
-        make_dzt_ptr(sbi, dzt_p);
+        make_dzt_ptr(sbi, &dzt_p);
         test_and_clear_bit_le(dzt_rno, dzt_p->bitmap);
         dafs_free_zone_blocks(sb, ei, ei->dz_addr >> PAGE_SHIFT, 1);
         kfree(ei);
@@ -373,7 +373,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         d_hn = BKDRHash(dafs_de->ful_name->f_name);
         bitpos = de_pos * 2;
         /*not decided z_p是不是需要取地址*/
-        make_zone_ptr(z_p, dafs_ze);
+        make_zone_ptr(&z_p, dafs_ze);
         test_and_clear_bit_le(bitpos, zone_p->statemap);
 	    bitpos++;
         test_and_clear_bit_le(bitpos, zone_p->statemap);
@@ -414,7 +414,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         d_hn = BKDRHash(dafs_de->ful_name->f_name);
         bitpos = de_pos * 2;
         /*not decided z_p是不是需要取地址*/
-        make_zone_ptr(z_p, dafs_ze);
+        make_zone_ptr(&z_p, dafs_ze);
         test_and_clear_bit_le(bitpos, zone_p->statemap);
 	    bitpos++;
         test_and_clear_bit_le(bitpos, zone_p->statemap);
@@ -568,7 +568,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
         return -EINVAL;
     dafs_rde = dafs_ze->dentry[depos];
 
-    make_zone_ptr(zone_p, dafs_ze);
+    make_zone_ptr(&zone_p, dafs_ze);
     while(bitpos<zone_p->zone_max){
         if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
             bitpos+=2;
@@ -740,7 +740,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de)
     phname = get_dentry_path(dentry);
     dzt_ei = find_dzt(sb, &phname);
     dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
-    make_zone_ptr(zone_p, dafs_ze);
+    make_zone_ptr(&zone_p, dafs_ze);
     while(bitpos<zone_p->zone_max){
         if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
             bitpos+=2;
@@ -824,7 +824,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     u64 phlen,src_len, hashname;
 
     ze = (struct dafs_zone_entry *)cpu_to_le64(dzt_ei->dz_addr);
-    make_zone_ptr(z_p, ze);
+    make_zone_ptr(&z_p, ze);
 
     sub_num = le64_to_cpu(src_de->sub_num);
 
@@ -1042,7 +1042,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     n_ei = find_dzt(sb, &phname);
     n_ze = cpu_to_le64(n_ei->dz_addr);
     phlen = strlen(n_phname);
-    make_zone_ptr(z_p, n_ze);
+    make_zone_ptr(&z_p, n_ze);
     while(bitpos<z_p->zone_max){
         if(test_bit_le(bitpos, z_p->statemap)||test_bit_le(bitpos+1, z_p->statemap)){
             bitpos+=2;
