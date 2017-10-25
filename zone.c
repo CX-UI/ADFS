@@ -319,10 +319,51 @@ int dafs_init_dzt(struct super_block *sb)
         dzt_ei->hash_name = le64_to_cpu(dzt_entry->hash_name);
 
         /*not decided 不设置有效位么*/
-        make_dzt_tree(dzt_ei);
+        make_dzt_tree(sbi, dzt_ei);
     }
 
     return ret;
+}
+
+/*init read frequency tree*/
+int init_rf_entry(struct super_block *sb, struct dzt_entry_info *dzt_ei)
+{
+    struct rf_entry *rfe;
+    struct ht_ptr *ht_p;
+    struct hash_table *ht;
+    struct hash_entry *he;
+    u64 ht_addr, bit_pos = 0, tail;
+    int key;
+
+    rfe = kzalloc(sizeof(struct rf_entry), GFP_KERNEL);
+    rfe->r_f = 0;
+    rfe->hash_name = dzt_ei->hash_name;
+    radix_tree_insert(&dzt_ei->rf_tree, rfe->hash_name, rfe);
+
+    ht_addr = dzt_ei->ht_head;
+    if(!ht_addr)
+        return 0;
+    ht = (struct hash_table *)nova_get_block(sb, ht_addr);
+lookup:
+    make_ht_ptr(&ht_p,ht);
+    rfe = kzalloc(sizeof(struct rf_entry), GFP_KERNEL);
+    while(bit_pos < ht_p->hash_max) {
+        if(test_bit_le(bit_pos, ht_p->bitmap) {
+            he = ht->hash_entry[bit_pos];
+            rfe->r_f = 0;
+            rfe->hash_name = le64_to_cpu(ht->hd_name);
+            radix_tree_insert(&dzt_ei->rf_tree, rfe->hash_name, rfe);
+            bit_pos++;
+        }
+
+    }
+    tail =le64_to_cpu(ht->hash_tail);
+    if(tail){
+        ht = (struct hash_table *)nova_get_block(sb, tail);
+        bitpos = 0;
+        goto lookup;
+    }
+    return 0;    
 }
 
 /*
@@ -340,6 +381,8 @@ static void make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_e
     //dzt_entry_info->dz_no = dzt_ei->dz_no;
     dzt_entry_info->dz_addr = dzt_ei->dz_addr;
     dzt_entry_info->hash_name = dzt_ei->hash_name;
+    INIT_RADIX_TREE(&dzt_entry_info->rf_tree);
+    init_rf_entry(sbi->sb, dzt_entry_info);
 
     radix_tree_insert(&dzt_m->dzt_root, dzt_entry_info->hash_name, dzt_entry_info);
 

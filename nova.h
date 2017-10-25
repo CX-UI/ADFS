@@ -348,6 +348,7 @@ struct dzt_entry_info{
     uint64_t rden_pos;
     //uint64_t dz_sf;
     uint64_t hash_name;
+    struct radix_tree_root rf_root;    /*read frequence root*/
     struct list_head child_list;
     //uint64_t child_dzt_eno[CHILD_PER_DZT_ENTRY];
     //uint64_t hash_path_name;

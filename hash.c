@@ -39,7 +39,8 @@ void make_ht_ptr(struct ht_ptr **ht_p, struct hash_table *ht)
 {
     struct ht_ptr *p;
     p->hash_map = ht->hash_map;
-    p->hash_max = NR_HASH_TABLE;
+    /*entries num is settled, bucket not*/
+    p->hash_max = NR_HASH_ENTRIES;
     p->he = ht->hash_entry;
     *ht_p = p;
 }
