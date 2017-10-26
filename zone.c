@@ -110,7 +110,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
     //zone_entry->root_len = dzt_e-> root_len;
     //zone_entry->log_head = NULL;               /*not decided*/
     zone_entry->dz_no = dzt_e->dzt_eno;
-    zone_entry->dz_sf = 0;
+    //zone_entry->dz_sf = 0;
     //zone_entry->dz_size = DAFS_DEF_ZONE_SIZE;        /*default size is 512K*/
     zone_entry->root_path = "/";
 
@@ -276,7 +276,7 @@ static void dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
     if(!dzt_m)
         return -ENOMEM;
     
-    INIT_RADIX_TREE(&dzt_m->dzt_root);
+    INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);
 
     make_dzt_tree(entry_info);
     
@@ -338,7 +338,7 @@ int init_rf_entry(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     rfe = kzalloc(sizeof(struct rf_entry), GFP_KERNEL);
     rfe->r_f = 0;
     rfe->hash_name = dzt_ei->hash_name;
-    radix_tree_insert(&dzt_ei->rf_tree, rfe->hash_name, rfe);
+    radix_tree_insert(&dzt_ei->rf_root, rfe->hash_name, rfe);
 
     ht_addr = dzt_ei->ht_head;
     if(!ht_addr)
@@ -352,7 +352,7 @@ lookup:
             he = ht->hash_entry[bit_pos];
             rfe->r_f = 0;
             rfe->hash_name = le64_to_cpu(ht->hd_name);
-            radix_tree_insert(&dzt_ei->rf_tree, rfe->hash_name, rfe);
+            radix_tree_insert(&dzt_ei->rf_root, rfe->hash_name, rfe);
             bit_pos++;
         }
 
@@ -381,7 +381,7 @@ static void make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_e
     //dzt_entry_info->dz_no = dzt_ei->dz_no;
     dzt_entry_info->dz_addr = dzt_ei->dz_addr;
     dzt_entry_info->hash_name = dzt_ei->hash_name;
-    INIT_RADIX_TREE(&dzt_entry_info->rf_tree);
+    INIT_RADIX_TREE(&dzt_entry_info->rf_root, GFP_ATOMIC);
     init_rf_entry(sbi->sb, dzt_entry_info);
 
     radix_tree_insert(&dzt_m->dzt_root, dzt_entry_info->hash_name, dzt_entry_info);
@@ -612,7 +612,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     memset(new_ze->statemap, 0, SIZE_DZT_BITMAP);
 
     new_ze->dz_no = n_dzt_e->dzt_eno;
-    new_ze->dz_sf = 0;
+    //new_ze->dz_sf = 0;
     
     dafs_rde = par_ze->dentry[sp_id];
     par_root_len = par_dzt_ei->root_len;
@@ -724,7 +724,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             }
 
             /*set sum frequency*/
-            old_z_e->dz_sf -= old_ze->d_f;
+            //old_z_e->dz_sf -= old_ze->d_f;
 
             /*set this file's pos in its par_ze*/
             par_ze->sub_pos[i] = new_id;
@@ -758,7 +758,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             }
             
             /*set sum frequency*/
-            old_z_e->dz_sf -= old_ze->d_f;
+            //old_z_e->dz_sf -= old_ze->d_f;
             
             par_ze->sub_pos[i] = new_id;
             bitpos = new_id *2 +1;
@@ -789,7 +789,7 @@ static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *n
             }
             
             /*set sum frequency*/
-            old_z_e->dz_sf -= old_ze->d_f;
+            //old_z_e->dz_sf -= old_ze->d_f;
             
             par_ze->sub_pos[i] = new_id;
             bitpos = new_id *2 +1;

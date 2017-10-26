@@ -32,7 +32,7 @@ struct dafs_zone_entry{
     //__le64 log_head;         /*logical address*/
     __le64 dz_no;           /*directory zone NO*/
     //__le64 hash_head;
-    __le64 dz_sf;           /* sum of frequency*/
+    //__le64 dz_sf;           /* sum of frequency*/
     //__le64 bm_head;         /*zone bit map address*/
     //__le64 dz_root_hash;         /*root directory of this zone*/
     //__le64 dz_size;         /*zone size*/
@@ -69,7 +69,7 @@ struct dafs_dentry{
     __le64 zone_no;         /* root dir records zone number */
     //__le64 par_z_no;        /* parent zone ino */
     __le64 prio;            /* level of priority to new a zone */
-    __le64 d_f;             /* dentry frenquency */
+    //__le64 d_f;             /* dentry frenquency */
     __le64 sub_s;           /* subfile number state */
     __le64 f_s;             /* frequency statement */
     __le64 sub_num;         /* the number of subfiles */

@@ -15,6 +15,50 @@
 #define DT2IF(dt) (((dt) << 12) & S_IFMT)
 #define IF2DT(sif) (((sif) & S_IFMT) >> 12)
 
+/*delete rf tree*/
+int delete_rf_tree(struct dzt_entry_info *ei)
+{
+    struct rf_entry *rf_e;
+    struct rf_entry *entries[NR_DENTRY_IN_ZONE];
+    u64 key;
+    int nr, i;
+    void *ret;
+
+    nr = radix_tree_gang_lookup(&ei->rf_root, (void **)entries, 0, NR_DENTRY_IN_ZONE);
+    for(i=0; i<nr; i++) {
+        rf_e = entries[i];
+        key = rf_e->hash_name;
+        ret = radix_tree_delete(&ei->rf_root, key);
+        if(!ret)
+            nova_dbg("ret is NULL\n");
+        kfree(rf_e);
+    }
+    return 0;
+}
+
+/*delete rf_entry*/
+int delete_rf_entry(struct dzt_entry_info *ei, u64 hash_name)
+{
+    struct rf_entry *old_rf;
+
+    old_rf = radix_tree_delete(&ei->rf_root, hash_name);
+    kfree(old_rf);
+    return 0;
+
+}
+
+/*add rf_entry in rf_tree*/
+int add_rf_entry(struct dzt_entry_info *ei, u64 hash_name)
+{
+    struct rf_entry *new_rf;
+
+    new_rf = kzalloc(sizeof(struct rf_entry), GFP_KERNEL);
+    new_rf->r_f = 0;
+    new_rf->hash_name = hash_name;
+    radix_tree_insert(&ei->rf_root, hash_name);
+    return 0;
+}
+
 /*update read frequency when read happens*/
 int update_read_hot(struct dzt_entry_info *dzt_ei, u64 sub_hash)
 {
@@ -234,7 +278,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     dafs_de->size = cpu_to_le64(dir->i_size);
     dafs_de->zone_no = cpu_to_le64(dzt_ei->dzt_eno);
     dafs_de->prio = LEVEL_0;
-    dafs_de->d_f = 0;
+    //dafs_de->d_f = 0;
     dafs_de->sub_s = 0;
     dafs_de->f_s = 0;
     dafs_de->sub_num = 0;
@@ -257,6 +301,9 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     hashname = BKDRHash(phname, phlen);
     ht_addr = dzt_ei->ht_head;
     ret = record_pos_htable(sb, ht_addr, hashname, phlen, cur_pos, 1);
+
+    /*new rf_entry*/
+    ret = add_rf_entry(dzt_ei, hashname);
 
     NOVA_END_TIMING(add_dentry_t, add_entry_time);
     return ret;
@@ -324,7 +371,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
 
         /*delete dir*/
         d_hlen = le64_to_cpu(dafs_de->ful_name->f_namelen);
-        d_hn = BKDRHash(dafs_de->ful_name->f_name);
+        d_hn = BKDRHash(dafs_de->ful_name->f_name,d_hlen);
         bitpos = de_pos * 2;
         /*not decided z_p是不是需要取地址*/
         make_zone_ptr(&z_p, dafs_ze);
@@ -332,6 +379,8 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
 	    bitpos++;
         test_and_clear_bit_le(bitpos, zone_p->statemap);
         ret = make_invalid_htable(dzt_ei->ht_head, d_hn, d_hlen, 1);
+        /*free rf_entry*/
+        delete_rf_entry(dzt_ei, d_hn);
         if(!ret)
             return -EINVAL;
 
@@ -343,7 +392,8 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
          * ei free zone
          * free hash table
          * free zone
-         * free ei*/
+         * free ei
+         * free rf_tree*/
         ei = radix_tree_delete(&dzt_m->dzt_root, hashname);
         tail = le64_to_cpu(ei->ht_head);
         while(tail){
@@ -354,6 +404,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         }
         make_dzt_ptr(sbi, &dzt_p);
         test_and_clear_bit_le(dzt_rno, dzt_p->bitmap);
+        delete_rf_tree(ei);
         dafs_free_zone_blocks(sb, ei, ei->dz_addr >> PAGE_SHIFT, 1);
         kfree(ei);
 
@@ -401,6 +452,9 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
 	    bitpos++;
         test_and_clear_bit_le(bitpos, zone_p->statemap);
         ret = make_invalid_htable(dzt_ei->ht_head, d_hn, d_hlen, 1);
+
+        /*free rf_entry*/
+        delete_rf_entry(dzt_ei, d_hn);
         if(!ret)
             return -EINVAL;
         
@@ -442,6 +496,8 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
 	    bitpos++;
         test_and_clear_bit_le(bitpos, zone_p->statemap);
         ret = make_invalid_htable(dzt_ei->ht_head, d_hn, d_hlen, 1);
+        /*free rf_entry*/
+        delete_rf_entry(dzt_ei, d_hn);
         if(!ret)
             return -EINVAL;
 
@@ -639,8 +695,8 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     record_pos_htable(sb, dzt_ei->ht_head, hashname, h_len, cur_pos, 1);
     cur_pos++;
 
-    /*set hash table with its position*/
-    set_pos_htable(dafs_de->ful_name->f_name,dafs_de->ful_name->f_namelen);
+    /*new rf_entry*/
+    ret = add_rf_entry(dzt_ei, hashname);
 
     while(bitpos<zone_p->zone_max){
         if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
@@ -683,6 +739,8 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     hashname = BKDRHash(dafs_de->ful_name->f_name, h_len);
     record_pos_htable(sb, dzt_ei->ht_head, hashname, h_len, cur_pos, 1);
 
+    /*new rf_entry*/
+    ret = add_rf_entry(dzt_ei, hashname);
     //不需要update tail
     
     return 0;
@@ -805,7 +863,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de)
     dafs_de->size = cpu_to_le64(dir->i_size);
     dafs_de->zone_no = old_de->dz_no;
     dafs_de->prio = old_de->prio;
-    dafs_de->d_f = old_de->d_f;
+    //dafs_de->d_f = old_de->d_f;
     dafs_de->sub_s = old_de->sub_s;
     dafs_de->f_s = old_de->f_s;
     dafs_de->sub_num = old->sub_num;
@@ -827,6 +885,9 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de)
     /*set pos in hash table for each zone*/
     hashname = BKDRHash(phname, phlen);
     record_pos_htable(sb, dzt_ei->ht_head, hashname, phlen, cur_pos, 1);
+
+    /*new rf_entry*/
+    ret = add_rf_entry(dzt_ei, hashname);
 
     NOVA_END_TIMING(add_dentry_t, add_entry_time);
     return ret;
@@ -890,7 +951,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     new_de->size = src_de->size;
     new_de->zone_no = ze->dz_no;
     new_de->prio = src_de->prio;
-    new_de->d_f = src_de->d_f + 1;
+    //new_de->d_f = src_de->d_f + 1;
     new_de->sub_s = src_de->sub_s;
     new_de->f_s = DENTRY_FREQUENCY_WRITE;
     new_de->sub_num = src_de->sub_num;
@@ -911,6 +972,9 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     record_pos_htable(sb, dzt_ei->ht_head, hashname, strlen(new_ph), dir_pos, 1);
     dir_pos++;
 
+    /*new rf_entry*/
+    ret = add_rf_entry(dzt_ei, hashname);
+    
     /*rename 子文件*/
     for(i = 0; i<sub_num; i++) {
         s_pos = src_de->sub_pos[i];
@@ -956,7 +1020,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
             new_de->size = sub_de->size;
             new_de->zone_no = ze->dz_no;
             new_de->prio = sub_de->prio;
-            new_de->d_f = sub_de->d_f + 1;
+            //new_de->d_f = sub_de->d_f + 1;
             new_de->sub_s = sub_de->sub_s;
             new_de->f_s = DENTRY_FREQUENCY_WRITE;
             new_de->sub_num = sub_de->sub_num;
@@ -976,6 +1040,9 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
             record_pos_htable(sb, dzt_ei->ht_head, hashname, strlen(new_ph), dir_pos, 1);
             bitpos++;
             dir_pos++;
+            
+            /*new rf_entry*/
+            ret = add_rf_entry(dzt_ei, hashname);
 
         }
     }
@@ -1107,7 +1174,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     dafs_de->size = o_de->size;
     dafs_de->zone_no = n_ze->dz_no;
     dafs_de->prio = o_de->prio;
-    dafs_de->d_f = o_de->d_f;
+    //dafs_de->d_f = o_de->d_f;
     dafs_de->sub_s = o_de->sub_s;
     dafs_de->f_s = DENTRY_FREQUENCY_WRITE;
     dafs_de->sub_num = 0;
@@ -1131,6 +1198,9 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     hashname = BKDRHash(n_phname, phlen);
     record_pos_htable(sb, n_ei->ht_addr, hashname, phlen, cur_pos, 1);
 
+    /*new rf_entry*/
+    ret = add_rf_entry(n_ei, hashname);
+    
     NOVA_END_TIMING(add_dentry_t, add_entry_time);
 
     return ret;
