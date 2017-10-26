@@ -77,6 +77,34 @@ int update_read_hot(struct dzt_entry_info *dzt_ei, u64 sub_hash)
 
     return 0;
 }
+
+/*get zone path through root dentry
+ * we get & when use this function*/
+int get_zone_path(struct dzt_entry_info *ei, char *char, const char *dename)
+{
+    struct dafs_zone_entry *ze;
+    struct dafs_dentry *de;
+    u64 num = ei->dzt_eno;
+    u64 de_pos, phlen;
+    phlen = (u64)ei->root_len;
+    char *path = kzalloc((sizeof(char *)*phlen), GFP_KERNEL);
+    char *name = kzalloc((sizeof(char*)*phlen), GFP_KERNEL);
+    while(num!=1){
+        ze = (struct dafs_zone_entry *)ei->pdz_addr;
+        de_pos = ei->rden_pos;
+        de = ze->dentry[de_pos];
+        memset(name, 0, strlen(name));
+        memcpy(name, de->ful_name->f_name,de->ful_name->f_namelen);
+        strcat(name,path);
+        memset(path,0,strlen(path));
+        memcpy(path, name, strlen(name));
+    }
+    strcat(path, dename);
+    memcpy(char, path, strlen(path));
+    return 0;
+
+}
+
 /*record dir operation in logs*/
 void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *des, int type)
 {

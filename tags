@@ -156,7 +156,7 @@ _mm_clflushopt	nova_def.h	207;"	d
 _mm_clwb	nova_def.h	209;"	d
 _mm_pcommit	nova_def.h	211;"	d
 add_dentry_t	stats.h	/^	add_dentry_t,$/;"	e	enum:timing_category
-add_dzt_entry	zone.c	/^struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei,\\$/;"	f
+add_dzt_entry	zone.c	/^struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei,\\ $/;"	f
 add_rename_dir	dafs_dir.c	/^int add_rename_dir(struct dentry *o_dentry, struct dentry *n_dentry, struct dafs_dentry *old_de)$/;"	f
 add_rename_zone_dir	dafs_dir.c	/^int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de)$/;"	f
 add_rf_entry	dafs_dir.c	/^int add_rf_entry(struct dzt_entry_info *ei, u64 hash_name)$/;"	f
@@ -223,7 +223,6 @@ curr_log_entry_invalid	inode.c	/^static bool curr_log_entry_invalid(struct super
 curr_page_invalid	inode.c	/^static bool curr_page_invalid(struct super_block *sb,$/;"	f	file:
 d_entry_info	nova.h	/^    struct dzt_entry_info *d_entry_info;$/;"	m	struct:dzt_entry	typeref:struct:dzt_entry::dzt_entry_info
 d_entry_info	zone.h	/^    struct dzt_entry_info *d_entry_info;$/;"	m	struct:dzt_entry	typeref:struct:dzt_entry::dzt_entry_info
-d_f	zone.h	/^    __le64 d_f;             \/* dentry frenquency *\/$/;"	m	struct:dafs_dentry
 dafs_add_dentry	dafs_dir.c	/^int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)$/;"	f
 dafs_alloc_dir_zone	zone.c	/^int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)$/;"	f
 dafs_append_dir_init_entries	dafs_dir.c	/^int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\\ $/;"	f
@@ -278,6 +277,7 @@ delete_dir_tree_t	stats.h	/^	delete_dir_tree_t,$/;"	e	enum:timing_category
 delete_dzt_entry	zone.c	/^struct dzt_entry_info *delete_dzt_entry(struct super_block *sb, struct dzt_entry_info *old_rdei)$/;"	f
 delete_file_tree_t	stats.h	/^	delete_file_tree_t,$/;"	e	enum:timing_category
 delete_rf_entry	dafs_dir.c	/^int delete_rf_entry(struct dzt_entry_info *ei, u64 hash_name)$/;"	f
+delete_rf_tree	dafs_dir.c	/^int delete_rf_tree(struct dzt_entry_info *ei)$/;"	f
 dentry	zone.h	/^    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];	$/;"	m	struct:dafs_zone_entry	typeref:struct:dafs_zone_entry::dafs_dentry
 des_dz_no	zone.h	/^    __le64 des_dz_no;$/;"	m	struct:direntry_log
 des_hashname	zone.h	/^    __le64 des_hashname;$/;"	m	struct:direntry_log
@@ -293,7 +293,6 @@ dz_addr	zone.h	/^     __le64 dz_addr;          \/* zone addr *\/$/;"	m	struct:da
 dz_addr	zone.h	/^    uint64_t dz_addr;$/;"	m	struct:dzt_entry_info
 dz_log_head	nova.h	/^    uint64_t dz_log_head;$/;"	m	struct:dzt_entry_info
 dz_no	zone.h	/^    __le64 dz_no;           \/*directory zone NO*\/$/;"	m	struct:dafs_zone_entry
-dz_sf	zone.h	/^    __le64 dz_sf;           \/* sum of frequency*\/$/;"	m	struct:dafs_zone_entry
 dzt_bitmap	zone.h	/^    __u8 dzt_bitmap[SIZE_DZT_BITMAP];               \/*not decided the size of bitmap*\/$/;"	m	struct:dafs_dzt_block
 dzt_eno	nova.h	/^    uint64_t dzt_eno;$/;"	m	struct:dzt_entry_info
 dzt_eno	zone.h	/^     __le64 dzt_eno;          \/*dzt entry Id *\/	$/;"	m	struct:dafs_dzt_entry
@@ -312,6 +311,7 @@ dzt_ptr	nova.h	/^struct dzt_ptr {$/;"	s
 dzt_ptr	zone.h	/^struct dzt_ptr {$/;"	s
 dzt_root	nova.h	/^    struct radix_tree_root dzt_root;$/;"	m	struct:dzt_manager	typeref:struct:dzt_manager::radix_tree_root
 dzt_root	zone.h	/^    struct radix_tree_root dzt_root;$/;"	m	struct:dzt_manager	typeref:struct:dzt_manager::radix_tree_root
+dzt_tail_pos	zone.h	/^    __le64 dzt_tail_pos;$/;"	m	struct:dafs_dzt_block
 entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_dentry
 entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_link_change_entry
 entry_type	nova.h	/^	u8	entry_type;$/;"	m	struct:nova_setattr_logentry
@@ -362,6 +362,7 @@ get_cpuid	bbuild.c	/^static int get_cpuid(struct nova_sb_info *sbi, unsigned lon
 get_dentry_path	dafs_dir.c	/^static inline char* get_dentry_path(struct dentry *dentry)$/;"	f	file:
 get_hash_table	hash.c	/^int  get_hash_table(struct super_block *sb, u64 *h_addr)$/;"	f
 get_nvmm	nova.h	/^static inline unsigned long get_nvmm(struct super_block *sb,$/;"	f
+get_zone_path	dafs_dir.c	/^int get_zone_path(struct dzt_entry_info *ei, char *char, const char *dename)$/;"	f
 gid	nova.h	/^	__le32	gid;$/;"	m	struct:nova_setattr_logentry
 gid	nova.h	/^	kgid_t		gid;    \/* Mount gid for root directory *\/$/;"	m	struct:nova_sb_info
 global_bm	bbuild.c	/^struct scan_bitmap *global_bm[64];$/;"	v	typeref:struct:scan_bitmap

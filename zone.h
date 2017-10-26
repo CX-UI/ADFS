@@ -102,7 +102,7 @@ struct direntry_log {
 struct dafs_dzt_block{
     __u8 dzt_bitmap[SIZE_DZT_BITMAP];               /*not decided the size of bitmap*/
     __u8 reserved[SIZE_OF_RESERVED];
-    //__le64 dzt_tail_pos;
+    __le64 dzt_tail_pos;
     struct direntry_log dlog;
     struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
 }__attribute((__packed__));

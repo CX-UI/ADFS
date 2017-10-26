@@ -413,26 +413,29 @@ int dafs_free_rft()
 /*
 * add dzt entries in DRAM
 * used in split*/
-struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei,\
-                 struct dafs_zone_entry *par_ze, unsigned long sp_id)
+struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei,\ 
+        unsigned long sp_id)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dzt_entry *new_dzt_e;
     struct dzt_entry_info *new_dzt_ei;
     struct dzt_manager *dzt_m = sbi->dzt_manager;
     struct dafs_dentry *dafs_rde;
+    struct dafs_zone_entry *par_ze;
     //struct dafs_dzt_block *dzt_blk;
     //struct dzt_ptr *dzt_p;
     uint32_t name_len;
     unsigned long eno_pos; 
     //char root_path[DAFS_PATH_LEN];
     int ret = 0;
+    u64 de_nlen;
 
-    
+    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, par_dei->dz_addr); 
+
     eno_pos = alloc_dzt_entry(sb);
 
     if(!eno_pos)
-        got ERR;             //not decided
+        return -EINVAL;             //not decided
     /* modify dzt_eno, dz_log_head, dz_addr */
     
     
@@ -441,8 +444,11 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     //memcpy(root_path[root_len+1], dafs_de->name, dafs_de->name_len);
 
     dafs_rde = par_ze->dentry[sp_id];
-    name_len = par_dei->root_len + 1 + dafs_rde-> name_len;
-
+    de_nlen = le64_to_cpu(dafs_rde->ful_name->f_namelen);
+    if(par_dei->eno!=1){
+        /*not decided*/
+        name_len = (u64)(par_dei->root_len) + de_nlen;
+    } else {}
     new_dzt_ei = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
     new_dzt_ei->zone_blk_type = DAFS_BLOCK_TYPE_512K;
     new_dzt_ei->name_len = name_len;
@@ -451,7 +457,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     new_dzt_ei->rden_pos = sp_id;
     //new_dzt_ei->dz_sf = dafs_rde->d_f;
     new_dzt_ei->hash_name = dafs_hash(root_path,name_len);       //not decided
-    
+
 
     /* add entry in parent child list make par dirty, seriously not decided*/
 
@@ -462,8 +468,6 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
 
     return new_dzt_ei;
 
-ERR: 
-    return err;
 }
 
 /*
@@ -1291,7 +1295,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     int i;
     unsigned long inh_id = 0;
 
-
+    /*not decided*/
     z_e = dzt_ei->dz_addr;
     make_zone_ptr(&z_p, z_e);
 
@@ -1386,7 +1390,7 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
 
     if(SPLIT_TYPE == POSITIVE_SPLIT){
         //dafs_rde = par_ze->dentry[sp_id];
-        new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, par_ze, sp_id);
+        new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, sp_id);
         new_dzt_e = append_dzt_entry(sb, new_dzt_ei);
         new_ze = alloc_mi_zone(sb, new_dzt_e, new_dzt_ei, par_ze, par_dzt_ei, sp_id);
         goto ret;
