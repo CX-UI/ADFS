@@ -104,7 +104,7 @@ static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\
     struct super_block *sb = dir->i_sb;
     struct dafs_dentry *direntry;
     
-    direntry = dafs_find_direntry(sb, dentry);
+    direntry = dafs_find_direntry(sb, dentry,1);
     if(direntry == NULL)
         return 0;
     
@@ -497,6 +497,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	if (!pidir)
 		return -EINVAL;
 
+    /*not sure to add read hot degree*/
     if(dafs_inode_by_name(dir, dentry, &de) == 0)
         return -ENOENT;
 
@@ -673,7 +674,7 @@ struct dentry *dafs_get_parent(struct dentry *child)
     struct dafs_dentry *de;
     ino_t ino;
     
-    de = dafs_find_direntry(sb, child);
+    de = dafs_find_direntry(sb, child,1);
     if(!de)
         return ERR_PTR(-ENOENT);
     ino = le64_to_cpu(de->ino);

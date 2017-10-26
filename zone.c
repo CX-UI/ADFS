@@ -402,6 +402,12 @@ int dafs_destroy_dzt(struct nova_sb_info *sbi)
     return 0;
 }
 
+/*free rf_tree*/
+int dafs_free_rft()
+{
+    return 0;
+}
+
 /*======================================= dzt&zone adaption =================================================*/
 
 /*

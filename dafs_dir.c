@@ -15,6 +15,24 @@
 #define DT2IF(dt) (((dt) << 12) & S_IFMT)
 #define IF2DT(sif) (((sif) & S_IFMT) >> 12)
 
+/*update read frequency when read happens*/
+int update_read_hot(struct dzt_entry_info *dzt_ei, u64 sub_hash)
+{
+    struct rf_entry *par_rf, *sub_rf;
+    u64 par_hash;
+
+    par_hash = dzt_ei->hash_name;
+    par_rf = radix_tree_lookup(&dzt_ei->rf_root, par_hash);
+    if(!par_rf)
+        return -EINVAL;
+    par_rf->r_f++;
+    sub_rf = radix_tree_lookup(&dzt_ei->rf_root, ph_hash);
+    if(!sub_rf)
+        return -EINVAL;
+    sub_rf->r_f++;
+
+    return 0;
+}
 /*record dir operation in logs*/
 void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *des, int type)
 {
@@ -28,7 +46,7 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
     unsigned long bitpos = 0;
     char *name, *phname, *des_name;
 
-    src_de = dafs_find_direntry(sb, src);
+    src_de = dafs_find_direntry(sb, src, 0);
     name = src_de->ful_name->f_name;
     src_hn = BKDRHash(name, strlen(name));
     src_dz = le64_to_cpu(src_de->zone_no);
@@ -244,17 +262,18 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     return ret;
 }
 
-/*look for dentry for each zone in its hash table*/
+/*look for dentry for each zone in its hash table
+ * add read frequency*/
 
 
-struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry)
+struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag)
 {
     struct dafs_dentry *direntry;
     struct dzt_entry_info *dzt_ei;
     struct dafs_zone_entry *dafs_ze;
     unsigned long phlen;
     unsigned long dzt_eno;
-    u64 ph_hash, ht_addr;
+    u64 ph_hash, ht_addr, par_hash;
     unsigned long de_pos;
     char *phname = NULL;
     int ret;
@@ -266,12 +285,16 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *de
     dzt_eno = dzt_ei->dzt_eno;
     ph_hash = BKDRHash(phname, phlen);
 
+
     /*lookup in hash table, not decided*/
     ht_addr = dzt_ei->ht_head;
     ret = lookup_in_hashtable(ht_addr, ph_hash, phlen, 1, &de_pos);
     if(!ret)
         return -EINVAL;
     direntry = dafs_ze->dentry[de_pos];
+    
+    if(update_flag)
+        update_read_hot(dzt_ei, ph_hash);
 
     return direntry;
 }
@@ -567,6 +590,9 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     if(!ret)
         return -EINVAL;
     dafs_rde = dafs_ze->dentry[depos];
+
+    /*update read hot*/
+    update_read_hot(dzt_ei, phhash);
 
     make_zone_ptr(&zone_p, dafs_ze);
     while(bitpos<zone_p->zone_max){
@@ -1001,7 +1027,7 @@ int __rename_dir_direntry(struct dentry *old_dentry, struct dentry *new_dentry)
     u64 dz_no;
     int err = -ENOENT;
 
-    old_de = dafs_find_direntry(sb, old_dentry);
+    old_de = dafs_find_direntry(sb, old_dentry,0);
     //dz_no = le64_to_cpu(old_de->zone_no);
     if(old_de->file_type == ROOT_DIRECTORY){
         err = add_rename_zone_dir(new_dentry, old_de);
@@ -1035,7 +1061,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     unsigned long phlen;
     u64 hashname;
 
-    o_de = dafs_find_direntry(sb, o_de);
+    o_de = dafs_find_direntry(sb, o_de, 0);
 
     phname = get_dentry_path(new_dentry);
     n_phname = phname;
@@ -1097,7 +1123,8 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     /*make valid*/
     bitpos++;
     test_and_set_bit_le(bitpos, z_p->statemap);
-    
+   
+    dafs_remove_dentry(old_dentry);
     dir->i_blocks = pidir->i_blocks;
 
     /*set pos in hash table for each zone*/
@@ -1148,7 +1175,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     }
 
     ze = cpu_to_le64(n_ei->dz_addr);
-	f_de = dafs_find_direntry(sb, dentry);
+	f_de = dafs_find_direntry(sb, dentry,1);
     
     sub_num = le64_to_cpu(f_de->sub_num);
 
