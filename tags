@@ -158,7 +158,7 @@ _mm_pcommit	nova_def.h	211;"	d
 add_dentry_t	stats.h	/^	add_dentry_t,$/;"	e	enum:timing_category
 add_dzt_entry	zone.c	/^struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei,\\ $/;"	f
 add_rename_dir	dafs_dir.c	/^int add_rename_dir(struct dentry *o_dentry, struct dentry *n_dentry, struct dafs_dentry *old_de)$/;"	f
-add_rename_zone_dir	dafs_dir.c	/^int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de)$/;"	f
+add_rename_zone_dir	dafs_dir.c	/^int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *new_hn, u64 *root_len)$/;"	f
 add_rf_entry	dafs_dir.c	/^int add_rf_entry(struct dzt_entry_info *ei, u64 hash_name)$/;"	f
 addr	bbuild.c	/^	u64 addr[512];$/;"	m	struct:task_ring	file:
 addrs	journal.h	/^	u64 addrs[4];$/;"	m	struct:nova_lite_journal_entry
@@ -207,7 +207,6 @@ check_invalid_t	stats.h	/^	check_invalid_t,$/;"	e	enum:timing_category
 check_zone_rlarge	zone.c	/^static void check_zone_rlarge(struct dzt_entry_info *cur_ei)$/;"	f	file:
 child_dzt_eno	zone.h	/^     __le64 child_dzt_eno[CHILD_PER_DZT_ENTRY];     \/*child dzt number in this table *\/      $/;"	m	struct:dafs_dzt_entry
 child_list	nova.h	/^    struct list_head child_list;$/;"	m	struct:dzt_entry_info	typeref:struct:dzt_entry_info::list_head
-child_list	zone.h	/^    struct list_head child_list;$/;"	m	struct:dzt_entry_info	typeref:struct:dzt_entry_info::list_head
 clear_opt	nova.h	99;"	d
 copy_to_nvmm_t	stats.h	/^	copy_to_nvmm_t,$/;"	e	enum:timing_category
 cow_write_bytes	stats.h	/^	cow_write_bytes,$/;"	e	enum:stats_category
@@ -304,6 +303,7 @@ dzt_entry	zone.h	/^    struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK
 dzt_entry	zone.h	/^struct dzt_entry {$/;"	s
 dzt_entry_info	nova.h	/^struct dzt_entry_info{$/;"	s
 dzt_entry_info	zone.h	/^struct dzt_entry_info{$/;"	s
+dzt_hn	zone.h	/^    __le64 dzt_hn;          \/* hashname od dzr if root dir*\/$/;"	m	struct:dafs_dentry
 dzt_m_info	nova.h	/^    struct dzt_manager *dzt_m_info;$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::dzt_manager
 dzt_manager	nova.h	/^struct dzt_manager {$/;"	s
 dzt_manager	zone.h	/^struct dzt_manager {$/;"	s
@@ -362,7 +362,7 @@ get_cpuid	bbuild.c	/^static int get_cpuid(struct nova_sb_info *sbi, unsigned lon
 get_dentry_path	dafs_dir.c	/^static inline char* get_dentry_path(struct dentry *dentry)$/;"	f	file:
 get_hash_table	hash.c	/^int  get_hash_table(struct super_block *sb, u64 *h_addr)$/;"	f
 get_nvmm	nova.h	/^static inline unsigned long get_nvmm(struct super_block *sb,$/;"	f
-get_zone_path	dafs_dir.c	/^int get_zone_path(struct dzt_entry_info *ei, char *char, const char *dename)$/;"	f
+get_zone_path	dafs_dir.c	/^int get_zone_path(struct dzt_entry_info *ei, char *pname, const char *dename)$/;"	f
 gid	nova.h	/^	__le32	gid;$/;"	m	struct:nova_setattr_logentry
 gid	nova.h	/^	kgid_t		gid;    \/* Mount gid for root directory *\/$/;"	m	struct:nova_sb_info
 global_bm	bbuild.c	/^struct scan_bitmap *global_bm[64];$/;"	v	typeref:struct:scan_bitmap
@@ -886,7 +886,7 @@ size	nova.h	/^	__le64	size;$/;"	m	struct:nova_dentry
 size	nova.h	/^	__le64	size;$/;"	m	struct:nova_file_write_entry
 size	nova.h	/^	__le64	size;$/;"	m	struct:nova_setattr_logentry
 size	zone.h	/^    __le64 size;            \/* inode_size *\/$/;"	m	struct:dafs_dentry
-src_dz_no	zone.h	/^    __le64 src_dz_no;  \/* record src dz number*\/$/;"	m	struct:direntry_log
+src_dz_no	zone.h	/^    __le64 src_dz_no;  \/* record src dz hashname*\/$/;"	m	struct:direntry_log
 src_hashname	zone.h	/^    __le64 src_hashname;  \/* record src dentry hashname*\/$/;"	m	struct:direntry_log
 statemap	zone.h	/^    const void *statemap; \/*pointer to 2-bit map*\/$/;"	m	struct:zone_ptr
 stats_category	stats.h	/^enum stats_category {$/;"	g
@@ -929,7 +929,6 @@ zone_blk_type	nova.h	/^    u8 zone_blk_type;$/;"	m	struct:dzt_entry_info
 zone_blk_type	zone.h	/^     __u8 zone_blk_type;$/;"	m	struct:dafs_dzt_entry
 zone_blk_type	zone.h	/^    u8 zone_blk_type;$/;"	m	struct:dzt_entry_info
 zone_max	zone.h	/^    unsigned long zone_max;$/;"	m	struct:zone_ptr
-zone_no	zone.h	/^    __le64 zone_no;         \/* root dir records zone number *\/$/;"	m	struct:dafs_dentry
 zone_ptr	zone.h	/^struct zone_ptr {$/;"	s
 zone_set_statemap	zone.c	/^int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *z_e)$/;"	f
 zone_statemap	zone.h	/^    u8 zone_statemap[SIZE_OF_ZONE_BITMAP];         \/* state and validity for zone dentries*\/$/;"	m	struct:dafs_zone_entry
