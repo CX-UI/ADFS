@@ -66,7 +66,8 @@ struct dafs_dentry{
     __le64 ino;             /* inode number*/
     __le64 par_ino;         /* parent inode_ino */
     __le64 size;            /* inode_size */
-    __le64 zone_no;         /* root dir records zone number */
+    __le64 dzt_hn;          /* hashname od dzr if root dir*/
+    //__le64 zone_no;         /* root dir records zone number */
     //__le64 par_z_no;        /* parent zone ino */
     __le64 prio;            /* level of priority to new a zone */
     //__le64 d_f;             /* dentry frenquency */
@@ -89,7 +90,7 @@ struct fulname{
 /*dir behavior log*/
 struct direntry_log {
     u8 type_d;     /*record dir behavior type*/
-    __le64 src_dz_no;  /* record src dz number*/
+    __le64 src_dz_no;  /* record src dz hashname*/
     __le64 src_hashname;  /* record src dentry hashname*/
     __le64 des_dz_no;
     __le64 des_hashname;
@@ -173,7 +174,7 @@ struct dzt_entry_info{
     //uint64_t dz_sf;
     uint64_t hash_name;
     struct radix_tree_root rf_tree;    /*read frequence root*/
-    struct list_head child_list;
+    //struct list_head child_list;
     //uint64_t child_dzt_eno[CHILD_PER_DZT_ENTRY];
     //uint64_t hash_path_name;
     //char root_path[DAFS_PATH_LEN];

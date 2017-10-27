@@ -79,8 +79,8 @@ int update_read_hot(struct dzt_entry_info *dzt_ei, u64 sub_hash)
 }
 
 /*get zone path through root dentry
- * we get & when use this function*/
-int get_zone_path(struct dzt_entry_info *ei, char *char, const char *dename)
+ * we get charpath when use this function*/
+int get_zone_path(struct dzt_entry_info *ei, char *pname, const char *dename)
 {
     struct dafs_zone_entry *ze;
     struct dafs_dentry *de;
@@ -90,7 +90,7 @@ int get_zone_path(struct dzt_entry_info *ei, char *char, const char *dename)
     char *path = kzalloc((sizeof(char *)*phlen), GFP_KERNEL);
     char *name = kzalloc((sizeof(char*)*phlen), GFP_KERNEL);
     while(num!=1){
-        ze = (struct dafs_zone_entry *)ei->pdz_addr;
+        ze = (struct dafs_zone_entry *)nova_get_block(ei->pdz_addr);
         de_pos = ei->rden_pos;
         de = ze->dentry[de_pos];
         memset(name, 0, strlen(name));
@@ -98,9 +98,12 @@ int get_zone_path(struct dzt_entry_info *ei, char *char, const char *dename)
         strcat(name,path);
         memset(path,0,strlen(path));
         memcpy(path, name, strlen(name));
+        num = le64_to_cpu(ze->dz_no);
     }
     strcat(path, dename);
-    memcpy(char, path, strlen(path));
+    memcpy(pname, path, strlen(path));
+    kfree(path);
+    kfree(name);
     return 0;
 
 }
@@ -113,15 +116,17 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
     struct dzt_ptr *dzt_p;
     struct direntry_log *dlog;
     struct dafs_dentry *src_de, *des_de;
-    struct dzt_entry_info *dzt_ei;
+    struct dzt_entry_info *dzt_ei, *src_ei;
     u64 src_dz, des_dz, src_hn, des_hn;
     unsigned long bitpos = 0;
-    char *name, *phname, *des_name;
+    char *name, *phname, *des_name, *src_pn;
 
+    src_pn = get_dentry_path(src);
+    src_ei = find_dzt(sb, src_pn);
     src_de = dafs_find_direntry(sb, src, 0);
     name = src_de->ful_name->f_name;
     src_hn = BKDRHash(name, strlen(name));
-    src_dz = le64_to_cpu(src_de->zone_no);
+    src_dz = src_ei->dzt_eno;
 
     if(!des) {
         src_hn = 0;
@@ -129,9 +134,10 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
     }
     else {
         phname = get_dentry_path(des);
-        des_name = phname;
         dzt_ei = find_dzt(sb, phname);
         des_dz = dzt_ei->dzt_eno;
+        des_de = dafs_find_direntry(des);
+        des_name = des->ful_name->f_name;
         des_hn = BKDRHash(des_name, strlen(des_name));
 
     }
@@ -390,11 +396,11 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
     unsigned long phlen;
     unsigned long dzt_eno, dzt_rno;
     unsigned long bitpos, par_id, par_pos, sub_p, sub_id, i, j, k;
-    char *tem;
+    //char *tem;
     u64 hashname, d_hn, d_hlen, tail, tem;
     int ret;
 
-    strcat(tem, dafs_ze->root_path);
+    //strcat(tem, dafs_ze->root_path);
     if(dafs_de->file_type == ROOT_DIRECTORY){
 
         /*delete dir*/
@@ -412,9 +418,10 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         if(!ret)
             return -EINVAL;
 
-        dzt_rno = le64_to_cpu(dafs_de->dz_no);
-        strcat(tem, dafs_de->ful_name->f_name);
-        hashname = BKDRHash(tem, strlen(tem));
+        //dzt_rno = le64_to_cpu(dafs_de->dz_no);
+        //strcat(tem, dafs_de->ful_name->f_name);
+        //hashname = BKDRHash(tem, strlen(tem));
+        //hashname = le64_to_cpu(dafs_de->hash_name);
 
         /*delete dzt on dram and nvm
          * ei free zone
@@ -422,10 +429,12 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
          * free zone
          * free ei
          * free rf_tree*/
+        hashname = le64_to_cpu(dafs_de->hash_name);
         ei = radix_tree_delete(&dzt_m->dzt_root, hashname);
+        dzt_rno = ei->dzt_eno;
         tail = le64_to_cpu(ei->ht_head);
         while(tail){
-            ht = (struct hash_table *)tail;
+            ht = (struct hash_table *)nova_get_block(tail);
             tem = le64_to_cpu(ht->hash_tail);
             dafs_free_htable_blocks(sb, HTABLE_SIZE, tail>>PAGE_SHIFT, 1);
             tail = tem;
@@ -1119,12 +1128,15 @@ int __rename_dir_direntry(struct dentry *old_dentry, struct dentry *new_dentry)
     struct zone_ptr *z_p;
     struct inode *new_inode = new_dentry->d_inode;
     struct inode *old_inode = old_dentry->d_inode;
+    struct dzt_entry_info *ch_ei;
+    char *phname;
     u64 dz_no;
     int err = -ENOENT;
 
     old_de = dafs_find_direntry(sb, old_dentry,0);
     //dz_no = le64_to_cpu(old_de->zone_no);
     if(old_de->file_type == ROOT_DIRECTORY){
+        
         err = add_rename_zone_dir(new_dentry, old_de);
         /*防止zone被删除*/
         if(err)

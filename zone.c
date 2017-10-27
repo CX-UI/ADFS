@@ -424,48 +424,55 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     struct dafs_zone_entry *par_ze;
     //struct dafs_dzt_block *dzt_blk;
     //struct dzt_ptr *dzt_p;
-    uint32_t name_len;
+    u64 name_len;
     unsigned long eno_pos; 
     //char root_path[DAFS_PATH_LEN];
     int ret = 0;
-    u64 de_nlen;
+    u64 de_nlen, phash;
+    char *pname;
 
     par_ze = (struct dafs_zone_entry *)nova_get_block(sb, par_dei->dz_addr); 
 
     eno_pos = alloc_dzt_entry(sb);
 
     if(!eno_pos)
-        return -EINVAL;             //not decided
+        goto end;             //not decided
     /* modify dzt_eno, dz_log_head, dz_addr */
     
-    
-    //memcpy(root_path[0],par_ze->root_path, par_dei->root_len);
-    //root_path[root_len]='/'
-    //memcpy(root_path[root_len+1], dafs_de->name, dafs_de->name_len);
 
     dafs_rde = par_ze->dentry[sp_id];
     de_nlen = le64_to_cpu(dafs_rde->ful_name->f_namelen);
-    if(par_dei->eno!=1){
-        /*not decided*/
-        name_len = (u64)(par_dei->root_len) + de_nlen;
-    } else {}
+    
     new_dzt_ei = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
     new_dzt_ei->zone_blk_type = DAFS_BLOCK_TYPE_512K;
-    new_dzt_ei->name_len = name_len;
     new_dzt_ei->dzt_eno = eno_pos;
     new_dzt_ei->pdz_addr = par_dei->dz_addr;
     new_dzt_ei->rden_pos = sp_id;
-    //new_dzt_ei->dz_sf = dafs_rde->d_f;
-    new_dzt_ei->hash_name = dafs_hash(root_path,name_len);       //not decided
 
-
-    /* add entry in parent child list make par dirty, seriously not decided*/
-
-
+    if(par_dei->eno!=1){
+        /*not decided*/
+        name_len = (u64)(par_dei->root_len) + de_nlen;
+        pname = kzalloc(sizeof(char *)*name_len, GFP_KERNEL);
+        get_zone_path(par_dei, pname, dafs_rde->ful_name->f_name);
+        if(strlen(pname)!=name_len){
+            nova_err(sb, "wrong name");
+            goto end;
+        }
+        phash = BKDRHash(pname, name_len);
+        new_dzt_ei->root_len =(u32) name_len;
+        new_dzt_ei->hash_name = phash;
+        kfree(pname);
+    } else {
+        name_len = de_nlen;
+        phash = BKDRHash(dafs_rde->ful_name->f_name, name_len);
+        new_dzt_ei->root_len = (u32)name_len;
+        new_dzt_ei->hash_name = phash;
+    }
 
     /* DRAM 中新建entry的时候一定是split zone的时候，不需要condition验证*/
     //new_dzt_e = append_dzt_entry(sb, dzt_ei, root_path, SPLIT_ZONE);
 
+end:
     return new_dzt_ei;
 
 }
