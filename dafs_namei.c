@@ -601,7 +601,7 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
     struct nova_inode *new_pidir = NULL, *old_pidir = NULL;
     struct nova_lite_journal_entry entry, entry1;
     struct nova_dentry *father_entry = NULL;
-    char *head_addr = NULL;
+    //char *head_addr = NULL;
     u64 old_tail = 0, new_tail = 0, new_pi_tail = 0, old_pi_tail = 0;
     int err = -ENOMEM;
     int entries = 0;

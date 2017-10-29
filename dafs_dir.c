@@ -195,8 +195,10 @@ ERR:
     return ph;
 }
 
-/* find currect zone*/
-static inline struct dzt_entry_info *find_dzt(struct super_block *sb, char *phstr)
+/* find currect zone
+ * 反向查找
+ * 可以用多线程*/
+static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char *phstr)
 {
     struct dzt_entry_info *dzt_ei, *dzt_ei_tem;
     struct nova_sb_info *sbi = NOVA_SB(sb);
@@ -204,29 +206,26 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, char *phst
     u64 hashname;
     u64 phlen;
     u64 dzt_eno;
-    char *token, *tem, *ph, *rph="/";
-    char *phname = kstrdup(pthstr,GFP_KERNEL);
-    char delim[] = "/";
+    char *tem, *ph;
 
-    hashname = BRDEHash(rph, 1);
-    dzt_ei = radix_tree_lookup(&dzt_m->dzt_root,hashname);
-    for(token = strsep(&phname, delim);token != NULL; token= strsep(&phname, delim) ){
-        if(!token){
-            strcat(tem, "/");
-            strcat(tem, token);
-            /*避免zone的根目录被查到*/
-            if(!strcat(tem, phstr))
-                goto END;
-            phlen = strlen(tem);
-            hashname = BKDRHash(tem, phlen);
-            dzt_ei_tem = radix_tree_lookup(&dzt_m->dzt_root, hashname);
-            if(!dzt_ei_tem)
-                goto END;
-            dzt_ei = dzt_ei_tem;
-            /*返回剩余的文件名*/
-            strcpy(phstr, phname);
-        }
+    ph = kzalloc(DAFS_PATH_LEN*(char *), GFP_KERNEL);
+    memcpy(ph, phstr, strlen(phstr));
+    while(1){
+        tem = strrchr(phstr, "/");
+        phlen = strlen(ph)-strlen(tem);
+        if(phlen==0)
+            break;
+        memset(ph, 0, strlen(ph));
+        memcpy(ph,phstr,phlen);
+        hashname = BKDRHash(ph,phlen);
+        dzt_ei = radix_tree_lookup(&dzt_m->dzt_root, hashname);
+        if(dzt_ei)
+            goto END;
     }
+
+    /*root dir*/
+    hashname = BKDRHash("/",1);
+    dzt_ei = radix_tree_lookup(,&dzt_m->dzt_root,hashname);
 
 END:
     return dzt_ei;
