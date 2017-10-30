@@ -80,7 +80,7 @@ int update_read_hot(struct dzt_entry_info *dzt_ei, u64 sub_hash)
 
 /*get zone path through root dentry
  * we get charpath when use this function*/
-int get_zone_path(struct dzt_entry_info *ei, char *pname, const char *dename)
+int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname, const char *dename)
 {
     struct dafs_zone_entry *ze;
     struct dafs_dentry *de;
@@ -90,7 +90,7 @@ int get_zone_path(struct dzt_entry_info *ei, char *pname, const char *dename)
     char *path = kzalloc((sizeof(char *)*phlen), GFP_KERNEL);
     char *name = kzalloc((sizeof(char*)*phlen), GFP_KERNEL);
     while(num!=1){
-        ze = (struct dafs_zone_entry *)nova_get_block(ei->pdz_addr);
+        ze = (struct dafs_zone_entry *)nova_get_block(sb, ei->pdz_addr);
         de_pos = ei->rden_pos;
         de = ze->dentry[de_pos];
         //memset(name, 0, strlen(name));
@@ -280,7 +280,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     memcpy(phname, ph, strlen(ph)+1);
     dzt_ei = find_dzt(sb, phname, phn);
-    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb,dzt_ei->dz_addr);
     make_zone_ptr(&zone_p, dafs_ze);
     while(bitpos<zone_p->zone_max){
         if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
@@ -379,7 +379,7 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *de
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     memcpy(phname, ph, strlen(ph));
     dzt_ei = find_dzt(sb, phname, phn);
-    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     phlen = strlen(phn);
     dzt_eno = dzt_ei->dzt_eno;
     ph_hash = BKDRHash(phn, phlen);
@@ -634,7 +634,7 @@ int dafs_remove_dentry(struct dentry *dentry)
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     memcpy(phname, ph, strlen(ph));
     dzt_ei = find_dzt(sb, phname, ph);
-    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     phlen = strlen(phn);
     dzt_eno = dzt_ei->dzt_eno;
     ph_hash = BKDRHash(phn, phlen);
@@ -704,7 +704,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     memcpy(phname, ph, strlen(ph));
     phlen = strlen(phn);
     dzt_ei = find_dzt(sb, phname, phn);
-    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     phhash = BKDRHash(phn, phlen);
     //not decided
     ret = lookup_in_hashtable(dzt_ei->ht_head, phhash, phlen, 1, &depos);
@@ -835,7 +835,7 @@ static int dafs_empty_dir(struct inode *inode, struct dentry *dentry)
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     memcpy(phname, ph, strlen(ph));
     dzt_ei = find_dzt(sb, phname, phn);
-    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     phlen = strlen(phn);
     dzt_eno = dzt_ei->dzt_eno;
     ph_hash = BKDRHash(phn, phlen);
@@ -900,7 +900,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     memcpy(phname, ph, strlen(ph));
     dzt_ei = find_dzt(sb, phname, phn);
-    dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
+    dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
 
     make_zone_ptr(&zone_p, dafs_ze);
     while(bitpos<zone_p->zone_max){
@@ -957,7 +957,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     if(dzt_ei->eno!=1){
         newp_len =(u64)dzt_ei->root_len + phlen;
         new_pn = kzalloc(sizeof(char*)*newp_len, GFP_KERNEL);
-        get_zone_path(dzt_ei, new_pn, phn);
+        get_zone_path(sb,dzt_ei, new_pn, phn);
         *root_len = newp_len;
         *new_hn = BKDRHash(new_pn, newp_len);
         kfree(new_pn);
@@ -1014,7 +1014,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     char *new_ph, *s_name, *sub_ph, ch_ph;
     u64 phlen,src_len, hashname, dzt_hn, ch_len, sub_len;
 
-    ze = (struct dafs_zone_entry *)cpu_to_le64(dzt_ei->dz_addr);
+    ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     make_zone_ptr(&z_p, ze);
 
     sub_num = le64_to_cpu(src_de->sub_num);
@@ -1152,7 +1152,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
                 if(dzt_ei->dzt_eno!=1) {
                     ch_len =(u64)dzt_ei->root_len + strlen(sub_ph);
                     ch_ph = kzalloc(sizeof(char *)ch_len, GFP_KERNEL);
-                    get_zone_path(dzt_ei, ch_ph, sub_ph);
+                    get_zone_path(sb, dzt_ei, ch_ph, sub_ph);
                 } else {
                     ch_len = strlen(sub_ph);
                     ch_ph = kzalloc(sizeof(char *)*ch_len, GFP_KERNEL);
@@ -1195,6 +1195,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
 /*rename directories*/
 int add_rename_dir(struct dentry *o_dentry, struct dentry *n_dentry, struct dafs_dentry *old_de)
 {
+    struct super_block *sb = o_dentry->d_sb;
     struct dafs_dentry *new_de;
     struct dzt_entry_info *o_ei, *n_ei;
     struct dafs_zone_entry *o_ze, *n_ze;
@@ -1214,7 +1215,7 @@ int add_rename_dir(struct dentry *o_dentry, struct dentry *n_dentry, struct dafs
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     memcpy(n_phname, ph, strlen(ph)+1);
     n_ei = find_dzt(sb, n_phname, phn);
-    n_ze = cpu_to_le64(n_ei->dz_addr);
+    n_ze = (struct dafs_zone_entry *)nova_get_block(sb, n_ei->dz_addr);
 
     n_name = n_dentry->d_name.name;
 
@@ -1293,7 +1294,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     memcpy(phname, ph, strlen(ph)+1);
     n_ei = find_dzt(sb, phname, phn);
-    n_ze = cpu_to_le64(n_ei->dz_addr);
+    n_ze = (struct dafs_zone_entry *)nova_get_block(sb, n_ei->dz_addr);
     phlen = strlen(phn);
     make_zone_ptr(&z_p, n_ze);
     while(bitpos<z_p->zone_max){
@@ -1413,7 +1414,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
         return EINVAL;
     }
 
-    ze = cpu_to_le64(n_ei->dz_addr);
+    ze = (struct dafs_zone_entry *)nova_get_block(sb, n_ei->dz_addr);
 	f_de = dafs_find_direntry(sb, dentry,1);
     
     sub_num = le64_to_cpu(f_de->sub_num);

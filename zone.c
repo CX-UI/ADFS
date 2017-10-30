@@ -194,9 +194,9 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
     block = nova_get_block_off(sb, blocknr, DAFS_BLOCK_TYPE_512K);
     
     /*get zone address*/
-    bp = (unsigned long)nova_get_block(sb, block);
+    //bp = (unsigned long)nova_get_block(sb, block);
     //hash_name = le64_to_cpu(z_entry->dz_root_hash);
-    dzt_e->dz_addr = cpu_to_le64(bp);
+    dzt_e->dz_addr = cpu_to_le64(block);
     //dzt_e->dz_log_head = cpu_to_le64(block);
     //dzt_ei->dz_log_head = block;
     //dzt_ei->dz_addr = bp;
@@ -453,7 +453,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
         /*not decided*/
         name_len = (u64)(par_dei->root_len) + de_nlen;
         pname = kzalloc(sizeof(char *)*name_len, GFP_KERNEL);
-        get_zone_path(par_dei, pname, dafs_rde->ful_name->f_name);
+        get_zone_path(sb, par_dei, pname, dafs_rde->ful_name->f_name);
         if(strlen(pname)!=name_len){
             nova_err(sb, "wrong name");
             goto end;
@@ -617,7 +617,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     n_dzt_ei->dz_addr = block;
 
     /* init new zone_entry */
-    new_ze =(struct dafs_zone_entry *)nova_get_block(n_dzt_ei->dz_addr);
+    new_ze =(struct dafs_zone_entry *)nova_get_block(sb, n_dzt_ei->dz_addr);
 
     /* clear statemap of new zone*/
     memset(new_ze->statemap, 0, SIZE_DZT_BITMAP);
@@ -1278,6 +1278,21 @@ unsigned long set_dentry_state(struct dafs_zone_entry *z_e, struct dafs_dentry *
 }
 
 /*
+* check if zone directory size is large for merge and inherit */
+static void check_zone_rlarge(struct super_block *sb, struct dzt_entry_info *cur_ei)
+{
+    struct dafs_dentry *dafs_rde;
+    struct dafs_zone_entry *par_ze;
+    unsigned long sub_s;
+
+    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->pdz_addr);
+    dafs_rde = par_ze->dentry[cur_ei->rden_pos];
+
+    sub_s = le64_to_cpu(dafs_rde->sub_s);
+    return sub_s;
+}
+
+/*
 * check zones
 * 1. positive split
 * 2. negtive split
@@ -1304,7 +1319,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     unsigned long inh_id = 0;
 
     /*not decided*/
-    z_e = dzt_ei->dz_addr;
+    z_e = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     make_zone_ptr(&z_p, z_e);
 
     while(bitpos < z_p->zone_max){
@@ -1335,12 +1350,12 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
         }
     }
     if(warm_num == 0 && hot_num ==1){
-        if(check_zone_rlarge(dzt_ei)!= NUMBER_OF_SUBFILES_LARGE)
+        if(check_zone_rlarge(sb, dzt_ei)!= NUMBER_OF_SUBFILES_LARGE)
             inh_id = hd_np[0];
             dafs_inh_zone(sb, dzt_ei, inh_id, z_e);
     
     } else if(hot_num == 0){
-        if(check_zone_rlarge(dzt_ei)!=NUMBER_OF_SUBFILES_LARGE)
+        if(check_zone_rlarge(sb, dzt_ei)!=NUMBER_OF_SUBFILES_LARGE)
             dafs_merge_zone(sb, dzt_ei, z_e);           /* not decided*/
 
     }else if(hd!=0){
@@ -1366,20 +1381,6 @@ RET:
     return ret;
 }
 
-/*
-* check if zone directory size is large for merge and inherit */
-static void check_zone_rlarge(struct dzt_entry_info *cur_ei)
-{
-    struct dafs_dentry *dafs_rde;
-    struct dafs_zone_entry *par_ze;
-    unsigned long sub_s;
-
-    par_ze = cur_ei->pdz_addr;
-    dafs_rde = par_ze->dentry[cur_ei->rden_pos];
-
-    sub_s = le64_to_cpu(dafs_rde->sub_s);
-    return sub_s;
-}
 
 /*
 * split zone 
@@ -1465,7 +1466,7 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, str
     test_and_clear_bit(ch_pos, dzt_p->bitmap);
 
     /* find and modify old_root dentry*/
-    par_ze = cur_rdei->pdz_addr;
+    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->pdz_addr);
     or_pos = cur_rdei->rden_pos;
     dafs_orde = par_ze->dentry[or_pos];
     dafs_orde->file_type = NORMAL_DIRECTORY;
@@ -1520,7 +1521,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struc
     test_and_clear_bit(ch_pos, dzt_p->bitmap);
 
     /*find old root dentry and modify*/
-    par_ze = cur_rdei->pdz_addr;
+    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->pdz_addr);
     or_pos = cur_rdei->rden_pos;
     dafs_orde = par_ze->dentry[or_pos];
     dafs_orde->file_type = NORMAL_DIRECTORY;
