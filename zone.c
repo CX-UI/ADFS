@@ -608,29 +608,30 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     block = nova_get_block_off(sb, blocknr, DAFS_BLOCK_TYPE_512K);
     
     /*get zone address*/
-    bp = (unsigned long)nova_get_block(sb, block);
+    //bp = (unsigned long)nova_get_block(sb, block);
     
     /* add attributes to dzt_entry  */
-    n_dzt_e->dz_addr = cpu_to_le32(bp);
-    n_dzt_e->dz_log_head = cpu_to_le64(block);
-    n_dzt_ei->dz_log_head = block;
-    n_dzt_ei->dz_addr = bp;
+    n_dzt_e->dz_addr = cpu_to_le64(block);
+    //n_dzt_e->dz_log_head = cpu_to_le64(block);
+    //n_dzt_ei->dz_log_head = block;
+    n_dzt_ei->dz_addr = block;
 
     /* init new zone_entry */
-    new_ze = n_dzt_e->dz_addr;
+    new_ze =(struct dafs_zone_entry *)nova_get_block(n_dzt_ei->dz_addr);
 
     /* clear statemap of new zone*/
     memset(new_ze->statemap, 0, SIZE_DZT_BITMAP);
 
-    new_ze->dz_no = n_dzt_e->dzt_eno;
+    new_ze->dz_no = cpu_to_le64(n_dzt_e->dzt_eno);
     //new_ze->dz_sf = 0;
     
+    /*
     dafs_rde = par_ze->dentry[sp_id];
     par_root_len = par_dzt_ei->root_len;
     memcpy(root_path[0], par_ze->root_path, par_root_len);
-    memcpy(root_path[par_root_len], dafs_rde->name, dafs_rde->name_len);
-    name_len = par_root_len + dafs_rde->name_len;
-    memcpy(new_ze->root_path[0], root, name_len);
+    memcpy(root_path[par_root_len], dafs_rde->name, cpu_to_le64(dafs_rde->name_len));
+    name_len = par_root_len + cpu_to_le64(dafs_rde->name_len);
+    memcpy(new_ze->root_path[0], root, name_len);*/
 
     /*clear dentry, memset after test null*/
 
