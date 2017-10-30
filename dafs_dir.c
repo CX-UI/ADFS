@@ -119,10 +119,13 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
     struct dzt_entry_info *dzt_ei, *src_ei;
     u64 src_dz, des_dz, src_hn, des_hn;
     unsigned long bitpos = 0;
-    char *name, *phname, *des_name, *src_pn;
+    char *name, *phname, *des_name, *src_pn, *ph, *phn;
 
     src_pn = get_dentry_path(src);
-    src_ei = find_dzt(sb, src_pn);
+    phname = kzalloc(sizeof(char)*strlen(src_pn), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(src_pn), GFP_KERNEL);
+    memcpy(phname, src_pn, strlen(src_pn));
+    src_ei = find_dzt(sb, phname, phn);
     src_de = dafs_find_direntry(sb, src, 0);
     name = src_de->ful_name->f_name;
     src_hn = BKDRHash(name, strlen(name));
@@ -133,8 +136,11 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
         src_dz = 0;
     }
     else {
-        phname = get_dentry_path(des);
-        dzt_ei = find_dzt(sb, phname);
+        ph = get_dentry_path(des);
+        memset(phname, 0, strlen(phname));
+        memset(phn, 0, strlen(phn));
+        memcpy(phname, ph, strlen(ph));
+        dzt_ei = find_dzt(sb, phname, phn);
         des_dz = dzt_ei->dzt_eno;
         des_de = dafs_find_direntry(des);
         des_name = des->ful_name->f_name;
@@ -153,6 +159,8 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
     dlog->des_dz_no = cpu_to_le64(des_dz);
     dlog->des_hashname = cpu_to_le64(des_hn);
 
+    kfree(phname);
+    kfree(ph);
 }
 
 /*delete dir operation log*/
@@ -196,9 +204,10 @@ ERR:
 }
 
 /* find currect zone
+ * ph record file ful name
  * 反向查找
  * 可以用多线程*/
-static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char *phstr)
+static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char *phstr, char *ph)
 {
     struct dzt_entry_info *dzt_ei, *dzt_ei_tem;
     struct nova_sb_info *sbi = NOVA_SB(sb);
@@ -206,9 +215,9 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char
     u64 hashname;
     u64 phlen;
     u64 dzt_eno;
-    char *tem, *ph;
+    char *tem;
 
-    ph = kzalloc(DAFS_PATH_LEN*(char *), GFP_KERNEL);
+    //ph = kzalloc(DAFS_PATH_LEN*(char *), GFP_KERNEL);
     memcpy(ph, phstr, strlen(phstr));
     while(1){
         tem = strrchr(phstr, "/");
@@ -224,7 +233,9 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char
     }
 
     /*root dir*/
-    hashname = BKDRHash("/",1);
+    memset(ph, 0, strlen(ph));
+    memcpy(ph, "/", 1);
+    hashname = BKDRHash(ph ,1);
     dzt_ei = radix_tree_lookup(,&dzt_m->dzt_root,hashname);
 
 END:
@@ -246,7 +257,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     struct dafs_zone_entry *dafs_ze;
     struct zone_ptr *zone_p;
     struct dafs_dentry *dafs_de;
-    char *phname = NULL;
+    char *phname, *ph, *phn;
     unsigned long phlen;
     unsigned short delen;
     unsigned short links_count;
@@ -263,9 +274,11 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
 	NOVA_START_TIMING(add_dentry_t, add_dentry_time);
 	if (namelen == 0)
 		return -EINVAL;
-    
-    phname = get_dentry_path(dentry);
-    dzt_ei = find_dzt(sb, &phname);
+    ph = get_dentry_path(dentry);
+    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(phname, ph, strlen(ph));
+    dzt_ei = find_dzt(sb, phname, phn);
     dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
     make_zone_ptr(&zone_p, dafs_ze);
     while(bitpos<zone_p->zone_max){
@@ -277,7 +290,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
         }
     }
 
-    phlen = strlen(phname);
+    phlen = strlen(phn);
     pidir = nova_get_inode(sb, dir);
     dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
     delen = DAFS_DIR_LEN(namelen + phlen); //not decided 
@@ -320,7 +333,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     dafs_de->name[dentry->d_name.len] = '\0';
     dafs_de->ful_name->f_namelen = cpu_to_le64(phlen);
     /*那路径名称呢*/
-    dafs_de->ful_name->f_name = phname;
+    dafs_de->ful_name->f_name = phn;
     /*not decided是不是每次写到nvm都需要这个接口*/ 
     nova_flush_buffer(dafs_de, delen, 0);
     
@@ -339,6 +352,8 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     ret = add_rf_entry(dzt_ei, hashname);
 
     NOVA_END_TIMING(add_dentry_t, add_entry_time);
+    kfree(phname);
+    kfree(ph);
     return ret;
 }
 
@@ -355,15 +370,18 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *de
     unsigned long dzt_eno;
     u64 ph_hash, ht_addr, par_hash;
     unsigned long de_pos;
-    char *phname = NULL;
+    char *phname, *ph, *phn;
     int ret;
 
-    phname = get_dentry_path(dentry);
-    dzt_ei = find_dzt(sb, &phname);
+    ph = get_dentry_path(dentry);
+    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(phname, ph, strlen(ph));
+    dzt_ei = find_dzt(sb, phname, phn);
     dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
-    phlen = strlen(phname);
+    phlen = strlen(phn);
     dzt_eno = dzt_ei->dzt_eno;
-    ph_hash = BKDRHash(phname, phlen);
+    ph_hash = BKDRHash(phn, phlen);
 
 
     /*lookup in hash table, not decided*/
@@ -376,6 +394,8 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *de
     if(update_flag)
         update_read_hot(dzt_ei, ph_hash);
 
+    kfree(phname);
+    kfree(ph);
     return direntry;
 }
 
@@ -591,7 +611,7 @@ int dafs_remove_dentry(struct dentry *dentry)
     unsigned long de_pos;
     unsigned short links_count;
     u64 ph_hash, de_addr;
-    char *phname = NULL;
+    char *phname, *ph, *phn;
     int ret;
     //unsigned short loglen;
 	//u64 curr_tail, curr_entry;
@@ -608,12 +628,15 @@ int dafs_remove_dentry(struct dentry *dentry)
 
     /*直接rm direntry就可以
     * 先找到相应的dir*/    
-    phname = get_dentry_path(dentry);
-    dzt_ei = find_dzt(sb, &phname);
+    ph = get_dentry_path(dentry);
+    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(phname, ph, strlen(ph));
+    dzt_ei = find_dzt(sb, phname, ph);
     dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
-    phlen = strlen(phname);
+    phlen = strlen(phn);
     dzt_eno = dzt_ei->dzt_eno;
-    ph_hash = BKDRHash(phname, phlen);
+    ph_hash = BKDRHash(phn, phlen);
 
     /*lookup in hash table*/
     ret = lookup_in_hashtable(dzt_ei->ht_head, ph_hash, phlen, 1, &de_pos);
@@ -630,6 +653,8 @@ int dafs_remove_dentry(struct dentry *dentry)
 
     if(ret)
         return ret;
+    kfree(phname);
+    kfree(ph);
     
     
     NOVA_END_TIMING(remove_dentry_t, remove_dentry_time);
@@ -644,7 +669,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     u64 new_block;
     u64 curr_p;
     u64 phhash;
-    char *phname;
+    char *phname, *ph, *phn;
     unsigned long phlen;
     unsigned long bitpos ,depos;
     unsigned short delen;
@@ -672,11 +697,14 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
 
     /*创建. ..并添加到父目录*/
     /*find parent directory*/
-    phname = get_dentry_path(dentry);
-    phlen = strlen(phname);
-    dzt_ei = find_dzt(sb, &phname);
+    ph = get_dentry_path(dentry);
+    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(phname, ph, strlen(ph));
+    phlen = strlen(phn);
+    dzt_ei = find_dzt(sb, phname, phn);
     dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
-    phhash = BKDRHash(phname, phlen);
+    phhash = BKDRHash(phn, phlen);
     //not decided
     ret = lookup_in_hashtable(dzt_ei->ht_head, phhash, phlen, 1, &depos);
     if(!ret)
@@ -713,9 +741,9 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     dafs_de->zone_no = cpu_to_le64(dzt_ei->dzt_eno);
     strncpy(dafs_de->name, ".\0", 2);
     dafs_de->ful_name->f_namelen = cpu_to_le64(phlen + 2);
-    strcpy(dafs_de->ful_name->f_name, phname);
-    strcat(dafs_de->ful_name->f_name, "/.");
-    
+    strcat(phn, "/.");
+    dafs_de->ful_name->f_name = phn;
+
     nova_flush_buffer(dafs_de, delen, 0);
     
     /*change in dir*/
@@ -760,8 +788,8 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     dafs_de->zone_no = cpu_to_le64(dzt_ei->dzt_eno);
     strncpy(dafs_de->name, "..\0", 2);
     dafs_de->ful_name->f_namelen = cpu_to_le64(phlen + 3);
-    strcpy(dafs_de->ful_name->f_name, phname);
-    strcat(dafs_de->ful_name->f_name, "/..");
+    strcat(phn, ".");
+    dafs_de->ful_name->f_name = phn;
     
     nova_flush_buffer(dafs_de, delen, 0);
     
@@ -779,6 +807,8 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     ret = add_rf_entry(dzt_ei, hashname);
     //不需要update tail
     
+    kfree(phname);
+    kfree(ph);
     return 0;
 }
 
@@ -793,17 +823,22 @@ static int dafs_empty_dir(struct inode *inode, struct dentry *dentry)
     unsigned long dzt_eno;
     u64 ph_hash;
     unsigned long de_pos;
-    char *phname = NULL;
+    char *phname, *ph, phn;
     unsigned long nr_de;
     int i, ret;
 
-    phname = get_dentry_path(dentry);
-    dzt_ei = find_dzt(sb, &phname);
+    ph = get_dentry_path(dentry);
+    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(phname, ph, strlen(ph));
+    dzt_ei = find_dzt(sb, phname, phn);
     dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
-    phlen = strlen(phname);
+    phlen = strlen(phn);
     dzt_eno = dzt_ei->dzt_eno;
-    ph_hash = BKDRHash(phname, phlen);
+    ph_hash = BKDRHash(phn, phlen);
 
+    kfree(phname);
+    kfree(ph);
     /*lookup in hash table, not decided*/
     ret = lookup_in_hashtable(dzt_ei->ht_head, ph_hash, phlen, 1, &de_pos);
     if(!ret)
@@ -840,7 +875,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     struct dafs_zone_entry *dafs_ze;
     struct zone_ptr *zone_p;
     struct dafs_dentry *dafs_de;
-    char *phname = NULL, *new_pn;
+    char *phname, *new_pn, *ph, *phn;
     unsigned long phlen;
     unsigned short delen;
     unsigned long bitpos = 0, cur_pos = 0;
@@ -857,8 +892,11 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
 	if (namelen == 0)
 		return -EINVAL;
     
-    phname = get_dentry_path(dentry);
-    dzt_ei = find_dzt(sb, phname);
+    ph = get_dentry_path(dentry);
+    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(phname, ph, strlen(ph));
+    dzt_ei = find_dzt(sb, phname, phn);
     dafs_ze = cpu_to_le64(dzt_ei->dz_addr);
 
     make_zone_ptr(&zone_p, dafs_ze);
@@ -871,7 +909,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
         }
     }
 
-    phlen = strlen(phname);
+    phlen = strlen(phn);
     pidir = nova_get_inode(sb, dir);
     dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
     delen = DAFS_DIR_LEN(namelen + phlen); //not decided 
@@ -909,20 +947,20 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     dafs_de->name[dentry->d_name.len] = '\0';
     dafs_de->ful_name->f_namelen = cpu_to_le64(phlen);
     /*那路径名称呢*/
-    dafs_de->ful_name->f_name = phname;
+    dafs_de->ful_name->f_name = phn;
 
     /*get new ei path hashname*/
     if(dzt_ei->eno!=1){
         newp_len =(u64)dzt_ei->root_len + phlen;
         new_pn = kzalloc(sizeof(char*)*newp_len, GFP_KERNEL);
-        get_zone_path(dzt_ei, new_pn, phname);
+        get_zone_path(dzt_ei, new_pn, phn);
         *root_len = newp_len;
         *new_hn = BKDRHash(new_pn, newp_len);
         kfree(new_pn);
     } else {
         newp_len = phlen;
         new_pn = kzalloc(sizeof(char *)*newp_len, GFP_KERNEL);
-        memcpy(new_pn, phname);
+        memcpy(new_pn, phn);
         *root_len = newp_len;
         *new_hn = BKDRHash(new_pn, newp_len);
         kfree(new_pn);
@@ -940,12 +978,14 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     dir->i_blocks = pidir->i_blocks;
 
     /*set pos in hash table for each zone*/
-    hashname = BKDRHash(phname, phlen);
+    hashname = BKDRHash(phn, phlen);
     record_pos_htable(sb, dzt_ei->ht_head, hashname, phlen, cur_pos, 1);
 
     /*new rf_entry*/
     ret = add_rf_entry(dzt_ei, hashname);
 
+    kfree(phname);
+    kfree(ph);
     NOVA_END_TIMING(add_dentry_t, add_entry_time);
     return ret;
 }
@@ -1146,7 +1186,7 @@ int add_rename_dir(struct dentry *o_dentry, struct dentry *n_dentry, struct dafs
     struct dafs_dentry *new_de;
     struct dzt_entry_info *o_ei, *n_ei;
     struct dafs_zone_entry *o_ze, *n_ze;
-    char *o_phname=NULL, n_name, n_phname=NULL, npath;
+    char  *n_name, *n_phname, *ph, *phn;
     unsigned long bitpos, cur_pos;
     int i;
     int ret= 0;
@@ -1157,15 +1197,19 @@ int add_rename_dir(struct dentry *o_dentry, struct dentry *n_dentry, struct dafs
     o_ei = find_dzt(sb, &o_phname);
     o_ze = cpu_to_le64(o_ei->dz_addr);*/
     
-    n_phname = get_dentry_path(n_dentry);
-    npath = n_phname;
-    n_ei = find_dzt(sb, &n_phname);
+    ph = get_dentry_path(n_dentry);
+    n_phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(n_phname, ph, strlen(ph));
+    n_ei = find_dzt(sb, n_phname, phn);
     n_ze = cpu_to_le64(n_ei->dz_addr);
 
     n_name = n_dentry->d_name.name;
 
-    ret = __rename_dir(old_de, n_ei, npath, n_name);
+    ret = __rename_dir(old_de, n_ei, phn, n_name);
     
+    kfree(phname);
+    kfree(ph);
     return ret;
 }
 
@@ -1223,7 +1267,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     struct dafs_zone_entry *n_ze, *o_ze;
     struct dzt_entry_info *n_ei;
     struct zone_ptr *z_p;
-    char *n_phname, *name=new_dentry->d_name.name, phname;
+    char *n_phname, *name=new_dentry->d_name.name, *phname, *ph, *phn;
     unsigned long bitpos=0, cur_pos=0;
     int namelen = new_dentry->d_name.len;
     unsigned short de_len;
@@ -1232,11 +1276,13 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
 
     o_de = dafs_find_direntry(sb, o_de, 0);
 
-    phname = get_dentry_path(new_dentry);
-    n_phname = phname;
-    n_ei = find_dzt(sb, &phname);
+    ph = get_dentry_path(new_dentry);
+    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(phname, ph, strlen(ph));
+    n_ei = find_dzt(sb, phname, phn);
     n_ze = cpu_to_le64(n_ei->dz_addr);
-    phlen = strlen(n_phname);
+    phlen = strlen(phn);
     make_zone_ptr(&z_p, n_ze);
     while(bitpos<z_p->zone_max){
         if(test_bit_le(bitpos, z_p->statemap)||test_bit_le(bitpos+1, z_p->statemap)){
@@ -1285,7 +1331,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     dafs_de->name[namelen] = name;
     dafs_de->ful_name->f_namelen = cpu_to_le64(phlen);
     /*那路径名称呢*/
-    dafs_de->ful_name->f_name = n_phname;
+    dafs_de->ful_name->f_name = phn;
     /*not decided是不是每次写到nvm都需要这个接口*/ 
     nova_flush_buffer(dafs_de, de_len, 0);
     
@@ -1297,12 +1343,14 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     dir->i_blocks = pidir->i_blocks;
 
     /*set pos in hash table for each zone*/
-    hashname = BKDRHash(n_phname, phlen);
+    hashname = BKDRHash(phn, phlen);
     record_pos_htable(sb, n_ei->ht_addr, hashname, phlen, cur_pos, 1);
 
     /*new rf_entry*/
     ret = add_rf_entry(n_ei, hashname);
     
+    kfree(phname);
+    kfree(ph);
     NOVA_END_TIMING(add_dentry_t, add_entry_time);
 
     return ret;
@@ -1327,7 +1375,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     ino_t ino;
     u8 type;
     int ret;
-    char *phname;
+    char *phname, *ph, *phn;
     timing_t readdir_time;
 
     NOVA_START_TIMING(readdir_t, readdir_time);
@@ -1337,9 +1385,14 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
 			__func__, (u64)inode->i_ino,
 			pidir->i_size, ctx->pos);
 
-    phname = get_dentry_path(dentry);
-    ei = find_dzt(sb, &phname);
+    ph = get_dentry_path(dentry);
+    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(phname, ph, strlen(ph));
+    ei = find_dzt(sb, phname, phn);
 
+    kfree(phname);
+    kfree(ph);
     if(!ei){
         nova_err("ei with dentry %lu not exist!\n", dentry->d_inode->i_ino);
         BUG();
