@@ -471,6 +471,9 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
 
     /* DRAM 中新建entry的时候一定是split zone的时候，不需要condition验证*/
     //new_dzt_e = append_dzt_entry(sb, dzt_ei, root_path, SPLIT_ZONE);
+    /*build hashtable*/
+
+    /*build rf_radix tree*/
 
 end:
     return new_dzt_ei;
@@ -481,43 +484,38 @@ end:
 *alloc dzt_entry
 * 1. append at tail 
 * 2. scan bitmap */
-uint64_t alloc_dzt_entry(struct super_block *sb)
+u64 alloc_dzt_entry(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);  
     struct dafs_dzt_block *dzt_blk;
     struct dzt_ptr *dzt_p;
     unsigned long tail_pos;
-    unsigned long bitpos;
+    unsigned long bitpos = 1;
     unsigned long i;
     
     dzt_blk = dafs_get_dzt_block(sbi);
     tail_pos = le64_to_cpu(dzt_blk->dzt_tail_pos);
 
     make_dzt_ptr(sbi, &dzt_p);
-    if(!test_bit(tail_pos, dzt_p->bitmap)){
+    /*
+    if(!test_bit_le(tail_pos, dzt_p->bitmap)){
         // not decided  清空
         i = tail_pos;
         i++;
         dzt_blk->dzt_tail_pos = cpu_to_le64(i);      //not decided 原子性
         return tail_pos;
-    }
+    }*/
     while(bitpos < dzt_p->max){
-        if(!test_bit(bitpos, dzt_p->bitmap))
-        {
-            //not decided 清空
-            break;
-        }
+        if(!test_bit_le(bitpos, dzt_p->bitmap))
+            goto end;
         else
             bitpos++;
     }
-    if(bitpos==dzt_p->max)
-        goto FULL;                            //not decided, dzt is full
-    
+
+    nova_err(sb, "dzt_blk is full");
+    return ENOMEM;
+end:
     return bitpos;
-
-
-FULL:
-    return NULL;
 }
 
 /*
@@ -553,11 +551,6 @@ struct dafs_dzt_entry *append_dzt_entry(struct super_block *sb, struct dzt_entry
     return dzt_e;
 }
 
-/*
-* hash algrithm*/
-uint64_t dafs_hash(){
-    //not decided
-}
 
 /*
 * delete dzt_entry in DRAM
@@ -585,11 +578,10 @@ struct dzt_entry_info *delete_dzt_entry(struct super_block *sb, struct dzt_entry
 /*
 * allocate and initalize for migrate zone*/
 struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_entry *n_dzt_e,\
-                                     struct dzt_entry_info *n_dzt_e, struct dafs_zone_entry *par_ze,\
-                                     struct dzt_entry_info *par_dzt_ei, unsigned long sp_id)
+                                     struct dzt_entry_info *n_dzt_ei, unsigned long sp_id)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dafs_zone_entry *new_ze;
+    struct dafs_zone_entry *new_ze, *par_ze;
     struct dafs_dentry *dafs_rde;
     struct dzt_manager *dzt_m = sbi->dzt_manager;
     unsigned long blocknr;
@@ -612,17 +604,15 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     
     /* add attributes to dzt_entry  */
     n_dzt_e->dz_addr = cpu_to_le64(block);
-    //n_dzt_e->dz_log_head = cpu_to_le64(block);
-    //n_dzt_ei->dz_log_head = block;
     n_dzt_ei->dz_addr = block;
 
     /* init new zone_entry */
     new_ze =(struct dafs_zone_entry *)nova_get_block(sb, n_dzt_ei->dz_addr);
 
     /* clear statemap of new zone*/
-    memset(new_ze->statemap, 0, SIZE_DZT_BITMAP);
+    memset(new_ze->statemap, 0, SIZE_OF_ZONE_BITMAP);
 
-    new_ze->dz_no = cpu_to_le64(n_dzt_e->dzt_eno);
+    new_ze->dz_no = cpu_to_le64(n_dzt_ei->dzt_eno);
     //new_ze->dz_sf = 0;
     
     /*
@@ -635,8 +625,9 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
 
     /*clear dentry, memset after test null*/
 
+    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, n_dzt_ei->pdz_addr);
     /* migrate*/
-    migrate_zone_entry(sp_id, n_dzt_e, par_ze, new_ze);
+    migrate_zone_entry(sb, sp_id, n_dzt_ei);
 
     zone_set_statemap(sb, par_ze);
 
@@ -648,11 +639,11 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
 
 /*
 * migrate zone entries */
-int migrate_zone_entry(struct zone_ptr *z_p, unsigned long ch_pos, struct dafs_dzt_entry *dzt_ne\
-                      struct dafs_zone_entry *old_z_e, struct dafs_zone_entry *new_z_e)
+int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_entry_info *dzt_nei)
 {
     //struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dafs_dentry *dafs_nde, *dafs_ode, *dafs_rde;
+    struct dafs_zone_entry *old_ze, *new_ze;
+    struct dafs_dentry *dafs_rde;
     struct zone_ptr *z_p;
     unsigned long old_id, ch_len, old_namelen, sub_no;
     unsigned long ch_no[NR_DENTRY_IN_ZONE];
@@ -663,27 +654,31 @@ int migrate_zone_entry(struct zone_ptr *z_p, unsigned long ch_pos, struct dafs_d
     int oi = 0;
     int ret = 0;
     
-    dafs_rde = old_z_e->dentry[ch_pos];
+    old_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_nei->pdz_addr);
+    ne_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_nei->dz_addr);
+
+    dafs_rde = old_ze->dentry[ch_pos];
     /*clear statemap of new zone*/
 
     //new_z_e->dz_no = dzt_ne->dzt_eno;
-    old_namelen = dafs_rde->name_len;
+    old_namelen = le64_to_cpu(dafs_rde->ful_name->f_namelen);
 
-    memcpy(ch_no[0],dafs_rde->sub_pos, dafs_rde->sub_num);
-    ch_len = dafs_rde->sub_num;
+    ch_len = le64_to_cpu(dafs_rde->sub_num);
+    memcpy(ch_no[0],dafs_rde->sub_pos, ch_len);
 
     /* modify root dentry 
     * not change rde sub_state*/
     dafs_rde->file_type = ROOT_DIRECTORY;
     dafs_rde->mtime = CURRENT_TIME_SEC.tv_sec;
     dafs_rde->vroot = 1;
-    dafs_rde->zoon_no = dzt_ne->dzt_eno;
-    dafs_rde->sub_pos = NULL;
+    //dafs_rde->zoon_no = dzt_nei->dzt_eno;
+    dafs_rde->dzt_hn = cpu_to_le64(dzt_nei->hash_name);
+    //dafs_rde->sub_pos = NULL;
     
     /*递归*/
 
-    make_zone_ptr(&z_p, new_z_e);
-    cpy_new_zentry(z_p, new_z_e, old_z_e, old_namelen, dafs_rde, ch_no, 0);
+    make_zone_ptr(&z_p, new_ze);
+    cpy_new_zentry(new_ze, old_ze, old_namelen, dafs_rde, ch_no, 0);
     
     return ret;
 }
@@ -692,125 +687,143 @@ int migrate_zone_entry(struct zone_ptr *z_p, unsigned long ch_pos, struct dafs_d
 *copy andd get new zone_dentry 
 *递归
 * z_p  for make every dentry statemap valid
-* new_z_e and old_z_e for get old dentry and new dentry
-* par_ze for record sub_file pos 
+* new_ze and old_ze for get old dentry and new dentry
+* par_de for record sub_file pos 
 * ch_no is an array records subfile_id
 * ch_pos is the star pos for copy*/
-static inline void cpy_new_zentry(struct zone_ptr *z_p,struct dafs_zone_entry *new_z_e,\
-                                 struct dafs_zone_entry *old_z_e, unsigned long old_len,
-                                 struct dafs_dentry *par_ze, unsigned long ch_no[], unsigned long ch_pos)
+static inline void cpy_new_zentry(struct dafs_zone_entry *new_ze, struct dafs_zone_entry *old_ze,\
+        unsigned long old_len, struct dafs_dentry *par_de, unsigned long *ch_no, unsigned long ch_pos)
 {
-    struct dafs_dentry *new_ze, *old_ze;
+    struct dafs_dentry *new_de, *old_de;
+    struct zone_ptr *new_p, *old_p;
     //unsigned long old_len = r_ze->name_len;
     char name[NOVA_NAME_LEN]; 
     unsigned long  j,k,old_id;
     unsigned long ch_len;
     unsigned long new_id = ch_pos;  /* ch_pos initalized as 0*/
     unsigned long bitpos = 0;
-    unsigned long i;
+    unsigned long i, name_len;
 
-    ch_len = par_ze->sub_num;
+    make_zone_ptr(&old_p, old_ze);
+    make_zone_ptr(&new_p, new_ze);
+    ch_len = par_de->sub_num;
     for(i=0;i<ch_len;i++){
-        old_id = ch_no[i];
-        old_ze = old_z_e->dentry[old_id];
-        new_ze = new_z_e->dentry[new_id];
-        if(old_ze->file_type == NORMAL_FILE){
-            new_ze->entry_type = old_ze->entry_type;
-            new_ze->name_len = old_ze->name_len-old_len;
-            new_ze->file_type = old_ze->file_type;
-            new_ze->links_count = old_ze ->links_count;
-            new_ze->mtime = CURRENT_TIME_SEC.tv_sec;
-            new_ze->vroot = old_ze->vroot;
-            new_ze->path_len = old_ze->path_len-old_len;
-            new_ze->ino = old_ze->ino;
-            new_ze->par_ino = old_ze->par_ino;
-            new_ze->size = old_ze->size;
-            new_ze->prio = LEVEL_0;
-            new_ze->d_f = 0;            //not decided
-            //new_ze->sub_s = old_ze->sub_s;
-            new_ze->f_s = DENTRY_FREQUENCY_COLD;
+        old_id = le64_to_cpu(ch_no[i]);
+        old_de = old_ze->dentry[old_id];
+        new_de = new_ze->dentry[new_id];
+        if(old_de->file_type == NORMAL_FILE){
+            new_de->entry_type = old_de->entry_type;
+            new_de->name_len = old_de->name_len;
+            //new_de->name_len = old_de->name_len-old_len;
+            new_de->file_type = old_de->file_type;
+            new_de->links_count = old_de ->links_count;
+            new_de->mtime = CURRENT_TIME_SEC.tv_sec;
+            new_de->vroot = old_de->vroot;
+            //new_de->path_len = old_de->path_len-old_len;
+            new_de->ino = old_de->ino;
+            new_de->par_ino = old_de->par_ino;
+            new_de->size = old_de->size;
+            new_de->dzt_hn = old_de->dzt_hn;
+            new_de->prio = LEVEL_0;
+            //new_de->d_f = 0;            //not decided
+            //new_de->sub_s = old_de->sub_s;
+            new_de->f_s = DENTRY_FREQUENCY_COLD;
+            memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
+            name_len = le64_to_cpu(old_de->ful_name->f_namelen) - old_len;
+            new_de->ful_name->f_namelen = cpu_to_le64(name_len);
+            memcpy(new_de->ful_name->f_name, old_de->ful_name->f_name+old_len, name_len+1);
 
-            for(k = 0;k<new_ze->name_len;k++){
-                new_ze->name[k] = old_ze->name[old_len];
+
+            /*for(k = 0;k<new_de->name_len;k++){
+                new_de->name[k] = old_de->name[old_len];
                 old_len++:
-            }
+            }*/
 
             /*set sum frequency*/
-            //old_z_e->dz_sf -= old_ze->d_f;
+            //old_ze->dz_sf -= old_de->d_f;
 
-            /*set this file's pos in its par_ze*/
-            par_ze->sub_pos[i] = new_id;
+            /*set this file's pos in its par_de*/
+            par_de->sub_pos[i] = new_id;
             /*atomic*/
             bitpos = new_id *2 +1;
-            set_bit_le(bitpos, z_p->statemap);
+            set_bit_le(bitpos, new_p->statemap);
+            /*record pos in hashtable*/
+            
+            /*set rf_entry*/
+
+            /*set old invalid*/
+            bitpos = old_id*2;
+            test_and_clear_bit_le(bitpos, old_p->statemap);
+            bitpos++;
+            test_and_clear_bit_le(bitpos, old_p->statemap);
 
             new_id++;
 
-        }else if(old_ze->file_type == ROOT_DIRECTORY){
-            new_ze->entry_type = old_ze->entry_type;
-            new_ze->name_len = old_ze->name_len-old_len;
-            new_ze->file_type = old_ze->file_type;
-            new_ze->links_count = old_ze ->links_count;
-            new_ze->mtime = CURRENT_TIME_SEC.tv_sec;
-            new_ze->vroot = old_ze->vroot;
-            new_ze->path_len = old_ze->path_len-old_len;
-            new_ze->ino = old_ze->ino;
-            new_ze->par_ino = old_ze->par_ino;
-            new_ze->size = old_ze->size;
-            new_ze->zone_no = old_ze->zone_no;
-            new_ze->prio = LEVEL_0;
-            new_ze->d_f = 0;
-            new_ze->sub_s = old_ze->sub_s;
-            new_ze->f_s = DENTRY_FREQUENCY_COLD;
-            new_ze->sub_num = old_ze->sub_num;
+        }else if(old_de->file_type == ROOT_DIRECTORY){
+            new_de->entry_type = old_de->entry_type;
+            new_de->name_len = old_de->name_len-old_len;
+            new_de->file_type = old_de->file_type;
+            new_de->links_count = old_de ->links_count;
+            new_de->mtime = CURRENT_TIME_SEC.tv_sec;
+            new_de->vroot = old_de->vroot;
+            new_de->path_len = old_de->path_len-old_len;
+            new_de->ino = old_de->ino;
+            new_de->par_ino = old_de->par_ino;
+            new_de->size = old_de->size;
+            new_de->zone_no = old_de->zone_no;
+            new_de->prio = LEVEL_0;
+            new_de->d_f = 0;
+            new_de->sub_s = old_de->sub_s;
+            new_de->f_s = DENTRY_FREQUENCY_COLD;
+            new_de->sub_num = old_de->sub_num;
 
-            for(k = 0;k<new_ze->name_len;k++){
-                new_ze->name[k] = old_ze->name[old_len];
+            for(k = 0;k<new_de->name_len;k++){
+                new_de->name[k] = old_de->name[old_len];
                 old_len++;
             }
             
             /*set sum frequency*/
-            //old_z_e->dz_sf -= old_ze->d_f;
+            //old_ze->dz_sf -= old_de->d_f;
             
-            par_ze->sub_pos[i] = new_id;
+            par_de->sub_pos[i] = new_id;
             bitpos = new_id *2 +1;
             set_bit_le(bitpos, z_p->statemap);
             new_id++;
 
-        }else if(old_ze->file_type == NORMAL_DIRECTORY){
+        }else if(old_de->file_type == NORMAL_DIRECTORY){
                     
-            new_ze->entry_type = old_ze->entry_type;
-            new_ze->name_len = old_ze->name_len-old_len;
-            new_ze->file_type = old_ze->file_type;
-            new_ze->links_count = old_ze ->links_count;
-            new_ze->mtime = CURRENT_TIME_SEC.tv_sec;
-            new_ze->vroot = old_ze->vroot;
-            new_ze->path_len = old_ze->path_len-old_len;
-            new_ze->ino = old_ze->ino;
-            new_ze->par_ino = old_ze->par_ino;
-            new_ze->size = old_ze->size;
-            new_ze->prio = LEVEL_0;
-            new_ze->d_f = 0;
-            new_ze->sub_s = old_ze->sub_s;
-            new_ze->f_s = DENTRY_FREQUENCY_COLD;
-            new_ze->sub_num = old_ze->sub_num;
+            new_de->entry_type = old_de->entry_type;
+            new_de->name_len = old_de->name_len-old_len;
+            new_de->file_type = old_de->file_type;
+            new_de->links_count = old_de ->links_count;
+            new_de->mtime = CURRENT_TIME_SEC.tv_sec;
+            new_de->vroot = old_de->vroot;
+            new_de->path_len = old_de->path_len-old_len;
+            new_de->ino = old_de->ino;
+            new_de->par_ino = old_de->par_ino;
+            new_de->size = old_de->size;
+            new_de->prio = LEVEL_0;
+            new_de->d_f = 0;
+            new_de->sub_s = old_de->sub_s;
+            new_de->f_s = DENTRY_FREQUENCY_COLD;
+            new_de->sub_num = old_de->sub_num;
             
-            for(k = 0;k<new_ze->name_len;k++){
-                new_ze->name[k] = old_ze->name[old_len];
+            for(k = 0;k<new_de->name_len;k++){
+                new_de->name[k] = old_de->name[old_len];
                 old_len++;
             }
             
             /*set sum frequency*/
-            //old_z_e->dz_sf -= old_ze->d_f;
+            //old_ze->dz_sf -= old_de->d_f;
             
-            par_ze->sub_pos[i] = new_id;
+            par_de->sub_pos[i] = new_id;
             bitpos = new_id *2 +1;
             set_bit_le(bitpos, z_p->statemap);
             new_id++;
             
-            memcpy(sub_no[0],old_ze->sub_pos,old_ze->sub_num);
-            /*input new_ze when it is a directory*/
-            cpy_new_zentry(z_p, new_z_e, old_z_e, old_len, new_ze, sub_no, new_id);
+            memcpy(sub_no[0],old_de->sub_pos,old_de->sub_num);
+            /*input new_de when it is a directory*/
+            cpy_new_zentry(z_p, new_ze, old_ze, old_len, new_de, sub_no, new_id);
 
         }
 
@@ -1401,7 +1414,7 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
         //dafs_rde = par_ze->dentry[sp_id];
         new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, sp_id);
         new_dzt_e = append_dzt_entry(sb, new_dzt_ei);
-        new_ze = alloc_mi_zone(sb, new_dzt_e, new_dzt_ei, par_ze, par_dzt_ei, sp_id);
+        new_ze = alloc_mi_zone(sb, new_dzt_e, new_dzt_ei, sp_id);
         goto ret;
 
     }else if(SPLIT_TYPE == NEGTIVE_SPLIT){
