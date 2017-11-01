@@ -113,6 +113,7 @@ fill_he:
     he->hd_name = cpu_to_le64(hashname);
     he->name_len = cpu_to_le64(namelen);
     he->hd_pos = cpu_to_le64(pos);
+    test_and_set_bit_le(h_pos, ht_p->hash_map);
     nova_flush_buffer(he, size(struct hash_entry),0);
 out:
     return 0;
