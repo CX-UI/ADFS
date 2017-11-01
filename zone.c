@@ -591,6 +591,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     struct dafs_zone_entry *new_ze, *par_ze;
     struct dafs_dentry *dafs_rde;
     struct dzt_manager *dzt_m = sbi->dzt_manager;
+    //struct dzt_entry_info *par_ei;
     unsigned long blocknr;
     unsigned long par_root_len, name_len;
     int allocated;
@@ -636,6 +637,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     /* migrate*/
     migrate_zone_entry(sb, sp_id, n_dzt_ei);
 
+    /*reset statemap*/
     zone_set_statemap(sb, par_ze);
 
     make_dzt_entry_valid(sbi, n_dzt_e->dzt_eno);
@@ -701,7 +703,7 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     old_namelen = le64_to_cpu(dafs_rde->ful_name->f_namelen);
 
     ch_len = le64_to_cpu(dafs_rde->sub_num);
-    ch_no = kzalloc(sizeof(int)*ch_len);
+    ch_no = kzalloc(sizeof(unsigned long)*ch_len);
     for(i =0;i<ch_len;i++){
         ch_no[i] = le64_to_cpu(dafs_rde->sub_pos[i]);
     }
@@ -736,7 +738,7 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
 * ch_pos is the star pos for copy*/
 static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_ei,\
         struct dzt_entry_info *old_ei, unsigned long old_len, struct dafs_dentry *par_de,\
-        unsigned long *ch_no, unsigned long *ch_pos)
+        const unsigned long *ch_no, unsigned long *ch_pos)
 {
     struct dafs_dentry *new_de, *old_de;
     struct zone_ptr *new_p, *old_p;
@@ -937,6 +939,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             new_id++;
             *ch_pos = new_id;
             sub_len = le64_to_cpu(old_de->sub_num);
+            sub_no = (unsigned long *)kzalloc(sizeof(unsigned long)*sub_len)
             for(j=0;j<sub_len;j++){
                 sub_no[j] = le64_to_cpu(old_de->sub_pos[j]);
             }
@@ -1234,7 +1237,7 @@ static unsigned long find_invalid_id(struct zone_ptr *z_p, unsigned long start_p
 /*
 * record mean frequency 
 * bring reference(&) in*/
-uint64_t dafs_rec_mf(struct dafs_zone_entry *z_e)
+uint64_t dafs_rec_mf(struct dzt_entry_info *ei)
 {
     struct zone_ptr *z_p;
     unsigned long bitpos = 0;
@@ -1273,23 +1276,27 @@ int dafs_change_condition(struct super_block *sb)
 
 /*
 * set state in statemap for each zone*/
-int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *z_e)
+int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    //struct dafs_zone_entry *z_e;
+    //struct dafs_zone_entry *ze;
     struct zone_ptr *z_p;
     struct dafs_dentry *dafs_de;
     struct dafs_dzt_entry *dzt_e;
-    //struct dzt_entry_info *dzt_ei;
+    struct dzt_entry_info *par_ei;
     unsigned long bitpos = 0;
     uint64_t mean;
     int statement;
     int id = 0;
     int ret = 0;
+    u64 par_eno;
 
-    make_zone_ptr(&z_p, z_e);
+    par_eno = le64_to_cpu(ze->dz_no);
+    par_ei = DAFS_GET_EI(sb, par_eno);
 
-    mean = dafs_rec_mf(z_e);
+    make_zone_ptr(&z_p, ze);
+
+    mean = dafs_rec_mf(par_ei);
 
     while(bitpos < z_p->zone_max){
         if((!test_bit_le(bitpos, z_p->statemap)) && (!test_bit_le(bitpos+1, z_p->statemap))){
@@ -1297,8 +1304,8 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *z_e)
             id++;
 
         }else{      
-            dafs_de = z_e->dentry[id];
-            statement = set_dentry_state(z_e, dafs_de);
+            dafs_de = ze->dentry[id];
+            statement = set_dentry_state(ze, dafs_de);
             
             if(statement == STATEMAP_COLD){
                 test_and_clear_bit_le(bitpos, z_p->statemap);

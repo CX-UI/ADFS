@@ -48,15 +48,18 @@ int delete_rf_entry(struct dzt_entry_info *ei, u64 hash_name)
 }
 
 /*add rf_entry in rf_tree*/
-int add_rf_entry(struct dzt_entry_info *ei, u64 hash_name)
+struct rf_entry *add_rf_entry(struct dzt_entry_info *ei, u64 hash_name)
 {
     struct rf_entry *new_rf;
 
     new_rf = kzalloc(sizeof(struct rf_entry), GFP_KERNEL);
     new_rf->r_f = 0;
+    new_rf->sub_s = 0;
+    new_rf->f_s = 0;
+    new_rf->prio = LEVEL_0;
     new_rf->hash_name = hash_name;
     radix_tree_insert(&ei->rf_root, hash_name);
-    return 0;
+    return new_rf;
 }
 
 /*update read frequency when read happens*/
@@ -70,13 +73,36 @@ int update_read_hot(struct dzt_entry_info *dzt_ei, u64 sub_hash)
     if(!par_rf)
         return -EINVAL;
     par_rf->r_f++;
-    sub_rf = radix_tree_lookup(&dzt_ei->rf_root, ph_hash);
+    sub_rf = radix_tree_lookup(&dzt_ei->rf_root, sub_hash);
     if(!sub_rf)
         return -EINVAL;
     sub_rf->r_f++;
 
     return 0;
 }
+
+/*update write frequency when rename happens */
+int update_rename_hot(struct dzt_entry_info *dzt_ei, u64 sub_hash)
+{
+    struct rf_entry *sub_rf;
+    sub_rf = radix_tree_lookup(&dzt_ei->rf_root, sub_hash);
+    if(!sub_rf)
+        return -EINVAL;
+    sub_rf->f_s = DENTRY_FREQUENCY_WRITE; 
+    return 0;
+}
+
+/*copy rf_entry
+int cpy_rf_entry(struct dzt_entry_info *src_ei, struct dzt_entry_info *des_ei,\
+        u64 new_hn, u64 old_hn)
+{
+    struct rf_entry *new_rf, *old_rf;
+    new_rf =(struct rf_entry *)kzalloc(sizeof(struct rf_entry),GFP_KERNEL);
+    old_rf = radix_tree_lookup(*src_ei->rf_root, old_hn);
+    new_rf->r_f = old_rf->r_f;
+}*/
+
+/*update sub files numbers*/
 
 /*get zone path through root dentry
  * we get charpath when use this function*/
@@ -324,10 +350,10 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     
     dafs_de->size = cpu_to_le64(dir->i_size);
     dafs_de->zone_no = cpu_to_le64(dzt_ei->dzt_eno);
-    dafs_de->prio = LEVEL_0;
+    //dafs_de->prio = LEVEL_0;
     //dafs_de->d_f = 0;
-    dafs_de->sub_s = 0;
-    dafs_de->f_s = 0;
+    //dafs_de->sub_s = 0;
+    //dafs_de->f_s = 0;
     dafs_de->sub_num = 0;
     dafs_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
     /*不存储名字字符在初始化的时候*/
@@ -350,7 +376,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     ret = record_pos_htable(sb, ht_addr, hashname, phlen, cur_pos, 1);
 
     /*new rf_entry*/
-    ret = add_rf_entry(dzt_ei, hashname);
+    add_rf_entry(dzt_ei, hashname);
 
     NOVA_END_TIMING(add_dentry_t, add_entry_time);
     kfree(phname);
@@ -377,7 +403,7 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *de
     ph = get_dentry_path(dentry);
     phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
-    memcpy(phname, ph, strlen(ph));
+    memcupdate write frequency when rename happens py(phname, ph, strlen(ph));
     dzt_ei = find_dzt(sb, phname, phn);
     dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     phlen = strlen(phn);
@@ -392,7 +418,7 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *de
         return -EINVAL;
     direntry = dafs_ze->dentry[de_pos];
     
-    if(update_flag)
+    if(update_flag &&(direntry->file_type!=ROOT_DIRECTORY))
         update_read_hot(dzt_ei, ph_hash);
 
     kfree(phname);
@@ -762,7 +788,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     cur_pos++;
 
     /*new rf_entry*/
-    ret = add_rf_entry(dzt_ei, hashname);
+    add_rf_entry(dzt_ei, hashname);
 
     while(bitpos<zone_p->zone_max){
         if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
@@ -807,7 +833,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     record_pos_htable(sb, dzt_ei->ht_head, hashname, h_len, cur_pos, 1);
 
     /*new rf_entry*/
-    ret = add_rf_entry(dzt_ei, hashname);
+    add_rf_entry(dzt_ei, hashname);
     //不需要update tail
     
     kfree(phname);
@@ -940,10 +966,10 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     
     dafs_de->size = cpu_to_le64(dir->i_size);
     //dafs_de->zone_no = old_de->dz_no;
-    dafs_de->prio = old_de->prio;
+    //dafs_de->prio = old_de->prio;
     //dafs_de->d_f = old_de->d_f;
-    dafs_de->sub_s = old_de->sub_s;
-    dafs_de->f_s = old_de->f_s;
+    //dafs_de->sub_s = old_de->sub_s;
+    //dafs_de->f_s = old_de->f_s;
     dafs_de->sub_num = old->sub_num;
     dafs_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
     /*不存储名字字符在初始化的时候*/
@@ -956,7 +982,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     /*get new ei path hashname*/
     if(dzt_ei->eno!=1){
         newp_len =(u64)dzt_ei->root_len + phlen;
-        new_pn = kzalloc(sizeof(char*)*newp_len, GFP_KERNEL);
+        new_pn = kzalloc(sizeof(char)*newp_len, GFP_KERNEL);
         get_zone_path(sb,dzt_ei, new_pn, phn);
         *root_len = newp_len;
         *new_hn = BKDRHash(new_pn, newp_len);
@@ -986,7 +1012,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     record_pos_htable(sb, dzt_ei->ht_head, hashname, phlen, cur_pos, 1);
 
     /*new rf_entry*/
-    ret = add_rf_entry(dzt_ei, hashname);
+    add_rf_entry(dzt_ei, hashname);
 
     kfree(phname);
     kfree(ph);
@@ -1007,6 +1033,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     struct dafs_zone_entry *ze;
     struct dzt_entry_info *ch_ei;
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct rf_entry *new_rf;
     unsigned long sub_num;
     unsigned long bitpos = 0, dir_pos = 0, s_pos;
     unsigned short delen;
@@ -1055,10 +1082,10 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     
     new_de->size = src_de->size;
     //new_de->zone_no = ze->dz_no;
-    new_de->prio = src_de->prio;
+    //new_de->prio = src_de->prio;
     //new_de->d_f = src_de->d_f + 1;
-    new_de->sub_s = src_de->sub_s;
-    new_de->f_s = DENTRY_FREQUENCY_WRITE;
+    //new_de->sub_s = src_de->sub_s;
+    //new_de->f_s = DENTRY_FREQUENCY_WRITE;
     new_de->sub_num = src_de->sub_num;
     new_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
     /*不存储名字字符在初始化的时候*/
@@ -1080,7 +1107,11 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     dir_pos++;
 
     /*new rf_entry*/
-    ret = add_rf_entry(dzt_ei, hashname);
+    new_rf = add_rf_entry(dzt_ei, hashname);
+    new_rf->f_s = DENTRY_FREQUENCY_WRITE;
+    //ret = update_write_hot(dzt_ei, hashname);
+    if(ret)
+        return -EINVAL;
     
     /*rename 子文件*/
     for(i = 0; i<sub_num; i++) {
@@ -1131,10 +1162,10 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
               
             new_de->size = sub_de->size;
             //new_de->zone_no = ze->dz_no;
-            new_de->prio = sub_de->prio;
+            //new_de->prio = sub_de->prio;
             //new_de->d_f = sub_de->d_f + 1;
-            new_de->sub_s = sub_de->sub_s;
-            new_de->f_s = DENTRY_FREQUENCY_WRITE;
+            //new_de->sub_s = sub_de->sub_s;
+            //new_de->f_s = DENTRY_FREQUENCY_WRITE;
             new_de->sub_num = sub_de->sub_num;
             new_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
             /*不存储名字字符在初始化的时候*/
@@ -1180,7 +1211,8 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
             dir_pos++;
             
             /*new rf_entry*/
-            ret = add_rf_entry(dzt_ei, hashname);
+            new_rf = add_rf_entry(dzt_ei, hashname);
+            new_rf->f_s = DENTRY_FREQUENCY_WRITE;
             
         }
         kfree(s_name);
@@ -1280,6 +1312,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     struct dafs_zone_entry *n_ze, *o_ze;
     struct dzt_entry_info *n_ei;
     struct zone_ptr *z_p;
+    struct rf_entry *new_rf;
     char *n_phname, *name=new_dentry->d_name.name, *phname, *ph, *phn;
     unsigned long bitpos=0, cur_pos=0;
     int namelen = new_dentry->d_name.len;
@@ -1334,10 +1367,10 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     
     dafs_de->size = o_de->size;
     dafs_de->zone_no = n_ze->dz_no;
-    dafs_de->prio = o_de->prio;
+    //dafs_de->prio = o_de->prio;
     //dafs_de->d_f = o_de->d_f;
-    dafs_de->sub_s = o_de->sub_s;
-    dafs_de->f_s = DENTRY_FREQUENCY_WRITE;
+    //dafs_de->sub_s = o_de->sub_s;
+    //dafs_de->f_s = DENTRY_FREQUENCY_WRITE;
     dafs_de->sub_num = 0;
     dafs_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
     /*不存储名字字符在初始化的时候*/
@@ -1362,7 +1395,8 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     record_pos_htable(sb, n_ei->ht_addr, hashname, phlen, cur_pos, 1);
 
     /*new rf_entry*/
-    ret = add_rf_entry(n_ei, hashname);
+    new_rf = add_rf_entry(n_ei, hashname);
+    new_rf->f_s = DENTRY_FREQUENCY_WRITE;
     
     kfree(phname);
     kfree(ph);

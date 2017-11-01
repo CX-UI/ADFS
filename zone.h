@@ -69,10 +69,10 @@ struct dafs_dentry{
     __le64 dzt_hn;          /* hashname od dzr if root dir*/
     //__le64 zone_no;         /* root dir records zone number */
     //__le64 par_z_no;        /* parent zone ino */
-    __le64 prio;            /* level of priority to new a zone */
+    //__le64 prio;            /* level of priority to new a zone */
     //__le64 d_f;             /* dentry frenquency */
-    __le64 sub_s;           /* subfile number state */
-    __le64 f_s;             /* frequency statement */
+    //__le64 sub_s;           /* subfile number state */
+    //__le64 f_s;             /* frequency statement */
     __le64 sub_num;         /* the number of subfiles */
     __le64 sub_pos[NR_DENTRY_IN_ZONE];         /* sub file position*/
     //char path[DAFS_PATH_LEN+1];          /* partial path name for lookup*/
@@ -150,9 +150,13 @@ struct hash_entry{
     __le64 hd_pos;          /* dentry pos in zone*/
 };
 
-/*rf_entry read frequence entry*/
+/*rf_entry read frequence entry
+ * */
 struct rf_entry {
-    u32 r_f;         /*read frequency*/
+    u16 r_f;         /*read frequency*/
+    u16 sub_s;       /*sub files number state*/
+    u16 f_s;         /*frequency state*/
+    u16 prio;        /*prio level*/  
     u64 hash_name;   /*hashname for record dentry it belongs*/
 
 };
