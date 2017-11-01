@@ -681,6 +681,7 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     struct dafs_dentry *dafs_rde;
     struct dzt_entry_info *old_ei;
     struct zone_ptr *z_p;
+    struct rf_entry *rf_e;
     unsigned long old_id, ch_len, old_namelen, sub_no;
     unsigned long *ch_no, ch_pos;
     unsigned long sub_pos[NR_DENTRY_IN_ZONE];
@@ -689,7 +690,7 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     int i = 0;
     int oi = 0;
     int ret = 0;
-    u64 eno;
+    u64 eno, hashname, name_len;
     
     ch_pos = 0;
 
@@ -717,10 +718,17 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     dafs_rde->dzt_hn = cpu_to_le64(dzt_nei->hash_name);
     //dafs_rde->sub_pos = NULL;
     
-    /*递归*/
+    name_len = le64_to_cpu(dafs_rde->ful_name->f_namelen);
+    hashname = BKDRHash(dafs_rde->ful_name->f_name, name_len);
 
     eno = le64_to_cpu(old_ze->dz_no);
     old_ei = DAFS_GET_EI(sb, eno);
+
+    rf_e = radix_tree_lookup(&old_ei->rf_root, hashname);
+    rf_e->sub_s = 0;
+    rf_e->f_s = 0;
+    rf_e->prio = 0;
+
     make_zone_ptr(&z_p, new_ze);
     cpy_new_zentry(dzt_nei, old_ei, old_namelen, dafs_rde, ch_no, &ch_pos);
     
@@ -1541,9 +1549,11 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
     //struct dafs_dentry *dafs_rde;
     struct dzt_entry_info *new_dzt_ei;
     struct dafs_zone_entry *new_ze;
+    struct rf_e;
     int bitpos = 0;
     int ret = 0;
     int ne_id = 0;
+    u64 name_len, hashname;
 
     if(SPLIT_TYPE == POSITIVE_SPLIT){
         //dafs_rde = par_ze->dentry[sp_id];
@@ -1560,10 +1570,13 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
                 bitpos++;
                 if(test_bit_le(bitpos, z_p->statemap)){
                     dafs_de = par_ze->dentry[ne_id];
-                    if(dafs_de->prio==LEVEL_3 || dafs_de->prio==LEVEL_4){
-                        new_dzt_ei = add_dzt_entry(sb, dzt_ei, dafs_de, par_ze);
+                    name_len = le64_to_cpu(dafs_de->ful_name->f_namelen);
+                    hashname = BKDRHash(dafs_de->ful_name->f_name, name_len);
+                    rf_e = radix_tree_lookup(&par_dzt_ei->rf_root, hashname);
+                    if(rf_e->prio==LEVEL_3 || rf_e->prio==LEVEL_4){
+                        new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, ne_id);
                         new_dzt_e = append_dzt_entry(sb, new_dzt_ei);
-                        new_ze = alloc_mi_zone(sb, new_dzt_ei, par_ze, par_dzt_ei, new_id);
+                        new_ze = alloc_mi_zone(sb, new_dzt_e, new_dzt_ei, ne_id);
                         goto ret;
 
                     }else{
