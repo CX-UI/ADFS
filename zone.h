@@ -153,10 +153,10 @@ struct hash_entry{
 /*rf_entry read frequence entry
  * */
 struct rf_entry {
-    u16 r_f;         /*read frequency*/
-    u16 sub_s;       /*sub files number state*/
-    u16 f_s;         /*frequency state*/
-    u16 prio;        /*prio level*/  
+    u32 r_f;         /*read frequency*/
+    u32 sub_s;       /*sub files number state*/
+    u32 f_s;         /*frequency state*/
+    u32 prio;        /*prio level*/  
     u64 hash_name;   /*hashname for record dentry it belongs*/
 
 };

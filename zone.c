@@ -775,7 +775,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             new_de->par_ino = old_de->par_ino;
             new_de->size = old_de->size;
             new_de->dzt_hn = old_de->dzt_hn;
-            new_de->prio = LEVEL_0;
+            //new_de->prio = LEVEL_0;
             //new_de->d_f = 0;            //not decided
             //new_de->sub_s = old_de->sub_s;
             new_de->f_s = DENTRY_FREQUENCY_COLD;
@@ -836,10 +836,10 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             new_de->size = old_de->size;
             new_de->dzt_hn = old_de->dzt_hn;
             //new_de->zone_no = old_de->zone_no;
-            new_de->prio = LEVEL_0;
+            //new_de->prio = LEVEL_0;
             //new_de->d_f = 0;
-            new_de->sub_s = old_de->sub_s;
-            new_de->f_s = DENTRY_FREQUENCY_COLD;
+            //new_de->sub_s = old_de->sub_s;
+            //new_de->f_s = DENTRY_FREQUENCY_COLD;
             new_de->sub_num = old_de->sub_num;
             memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
             name_len = le64_to_cpu(old_de->ful_name->f_namelen) - old_len;
@@ -894,10 +894,10 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             new_de->ino = old_de->ino;
             new_de->par_ino = old_de->par_ino;
             new_de->size = old_de->size;
-            new_de->prio = LEVEL_0;
+            //new_de->prio = LEVEL_0;
             //new_de->d_f = 0;
-            new_de->sub_s = old_de->sub_s;
-            new_de->f_s = DENTRY_FREQUENCY_COLD;
+            //new_de->sub_s = old_de->sub_s;
+            //new_de->f_s = DENTRY_FREQUENCY_COLD;
             new_de->sub_num = old_de->sub_num;
             memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
             name_len = le64_to_cpu(old_de->ful_name->f_namelen) - old_len;
@@ -1237,33 +1237,23 @@ static unsigned long find_invalid_id(struct zone_ptr *z_p, unsigned long start_p
 /*
 * record mean frequency 
 * bring reference(&) in*/
-uint64_t dafs_rec_mf(struct dzt_entry_info *ei)
+int dafs_rec_mf(struct dzt_entry_info *ei)
 {
-    struct zone_ptr *z_p;
-    unsigned long bitpos = 0;
-    uint64_t sum = le64_to_cpu(z_e->dz_sf);
-    uint64_t mean;
-    int i=0;
+    struct rf_entry *rf_e;
+    struct rf_entry *entries[NR_DENTRY_IN_ZONE];
+    int nr,i,rcount=0;
+    int mean = 0;
 
-    make_zone_ptr(&z_p, z_e);
-    while(bitpos < z_p->zone_max){
-        if(!test_bit_le(bitpos, z_p->statemap)){
-            bit_pos++;
-            if(test_bit_le(bitpos, z_p->statemap)){
-                bitpos++;
-                i++;
-            }else
-                bitpos++;
-        }else{
-            bitpos+=2;
-            i++;
-        }
+    nr = radix_tree_gang_lookup(&ei->rf_root, (void **)entries, 0, NR_DENTRY_IN_ZONE);
+    for(i=0; i<nr; i++){
+        rf_e = entries[i];
+        rcount+=rf_e->r_f;
     }
-    
-    mean = sum/i;
 
-    return mean;            
+    mean = rcount/(nr*2);
+    return mean;
 }
+
 
 /*
 * 2012/09/12
@@ -1285,7 +1275,7 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
     struct dafs_dzt_entry *dzt_e;
     struct dzt_entry_info *par_ei;
     unsigned long bitpos = 0;
-    uint64_t mean;
+    int mean;
     int statement;
     int id = 0;
     int ret = 0;
@@ -1296,7 +1286,7 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
 
     make_zone_ptr(&z_p, ze);
 
-    mean = dafs_rec_mf(par_ei);
+    //mean = dafs_rec_mf(par_ei);
 
     while(bitpos < z_p->zone_max){
         if((!test_bit_le(bitpos, z_p->statemap)) && (!test_bit_le(bitpos+1, z_p->statemap))){
@@ -1305,7 +1295,7 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
 
         }else{      
             dafs_de = ze->dentry[id];
-            statement = set_dentry_state(ze, dafs_de);
+            statement = set_dentry_state(dafs_de, par_ei);
             
             if(statement == STATEMAP_COLD){
                 test_and_clear_bit_le(bitpos, z_p->statemap);
@@ -1339,81 +1329,100 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
 /*
 * set dentry state
 * return statemap value*/
-unsigned long set_dentry_state(struct dafs_zone_entry *z_e, struct dafs_dentry *dafs_de)
+unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_info *ei)
 {
+    struct rf_entry *rf_e;
     unsigned long statement = STATEMAP_COLD;
-    uint64_t mean;
-    uint64_t st_sub = STARDARD_SUBFILE_NUM;
-    uint64_t d_f;
-    uint64_t sub_s;
-    uint64_t f_s;
-    uint64_t sub_num;
-
-    mean = dafs_rec_mf(z_e); 
-    d_f = le64_to_cpu(dafs_de->d_f);
+    int mean;
+    int st_sub = STARDARD_SUBFILE_NUM;
+    int rcount;
+    int sub_s=0;
+    int f_s;
+    u64 sub_num, hashname, name_len;
     
-    if(dafs_de->file_type == NORMAL_DIRECTORY ){                   //not decided, not including . and ..
-        sub_num = le64_to_cpu(dafs_de->sub_num);
-    }
-    else
-        sub_num = NULL;
 
-    if(!sub_num){
-        if(sub_num < st_sub)
-            sub_s = NUMBER_OF_SUBFILES_FEW;         //not decided
+    if(dafs_de->file_type==ROOT_DIRECTORY){
+        return statement;
+    }
+
+    mean = dafs_rec_mf(ei);
+
+    name_len = le64_to_cpu(dafs_de->ful_name->f_namelen);
+    hashname = BKDRHash(dafs_de->ful_name->f_name, name_len);
+    rf_e = radix_tree_lookup(&ei->rf_root, hashname);
+    rcount = rf_e->r_f;
+    //rcount = le64_to_cpu(dafs_de->rcount);
+    
+    /*check and set frequency state and subfiles state*/
+    if(dafs_de->file_type == NORMAL_DIRECTORY ){            
+        sub_num = le64_to_cpu(dafs_de->sub_num);
+        if(sub_num < NR_ZONE_FILES)
+            sub_s = NUMBER_OF_SUBFILES_FEW;         //not decided,few=1,large=2,none=0
         else 
             sub_s = NUMBER_OF_SUBFILES_LARGE;
+        rf_e->sub_s = sub_s;
     }
-    else
-        sub_s = NULL;
+
+    //rf_e->sub_s = sub_s;
 
     //sub_s = le64_to_cpu(dafs_de->sub_s);
     //f_s = le64_to_cpu(dafs_de->f_s);
 
-    if(d_f < mean){
-        f_s = DENTRY_FREQUENCY_COLD;
-        dafs_de->f_s = cpu_to_le64(f_s);
-    }else{
-        f_s = DENTRY_FREQUENCY_WARM;
-        dafs_de->f_s = cpu_to_le64(f_s);
+    if(rf_e->f_s!=DENTRY_FREQUENCY_WRITE)
+    {
+        if(rcount < mean){
+            f_s = DENTRY_FREQUENCY_COLD;
+            //dafs_de->f_s = cpu_to_le64(f_s);
+        }else{
+            f_s = DENTRY_FREQUENCY_WARM;
+            //dafs_de->f_s = cpu_to_le64(f_s);
+        }
+        rf_e->f_s = f_s;
     }
-    
-    if(!sub_s){
+
+    /*sub_s=0 =>is a file, or . ..
+    * sub =1, 2 => is NORMAL_DIRECTORY */
+    if(sub_s){
         if(sub_s==NUMBER_OF_SUBFILES_FEW && f_s!= DENTRY_FREQUENCY_WRITE){
 
             statement = STATEMAP_COLD;
-            dafs_de->prio = LEVEL_1;
+            rf_e->prio = LEVEL_1;
+            //dafs_de->prio = LEVEL_1;
 
         }else if(sub_s==NUMBER_OF_SUBFILES_LARGE && f_s==DENTRY_FREQUENCY_COLD){
             
             statement = STATEMAP_WARM;
-            dafs_de->prio = LEVEL_2;
+            rf_e->prio = LEVEL_2;
+            //dafs_de->prio = LEVEL_2;
 
         }else if(sub_s==NUMBER_OF_SUBFILES_FEW && f_S==DENTRY_FREQUENCY_WRITE){
             
             statement = STATEMAP_WARM;
-            dafs_de->prio = LEVEL_2;
+            rf_e->prio = LEVEL_2;
+            //dafs_de->prio = LEVEL_2;
 
         }else if(sub_s==NUMBER_OF_SUBFILES_LARGE && f_s==DENTRY_FREQUENCY_WARM){
             
             statement = STATEMAP_HOT;
-            dafs_de->prio = LEVEL_3;
+            rf_e->prio = LEVEL_3;
+            //dafs_de->prio = LEVEL_3;
 
         }else if(sub_s==NUMBER_OF_SUBFILES_LARGE && f_s==DENTRY_FREQUENCY_WRITE){
             statement = STATEMAP_HOT;
-            dafs_DE->prio = LEVEL_4;
+            rf_e->prio = LEVEL_4;
+            //dafs_DE->prio = LEVEL_4;
         }
-    }else{
-        dafs_de->prio = LEVEL_0;
+    } else {
+
         if (f_s==DENTRY_FREQUENCY_COLD)
-            statemap = STATEMAP_COLD;
+            statement = STATEMAP_COLD;
         else if (f_s==DENTRY_FREQUENCY_WARM)
-            statemap = STATEMAP_WARM;
+            statement = STATEMAP_WARM;
         else if (f_s==DENTRY_FREQUENCY_WRITE)
-            statemap = STATEMAP_HOT;
+            statement = STATEMAP_HOT;
     }   
     
-    return statemap;
+    return statement;
 }
 
 /*
