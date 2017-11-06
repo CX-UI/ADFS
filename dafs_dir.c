@@ -251,8 +251,8 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char
         phlen = strlen(ph)-strlen(tem);
         if(phlen==0)
             break;
-        //memset(ph, 0, strlen(ph));
-        memcpy(ph,phstr,phlen+1);
+        memset(ph, 0, strlen(ph));
+        memcpy(ph,phstr,phlen);
         hashname = BKDRHash(ph,phlen);
         dzt_ei = radix_tree_lookup(&dzt_m->dzt_root, hashname);
         if(dzt_ei)

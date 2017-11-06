@@ -1215,6 +1215,57 @@ static void cpy_merge_dentry(struct super_bolck *sb,struct zone_ptr *src_p, stru
     }
 }
 
+/*find root par_dir hn*/
+u64 find_dir_hn(const char *name, u64 hash_name)
+{
+    char *ph, *tem;
+    u64 namelen, temlen, hn;
+    
+    namelen = strlen(name);
+    ph = kzalloc(namelen*sizeof(char), GFP_KERNEL);
+    tem = strrchr(name, "/");
+    templen = namelen - strlen(tem);
+    memset(ph, 0, temlen);
+    memcpy(ph, name, temlen);
+    hn = BKDRHash(ph, temlen);
+    if(hn = hash_name){
+        hn = BKDRHash(name, namelen);
+    } else {
+        hn = find_dir_hn(ph, hash_name);
+    }
+    kfree(ph);
+    return hn;
+}
+
+/*cpy merge*/
+int cpy_merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
+{
+    struct zone_ptr *cur_p;
+//    struct dafs_zone_entry *par_ze;
+    struct dafs_zone_entry *cur_ze;
+    struct hash_table *cur_ht, *par_ht;
+    struct hash_entry *he;
+    struct dafs_dentry *de;
+    u64 bitpos, filepos = 0;
+    char *name = kzalloc(DAFS_PATH_LEN*sizeof(char), GFP_KERNEL);
+    u64 nlen,plen;
+
+    cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->dz_addr);
+//    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->pdz_addr);
+
+    make_zone_ptr(&cur_p, cur_ze);
+
+    bitpos = 0;
+    while(bitpos<z_p->zone_max){
+        bitpos++;
+        if(test_bit_le(bitpos, z_p->statemap)){
+            de = cur_ze->dentry[filepos];
+            
+        }
+    }
+
+}
+
 /*find invalid dentry in zone
 * start pos = start dentry id*/
 static unsigned long find_invalid_id(struct zone_ptr *z_p, unsigned long start_pos)
@@ -1633,7 +1684,7 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, str
     dafs_orde->file_type = NORMAL_DIRECTORY;
     dafs_orde->mtime = CURRENT_TIME_SEC.tv_sec;
     dafs_orde->vroot = 0;
-    dafs_orde->zone_no = NULL;
+    dafs_orde->dzt_hn = 0;
 
     /*merge, cur_rdei is not used*/
     merge_zone_dentry(cur_ze, par_ze, dafs_orde,MERGE);

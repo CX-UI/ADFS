@@ -332,50 +332,6 @@ struct nova_inode_info {
 	struct inode vfs_inode;
 };
 
-/*
-* 2017/09/13
-* zone entries for copy-on-write Btree*/
-struct dzt_entry_info{
-    u8 zone_blk_type;
-    uint32_t root_len;
-    uint64_t dzt_eno;
-    //uint64_t dz_no;
-    uint64_t dz_log_head;
-    uint64_t dz_addr;
-    uint64_t ht_head;
-    //uint64_t dz_size;
-    uint64_t pdz_addr;
-    uint64_t rden_pos;
-    //uint64_t dz_sf;
-    uint64_t hash_name;
-    struct radix_tree_root rf_root;    /*read frequence root*/
-    struct list_head child_list;
-    //uint64_t child_dzt_eno[CHILD_PER_DZT_ENTRY];
-    //uint64_t hash_path_name;
-    //char root_path[DAFS_PATH_LEN];
-};
-
-/*
-* 2017/09/13
-* directory zone entry Btree list*/
-struct dzt_entry {
-    //struct list_head list;           /*for B-tree lists*/
-    uint64_t hash_path_name;
-    struct dzt_entry_info *d_entry_info;
-};
-
-/*
- * dzt manager for radix_tree in DRAM */
-struct dzt_manager {
-    struct radix_tree_root dzt_root;
-};
-
-/* use for dzt_block operations */
-struct dzt_ptr {
-    const void *bitmap;
-    unsinged long max;
-    struct dafs_dzt_entry *dzt_entry;
-};
 enum bm_type {
 	BM_4K = 0,
 	BM_2M,
