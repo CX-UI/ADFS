@@ -123,7 +123,7 @@ out:
  * &pos for position of dentry
  * nr_table for hash table level 
  * return 1 for found*/
-int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, int pos)
+int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, unsigned long *pos)
 {
     struct hash_table *ht;
     struct hash_entry *he;
@@ -166,7 +166,7 @@ int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, int 
         h_name = le64_to_cpu(he->hd_name);
         h_len = le64_to_cpu(he->name_len);
         if(h_name==hashname && h_len==namelen){
-            pos = le64_to_cpu(he->hd_pos);
+            *pos = le64_to_cpu(he->hd_pos);
             ret = 1;
             goto out;
         } else {
