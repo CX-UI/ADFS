@@ -420,6 +420,7 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *de
     return direntry;
 }
 
+
 /**递归删除dentry*/
 static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de,\
         struct dafs_zone_entry *dafs_ze, struct dzt_entry_info *dzt_ei, unsigned long de_pos)
@@ -525,9 +526,9 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         bitpos = de_pos * 2;
         /*not decided z_p是不是需要取地址*/
         make_zone_ptr(&z_p, dafs_ze);
-        test_and_clear_bit_le(bitpos, zone_p->statemap);
+        test_and_clear_bit_le(bitpos, z_p->statemap);
 	    bitpos++;
-        test_and_clear_bit_le(bitpos, zone_p->statemap);
+        test_and_clear_bit_le(bitpos, z_p->statemap);
         ret = make_invalid_htable(dzt_ei->ht_head, d_hn, d_hlen, 1);
 
         /*free rf_entry*/
@@ -569,9 +570,9 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         bitpos = de_pos * 2;
         /*not decided z_p是不是需要取地址*/
         make_zone_ptr(&z_p, dafs_ze);
-        test_and_clear_bit_le(bitpos, zone_p->statemap);
+        test_and_clear_bit_le(bitpos, z_p->statemap);
 	    bitpos++;
-        test_and_clear_bit_le(bitpos, zone_p->statemap);
+        test_and_clear_bit_le(bitpos, z_p->statemap);
         ret = make_invalid_htable(dzt_ei->ht_head, d_hn, d_hlen, 1);
         /*free rf_entry*/
         delete_rf_entry(dzt_ei, d_hn);
@@ -608,13 +609,14 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
     return 0;
 }
 
+
 /* removes a directory entry pointing to the inode. assumes the inode has
  * already been logged for consistency
  * 只是先将对应的状态表显示无效
  * 检查是不是根节点
  * 并不含有link的变化
  */
-int dafs_remove_dentry(struct dentry *dentry)
+int dafs_rm_dir(struct dentry *dentry)
 {
     struct inode *dir = dentry->d_parent->d_inode;
     struct super_block *sb = dir->i_sb;
@@ -624,14 +626,16 @@ int dafs_remove_dentry(struct dentry *dentry)
     //struct qstr *entry = &dentry->d_name;
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dentry *dafs_de;
-    struct dzt_entry_info *dzt_ei;
+    struct dzt_entry_info *dzt_ei, *sub_ei;
     struct dafs_zone_entry *dafs_ze;
     struct zone_ptr *z_p;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
     unsigned long phlen;
     unsigned long dzt_eno;
     unsigned long de_pos;
+    unsigned long bitpos;
     unsigned short links_count;
-    u64 ph_hash, de_addr;
+    u64 ph_hash, de_addr, ei_hash;
     char *phname, *ph, *phn;
     int ret;
     //unsigned short loglen;
@@ -666,10 +670,97 @@ int dafs_remove_dentry(struct dentry *dentry)
 
     dafs_de = dafs_ze->dentry[de_pos];
 
+    if(dafs_de->file_type == ROOT_DIRECTORY) {
+        ei_hash = le64_to_cpu(dafs_de->dzt_hn);
+        sub_ei = radix_tree_lookup(&dzt_m->dzt_root, ei_hash);
+        free_zone_area(sb, sub_ei);
+    }
+    bitpos = de_pos * 2;
+    /*not decided z_p是不是需要取地址*/
+    make_zone_ptr(&z_p, dafs_ze);
+    test_and_clear_bit_le(bitpos, z_p->statemap);
+	bitpos++;
+    test_and_clear_bit_le(bitpos, z_p->statemap);
+    make_invalid_htable(dzt_ei->ht_head, ph_hash, phlen, 1);
+    /*free rf_entry*/
+    delete_rf_entry(dzt_ei, ph_hash);
+    
     /*
     de_addr = le64_to_cpu(&dafs_de);
     record_dir_log(sb, de_addr, 0, DIR_RMDIR);*/
 
+    
+    //ret = __remove_direntry(sb, dafs_de, dafs_ze, dzt_ei, de_pos);
+
+    if(ret)
+        return ret;
+    kfree(phname);
+    kfree(ph);
+    
+    
+    NOVA_END_TIMING(remove_dentry_t, remove_dentry_time);
+	return 0;
+}
+
+/*remove dir when use rename*/
+int dafs_remove_dentry(struct dentry *dentry)
+{
+    struct inode *dir = dentry->d_parent->d_inode;
+    struct super_block *sb = dir->i_sb;
+    //struct nova_inode_info *si = NOVA_I(dir);
+    //struct nova_inode_info_header *sih = &si->header;
+    //struct nova_inode *pidir;
+    //struct qstr *entry = &dentry->d_name;
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dafs_dentry *dafs_de;
+    struct dzt_entry_info *dzt_ei, *sub_ei;
+    struct dafs_zone_entry *dafs_ze;
+    struct zone_ptr *z_p;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    unsigned long phlen;
+    unsigned long dzt_eno;
+    unsigned long de_pos;
+    unsigned long bitpos;
+    unsigned short links_count;
+    u64 ph_hash, de_addr, ei_hash;
+    char *phname, *ph, *phn;
+    int ret;
+    //unsigned short loglen;
+	//u64 curr_tail, curr_entry;
+	timing_t remove_dentry_time;
+
+	NOVA_START_TIMING(remove_dentry_t, remove_dentry_time);
+
+	if (!dentry->d_name.len)
+		return -EINVAL;
+
+	pidir = nova_get_inode(sb, dir);
+
+	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
+
+    /*直接rm direntry就可以
+    * 先找到相应的dir*/    
+    ph = get_dentry_path(dentry);
+    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    memcpy(phname, ph, strlen(ph));
+    dzt_ei = find_dzt(sb, phname, ph);
+    dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
+    phlen = strlen(phn);
+    dzt_eno = dzt_ei->dzt_eno;
+    ph_hash = BKDRHash(phn, phlen);
+
+    /*lookup in hash table*/
+    ret = lookup_in_hashtable(dzt_ei->ht_head, ph_hash, phlen, 1, &de_pos);
+    if(!ret)
+        return -EINVAL;
+
+    dafs_de = dafs_ze->dentry[de_pos];
+    /*
+    de_addr = le64_to_cpu(&dafs_de);
+    record_dir_log(sb, de_addr, 0, DIR_RMDIR);*/
+
+    
     ret = __remove_direntry(sb, dafs_de, dafs_ze, dzt_ei, de_pos);
 
     if(ret)

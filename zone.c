@@ -1903,6 +1903,7 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, str
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dafs_dentry *dafs_orde, *dafs_nrde;
     struct dafs_zone_entry *par_ze;
+    struct hash_table *ht;
     //struct zone_ptr *src_p, *des_p;
     struct dzt_ptr *dzt_p;
     unsigned long hash_name, ch_pos, or_pos;
@@ -1998,4 +1999,35 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struc
     /* make valid*/
     test_and_set_bit_le(ch_pos, dzt_p->bitmap);
 
+}
+==============================================free zone======================================================
+void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_ptr *dzt_p;
+    u64 tail, tem, eno;
+    struct hash_table *ht;
+
+    /*make dzt invalid*/
+    eno = dzt_ei->dzt_eno;
+    make_dzt_ptr(sbi, *dzt_p);
+    test_and_clear_bit_le(eno, dzt_p->bitmap);
+
+    /*delete rf tree*/
+    delete_rf_tree(dzt_ei);
+
+    /* kfree redi
+     * free hash table
+     * free zone
+    *  */
+
+    tail = le64_to_cpu(dzt_ei->ht_head);
+    while(tail){
+        ht = (struct hash_table *)tail;
+        tem = le64_to_cpu(ht->hash_tail);
+        dafs_free_htable_blocks(sb, HTABLE_SIZE, tail>>PAGE_SHIFT, 1);
+        tail = tem;
+    }
+    dafs_free_zone_blocks(sb, dzt_ei, dzt_ei->dz_addr >> PAGE_SHIFT, 1);
+    kfree(dzt_ei);
 }

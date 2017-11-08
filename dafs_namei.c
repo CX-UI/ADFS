@@ -513,7 +513,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 
     /*add log to dzt for suddenly shut down*/
     record_dir_log(sb, dentry, NULL, DIR_RMDIR);
-    err = dafs_remove_dentry(dentry);
+    err = dafs_rm_dir(dentry);
 
 	if (err)
 		goto end_rmdir;

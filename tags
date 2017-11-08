@@ -239,7 +239,6 @@ dafs_dzt_entry	zone.h	/^ struct dafs_dzt_entry {$/;"	s
 dafs_empty_dir	dafs_dir.c	/^static int dafs_empty_dir(struct inode *inode, struct dentry *dentry)$/;"	f	file:
 dafs_find_direntry	dafs_dir.c	/^struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag)$/;"	f
 dafs_free_htable_blocks	balloc.c	/^int dafs_free_htable_blocks(struct super_block *sb, unsigned short btype,\\$/;"	f
-dafs_free_rft	zone.c	/^int dafs_free_rft()$/;"	f
 dafs_free_zone_blocks	balloc.c	/^int dafs_free_zone_blocks(struct super_block *sb, struct dzt_entry_info *dzt_ei,\\$/;"	f
 dafs_get_dzt_block	zone.c	/^struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)$/;"	f	file:
 dafs_get_parent	dafs_namei.c	/^struct dentry *dafs_get_parent(struct dentry *child)$/;"	f
@@ -259,6 +258,7 @@ dafs_readdir	dafs_dir.c	/^static int dafs_readdir(struct file *file, struct dir_
 dafs_rec_mf	zone.c	/^int dafs_rec_mf(struct dzt_entry_info *ei)$/;"	f
 dafs_remove_dentry	dafs_dir.c	/^int dafs_remove_dentry(struct dentry *dentry)$/;"	f
 dafs_rename	dafs_namei.c	/^static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\\ $/;"	f	file:
+dafs_rm_dir	dafs_dir.c	/^int dafs_rm_dir(struct dentry *dentry)$/;"	f
 dafs_rmdir	dafs_namei.c	/^static int dafs_rmdir(struct inode *dir, struct dentry *dentry)$/;"	f	file:
 dafs_special_inode_operations	dafs_namei.c	/^const struct inode_operations dafs_special_inode_operations = {$/;"	v	typeref:struct:inode_operations
 dafs_split_zone	zone.c	/^int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\\$/;"	f
@@ -335,6 +335,7 @@ free_lists	nova.h	/^	struct free_list *free_lists;$/;"	m	struct:nova_sb_info	typ
 free_log_count	nova.h	/^	unsigned long	free_log_count;$/;"	m	struct:free_list
 free_log_t	stats.h	/^	free_log_t,$/;"	e	enum:timing_category
 free_resources	bbuild.c	/^static void free_resources(struct super_block *sb)$/;"	f	file:
+free_zone_area	zone.c	/^void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei)$/;"	f
 free_zone_count	nova.h	/^    unsigned long   free_zone_count;$/;"	m	struct:free_list
 free_zone_t	stats.h	/^    free_zone_t,$/;"	e	enum:timing_category
 freed	nova.h	/^	int freed;$/;"	m	struct:inode_map
