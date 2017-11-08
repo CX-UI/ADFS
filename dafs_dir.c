@@ -65,14 +65,7 @@ struct rf_entry *add_rf_entry(struct dzt_entry_info *ei, u64 hash_name)
 /*update read frequency when read happens*/
 int update_read_hot(struct dzt_entry_info *dzt_ei, u64 sub_hash)
 {
-    struct rf_entry *par_rf, *sub_rf;
-    u64 par_hash;
-
-    par_hash = dzt_ei->hash_name;
-    par_rf = radix_tree_lookup(&dzt_ei->rf_root, par_hash);
-    if(!par_rf)
-        return -EINVAL;
-    par_rf->r_f++;
+    struct rf_entry *sub_rf;
     sub_rf = radix_tree_lookup(&dzt_ei->rf_root, sub_hash);
     if(!sub_rf)
         return -EINVAL;
@@ -572,7 +565,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         
         /*delete dir itself*/
         d_hlen = le64_to_cpu(dafs_de->ful_name->f_namelen);
-        d_hn = BKDRHash(dafs_de->ful_name->f_name);
+        d_hn = BKDRHash(dafs_de->ful_name->f_name, d_hlen);
         bitpos = de_pos * 2;
         /*not decided z_p是不是需要取地址*/
         make_zone_ptr(&z_p, dafs_ze);
