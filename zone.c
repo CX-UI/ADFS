@@ -32,9 +32,11 @@ int dafs_build_dzt_block(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dzt_block *dzt_block;
+    struct dzt_entry_info *ei;
     struct dzt_ptr * dzt_p;
     char *name = '/'; 
     int ret = 0;
+    u64 ht_addr;
 
     /*init linux root directory '/' 
     * dir zone no is pos in bitmap*/
@@ -49,8 +51,10 @@ int dafs_build_dzt_block(struct super_block *sb)
     dzt_block-> dzt_entry[0].rden_pos = NULL;
     dzt_block-> dzt_entry[0].hash_name = cpu_to_le64(BKDRHash(name, 1));        
     dzt_block-> dzt_entry[0].child_dzt_eno = NULL;            // init NULL not decided yet
-    // dzt_block-> dzt_entry[0].path_name = "/";    
-    //dzt_block->dzt_bitmap[0] = (1 << 0) | (1 << 1); 
+
+    /*alloc htable zone */
+    get_hash_table(sb, &ht_addr);
+    dzt_block->dzt_entry[0].ht_head = cpu_to_le64(ht_addr);
 
     /*alloc zone area
     * get zone addr*/
@@ -58,15 +62,19 @@ int dafs_build_dzt_block(struct super_block *sb)
     
     /*make valid*/
     make_dzt_ptr(sbi, &dzt_p);
-    set_dzt_entry_valid(sbi, 0); 
+    test_and_set_bit_le(0, dzt_p->bitmap);
+
+    /*build radix search tree
+    * initialize entry info*/ 
+    ei = dafs_build_dzt(sbi, dzt_block->dzt_entry[0]);
 
     /*init dir_zone*/
     /*append . and .. into new zone*/
-    dafs_init_dir_zone(sbi, dzt_block->dzt_entry[0]);
+    dafs_init_dir_zone(sbi, ei);
+
+    /*init rf_entry*/
+    init_rf_entry(sb, ei);
     
-    /*build radix search tree
-    * initialize entry info*/ 
-    dafs_build_dzt(sbi, dzt_block->dzt_entry[0]);
 
     return ret;
 }
@@ -78,7 +86,7 @@ int dafs_build_dzt_block(struct super_block *sb)
 * dafs_de 在create的时候创建的根目录
 * 此函数只在初始化根目录的时候有用
 * 其他zone不需要初始化直接迁移*/
-int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
+int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_zone_entry *zone_entry;
@@ -86,8 +94,14 @@ int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
     struct zone_ptr *z_p;
     unsigned long bitpos = 0;
     int i;
+    u64 hn;
+
+    zone_entry = (struct dafs_zone_entry *)nova_get_block(sb, ei->dz_addr);
+
+    hn = BKDRHash("/",1);
 
     /*create root directory*/
+    dafs_rde = zone_entry->dentry[0];
     dafs_rde->entry_type = DAFS_DIR_ENTRY;             /*not decided yet*/
     dafs_rde->name_len = 1;
     dafs_rde->file_type = ROOT_DIRECTORY;
@@ -98,58 +112,52 @@ int dafs_init_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
     dafs_rde->ino = 0;      /*not decided*/
     dafs_rde->par_ino = 0;   /*not decided*/
     dafs_rde->size = DENTRY_SIZE; /*not decided*/
-    dafs_rde->zone_no = dzt_e->dzt_eno;
+    dafs_rde->dzt_hn = cpu_to_le64(hn); 
     dafs_rde->prio = LEVEL_0;
-    dafs_rde->d_f = 0;
-    dafs_rde->sub_s = NULL;
-    dafs_rde->f_s = NULL;
     dafs_rde->sub_num = 0;
+    dafs_rde->sub_pos[NR_DENTRY_IN_ZONE]={0};
     dafs_rde->name = "/";
-
-    //zone_entry->zone_blk_type = DAFS_BLOCK_TYPE_512K;         /* not decided */
-    //zone_entry->root_len = dzt_e-> root_len;
-    //zone_entry->log_head = NULL;               /*not decided*/
-    zone_entry->dz_no = dzt_e->dzt_eno;
-    //zone_entry->dz_sf = 0;
-    //zone_entry->dz_size = DAFS_DEF_ZONE_SIZE;        /*default size is 512K*/
-    zone_entry->root_path = "/";
+    dafs_rde->ful_name->f_namelen = 1;
+    dafs_rde->ful_name->f_name = "/";
+    
+    record_pos_htable(sb, ei->ht_head, hn, 1, 0, 1);
+    zone_entry->dz_no = cpu_to_le64(ei->dzt_eno);
 
     /*sub  file "."*/
-    zone_entry->dentry[0].entry_type = DAFS_DIR_ENTRY;      /*not decided */
-    zone_entry->dentry[0].name_len = 1;
-    zone_entry->dentry[0].links_count = 1;
-    zone_entry->dentry[0].mtime = CURRENT_TIME_SEC.tv_sec;
-    zone_entry->dentry[0].vroot = 0;
-    zone_entry->dentry[0].path_len = 1;         //besides file name length and root dir
-    zone_entry->dentry[0].size = DAFS_DEF_ZONE_ENTRY_SIZE;      //not decided
-    zone_entry->dentry[0].zone_no = dzt_e->dzt_eno;          //not decided
-    //zone_entry->dentry[0].subpos = NULL;
-    //zone_entry->dentry[0].path = "/";         /*not decided*/
-    zone_entry->dentry[0].name = ".";
-
-    /*sub file ".."*/
-    zone_entry->dentry[1].entry_type = DAFS_DIR_ENTRY;      /*default file type*/
-    zone_entry->dentry[1].name_len = 2;
-    zone_entry->dentry[1].links_count = 2;
+    zone_entry->dentry[1].entry_type = DAFS_DIR_ENTRY;      /*not decided */
+    zone_entry->dentry[1].name_len = 1;
+    zone_entry->dentry[1].links_count = 1;
     zone_entry->dentry[1].mtime = CURRENT_TIME_SEC.tv_sec;
     zone_entry->dentry[1].vroot = 0;
-    zone_entry->dentry[1].path_len = 1;         //besides file name length and root dir, not decided
-    zone_entry->dentry[1].ino = dafs_de->par_ino;
-    zone_entry->dentry[1].size = DAFS_DEF_ZONE_ENTRY_SIZE;
-    zone_entry->dentry[1].zone_no = NULL;          //not decided
-    //zone_entry->dentry[1].subpos = NULL;
-    //zone_entry->dentry[1].path = NULL;
-    zone_entry->dentry[1].name = "..";
+    zone_entry->dentry[1].size = DAFS_DEF_ZONE_ENTRY_SIZE;      //not decided
+    zone_entry->dentry[1].dzt_hn = 0;
+    zone_entry->dentry[1].sub_pos[NR_DENTRY_IN_ZONE] = 0;
+    zone_entry->dentry[1].name = ".";
+    zone_entry->dentry[1].ful_name->f_namelen = 2;
+    zone_entry->dentry[1].ful_name->f_name = "/.";
+    hn = BKDRHash("/.", 2);
+    record_pos_htable(sb, ei->ht_head, hn, 2, 1,1);
 
+    /*sub file ".."*/
+    zone_entry->dentry[2].entry_type = DAFS_DIR_ENTRY;      /*default file type*/
+    zone_entry->dentry[2].name_len = 2;
+    zone_entry->dentry[2].links_count = 2;
+    zone_entry->dentry[2].mtime = CURRENT_TIME_SEC.tv_sec;
+    zone_entry->dentry[2].vroot = 0;
+    zone_entry->dentry[2].ino = dafs_de->par_ino;
+    zone_entry->dentry[2].size = DAFS_DEF_ZONE_ENTRY_SIZE;
+    zone_entry->dentry[2].dzt_hn = 0;          //not decided
+    zone_entry->dentry[2].sub_pos[NR_DENTRY_IN_ZONE] = {0};
+    zone_entry->dentry[2].name = "..";
+    zone_entry->dentry[2].ful_name->f_namelen = 3;
+    zone_entry->dentry[2].ful_name->f_name = "/..";
+    hn = BKDRHash("/..", 3);
+    record_pos_htable(sb, ei->ht_head, hn, 3, 2, 1);
     make_zone_ptr(&z_p, zone_entry);
     /*change 2-bitmap*/
     for(i=0;i<2;i++){
-        if(!test_bit_le(bit_pos, z_p->statemap))
-             set_bit(bit_pos++, z_p->statemap);
-        else{
-            clear_bit_le(bit_pos, z_p->statemap);
-            set_bit_le(bit_pos++, z_p->statemap);
-        }
+        bit_pos++;
+        test_and_set_bit_le(bitpos, z_p->statemap);
     }
 }
 
@@ -194,21 +202,7 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
     block = nova_get_block_off(sb, blocknr, DAFS_BLOCK_TYPE_512K);
     
     /*get zone address*/
-    //bp = (unsigned long)nova_get_block(sb, block);
-    //hash_name = le64_to_cpu(z_entry->dz_root_hash);
     dzt_e->dz_addr = cpu_to_le64(block);
-    //dzt_e->dz_log_head = cpu_to_le64(block);
-    //dzt_ei->dz_log_head = block;
-    //dzt_ei->dz_addr = bp;
-   
-
-    /*not decided set root path and dz_no for new zone*/
-
-    //make_dzt_entry_valid(sbi, dzt_e->dzt_eno);
-
-    //radix_tree_insert(&dzt_m->dzt_root, dzt_ei->hash_name, dzt_ei);
-    
-    //dafs_init_dir_zone(sb, dzt_e, root_path, );        //not decided
 
     PERSISTENT_BARRIER();
     return ret;
@@ -248,28 +242,28 @@ void set_dzt_entry_valid(struct nova_sb_info *sbi, unsigned long bitpos)
 /*
 * build dzt radix-tree
 * 初始化entry_info*/
-static void dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
+static struct dzt_entry_info *dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
                      *dafs_dzt_entry)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dzt_entry_info *entry_info;
     struct dzt_manager *dzt_m;
-    //int ret = 0;
-    //struct dzt_entry *dzt_entry;
 
     /*take into acount when to destroy this entry*/
-    //entry_info = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);  //move dzt entry into DRAM B-tree
+    entry_info = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);  //move dzt entry into DRAM B-tree
     
-    if(!dzt_entry)
+    if(!entry_info)
         return -ENOMEM;
+
     entry_info->zone_blk_type = DAFS_BLOCK_TYPE_512K; 
     entry_info->root_len = le32_to_cpu(dafs_dzt_entry->root_len);
     entry_info->dzt_eno = le64_to_cpu(dafs_dzt_entry->dzt_eno);
     //entry_info->dz_no = le64_to_cpu(dafs_dzt_entry->dz_no);
     entry_info->dz_addr = le64_to_cpu(dafs_dzt_entry->dz_addr);
     entry_info->hash_name = le64_to_cpu(dafs_dzt_entry->hash_name);
+    entry_info->ht_head = le64_to_cpu(dafs_dzt_entry->ht_head);
 
-    INIT_LIST_HEAD(&entry_info->child_list);
+    //INIT_LIST_HEAD(&entry_info->child_list);
 
     dzt_m = kzalloc(sizeof(struct dzt_manager), GFP_KERNEL);
 
@@ -278,9 +272,15 @@ static void dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
     
     INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);
 
-    make_dzt_tree(entry_info);
+    /*build dzt radix tree
+    * build rf tree*/
+    INIT_RADIX_TREE(&entry_info->rf_root, GFP_ATOMIC);
+    //init_rf_entry(sb, entry_info);
+
+    radix_tree_insert(&dzt_m->dzt_root, entry_info->hash_name, entry_info);
+
     
-    //return ret;
+    return entry_info;
 }
 
 /*
@@ -543,12 +543,6 @@ struct dafs_dzt_entry *append_dzt_entry(struct super_block *sb, struct dzt_entry
     dzt_e->rden_pos = cpu_to_le64(dzt_ei->rden_pos);
     //dzt_e->dz_sf = cpu_to_le64(dzt_ei->dz_sf);
     dzt_e->hash_name = cpu_to_le64(dzt_ei->hash_name);
-    /* not decided sub files */
-    
-    /*
-    if(AP_CON == SPLIT_ZONE){
-        ret = dafs_alloc_dir_zone(sb, dzt_e, dzt_ei, par_ze, path_name);
-    }*/
 
     return dzt_e;
 }
@@ -1722,20 +1716,6 @@ unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_inf
     return statement;
 }
 
-/*
-* check if zone directory size is large for merge and inherit */
-static void check_zone_rlarge(struct super_block *sb, struct dzt_entry_info *cur_ei)
-{
-    struct dafs_dentry *dafs_rde;
-    struct dafs_zone_entry *par_ze;
-    unsigned long sub_s;
-
-    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->pdz_addr);
-    dafs_rde = par_ze->dentry[cur_ei->rden_pos];
-
-    sub_s = le64_to_cpu(dafs_rde->sub_s);
-    return sub_s;
-}
 
 /*
 * check zones
@@ -1762,6 +1742,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     unsigned long sp_id = 0;      /* impossible for pos_0 */
     int i;
     unsigned long inh_id = 0;
+    u64 zf_num = 0, sub_s;  /*record zone valid sub_files num*/
 
     /*not decided*/
     z_e = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
@@ -1777,6 +1758,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
                 bitpos++;
                 cold_num++;
                 id++;
+                zf_num++;
             }
 
         }else{
@@ -1791,19 +1773,26 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
                 hot_num++;
                 id++;
             }
-
+            zf_num++;
         }
     }
+
+    /*judge zone sub_num state*/
+    if(zf_num < NR_ZONE_FILES )
+        sub_s = NUMBER_OF_SUBFILES_FEW;
+    else
+        sub_s = NUMBER_OF_SUBFILES_LARGE;
+
     if(warm_num == 0 && hot_num ==1){
-        if(check_zone_rlarge(sb, dzt_ei)!= NUMBER_OF_SUBFILES_LARGE)
+        if(sub_s!= NUMBER_OF_SUBFILES_LARGE)
             inh_id = hd_np[0];
             dafs_inh_zone(sb, dzt_ei, inh_id, z_e);
     
     } else if(hot_num == 0){
-        if(check_zone_rlarge(sb, dzt_ei)!=NUMBER_OF_SUBFILES_LARGE)
+        if(sub_s!=NUMBER_OF_SUBFILES_LARGE)
             dafs_merge_zone(sb, dzt_ei, z_e);           /* not decided*/
 
-    }else if(hd!=0){
+    }else if(hot_num!=0){
         for(i=0;i<hot_num;i++){
             sp_id = hd_no[i];
             dafs_de = z_e->dentry[sp_id];
