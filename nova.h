@@ -956,12 +956,17 @@ int nova_dax_file_mmap(struct file *file, struct vm_area_struct *vma);
 
 /* dir.c */
 extern const struct file_operations nova_dir_operations;
+extern const struct file_operations dafs_dir_operations;
 int nova_append_dir_init_entries(struct super_block *sb,
 	struct nova_inode *pi, u64 self_ino, u64 parent_ino);
+int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\ 
+                                u64 self_ino, u64 parent_ino);
 extern int nova_add_dentry(struct dentry *dentry, u64 ino,
 	int inc_link, u64 tail, u64 *new_tail);
+extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link);
 extern int nova_remove_dentry(struct dentry *dentry, int dec_link, u64 tail,
 	u64 *new_tail);
+extern int dafs_remove_dentry(struct dentry *dentry);
 void nova_print_dir_tree(struct super_block *sb,
 	struct nova_inode_info_header *sih, unsigned long ino);
 void nova_delete_dir_tree(struct super_block *sb,
@@ -969,6 +974,7 @@ void nova_delete_dir_tree(struct super_block *sb,
 struct nova_dentry *nova_find_dentry(struct super_block *sb,
 	struct nova_inode *pi, struct inode *inode, const char *name,
 	unsigned long name_len);
+struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag)
 int nova_rebuild_dir_inode_tree(struct super_block *sb,
 	struct nova_inode *pi, u64 pi_addr,
 	struct nova_inode_info_header *sih);
@@ -1038,11 +1044,18 @@ extern long nova_compat_ioctl(struct file *file, unsigned int cmd,
 
 /* namei.c */
 extern const struct inode_operations nova_dir_inode_operations;
+extern const struct inode_operations dafs_dir_inode_operations;
 extern const struct inode_operations nova_special_inode_operations;
+extern const struct inode_operations dafs_special_inode_operations;
 extern struct dentry *nova_get_parent(struct dentry *child);
+extern struct dentry *dafs_get_parent(struct dentry *child);
 int nova_append_link_change_entry(struct super_block *sb,
 	struct nova_inode *pi, struct inode *inode, u64 tail, u64 *new_tail);
+int dafs_append_link_change_entry(struct super_block *sb,
+	struct nova_inode *pi, struct inode *inode, u64 tail, u64 *new_tail);
 void nova_apply_link_change_entry(struct nova_inode *pi,
+	struct nova_link_change_entry *entry);
+void dafs_apply_link_change_entry(struct nova_inode *pi,
 	struct nova_link_change_entry *entry);
 
 /* super.c */

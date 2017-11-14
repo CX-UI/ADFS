@@ -392,7 +392,7 @@ static int nova_free_dram_resource(struct super_block *sb,
 		freed = nova_delete_file_tree(sb, sih, 0,
 						last_blocknr, false, true);
 	} else {
-		nova_delete_dir_tree(sb, sih);
+		//nova_delete_dir_tree(sb, sih);
 		freed = 1;
 	}
 
@@ -904,6 +904,7 @@ void nova_evict_inode(struct inode *inode)
 	struct nova_inode *pi = nova_get_inode(sb, inode);
 	struct nova_inode_info *si = NOVA_I(inode);
 	struct nova_inode_info_header *sih = &si->header;
+    struct dentry *dentry;
 	unsigned long last_blocknr;
 	timing_t evict_time;
 	int err = 0;
@@ -934,7 +935,9 @@ void nova_evict_inode(struct inode *inode)
 			break;
 		case S_IFDIR:
 			nova_dbgv("%s: dir ino %lu\n", __func__, inode->i_ino);
-			nova_delete_dir_tree(sb, sih);
+            dentry = d_find_alias(inode);
+            dafs_remove_dentry(dentry);
+			//nova_delete_dir_tree(sb, sih);
 			break;
 		case S_IFLNK:
 			/* Log will be freed later */
@@ -2233,7 +2236,7 @@ int nova_rebuild_file_inode_tree(struct super_block *sb,
 			case LINK_CHANGE:
 				link_change_entry =
 					(struct nova_link_change_entry *)addr;
-				nova_apply_link_change_entry(pi,
+				dafs_apply_link_change_entry(pi,
 							link_change_entry);
 				sih->last_link_change = curr_p;
 				curr_p += sizeof(struct nova_link_change_entry);

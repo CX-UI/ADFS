@@ -76,7 +76,9 @@ long nova_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		nova_set_inode_flags(inode, pi, flags);
 
 		nova_memunlock_inode(sb, pi);
-		ret = nova_append_link_change_entry(sb, pi, inode, 0,
+		//ret = nova_append_link_change_entry(sb, pi, inode, 0,
+		//					&new_tail);
+		ret = dafs_append_link_change_entry(sb, pi, inode, 0,
 							&new_tail);
 		if (!ret)
 			nova_update_tail(pi, new_tail);
@@ -104,8 +106,10 @@ flags_out:
 		inode->i_generation = generation;
 
 		nova_memunlock_inode(sb, pi);
-		ret = nova_append_link_change_entry(sb, pi, inode, 0,
+		ret = dafs_append_link_change_entry(sb, pi, inode, 0,
 							&new_tail);
+		//ret = nova_append_link_change_entry(sb, pi, inode, 0,
+		//					&new_tail);
 		if (!ret)
 			nova_update_tail(pi, new_tail);
 		nova_memlock_inode(sb, pi);

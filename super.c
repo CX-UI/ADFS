@@ -380,7 +380,9 @@ static struct nova_inode *nova_init(struct super_block *sb,
 	nova_memlock_inode(sb, root_i);
 	nova_flush_buffer(root_i, sizeof(*root_i), false);
 
-	nova_append_dir_init_entries(sb, root_i, NOVA_ROOT_INO,
+	//nova_append_dir_init_entries(sb, root_i, NOVA_ROOT_INO,
+	//				NOVA_ROOT_INO);
+	dafs_append_dir_init_entries(sb, root_i, NOVA_ROOT_INO,
 					NOVA_ROOT_INO);
 
 	PERSISTENT_MARK();

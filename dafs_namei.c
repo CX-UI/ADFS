@@ -229,6 +229,19 @@ static void dafs_lite_transaction_for_time_and_link(struct super_block *sb,
 	NOVA_END_TIMING(link_trans_t, trans_time);
 }
 
+void dafs_apply_link_change_entry(struct nova_inode *pi,
+	struct nova_link_change_entry *entry)
+{
+	if (entry->entry_type != LINK_CHANGE)
+		BUG();
+
+	pi->i_links_count	= entry->links;
+	pi->i_ctime		= entry->ctime;
+	pi->i_flags		= entry->flags;
+	pi->i_generation	= entry->generation;
+
+	/* Do not flush now */
+}
 static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentry *dentry)
 {
     struct super_block *sb = dir->i_sb;
@@ -320,7 +333,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
 	}
 
     /*not decided 返回值没有弄好*/
-    retval = nova_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
+    retval = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
 	if (retval)
 		goto out;
 
