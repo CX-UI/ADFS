@@ -84,8 +84,8 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
 	unlock_new_inode(inode);
 
     pi = nova_get_block(sb ,pi_addr);
-    //not decided 需要重新考量关于tail的所有的操作
-    //这个是目录于新建的文件之间的关系，not decided
+    
+    /* record tail in journal entry*/
 	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 	NOVA_END_TIMING(create_t, create_time);
 	return err;
@@ -281,6 +281,7 @@ static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentr
 	inode->i_ctime = CURRENT_TIME_SEC;
 	inc_nlink(inode);
 
+    /*this is for inode log to record*/
 	err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
 	if (err) {
 		iput(inode);
@@ -288,6 +289,7 @@ static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentr
 	}
 
 	d_instantiate(dentry, inode);
+    /*pidir_tail not been changed*/
 	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
 						pi_tail, pidir_tail, 0);
 
@@ -647,6 +649,13 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
 
     /*change log entry not decided*/
 	
+    /*文件夹要减少一个link*/
+	if (S_ISDIR(old_inode->i_mode)) {
+		dec_link = -1;
+        /*new inode不存在要增加一个link*/
+		if (!new_inode)
+			inc_link = 1;
+	}
 
     /*record rename log*/
     record_dir_log(sb, old_dentry, new_dentry, DIR_RENAME);
@@ -659,7 +668,10 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
             if (err)
                 goto out;
         }
-        err = __rename_dir_direntry(old_dentry, new_dentry); 
+        err = __rename_dir_direntry(old_dentry, new_dentry);
+        if(err)
+            goto out;
+
     } else {
         
         if(new_inode){
@@ -671,9 +683,36 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
 
         err =__rename_file_dentry(old_dentry, new_dentry);
     }
+   
     
     /*make log invalid*/
     delete_dir_log(sb);
+	
+	if (inc_link)
+		inc_nlink(new_dir);
+
+    if (dec_link < 0)
+		drop_nlink(old_dir);
+
+	if (new_inode) {
+		new_pi = nova_get_inode(sb, new_inode);
+		new_inode->i_ctime = CURRENT_TIME;
+
+		if (S_ISDIR(old_inode->i_mode)) {
+			if (new_inode->i_nlink)
+				drop_nlink(new_inode);
+		}
+		if (new_inode->i_nlink)
+			drop_nlink(new_inode);
+
+		err = nova_append_link_change_entry(sb, new_pi,
+						new_inode, 0, &new_pi_tail);
+		if (err)
+			goto out;
+	}
+
+	NOVA_END_TIMING(rename_t, rename_time);
+	return 0;
 out:
 	nova_err(sb, "%s return %d\n", __func__, err);
 	NOVA_END_TIMING(rename_t, rename_time);

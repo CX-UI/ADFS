@@ -149,6 +149,7 @@ static int nova_create(struct inode *dir, struct dentry *dentry, umode_t mode,
 	unlock_new_inode(inode);
 
 	pi = nova_get_block(sb, pi_addr);
+    /*record tail in journal*/
 	nova_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 	NOVA_END_TIMING(create_t, create_time);
 	return err;
@@ -865,6 +866,8 @@ const struct inode_operations nova_dir_inode_operations = {
 	.lookup		= nova_lookup,
 	.link		= nova_link,
 	.unlink		= nova_unlink,
+    .symlink    = nova_symlink,
+    .mkdir      = nova_mkdir,
 	.rmdir		= nova_rmdir,
 	.mknod		= nova_mknod,
 	.rename		= nova_rename,
