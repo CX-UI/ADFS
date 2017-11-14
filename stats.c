@@ -274,14 +274,14 @@ static inline void nova_print_link_change_entry(struct super_block *sb,
 }
 
 static inline size_t nova_print_dentry(struct super_block *sb,
-	u64 curr, struct nova_dentry *entry)
+	u64 curr, struct dafs_dentry *entry)
 {
 	nova_dbg("dir logentry @ 0x%llx: inode %llu, "
 			"namelen %u, rec len %u\n", curr,
 			le64_to_cpu(entry->ino),
-			entry->name_len, le16_to_cpu(entry->de_len));
+			entry->name_len, le16_to_cpu(DAFS_DEF_ZONE_ENTRY_SIZE);//entry->de_len));
 
-	return le16_to_cpu(entry->de_len);
+	return le16_to_cpu(DAFS_DEF_ZONE_ENTRY_SIZE);//entry->de_len);
 }
 
 static u64 nova_print_log_entry(struct super_block *sb, u64 curr)

@@ -1578,7 +1578,7 @@ static bool curr_log_entry_invalid(struct super_block *sb,
 {
 	struct nova_setattr_logentry *setattr_entry;
 	struct nova_file_write_entry *entry;
-	struct nova_dentry *dentry;
+	//struct nova_dentry *dentry;
 	void *addr;
 	u8 type;
 	bool ret = true;
@@ -1606,12 +1606,14 @@ static bool curr_log_entry_invalid(struct super_block *sb,
 				ret = false;
 			*length = sizeof(struct nova_file_write_entry);
 			break;
+        /*
 		case DIR_LOG:
 			dentry = (struct nova_dentry *)addr;
 			if (dentry->ino && dentry->invalid == 0)
 				ret = false;
 			*length = le16_to_cpu(dentry->de_len);
 			break;
+        */
 		case NEXT_PAGE:
 			/* No more entries in this page */
 			*length = PAGE_SIZE - ENTRY_LOC(curr_p);;
@@ -1707,7 +1709,7 @@ int nova_gc_assign_file_entry(struct super_block *sb,
 
 	return ret;
 }
-
+/*
 static int nova_gc_assign_dentry(struct super_block *sb,
 	struct nova_inode_info_header *sih, struct nova_dentry *old_dentry,
 	struct nova_dentry *new_dentry)
@@ -1731,13 +1733,13 @@ static int nova_gc_assign_dentry(struct super_block *sb,
 
 	return ret;
 }
-
+*/
 static int nova_gc_assign_new_entry(struct super_block *sb,
 	struct nova_inode *pi, struct nova_inode_info_header *sih,
 	u64 curr_p, u64 new_curr)
 {
 	struct nova_file_write_entry *old_entry, *new_entry;
-	struct nova_dentry *old_dentry, *new_dentry;
+	//struct nova_dentry *old_dentry, *new_dentry;
 	void *addr, *new_addr;
 	u8 type;
 	int ret = 0;
@@ -1758,6 +1760,7 @@ static int nova_gc_assign_new_entry(struct super_block *sb,
 			ret = nova_gc_assign_file_entry(sb, sih, old_entry,
 							new_entry);
 			break;
+        /*
 		case DIR_LOG:
 			new_addr = (void *)nova_get_block(sb, new_curr);
 			old_dentry = (struct nova_dentry *)addr;
@@ -1765,6 +1768,7 @@ static int nova_gc_assign_new_entry(struct super_block *sb,
 			ret = nova_gc_assign_dentry(sb, sih, old_dentry,
 							new_dentry);
 			break;
+        */
 		default:
 			nova_dbg("%s: unknown type %d, 0x%llx\n",
 						__func__, type, curr_p);
