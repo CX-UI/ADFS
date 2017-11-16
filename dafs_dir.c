@@ -190,7 +190,7 @@ void delete_dir_log(struct super_block *sb)
     struct dzt_ptr *dzt_p;
     unsigned long bitpos = 0;
 
-    make_zone_ptr(sbi, &dzt_p);
+    make_dzt_ptr(sbi, &dzt_p);
     test_and_clear_bit_le(bitpos, dzt_p->bitmap);
 }
 
@@ -311,6 +311,9 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
         }
     }
 
+    if(cur_pos==NR_DENTRY_IN_ZONE){
+        dafs_split_zone(sb, 0, NEGTIVE_SPLIT);
+    }
     phlen = strlen(phn);
     pidir = nova_get_inode(sb, dir);
     dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
@@ -835,6 +838,12 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
             break;
         }
     }
+
+    /* if not enough entries, negtive split*/
+    if(cur_pos == NR_DENTRY_IN_ZONE){
+        dafs_split_zone(sb, dzt_ei);
+    }
+
     //delen = DAFS_DIR_LEN(1+phlen+2);
     dafs_de = dafs_ze->dentry[cur_pos];
     dafs_de->entry_type = DAFS_DIR_ENTRY;

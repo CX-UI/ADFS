@@ -668,7 +668,7 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     struct dafs_zone_entry *old_ze, *new_ze;
     struct dafs_dentry *dafs_rde;
     struct dzt_entry_info *old_ei;
-    struct zone_ptr *z_p;
+    //struct zone_ptr *z_p;
     struct rf_entry *rf_e;
     unsigned long old_id, ch_len, old_namelen, sub_no;
     unsigned long *ch_no, ch_pos;
@@ -719,7 +719,7 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     rf_e->f_s = 0;
     rf_e->prio = 0;
 
-    make_zone_ptr(&z_p, new_ze);
+    //make_zone_ptr(&z_p, new_ze);
     cpy_new_zentry(dzt_nei, old_ei, old_namelen, dafs_rde, ch_no, &ch_pos);
     
     kfree(ch_no);
@@ -1785,11 +1785,11 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     if(warm_num == 0 && hot_num ==1){
         if(sub_s!= NUMBER_OF_SUBFILES_LARGE)
             inh_id = hd_np[0];
-            dafs_inh_zone(sb, dzt_ei, inh_id, z_e);
+            dafs_inh_zone(sb, dzt_ei, inh_id);
     
     } else if(hot_num == 0){
         if(sub_s!=NUMBER_OF_SUBFILES_LARGE)
-            dafs_merge_zone(sb, dzt_ei, z_e);           /* not decided*/
+            dafs_merge_zone(sb, dzt_ei);           /* not decided*/
 
     }else if(hot_num!=0){
         for(i=0;i<hot_num;i++){
@@ -1797,14 +1797,14 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
             dafs_de = z_e->dentry[sp_id];
             prio = le_to_cpu(dafs_de->prio);
             if(prio == LEVEL_4){
-                dafs_split_zone(sb, dzt_ei, z_e, sp_id, POSITIVE_SPLIT);     /*not decided*/
+                dafs_split_zone(sb, dzt_ei,sp_id, POSITIVE_SPLIT);     /*not decided*/
                 /*每次只分裂一次,避免子和父文件夹冲突 not decided*/
                 goto RET;
             }
-            //dafs_split_zone(sb, dzt_ei, z_e, id, POSITIVE_SPLIT);     /*not decided*/
+            //dafs_split_zone(sb, dzt_ei,id, POSITIVE_SPLIT);     /*not decided*/
         }
         if(prio == LEVEL_3){
-            dafs_split_zone(sb, dzt_ei, z_e, sp_id, POSITIVE_SPLIT);     /*not decided*/
+            dafs_split_zone(sb, dzt_ei, sp_id, POSITIVE_SPLIT);     /*not decided*/
             /*每次只分裂一次,避免子和父文件夹冲突 not decided*/
             goto RET;
         }
@@ -1820,17 +1820,20 @@ RET:
 * s_pos split pos
 * sp_id split id*/
 int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
-                    struct dafs_zone_entry *par_ze, unsigned long sp_id, int SPLIT_TYPE)
+                    unsigned long sp_id, int SPLIT_TYPE)
 {
     struct zone_ptr *z_p;
     //struct dafs_dentry *dafs_rde;
     struct dzt_entry_info *new_dzt_ei;
     struct dafs_zone_entry *new_ze;
+    struct dafs_zone_entry *par_ze;
     struct rf_e;
     int bitpos = 0;
     int ret = 0;
     int ne_id = 0;
     u64 name_len, hashname;
+
+    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, par_dzt_ei->dz_addr);
 
     if(SPLIT_TYPE == POSITIVE_SPLIT){
         //dafs_rde = par_ze->dentry[sp_id];
@@ -1885,17 +1888,19 @@ ret:
 * merge zone
 * 1.small zone or cold zone will merge together
 * 2.subdirectory has more files will take place of parent dir to be root dir**/
-int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struct dafs_zone_entry *cur_ze)
+int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dafs_dentry *dafs_orde, *dafs_nrde;
-    struct dafs_zone_entry *par_ze;
+    struct dafs_zone_entry *par_ze, *cur_ze;
     struct hash_table *ht;
     //struct zone_ptr *src_p, *des_p;
     struct dzt_ptr *dzt_p;
     unsigned long hash_name, ch_pos, or_pos;
     u64 tail, tem, eno;
+
+    cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->dz_addr);
 
     /*delete entry info
     * delete dzt on nvm*/
@@ -1944,17 +1949,19 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, str
  * when parent is not stranger than childs 
  * nr_pos >> new root pos
  * or_pos >> old root pos*/
-int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struct unsigned long *nr_pos,
-                 struct dafs_zone_entry *cur_ze)
+int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei,\
+                  struct unsigned long *nr_pos)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
-    struct dafs_zone_entry *par_ze;
+    struct dafs_zone_entry *par_ze, *cur_ze;
     struct dafs_dentry *dafs_orde, *dafs_nrde;
     struct dzt_ptr *dzt_p;
     //struct zone_ptr *z_cp, *z_pp;
     unsigned long hash_name, cur_namelen;
     unsigned long ch_pos, or_pos;
+
+    cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->dz_addr);
 
     /*delete eni from radix tree*/
     make_dzt_ptr(sbi, &dzt_p);
@@ -1988,7 +1995,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, struc
     test_and_set_bit_le(ch_pos, dzt_p->bitmap);
 
 }
-==============================================free zone======================================================
+/*==============================================free zone======================================================*/
 void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
