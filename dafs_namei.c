@@ -647,7 +647,6 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
         }
     }
 
-    /*change log entry not decided*/
 	
     /*文件夹要减少一个link*/
 	if (S_ISDIR(old_inode->i_mode)) {

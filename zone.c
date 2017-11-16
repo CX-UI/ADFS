@@ -49,7 +49,6 @@ int dafs_build_dzt_block(struct super_block *sb)
     dzt_block-> dzt_entry[0].pdz_addr = NULL;
     dzt_block-> dzt_entry[0].rden_pos = NULL;
     dzt_block-> dzt_entry[0].hash_name = cpu_to_le64(BKDRHash(name, 1));        
-    dzt_block-> dzt_entry[0].child_dzt_eno = NULL;            // init NULL not decided yet
 
     /*alloc htable zone */
     get_hash_table(sb, &ht_addr);
@@ -1743,7 +1742,6 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     unsigned long inh_id = 0;
     u64 zf_num = 0, sub_s;  /*record zone valid sub_files num*/
 
-    /*not decided*/
     z_e = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     make_zone_ptr(&z_p, z_e);
 
@@ -1789,7 +1787,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     
     } else if(hot_num == 0){
         if(sub_s!=NUMBER_OF_SUBFILES_LARGE)
-            dafs_merge_zone(sb, dzt_ei);           /* not decided*/
+            dafs_merge_zone(sb, dzt_ei);           
 
     }else if(hot_num!=0){
         for(i=0;i<hot_num;i++){
@@ -1797,15 +1795,14 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
             dafs_de = z_e->dentry[sp_id];
             prio = le_to_cpu(dafs_de->prio);
             if(prio == LEVEL_4){
-                dafs_split_zone(sb, dzt_ei,sp_id, POSITIVE_SPLIT);     /*not decided*/
-                /*每次只分裂一次,避免子和父文件夹冲突 not decided*/
+                dafs_split_zone(sb, dzt_ei,sp_id, POSITIVE_SPLIT);  
+                /*每次只分裂一次,避免子和父文件夹冲突*/
                 goto RET;
             }
-            //dafs_split_zone(sb, dzt_ei,id, POSITIVE_SPLIT);     /*not decided*/
         }
         if(prio == LEVEL_3){
-            dafs_split_zone(sb, dzt_ei, sp_id, POSITIVE_SPLIT);     /*not decided*/
-            /*每次只分裂一次,避免子和父文件夹冲突 not decided*/
+            dafs_split_zone(sb, dzt_ei, sp_id, POSITIVE_SPLIT); 
+            /*每次只分裂一次,避免子和父文件夹冲突 */
             goto RET;
         }
     }
