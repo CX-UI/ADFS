@@ -548,6 +548,14 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 		goto out;
 	}
 
+    /*set_up dzt_manager*/
+    INIT_RADIX_TREE(&sbi->dzt_m_info, GFP_ATOMIC);
+
+    /*start check zone kthread*/
+    retval = start_cz_thread(sbi);
+    if(retval)
+        goto out;
+
 	/* Init a new nova instance */
 	if (sbi->s_mount_opt & NOVA_MOUNT_FORMAT) {
 		root_pi = nova_init(sb, sbi->initsize);
@@ -785,6 +793,9 @@ static void nova_put_super(struct super_block *sb)
 	kfree(sbi->inode_maps);
 
 	nova_sysfs_exit(sb);
+
+    /*stop check zone thread*/
+    stop_cz_thread(sbi);
 
 	kfree(sbi);
 	sb->s_fs_info = NULL;

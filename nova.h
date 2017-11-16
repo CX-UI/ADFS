@@ -134,6 +134,9 @@ extern unsigned int nova_dbgmask;
 #define	SHARED_CPU			(65536)
 #define FREE_BATCH			(16)
 
+/*DAFS*/
+#define CHECK_ZONES_SLLEP_TIME 1000
+
 extern int measure_timing;
 
 extern unsigned int blk_type_to_shift[NOVA_BLOCK_TYPE_MAX];
@@ -397,6 +400,13 @@ struct inode_map {
 	int freed;
 };
 
+/*zone check kthread*/
+struct zone_kthread{
+    struct task_struct *zone_task;
+    wait_queue_head_t wait_queue_head;
+};
+
+
 /*
  * NOVA super-block data in memory
  */
@@ -462,6 +472,9 @@ struct nova_sb_info {
 
     /* dzt info not decided yet*/
     struct dzt_manager *dzt_m_info;
+
+    /* zone check thread*/
+    struct zone_kthread *check_thread;
 };
 
 static inline struct nova_sb_info *NOVA_SB(struct super_block *sb)

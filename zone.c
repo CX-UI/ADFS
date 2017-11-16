@@ -11,7 +11,66 @@
 #include "nova.h"
 #include "nova_def.h"
 
+/*=================================================check zone thread======================================*/
+/*initialize thread*/
+static int check_thread_func(void *data)
+{
+    struct nova_sb_info *sbi = data;
+    struct dzt_entry *ei;
+    struct dzt_manager *dzt_m;
+    struct dzt_entry_info *dzt_eis[DAFS_DZT_ENTRIES_IN_BLOCK];
+    int nr, i;
+    int time_count = 0;
+    int ret = 0;
+    do{
+        set_current_state(TASK_UNINTERRUPTIBLE);
+        schedule_timeout_interruptible(msecs_to_jiffies(CHECK_ZONES_SLLEP_TIME));
+        dzt_m = sbi->dzt_m_info;
+        nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, 0, DAFS_DZT_ENTRIES_IN_BLOCK);
+        for(i=0; i<nr; i++) {
+            ei = dzt_eis[i];
+            ret = dafs_check_zones(sbi->sb, ei);
+            if(ret)
+                return -EINVAL;
+        }
+    }while(!kthread_should_stop());
+    return time_count;
+}
 
+/*start kthread*/
+int start_cz_thread(struct nova_sb_info *sbi)
+{
+    struct zone_kthread *check_thread = NULL;
+    int err = 0;
+
+    sbi->check_thread = NULL;
+    /*initialize zone check thread*/
+    check_thread = kmalloc(sizeof(struct zone_kthread), GFP_KERNEL);
+    if(!check_thread)
+        return -ENOMEM;
+
+    init_waitqueue_head(&(check_thread->wait_queue_head));
+    check_thread->zone_task = kthread_run(check_thread_func, sbi, "DAFS_CHECK_ZONE");
+    sbi->check_thread = check_thread;
+    if(IS_ERR(check_thread->zone_task)){
+        err = PTR_ERR(check_thread->zone_task);
+        goto free_check;
+    }
+    return 0;
+free_check:
+    kfree(check_thread);
+    return err;
+}
+
+/*stop check zones thread*/
+void stop_cz_thread(struct hmfs_sb_info *sbi)
+{
+    if(sbi->check_thread) {
+        kthread_stop(sbi->check_thread->zone_task);
+        kfree(sbi->check_thread);
+        sbi->check_thread = NULL;
+    }
+}
 /*=================================================== set up system ========================================*/
 /*
 * dafs get dir_zonet_table
