@@ -280,7 +280,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     struct dafs_dentry *dafs_de;
     char *phname, *ph, *phn;
     unsigned long phlen;
-    unsigned short delen;
+    //unsigned short delen;
     unsigned short links_count;
     unsigned long bitpos = 0, cur_pos = 0;
     int ret = 0;
@@ -314,7 +314,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     phlen = strlen(phn);
     pidir = nova_get_inode(sb, dir);
     dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
-    delen = DAFS_DIR_LEN(namelen + phlen); //not decided 
+    //delen = DAFS_DIR_LEN(namelen + phlen); //not decided 
 
     /*get dentry on nvm*/
     dafs_de = dafs_ze->dentry[cur_pos];
@@ -331,7 +331,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
 		links_count += inc_link;
 	dafs_de->links_count = cpu_to_le16(links_count);
 
-    dafs_de->de_len = cpu_to_le16(delen);  
+    //dafs_de->de_len = cpu_to_le16(delen);  
     dafs_de->mtime = cpu_to_le32(dir->i_mtime.tv_sec);
     /*not root at first*/
     dafs_de->vroot = 0;
@@ -356,7 +356,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     /*那路径名称呢*/
     memcpy(dafs->ful_name->f_name, phn, phlen+1);
     /*not decided是不是每次写到nvm都需要这个接口*/ 
-    nova_flush_buffer(dafs_de, delen, 0);
+    nova_flush_buffer(dafs_de, DAFS_DEF_DENTRY_SIZE, 0);
     
     /*make valid*/
     bitpos++;
@@ -784,7 +784,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     char *phname, *ph, *phn;
     unsigned long phlen;
     unsigned long bitpos ,depos;
-    unsigned short delen;
+    //unsigned short delen;
     struct dafs_zone_entry *dafs_ze;
     struct dzt_entry_info *dafs_ei;
     struct zone_ptr *zone_p;
@@ -835,14 +835,14 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
             break;
         }
     }
-    delen = DAFS_DIR_LEN(1+phlen+2);
+    //delen = DAFS_DIR_LEN(1+phlen+2);
     dafs_de = dafs_ze->dentry[cur_pos];
     dafs_de->entry_type = DAFS_DIR_ENTRY;
     /*标示. ..文件*/
     dafs_de->file_type = FIXED_FILE;
     dafs_de->name_len = 1;
     dafs_de->links_count = 1;
-    dafs_de->de_len = cpu_to_le16(delen);
+    //dafs_de->de_len = cpu_to_le16(delen);
     dafs_de->mtime = CURRENT_TIME_SEC.tv_sec;
     //dafs_de->size = sb->s_blocksize;
     dafs_de->vroot = 0;
@@ -857,7 +857,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     memcpy(dafs_de->ful_name->f_name, phn, phlen+3);
     //dafs_de->ful_name->f_name = phn;
 
-    nova_flush_buffer(dafs_de, delen, 0);
+    nova_flush_buffer(dafs_de, DAFS_DEF_DENTRY_SIZE, 0);
     
     /*change in dir*/
     dafs_rde->sub_num +=1;
@@ -883,14 +883,14 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
             break;
         }
     }
-    delen = DAFS_DIR_LEN(2+phlen+3);
+    //delen = DAFS_DIR_LEN(2+phlen+3);
     dafs_de = dafs_ze->dentry[cur_pos];
     dafs_de->entry_type = DAFS_DIR_ENTRY;
     /*标示. ..文件*/
     dafs_de->file_type = FIXED_FILE;
     dafs_de->name_len = 2;
     dafs_de->links_count = 2;
-    dafs_de->de_len = cpu_to_le16(delen);
+    //dafs_de->de_len = cpu_to_le16(delen);
     dafs_de->mtime = CURRENT_TIME_SEC.tv_sec;
     //dafs_de->size = sb->s_blocksize;
     dafs_de->vroot = 0;
@@ -905,7 +905,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, struct nova_inode *pi,\
     memcpy(dafs_de->ful_name->f_name, phn, phlen+4)
     //dafs_de->ful_name->f_name = phn;
     
-    nova_flush_buffer(dafs_de, delen, 0);
+    nova_flush_buffer(dafs_de, DAFS_DEF_DENTRY_SIZE, 0);
     
     dafs_rde->sub_num +=1;
     dafs_rde->sub_pos[1] = cpu_to_le64(cur_pos);
@@ -991,7 +991,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     struct dafs_dentry *dafs_de;
     char *phname, *new_pn, *ph, *phn;
     unsigned long phlen;
-    unsigned short delen;
+    //unsigned short delen;
     unsigned long bitpos = 0, cur_pos = 0;
     u64 hashname, newp_len;
     int ret = 0;
@@ -1026,7 +1026,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     phlen = strlen(phn);
     pidir = nova_get_inode(sb, dir);
     dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
-    delen = DAFS_DIR_LEN(namelen + phlen); //not decided 
+    //delen = DAFS_DIR_LEN(namelen + phlen); //not decided 
 
     /*get dentry on nvm*/
     dafs_de = dafs_ze->dentry[cur_pos];
@@ -1038,7 +1038,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
 
 	dafs_de->links_count = old_de->links_count;
 
-    dafs_de->de_len = cpu_to_le16(delen);  
+    //dafs_de->de_len = cpu_to_le16(delen);  
     dafs_de->mtime = cpu_to_le32(dir->i_mtime.tv_sec);
     /*not root at first*/
     dafs_de->vroot = 1;
@@ -1084,7 +1084,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     dafs_de->dzt_hn = cpu_to_le64(*new_hn);
 
     /*not decided是不是每次写到nvm都需要这个接口*/ 
-    nova_flush_buffer(dafs_de, delen, 0);
+    nova_flush_buffer(dafs_de, DAFS_DEF_DENTRY_SIZE, 0);
     
     /*make valid*/
     bitpos++;
@@ -1121,7 +1121,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     struct rf_entry *new_rf;
     unsigned long sub_num;
     unsigned long bitpos = 0, dir_pos = 0, s_pos;
-    unsigned short delen;
+    //unsigned short delen;
     int i, ret=0;
     char *new_ph, *s_name, *sub_ph, ch_ph;
     u64 phlen,src_len, hashname, dzt_hn, ch_len, sub_len;
@@ -1139,7 +1139,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     //strcat(new_ph, n_name);
     new_ph = kzalloc(sizeof(char )*DAFS_PATH_LEN, GFP_KERNEL);
     memcpy(new_ph, path, strlen(path)+1);
-    delen = DAFS_DIR_LEN(strlen(name)+strlen(new_ph));
+    //delen = DAFS_DIR_LEN(strlen(name)+strlen(new_ph));
     
     /*set dir entry*/
     while(bitpos<z_p->zone_max){
@@ -1156,7 +1156,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     new_de->name_len = strlen(name);
     new_de->file_type = src_de->file_type;       //file_type是啥？ not decided
 	new_de->links_count = src_de->links_count;
-    new_de->de_len = cpu_to_le16(delen);  
+    //new_de->de_len = cpu_to_le16(delen);  
     new_de->mtime = cpu_to_le32(CURRENT_TIME_SEC);
     new_de->vroot = src_de->vroot;
     new_de->ino = src_de->ino;
@@ -1181,7 +1181,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     memcpy(new_de->ful_name->f_name, new_ph, strlen(new_ph)+1);
     //new_de->ful_name->f_name = new_ph;
 
-    nova_flush_buffer(new_de, delen, 0);
+    nova_flush_buffer(new_de, DAFS_DEF_DENTRY_SIZE, 0);
     
     /*make valid*/
     bitpos++;
@@ -1220,7 +1220,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
             ret = __rename_dir(sb, sub_de, dzt_ei, sub_ph, s_name);
 
         } else {
-            delen = DAFS_DIR_LEN(str(s_name)+str(sub_ph));
+            //delen = DAFS_DIR_LEN(str(s_name)+str(sub_ph));
             /*set dir entry*/
             while(bitpos<z_p->zone_max){
                 if(test_bit_le(bitpos, z_p->statemap)||test_bit_le(bitpos+1, z_p->statemap)){
@@ -1236,7 +1236,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
             new_de->name_len = sub_de->name_len;
             new_de->file_type = sub_de->file_type;       //file_type是啥？ not decided
 	        new_de->links_count = sub_de->links_count;
-            new_de->de_len = cpu_to_le16(delen);  
+            //new_de->de_len = cpu_to_le16(delen);  
             new_de->mtime = cpu_to_le32(CURRENT_TIME_SEC);
             new_de->vroot = sub_de->vroot;
             new_de->ino = sub_de->ino;
@@ -1285,7 +1285,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
                 new_de->dzt_hn = sub_de->dzt_hn;
             }
 
-            nova_flush_buffer(new_de, delen, 0);
+            nova_flush_buffer(new_de, DAFS_DEF_DENTRY_SIZE, 0);
              
             /*make valid*/
             bitpos++;
@@ -1401,7 +1401,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     char *n_phname, *name=new_dentry->d_name.name, *phname, *ph, *phn;
     unsigned long bitpos=0, cur_pos=0;
     int namelen = new_dentry->d_name.len;
-    unsigned short de_len;
+    //unsigned short de_len;
     unsigned long phlen;
     u64 hashname;
 
@@ -1427,7 +1427,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     //phlen = strlen(n_phname);
     pidir = nova_get_inode(sb, dir);
     dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
-    de_len = DAFS_DIR_LEN(namelen + phlen); //not decided 
+    //de_len = DAFS_DIR_LEN(namelen + phlen); //not decided 
 
     /*get dentry on nvm*/
     dafs_de = n_ze->dentry[cur_pos];
@@ -1439,7 +1439,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
 
 	dafs_de->links_count = o_de->links_count;
 
-    dafs_de->de_len = cpu_to_le16(de_len);  
+    //dafs_de->de_len = cpu_to_le16(de_len);  
     dafs_de->mtime = cpu_to_le32(CURRENT_TIME_SEC);
     /*not root at first*/
     dafs_de->vroot = 0;
@@ -1466,7 +1466,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     memcpy(dafs_de->ful_name->f_name, phn, phlen+1);
     //dafs_de->ful_name->f_name = phn;
     /*not decided是不是每次写到nvm都需要这个接口*/ 
-    nova_flush_buffer(dafs_de, de_len, 0);
+    nova_flush_buffer(dafs_de, DAFS_DEF_DENTRY_SIZE, 0);
     
     /*make valid*/
     bitpos++;
@@ -1503,7 +1503,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     struct dafs_dentry *f_de = NULL;
     struct dzt_entry_info *ei;
     struct dafs_zone_entry *ze;
-    unsigned short de_len;
+    //unsigned short de_len;
     u64 pi_addr;
     unsigned long pos = 0, sub_num, n = 0;
     ino_t ino;
@@ -1563,7 +1563,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
 			"name %s, namelen %u, rec len %u\n", pos,
 			de->entry_type, le64_to_cpu(de->ino),
 			de->name, de->name_len,
-			le16_to_cpu(de->de_len));
+			DAFS_DEF_DENTRY_SIZE);
 
         if(de->ino>0){
             ino = __le64_to_cpu(de->ino);
@@ -1579,7 +1579,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
 			nova_dbgv("ctx: ino %llu, name %s, "
 				"name_len %u, de_len %u\n",
 				(u64)ino, de->name, de->name_len,
-				de->de_len);
+				DAFS_DEF_DENTRY_SIZE);
 			if (!dir_emit(ctx, de->name,
 				de->name_len, ino,
 				IF2DT(le16_to_cpu(_child_pi->i_mode)))) {

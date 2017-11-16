@@ -19,6 +19,14 @@
 #define DIR_RMDIR  1
 #define DIR_CREATE 2
 
+/*dzt_block*/
+#define SIZE_DZT_BITMAP ((DAFS_DZT_ENTRIES_IN_BLOCK + 1 + BITS_PER_BYTE -1)/BITS_PER_BYTE)
+#define DAFS_DZT_ENTRIES_IN_BLOCK 74
+#define SIZE_OF_RESERVED 46
+
+/*zone_entry */
+#define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE + BITS_PER_BYTE-1)/BITS_PER_BYTE)
+
 /*
  * struct dir_zone
  * learn in f2fs*/
@@ -44,10 +52,9 @@ struct dafs_dentry{
     u8 entry_type;          
     u8 name_len;            /*length of the dentry name*/
     u8 file_type;           /* file type */
+    u8  vroot;           /* root dir or ? */
     __le16 links_count;         /* links */
-    __le16 de_len;
     __le32 mtime;
-    __le32 vroot;           /* root dir or ? */
     __le64 ino;             /* inode number*/
     __le64 par_ino;         /* parent inode_ino */
     __le64 size;            /* inode_size */
