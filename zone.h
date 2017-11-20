@@ -60,8 +60,8 @@ struct dafs_dentry{
     __le64 par_ino;         /* parent inode_ino */
     __le64 size;            /* inode_size */
     __le64 dzt_hn;          /* hashname od dzr if root dir*/
-    __le64 sub_num;         /* the number of subfiles */
-    __le64 sub_pos[NR_DENTRY_IN_ZONE];         /* sub file position*/
+    //__le64 sub_num;         /* the number of subfiles */
+    //__le64 sub_pos[NR_DENTRY_IN_ZONE];         /* sub file position*/
     char name[NOVA_NAME_LEN+1];          /* file name*/
     struct fulname ful_name;
 
@@ -147,10 +147,23 @@ struct file_p {
 };
 
 /*record dir subfile info*/
+/*
 struct dir_sf_info {
+    int sub_num;
     u64 dir_hash;
     struct list_head sub_file;
     //unsinged short sub_pos[NR_DENTRY_IN_ZONE];
+};*/
+
+/*record dir frequecy ,info and subfile list*/
+struct dir_info {
+    u32 r_f;
+    u32 sub_num;
+    u32 sub_s;
+    u32 f_s;
+    u32 prio;
+    u32 dir_hash;
+    struct list_head sub_file;
 };
 
 /*
@@ -165,8 +178,9 @@ struct dzt_entry_info{
     uint64_t pdz_addr;
     uint64_t rden_pos;
     uint64_t hash_name;
-    struct radix_tree_root rf_tree;    /*read frequence root*/
-    struct radix_tree_root sub_pos;   /*for dir infor in this root*/
+    struct radix_tree_root dir_tree;   /*record frequency and dir info */
+    //struct radix_tree_root rf_tree;    /*read frequence root*/
+    //struct radix_tree_root sub_tree;   /*for dir infor in this root*/
 };
 
 /*
