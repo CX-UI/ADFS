@@ -345,15 +345,16 @@ int init_rf_entry(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 lookup:
     make_ht_ptr(&ht_p,ht);
     rfe = kzalloc(sizeof(struct rf_entry), GFP_KERNEL);
-    while(bit_pos < ht_p->hash_max) {
-        if(test_bit_le(bit_pos, ht_p->bitmap) {
+    while(bit_pos < ht_p->hash_max){
+        if(test_bit_le(bit_pos, ht_p->bitmap)){
             he = ht->hash_entry[bit_pos];
             rfe->r_f = 0;
             rfe->hash_name = le64_to_cpu(ht->hd_name);
             radix_tree_insert(&dzt_ei->rf_root, rfe->hash_name, rfe);
             bit_pos++;
         }
-
+        else
+            bitpos++;
     }
     tail =le64_to_cpu(ht->hash_tail);
     if(tail){
@@ -362,6 +363,121 @@ lookup:
         goto lookup;
     }
     return 0;    
+}
+
+/*compare dir name and file name,
+* then get subfile position*/
+int set_sf_pos(struct dzt_entry_info *dzt_ei, const char *dir, struct dir_sf_info *sf_info)
+{
+    struct dafs_zone_entry *ze;
+    struct dafs_dentry *de;
+    struct zone_ptr *z_p;
+    struct file_p *fp;
+    unsigned short bitpos = 0, filepos = 0;
+    int pathlen, namelen, ret =0;
+    char *s_name;
+
+
+    ze = (struct dafs_zone_entry *)nova_get_block(dzt_ei->dz_addr);
+    make_zone_ptr(&z_p, ze);
+
+    s_name = kzalloc(DAFS_PATH_LEN*sizeof(char), GFP_ATOMIC);
+    pathlen = strlen(dir);
+    while(filepos<NR_DENTRY_IN_ZONE){
+        if(test_bit_le(bitpos, z_p->statemap)){
+            de = ze->dentry[filepos];
+            namelen = de->ful_name->f_namelen;
+            if(namelen > pathelen){
+                memcpy(name, de->ful_name->f_name, pathlen);
+                if(!strcmp(dir, name)) {
+                    fp = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+                    fp->pos = filepos;
+                    list_add_tail(&fp->list, &sf_info->sub_file);
+                }
+            }
+            filepos++;
+            bitpos++;
+            bitpos++;
+        }else {
+            bitpos ++;
+            if(test_bit_le(bitpos, z_p->statemap)){
+                de = ze->dentry[filepos];
+                namelen = de->ful_name->f_namelen;
+                if(namelen > pathelen){
+                    memcpy(name, de->ful_name->f_name, pathlen);
+                    if(!strcmp(dir, name)) {
+                        fp = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+                        fp->pos = filepos;
+                        list_add_tail(&fp->list, &sf_info->sub_file);
+                    }
+                }
+            }
+            bitpos ++;
+            filepos ++;
+        }
+    }
+
+    kfree(s_name);
+    return ret;
+}
+
+/* init sub files tree */
+int init_subfile_tree(struct dzt_entry_info *dzt_ei)
+{
+    struct dafs_zone_entry *ze;
+    struct dafs_dentry *de;
+    struct dir_sf_info *dir_sf;
+    struct zone_ptr *zp;
+    unsigned short bitpos = 0, filepos = 0, sf_pos;
+    int pathlen,ret = 0;
+    char *path;
+    u64 hashname;
+
+    ze = (struct dafs_zone_entry *)nova_get_block(dzt_ei->dz_addr);
+    make_zone_ptr(&zp, ze);
+    path = kzalloc(DAFS_PATH_LEN*sizeof(char), GFP_KERNEL);
+    while(filepos<NR_DENTRY_IN_ZONE){
+        if(test_bit_le(bitpos, zp->statemap)){
+            de = ze->dentry[filepos];
+            if(de->file_type==NORMAL_DIRECTORY){
+                pathlen = le64_to_cpu(de->ful_name->f_namelen);
+                memcpy(path, de->ful_name->f_name, pathlen);
+                memcpy(path+pathlen, "/0", 1);
+                hashname = BKDRHash(path, strlen(path));
+                dir_sf = kzalloc(sizeof(struct dir_sf_info), GFP_ATOMIC);
+                dir_sf->dir_hash = hashname;
+                INIT_LIST_HEAD(&dir_sf->sub_file);
+                ret = set_sf_pos(dzt_ei, path, dir_sf);
+                if(ret)
+                    return -ENOMEM;
+                radix_tree_insert(&dzt_ei->sub_pos, dir_sf);
+            }
+            bitpos+=2;
+            filepos++;
+        } else{
+            bitpos++:
+            if(test_bit_le(bitpos, zp->statemap)){
+                de = ze->dentry[filepos];
+                if(de->file_type==NORMAL_DIRECTORY){
+                    pathlen = le64_to_cpu(de->ful_name->f_namelen);
+                    memcpy(path, de->ful_name->f_name, pathlen);
+                    memcpy(path+pathlen, "/0", 1);
+                    hashname = BKDRHash(path, strlen(path));
+                    dir_sf = kzalloc(sizeof(struct dir_sf_info), GFP_ATOMIC);
+                    dir_sf->dir_hash = hashname;
+                    INIT_LIST_HEAD(&dir_sf->sub_file);
+                    ret = set_sf_pos(dzt_ei, path, dir_sf);
+                    if(ret)
+                        return -ENOMEM;
+                    radix_tree_insert(&dzt_ei->sub_pos, dir_sf);
+                }
+            }
+            bitpos++;
+            filepos++;
+        }
+    }
+    kfree(path);
+    return ret;
 }
 
 /*
@@ -381,7 +497,10 @@ static void make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_e
     dzt_entry_info->hash_name = dzt_ei->hash_name;
     INIT_RADIX_TREE(&dzt_entry_info->rf_root, GFP_ATOMIC);
     init_rf_entry(sbi->sb, dzt_entry_info);
-
+    
+    /*init sub file pos*/
+    INIT_RADIX_TREE(&dzt_entry_info->sub_pos, GFP_ATOMIC);
+    init_subpos_tree();
     radix_tree_insert(&dzt_m->dzt_root, dzt_entry_info->hash_name, dzt_entry_info);
 
 }

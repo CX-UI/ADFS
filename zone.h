@@ -52,7 +52,8 @@ struct dafs_dentry{
     u8 entry_type;          
     u8 name_len;            /*length of the dentry name*/
     u8 file_type;           /* file type */
-    u8  vroot;           /* root dir or ? */
+    //u8  vroot;           /* root dir or ? */
+    u8 ext_flag;
     __le16 links_count;         /* links */
     __le32 mtime;
     __le64 ino;             /* inode number*/
@@ -138,6 +139,20 @@ struct rf_entry {
 
 };
 
+/* list memebers in list 
+ * record position*/
+struct file_p {
+    struct list_head list;
+    unsinged short pos;
+};
+
+/*record dir subfile info*/
+struct dir_sf_info {
+    u64 dir_hash;
+    struct list_head sub_file;
+    //unsinged short sub_pos[NR_DENTRY_IN_ZONE];
+};
+
 /*
 * 2017/09/13
 * zone entries for copy-on-write Btree*/
@@ -151,6 +166,7 @@ struct dzt_entry_info{
     uint64_t rden_pos;
     uint64_t hash_name;
     struct radix_tree_root rf_tree;    /*read frequence root*/
+    struct radix_tree_root sub_pos;   /*for dir infor in this root*/
 };
 
 /*
