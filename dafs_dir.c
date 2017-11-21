@@ -301,7 +301,7 @@ END:
 
 /*dafs add dentry in the zone
 * and initialize direntry without name*/
-int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
+int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
 {
     struct inode *dir = dentry->d_parent->d_inode;
     struct super_block *sb = dir->i_sb;
@@ -313,13 +313,15 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     struct dafs_zone_entry *dafs_ze;
     struct zone_ptr *zone_p;
     struct dafs_dentry *dafs_de;
-    char *phname, *ph, *phn;
-    unsigned long phlen;
+    struct dir_info *par_dir;
+    struct file_p *tem_sf;
+    char *phname, *ph, *phn, *tem;
+    unsigned long phlen, temlen;
     //unsigned short delen;
     unsigned short links_count;
     unsigned long bitpos = 0, cur_pos = 0;
     int ret = 0;
-    u64 hashname, ht_addr;
+    u64 hashname, ht_addr, par_hn;
     timing_t add_dentry_time;
 
     
@@ -389,6 +391,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     //dafs_de->sub_num = 0;
     //dafs_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
     /*不存储名字字符在初始化的时候*/
+    memcpy(dafs_de->name,dentry->d_name.name,dentry->d_name.len);
     dafs_de->name[dentry->d_name.len] = '\0';
     dafs_de->ful_name->f_namelen = cpu_to_le64(phlen);
     /*那路径名称呢*/
@@ -403,16 +406,36 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link)
     dir->i_blocks = pidir->i_blocks;
 
     /*set pos in hash table for each zone*/
-    hashname = BKDRHash(phname, phlen);
+    hashname = BKDRHash(phn, phlen);
     ht_addr = dzt_ei->ht_head;
     ret = record_pos_htable(sb, ht_addr, hashname, phlen, cur_pos, 1);
 
+    /*set pos in par_dir info*/
+    temlen = phlen - dentry->d_name.len;
+    if(temlen>1){
+        tem = kzalloc(temlen*sizeof(char), GFP_ATOMIC);
+        temlen--;
+        memcpy(tem, phn, temlen);
+        memcpy(tem+temlen, "/0", 1);
+        par_hn = BKDRHash(tem, temlen);
+        par_dir = radix_tree_lookup(&dzt_ei->dir_tree, par_hn);
+        par_dir->sub_num++;
+        tem_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+        tem_sf->pos = cur_pos;
+        list_add_tail(&tem_sf->list, &par_dir->sub_file);
+    }
+
+    /*add dir info if dentry is dir*/
+    if(file_type==1){
+        add_dir_info(dzt_ei, hashname);
+    }
     /*new rf_entry*/
     //add_rf_entry(dzt_ei, hashname);
 
     NOVA_END_TIMING(add_dentry_t, add_entry_time);
     kfree(phname);
     kfree(ph);
+    kfree(tem);
     return ret;
 }
 
