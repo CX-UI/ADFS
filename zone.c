@@ -113,8 +113,8 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     dafs_rde->size = sb->s_blocksize; /*not decided*/
     dafs_rde->dzt_hn = cpu_to_le64(hn); 
     //dafs_rde->prio = LEVEL_0;
-    dafs_rde->sub_num = 0;
-    dafs_rde->sub_pos[NR_DENTRY_IN_ZONE]={0};
+    //dafs_rde->sub_num = 0;
+    //dafs_rde->sub_pos[NR_DENTRY_IN_ZONE]={0};
     dafs_rde->name = "/";
     dafs_rde->ful_name->f_namelen = 1;
     dafs_rde->ful_name->f_name = "/";
@@ -130,7 +130,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     zone_entry->dentry[1].vroot = 0;
     zone_entry->dentry[1].size = sb->s_blocksize;      //not decided
     zone_entry->dentry[1].dzt_hn = 0;
-    zone_entry->dentry[1].sub_pos[NR_DENTRY_IN_ZONE] = 0;
+    //zone_entry->dentry[1].sub_pos[NR_DENTRY_IN_ZONE] = 0;
     zone_entry->dentry[1].name = ".";
     zone_entry->dentry[1].ful_name->f_namelen = 2;
     zone_entry->dentry[1].ful_name->f_name = "/.";
@@ -146,7 +146,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     zone_entry->dentry[2].ino = dafs_de->par_ino;
     zone_entry->dentry[2].size = sb->s_blocksize;
     zone_entry->dentry[2].dzt_hn = 0;          //not decided
-    zone_entry->dentry[2].sub_pos[NR_DENTRY_IN_ZONE] = {0};
+    //zone_entry->dentry[2].sub_pos[NR_DENTRY_IN_ZONE] = {0};
     zone_entry->dentry[2].name = "..";
     zone_entry->dentry[2].ful_name->f_namelen = 3;
     zone_entry->dentry[2].ful_name->f_name = "/..";
@@ -806,9 +806,11 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     //struct zone_ptr *z_p;
     //struct rf_entry *rf_e;
     struct dir_info *dir_i;
+    struct list *this, *head; 
+    struct file_p *o_sf;
     unsigned long old_id, ch_len, old_namelen, sub_no;
-    unsigned long *ch_no, ch_pos;
-    unsigned long sub_pos[NR_DENTRY_IN_ZONE];
+    unsigned long ch_no, ch_pos;
+    //unsigned long sub_pos[NR_DENTRY_IN_ZONE];
     unsigned long bitpos = 0;
     unsigned long new_id = 0;
     int i = 0;
@@ -827,11 +829,6 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     //new_z_e->dz_no = dzt_ne->dzt_eno;
     old_namelen = le64_to_cpu(dafs_rde->ful_name->f_namelen);
 
-    ch_len = le64_to_cpu(dafs_rde->sub_num);
-    ch_no = kzalloc(sizeof(unsigned long)*ch_len);
-    for(i =0;i<ch_len;i++){
-        ch_no[i] = le64_to_cpu(dafs_rde->sub_pos[i]);
-    }
 
     /* modify root dentry 
     * not change rde sub_state*/
@@ -840,8 +837,6 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     dafs_rde->vroot = 1;
     //dafs_rde->zoon_no = dzt_nei->dzt_eno;
     dafs_rde->dzt_hn = cpu_to_le64(dzt_nei->hash_name);
-    dafs_rde->sub_num = 0;
-    dafs_rde->sub_pos[NR_DENTRY_IN_ZONE] = {0};
     
     name_len = le64_to_cpu(dafs_rde->ful_name->f_namelen);
     hashname = BKDRHash(dafs_rde->ful_name->f_name, name_len);
@@ -849,19 +844,19 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     eno = le64_to_cpu(old_ze->dz_no);
     old_ei = DAFS_GET_EI(sb, eno);
 
-    /*change rf value of root dir*/
-    /*
-    rf_e = radix_tree_lookup(&old_ei->rf_root, hashname);
-    rf_e->sub_s = 0;
-    rf_e->f_s = 0;
-    rf_e->prio = 0;*/
-    /*delete dir info of root_directory*/
+    /*move sub files*/
     dir_i = radix_tree_delete(&old_ei->dir_tree, hashname);
+    head = &dir_i->sub_file;
+    list_for_each(this, head) {
+        o_sf = list_entry(this, struct file_p, list);
+        ch_no = o_sf->pos;
+        cpy_new_zentry(dzt_nei, old_ei, old_namelen, dafs_rde, dir_i, ch_no, &ch_pos);
+        //ch_pos ++;
+        list_del(&o_sf->list);
+        kfree(o_sf);
+    }
+   
     kfree(dir_i);
-
-    //make_zone_ptr(&z_p, new_ze);
-    cpy_new_zentry(dzt_nei, old_ei, old_namelen, dafs_rde, ch_no, &ch_pos);
-    
     kfree(ch_no);
     return ret;
 }
@@ -872,224 +867,198 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
 * z_p  for make every dentry statemap valid
 * new_ze and old_ze for get old dentry and new dentry
 * par_de for record sub_file pos 
-* ch_no is an array records subfile_id
+* ch_no is subfile_id
 * ch_pos is the star pos for copy*/
 static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_ei,\
         struct dzt_entry_info *old_ei, unsigned long old_len, struct dafs_dentry *par_de,\
-        const unsigned long *ch_no, unsigned long *ch_pos)
+        struct dir_info *par_f, unsigned long ch_no, unsigned long *ch_pos)
 {
     struct dafs_dentry *new_de, *old_de;
     struct zone_ptr *new_p, *old_p;
     struct dafs_zone_entry *new_ze, *old_ze;
+    struct list *head, *this;
+    struct dir_info *o_dir, *new_dir;
+    struct file_p *new_sf, *old_sf;
     //unsigned long old_len = r_ze->name_len;
     char name[NOVA_NAME_LEN]; 
     unsigned long  j,k,old_id;
-    unsigned long ch_len, *sub_no, sub_len;
+    unsigned long ch_len, sub_no, sub_len;
     unsigned long new_id = *ch_pos;  /* ch_pos initalized as 0*/
     unsigned long bitpos = 0;
     unsigned long i, name_len;
-    u64 hashname, hashlen;
+    u64 hashname, hashlen, o_hn;
     int j;
 
     old_ze = (struct dafs_zone_entry *)nova_get_block(sb, new_ei->pdz_addr);
     new_ze = (struct dafs_zone_entry *)nova_get_block(sb, old_ei->dz_addr);
     make_zone_ptr(&old_p, old_ze);
     make_zone_ptr(&new_p, new_ze);
-    ch_len = par_de->sub_num;
-    for(i=0;i<ch_len;i++){
-        old_id = le64_to_cpu(ch_no[i]);
-        old_de = old_ze->dentry[old_id];
-        new_de = new_ze->dentry[new_id];
-        if(old_de->file_type == NORMAL_FILE){
-            new_de->entry_type = old_de->entry_type;
-            new_de->name_len = old_de->name_len;
-            //new_de->name_len = old_de->name_len-old_len;
-            new_de->file_type = old_de->file_type;
-            new_de->links_count = old_de ->links_count;
-            new_de->mtime = CURRENT_TIME_SEC.tv_sec;
-            new_de->vroot = old_de->vroot;
-            //new_de->path_len = old_de->path_len-old_len;
-            new_de->ino = old_de->ino;
-            new_de->par_ino = old_de->par_ino;
-            new_de->size = old_de->size;
-            new_de->dzt_hn = old_de->dzt_hn;
-            //new_de->prio = LEVEL_0;
-            //new_de->d_f = 0;            //not decided
-            //new_de->sub_s = old_de->sub_s;
-            new_de->f_s = DENTRY_FREQUENCY_COLD;
-            memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
-            name_len = le64_to_cpu(old_de->ful_name->f_namelen) - old_len;
-            new_de->ful_name->f_namelen = cpu_to_le64(name_len);
-            memcpy(new_de->ful_name->f_name, old_de->ful_name->f_name+old_len, name_len+1);
+    //ch_len = par_de->sub_num;
+    //for(i=0;i<ch_len;i++){
+        //old_id = le64_to_cpu(ch_no[i]);
+    old_de = old_ze->dentry[ch_no];
+    new_de = new_ze->dentry[new_id];
+    if(old_de->file_type == NORMAL_FILE){
+        new_de->entry_type = old_de->entry_type;
+        new_de->name_len = old_de->name_len;
+        new_de->file_type = old_de->file_type;
+        new_de->links_count = old_de ->links_count;
+        new_de->mtime = CURRENT_TIME_SEC.tv_sec;
+        new_de->vroot = old_de->vroot;
+        new_de->ino = old_de->ino;
+        new_de->par_ino = old_de->par_ino;
+        new_de->size = old_de->size;
+        new_de->dzt_hn = old_de->dzt_hn;
+        memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
+        name_len = le64_to_cpu(old_de->ful_name->f_namelen) - old_len;
+        new_de->ful_name->f_namelen = cpu_to_le64(name_len);
+        memcpy(new_de->ful_name->f_name, old_de->ful_name->f_name+old_len, name_len+1);
 
-
-            /*for(k = 0;k<new_de->name_len;k++){
-                new_de->name[k] = old_de->name[old_len];
-                old_len++:
-            }*/
-
-            /*set sum frequency*/
-            //old_ze->dz_sf -= old_de->d_f;
-
-            /*set this file's pos in its par_de*/
-            par_de->sub_pos[i] = new_id;
-            /*atomic*/
-            bitpos = new_id *2 +1;
-            set_bit_le(bitpos, new_p->statemap);
-
-            /*record pos in hashtable*/
-            hashname = BKDRHash(new_de->ful_name->f_name, name_len);
-            record_pos_htable(sb, new_ei->ht_head, hashname, name_len, new_id, 1);
-            /*set rf_entry*/
-            //add_rf_entry(new_ei, hashname);
-
-            /*set old invalid*/
-            bitpos = old_id*2;
-            test_and_clear_bit_le(bitpos, old_p->statemap);
-            bitpos++;
-            test_and_clear_bit_le(bitpos, old_p->statemap);
-
-            /*make invalid in hashtable*/
-            name_len = le64_to_cpu(old_de->ful_name->f_namelen);
-            hashname = BKDRHash(old_de->ful_name->f_name, name_len);
-            make_invalid_htable(old_ei->ht_head, hashname, name_len, 1);
-
-            /*delete ef_entry in old rf_tree*/
-            //delete_rf_entry(old_ei, hashname);
-
-            new_id++;
-            *ch_pos = new_id;
-
-        }else if(old_de->file_type == ROOT_DIRECTORY){
-            new_de->entry_type = old_de->entry_type;
-            new_de->name_len = old_de->name_len;
-            //new_de->name_len = old_de->name_len-old_len;
-            new_de->file_type = old_de->file_type;
-            new_de->links_count = old_de ->links_count;
-            new_de->mtime = CURRENT_TIME_SEC.tv_sec;
-            new_de->vroot = old_de->vroot;
-            //new_de->path_len = old_de->path_len-old_len;
-            new_de->ino = old_de->ino;
-            new_de->par_ino = old_de->par_ino;
-            new_de->size = old_de->size;
-            new_de->dzt_hn = old_de->dzt_hn;
-            //new_de->zone_no = old_de->zone_no;
-            //new_de->prio = LEVEL_0;
-            //new_de->d_f = 0;
-            //new_de->sub_s = old_de->sub_s;
-            //new_de->f_s = DENTRY_FREQUENCY_COLD;
-            new_de->sub_num = old_de->sub_num;
-            memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
-            name_len = le64_to_cpu(old_de->ful_name->f_namelen) - old_len;
-            new_de->ful_name->f_namelen = cpu_to_le64(name_len);
-            memcpy(new_de->ful_name->f_name, old_de->ful_name->f_name+old_len, name_len+1);
-
-            /*
-            for(k = 0;k<new_de->name_len;k++){
-                new_de->name[k] = old_de->name[old_len];
-                old_len++;
-            }*/
-            
-            /*set sum frequency*/
-            //old_ze->dz_sf -= old_de->d_f;
-            
-            par_de->sub_pos[i] = new_id;
-            bitpos = new_id *2 +1;
-            set_bit_le(bitpos, new_p->statemap);
-
-            /*record pos in hashtable*/
-            hashname = BKDRHash(new_de->ful_name->f_name, name_len);
-            record_pos_htable(sb, new_ei->ht_head, hashname, name_len, new_id, 1);
-            /*set rf_entry*/
-            //add_rf_entry(new_ei, hashname);
-
-            /*set old invalid*/
-            bitpos = old_id*2;
-            test_and_clear_bit_le(bitpos, old_p->statemap);
-            bitpos++;
-            test_and_clear_bit_le(bitpos, old_p->statemap);
-
-            /*make invalid in hashtable*/
-            name_len = le64_to_cpu(old_de->ful_name->f_namelen);
-            hashname = BKDRHash(old_de->ful_name->f_name, name_len);
-            make_invalid_htable(old_ei->ht_head, hashname, name_len, 1);
-
-            /*delete ef_entry in old rf_tree*/
-            //delete_rf_entry(old_ei, hashname);
-
-            new_id++;
-            *ch_pos = new_id;
-        }else if(old_de->file_type == NORMAL_DIRECTORY){
-                    
-            new_de->entry_type = old_de->entry_type;
-            new_de->name_len = old_de->name_len;
-            //new_de->name_len = old_de->name_len-old_len;
-            new_de->file_type = old_de->file_type;
-            new_de->links_count = old_de ->links_count;
-            new_de->mtime = CURRENT_TIME_SEC.tv_sec;
-            new_de->vroot = old_de->vroot;
-            //new_de->path_len = old_de->path_len-old_len;
-            new_de->ino = old_de->ino;
-            new_de->par_ino = old_de->par_ino;
-            new_de->size = old_de->size;
-            //new_de->prio = LEVEL_0;
-            //new_de->d_f = 0;
-            //new_de->sub_s = old_de->sub_s;
-            //new_de->f_s = DENTRY_FREQUENCY_COLD;
-            new_de->sub_num = old_de->sub_num;
-            memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
-            name_len = le64_to_cpu(old_de->ful_name->f_namelen) - old_len;
-            new_de->ful_name->f_namelen = cpu_to_le64(name_len);
-            memcpy(new_de->ful_name->f_name, old_de->ful_name->f_name+old_len, name_len+1);
-            /*
-            for(k = 0;k<new_de->name_len;k++){
-                new_de->name[k] = old_de->name[old_len];
-                old_len++;
-            }*/
-            
-            /*set sum frequency*/
-            //old_ze->dz_sf -= old_de->d_f;
-            
-            par_de->sub_pos[i] = new_id;
-            bitpos = new_id *2 +1;
-            set_bit_le(bitpos, z_p->statemap);
-            
-            /*record pos in hashtable*/
-            hashname = BKDRHash(new_de->ful_name->f_name, name_len);
-            record_pos_htable(sb, new_ei->ht_head, hashname, name_len, new_id, 1);
-            /*set dir_entry*/
-            //add_rf_entry(new_ei, hashname);
-
-            /*set old invalid*/
-            bitpos = old_id*2;
-            test_and_clear_bit_le(bitpos, old_p->statemap);
-            bitpos++;
-            test_and_clear_bit_le(bitpos, old_p->statemap);
-
-            /*make invalid in hashtable*/
-            name_len = le64_to_cpu(old_de->ful_name->f_namelen);
-            hashname = BKDRHash(old_de->ful_name->f_name, name_len);
-            make_invalid_htable(old_ei->ht_head, hashname, name_len, 1);
-
-            /*delete ef_entry in old rf_tree*/
-            //delete_rf_entry(old_ei, hashname);
-            /* delete dir_info in old dir_info tree*/
-            delete_dir_info(old_ei, hashname);
-
-            new_id++;
-            *ch_pos = new_id;
-            sub_len = le64_to_cpu(old_de->sub_num);
-            sub_no = (unsigned long *)kzalloc(sizeof(unsigned long)*sub_len)
-            for(j=0;j<sub_len;j++){
-                sub_no[j] = le64_to_cpu(old_de->sub_pos[j]);
-            }
-            //memcpy(sub_no[0],old_de->sub_pos,old_de->sub_num);
-            /*input new_de when it is a directory*/
-            cpy_new_zentry(sb, new_ei, old_ei, old_len, new_de, sub_no, &new_id);
-
+        /*set this file's pos in its par_de
+        * update sub_num*/
+        if(par_de->file_type!=ROOT_DIRECTORY){
+            new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+            new_sf->pos = new_id;
+            list_add_tail(&new_sf->list, &par_f->sub_file);
+            par_f->sub_num++;
         }
 
-    } 
+        /*atomic*/
+        bitpos = new_id *2 +1;
+        set_bit_le(bitpos, new_p->statemap);
+
+        /*record pos in hashtable*/
+        hashname = BKDRHash(new_de->ful_name->f_name, name_len);
+        record_pos_htable(sb, new_ei->ht_head, hashname, name_len, new_id, 1);
+
+        /*set old invalid*/
+        bitpos = ch_no*2;
+        test_and_clear_bit_le(bitpos, old_p->statemap);
+        bitpos++;
+        test_and_clear_bit_le(bitpos, old_p->statemap);
+
+        /*make invalid in hashtable*/
+        name_len = le64_to_cpu(old_de->ful_name->f_namelen);
+        hashname = BKDRHash(old_de->ful_name->f_name, name_len);
+        make_invalid_htable(old_ei->ht_head, hashname, name_len, 1);
+
+        new_id++;
+        *ch_pos = new_id;
+    }else if(old_de->file_type == ROOT_DIRECTORY){
+        new_de->entry_type = old_de->entry_type;
+        new_de->name_len = old_de->name_len;
+        //new_de->name_len = old_de->name_len-old_len;
+        new_de->file_type = old_de->file_type;
+        new_de->links_count = old_de ->links_count;
+        new_de->mtime = CURRENT_TIME_SEC.tv_sec;
+        new_de->vroot = old_de->vroot;
+        //new_de->path_len = old_de->path_len-old_len;
+        new_de->ino = old_de->ino;
+        new_de->par_ino = old_de->par_ino;
+        new_de->size = old_de->size;
+        new_de->dzt_hn = old_de->dzt_hn;
+        memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
+        name_len = le64_to_cpu(old_de->ful_name->f_namelen) - old_len;
+        new_de->ful_name->f_namelen = cpu_to_le64(name_len);
+        memcpy(new_de->ful_name->f_name, old_de->ful_name->f_name+old_len, name_len+1);
+     
+        /*set this file's pos in its par_de*/
+        if(par_de->file_type!=ROOT_DIRECTORY){
+            new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+            new_sf->pos = new_id;
+            list_add_tail(&new_sf->list, &par_f->sub_file);
+            par_f->sub_num++;
+        }
+        
+        bitpos = new_id *2 +1;
+        set_bit_le(bitpos, new_p->statemap);
+
+        /*record pos in hashtable*/
+        hashname = BKDRHash(new_de->ful_name->f_name, name_len);
+        record_pos_htable(sb, new_ei->ht_head, hashname, name_len, new_id, 1);
+
+        /*set old invalid*/
+        bitpos = old_id*2;
+        test_and_clear_bit_le(bitpos, old_p->statemap);
+        bitpos++;
+        test_and_clear_bit_le(bitpos, old_p->statemap);
+
+        /*make invalid in hashtable*/
+        name_len = le64_to_cpu(old_de->ful_name->f_namelen);
+        hashname = BKDRHash(old_de->ful_name->f_name, name_len);
+        make_invalid_htable(old_ei->ht_head, hashname, name_len, 1);
+
+        new_id++;
+        *ch_pos = new_id;
+    }else if(old_de->file_type == NORMAL_DIRECTORY){
+            
+        new_de->entry_type = old_de->entry_type;
+        new_de->name_len = old_de->name_len;
+        //new_de->name_len = old_de->name_len-old_len;
+        new_de->file_type = old_de->file_type;
+        new_de->links_count = old_de ->links_count;
+        new_de->mtime = CURRENT_TIME_SEC.tv_sec;
+        new_de->vroot = old_de->vroot;
+        new_de->ino = old_de->ino;
+        new_de->par_ino = old_de->par_ino;
+        new_de->size = old_de->size;
+        memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
+        name_len = le64_to_cpu(old_de->ful_name->f_namelen) - old_len;
+        new_de->ful_name->f_namelen = cpu_to_le64(name_len);
+        memcpy(new_de->ful_name->f_name, old_de->ful_name->f_name+old_len, name_len+1);
+         
+        /*set this file's pos in its par_de*/
+        if(par_de->file_type!=ROOT_DIRECTORY){
+            new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+            new_sf->pos = new_id;
+            list_add_tail(&new_sf->list, &par_f->sub_file);
+            par_f->sub_num++;
+        }
+
+        bitpos = new_id *2 +1;
+        set_bit_le(bitpos, z_p->statemap);
+            
+        /*record pos in hashtable*/
+        hashname = BKDRHash(new_de->ful_name->f_name, name_len);
+        record_pos_htable(sb, new_ei->ht_head, hashname, name_len, new_id, 1);
+
+        /*set old invalid*/
+        bitpos = old_id*2;
+        test_and_clear_bit_le(bitpos, old_p->statemap);
+        bitpos++;
+        test_and_clear_bit_le(bitpos, old_p->statemap);
+
+        /*make invalid in hashtable*/
+        name_len = le64_to_cpu(old_de->ful_name->f_namelen);
+        o_hn = BKDRHash(old_de->ful_name->f_name, name_len);
+        make_invalid_htable(old_ei->ht_head, hashname, name_len, 1);
+
+        /* delete dir_info in old dir_info tree*/
+        delete_dir_info(old_ei, hashname);
+
+        new_id++;
+
+        /*add dir_info*/
+        new_dir = add_dir_info(new_ei, hashname);
+
+        o_dir = radix_tree_delete(&old_ei->dir_tree, o_hn);
+        head = &o_dir->sub_file;
+        list_for_each(this, head){
+            old_sf = list_entry(this, struct file_p, list);
+            sub_no = old_sf->pos;
+            cpy_new_zentry(sb, new_ei, old_ei, old_len, new_de, new_dir, sub_no, &new_id);
+            new_id ++;
+            list_del(&old_sf->list);
+            kfree(old_sf);
+        }
+
+        /* delete dir_info in old dir_info tree*/
+        kfree(o_dir);
+ 
+        *ch_pos = new_id;
+        
+    }
+ 
     
 }
 /*merge*/
@@ -1133,8 +1102,6 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         des_de->par_ino = cur_de->par_ino;
         des_de->size = cur_de->size;
         des_de->dzt_hn = cur_de->dzt_hn;
-        //des_de->sub_num = 0;
-        //des_de->sub_pos[NR_DENTRY_IN_ZONE]={0};
         memcpy(des_de->name, cur_de->name, le64_to_cpu(cur_de->name_len));
         plen = le64_to_cpu(cur_de->ful_name->f_namelen)+le64_to_cpu(rde->ful_name->f_namelen);
         des_de->ful_name->f_namelen = cpu_to_le64(plen);
@@ -1148,20 +1115,6 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         hn = BKDRHash(name, plen);
         record_pos_htable(sb, par_ei->ht_head, hn, plen, f_pos, 1);
 
-        /*热度, subfile etc*/
-        /*
-        old_hn = BKDRHash(cur_de->ful_name->f_name, le64_to_cpu(cur_de->ful_name->f_namelen));
-        old_idir = radix_tree_lookup(&cur_ei->dir_tree, old_hn);
-        new_idir = kzalloc(sizeof(struct dir_info),GFP_KERNEL);
-        new_idir->r_f = old_idir->r_f;
-        new_idir->sub_num = old_idir->sub_num;
-        new_idir->sub_s = old_idir->sub_s;
-        new_idir->f_s = 0;
-        new_idir->prio = LEVEL_0;
-        new_idir->hash_name = hn;
-        INIT_LIST_HEAD(&new_idir->sub_file);
-        radix_tree_insert(&par_ei->dir_tree, hn); 
-        */
 
         /*状态表*/
         bitpos = fpos*2+1;
@@ -1172,13 +1125,6 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         bitpos++;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
 
-        /*par dir sub_num and sub_pos*/
-        /*
-        subnum = le64_to_cpu(rde->sub_num);
-        sub_num++;
-        rde->sub_num = cpu_to_le64(sub_num);
-        rde->sub_pos[sub_num] = cpu_to_le64(cur_pos);
-        */
 
         /*update par dir info entry*/
         old_hn = BKDRHash(tem, rnamelen);
@@ -1202,8 +1148,6 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         des_de->par_ino = cur_de->par_ino;
         des_de->size = cur_de->size;
         des_de->dzt_hn = cur_de->dzt_hn;
-        //des_de->sub_num = 0;
-        //des_de->sub_pos[NR_DENTRY_IN_ZONE]={0};
         memcpy(des_de->name, cur_de->name, le64_to_cpu(cur_de->name_len));
         plen = le64_to_cpu(cur_de->ful_name->f_namelen)+le64_to_cpu(rde->ful_name->f_namelen);
         des_de->ful_name->f_namelen = cpu_to_le64(plen);
@@ -1239,14 +1183,6 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         bitpos++;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
 
-        /*par dir sub_num and sub_pos*/
-        /*
-        subnum = le64_to_cpu(rde->sub_num);
-        sub_num++;
-        rde->sub_num = cpu_to_le64(sub_num);
-        rde->sub_pos[sub_num] = cpu_to_le64(cur_pos);
-        */
-
         /*update par dir info entry*/
         old_hn = BKDRHash(tem, rnamelen);
         par_idir = radix_tree_lookup(&par_ei->dir_tree, old_hn);
@@ -1263,11 +1199,6 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
             pos = o_sub->pos;
             ret = __merge_dentry(sb, cur_ei, pos, des_de);
         }
-        /*
-        for(i=0;i<f_num;i++){
-            pos = le64_to_cpu(cur_de->sub_pos[i]);
-            ret = __merge_dentry(sb, cur_ei, pos, des_de);
-        }*/
     }
     kfree(name);
     kfree(tem);
@@ -1404,9 +1335,12 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
     struct dafs_dentry *cur_de, *des_de;
     struct dzt_entry_info *par_ei;
     struct rf_entry *old_rf, *new_rf;
+    struct dir_info *par_dir, *new_dir, *old_dir;
+    struct file_p *new_sf, *tem_sf;
+    struct list *this, *head;
     u64 bitpos = 0, fpos = 0, plen， hn, eno, old_hn, subnum, pos, f_num, inamelen, len;
-    u64 phash;
-    int i, ret =0, re;
+    u64 phash, parhash;
+    int i, ret =0, re, rdelen;
     char *name = kzalloc(DAFS_PATH_LEN*sizeof(char), GFP_KERNEL);
     char *tem, *pname;
 
@@ -1427,7 +1361,10 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         return ret;
     }
 
-    memcpy(name, rde->ful_name->f_name, le64_to_cpu(rde->ful_name->f_namelen)+1);
+    rdelen = rde->ful_name->f_namelen;
+    memcpy(name, rde->ful_name->f_name, rdelen);
+    memcpy(name+rdenlen, "/0",1);
+    parhash = BKDRHash(name, rdelen);
 
     make_zone_ptr(&par_p, des_ze);
 
@@ -1444,8 +1381,8 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         des_de->par_ino = cur_de->par_ino;
         des_de->size = cur_de->size;
         des_de->dzt_hn = cur_de->dzt_hn;
-        des_de->sub_num = 0;
-        des_de->sub_pos[NR_DENTRY_IN_ZONE]={0};
+        //des_de->sub_num = 0;
+        //des_de->sub_pos[NR_DENTRY_IN_ZONE]={0};
         memcpy(des_de->name, cur_de->name, le64_to_cpu(cur_de->name_len));
         plen = le64_to_cpu(cur_de->ful_name->f_namelen)+le64_to_cpu(rde->ful_name->f_namelen);
         des_de->ful_name->f_namelen = cpu_to_le64(plen);
@@ -1463,7 +1400,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         * delete old rf
         * free rf*/
         old_hn = BKDRHash(cur_de->ful_name->f_name, le64_to_cpu(cur_de->ful_name->f_namelen));
-        old_rf = radix_tree_delete(&cur_ei->rf_root, old_hn);
+       /* old_rf = radix_tree_delete(&cur_ei->rf_root, old_hn);
         new_rf = kzalloc(sizeof(struct rf_entry),GFP_KERNEL);
         new_rf->r_f = old_rf->r_f;
         new_rf->sub_s = old_rf->sub_s;
@@ -1471,12 +1408,12 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         new_rf->prio = LEVEL_0;
         new_rf->hash_name = hn;
         radix_tree_insert(&par_ei->rf_root, hn); 
-        kfree(old_rf);
+        kfree(old_rf);*/
 
         /*状态表
         * set and clear*/
         bitpos = fpos*2+1;
-        test_and_set_bit_le(bitpos+1,par_p->statemap);
+        test_and_set_bit_le(bitpos,par_p->statemap);
         
         bitpos = cur_pos*2;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
@@ -1487,10 +1424,11 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         make_invalid_htable(cur_ei->ht_head, old_hn, len, 1);
 
         /*par dir sub_num and sub_pos*/
-        subnum = le64_to_cpu(rde->sub_num);
-        sub_num++;
-        rde->sub_num = cpu_to_le64(sub_num);
-        rde->sub_pos[sub_num] = cpu_to_le64(cur_pos);
+        par_dir = radix_tree_lookup(&par_ei->dir_tree, parhash);
+        par_dir->sub_num++;
+        new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+        new_sf->pos = fpos;
+        list_add_tail(&new_sf->list, &par_dir->sub_file);
 
     } else if(cur_de->file_type == NORMAL_DIRECTORY){
         /*migrate dir*/  
@@ -1506,8 +1444,8 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         des_de->par_ino = cur_de->par_ino;
         des_de->size = cur_de->size;
         des_de->dzt_hn = cur_de->dzt_hn;
-        des_de->sub_num = 0;
-        des_de->sub_pos[NR_DENTRY_IN_ZONE]={0};
+        //des_de->sub_num = 0;
+        //des_de->sub_pos[NR_DENTRY_IN_ZONE]={0};
         memcpy(des_de->name, cur_de->name, le64_to_cpu(cur_de->name_len));
         plen = le64_to_cpu(cur_de->ful_name->f_namelen)+le64_to_cpu(rde->ful_name->f_namelen);
         des_de->ful_name->f_namelen = cpu_to_le64(plen);
@@ -1521,7 +1459,20 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         hn = BKDRHash(name, plen);
         record_pos_htable(sb, par_ei->ht_head, hn, plen, f_pos, 1);
 
+        /*add dir_info */
+        old_hn = BKDRHash(cur_de->ful_name->f_name, len);
+        old_dir = radix_tree_delete(&cur_ei->dir_tree, old_hn);
+        new_dir = kzalloc(sizeof(struct dir_info), GFP_ATOMIC);
+        new_dir->r_f =  old_dir->r_f;
+        new_dir->sub_num = 0;
+        new_dir->sub_s = old_dir->sub_s;
+        new_dir->f_s = 0;
+        new_dir->prio = LEVEL_0;
+        new_dir->dir_hash = hn;
+        INIT_LIST_HEAD(&new_dir->sub_file);
+        radix_tree_insert(&par_ei->dir_tree, hn);
         /*热度*/
+        /*
         old_hn = BKDRHash(cur_de->ful_name->f_name, len);
         old_rf = radix_tree_delete(&cur_ei->rf_root, old_hn);
         new_rf = kzalloc(sizeof(struct rf_entry),GFP_KERNEL);
@@ -1531,11 +1482,11 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         new_rf->prio = LEVEL_0;
         new_rf->hash_name = hn;
         radix_tree_insert(&par_ei->rf_root, hn); 
-        kfree(old_rf);
+        kfree(old_rf);*/
 
         /*状态表*/
         bitpos = fpos*2+1;
-        test_and_set_bit_le(bitpos+1,par_p->statemap);
+        test_and_set_bit_le(bitpos,par_p->statemap);
         
         bitpos = cur_pos*2;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
@@ -1546,17 +1497,23 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         make_invalid_htable(cur_ei->ht_head, old_hn, len, 1);
         
         /*par dir sub_num and sub_pos*/
-        subnum = le64_to_cpu(rde->sub_num);
-        sub_num++;
-        rde->sub_num = cpu_to_le64(sub_num);
-        rde->sub_pos[sub_num] = cpu_to_le64(cur_pos);
+        par_dir = radix_tree_lookup(&par_ei->dir_tree, parhash);
+        par_dir->sub_num++;
+        new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+        new_sf->pos = f_pos;
+        list_add_tail(&new_sf->list, &par_dir->sub_file);
 
         /*sub files*/
-        f_num = le64_to_cpu(cur_de->sub_num);
-        for(i=0;i<f_num;i++){
-            pos = le64_to_cpu(cur_de->sub_pos[i]);
+        head = old_dir->sub_file;
+        list_for_each(this, head) {
+            tem_sf = list_entry(this, struct file_p, list);
+            pos = tem_sf->pos;
             ret = __inherit_dentry(sb, cur_ei, pos, des_de, iname);
+            list_del(&tem_sf->list);
+            kfree(tem_sf);
         }
+
+        kfree(old_dir);
     } else{
         fpos = find_invalid_id(par_p, fpos);
         des_de = des_ze->dentry[fpos];
@@ -1571,8 +1528,8 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         des_de->size = cur_de->size;
         /*for new root*/
         des_de->dzt_hn = cur_ei->hash_name;
-        des_de->sub_num = 0;
-        des_de->sub_pos[NR_DENTRY_IN_ZONE]={0};
+        //des_de->sub_num = 0;
+        //des_de->sub_pos[NR_DENTRY_IN_ZONE]={0};
         memcpy(des_de->name, cur_de->name, le64_to_cpu(cur_de->name_len));
         plen = le64_to_cpu(cur_de->ful_name->f_namelen)+le64_to_cpu(rde->ful_name->f_namelen);
         des_de->ful_name->f_namelen = cpu_to_le64(plen);
@@ -1586,18 +1543,16 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         hn = BKDRHash(name, plen);
         record_pos_htable(sb, par_ei->ht_head, hn, plen, f_pos, 1);
 
-        /*copy rf_entry
-        * delete old rf
-        * free rf*/
+        /*delete old dir_info*/
         old_hn = BKDRHash(cur_de->ful_name->f_name, len);
-        old_rf = radix_tree_delete(&cur_ei->rf_root, old_hn);
-        add_rf_entry(par_ei, hn);
-        kfree(old_rf);
+        old_dir = radix_tree_delete(&cur_ei->dir_tree, old_hn);
+        //add_rf_entry(par_ei, hn);
+        kfree(old_dir);
 
         /*状态表
         * set and clear*/
         bitpos = fpos*2+1;
-        test_and_set_bit_le(bitpos+1,par_p->statemap);
+        test_and_set_bit_le(bitpos,par_p->statemap);
         
         bitpos = cur_pos*2;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
@@ -1608,10 +1563,11 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u64 
         make_invalid_htable(cur_ei->ht_head, old_hn, len, 1);
 
         /*par dir sub_num and sub_pos*/
-        subnum = le64_to_cpu(rde->sub_num);
-        sub_num++;
-        rde->sub_num = cpu_to_le64(sub_num);
-        rde->sub_pos[sub_num] = cpu_to_le64(cur_pos);
+        par_dir = radix_tree_lookup(&par_ei->dir_tree, parhash);
+        par_dir->sub_num++;
+        new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+        new_sf->pos = fpos;
+        list_add_tail(&new_sf->list, &par_dir->sub_file);
 
         /*change cur_ei*/
         cur_ei->rden_pos = fpos;
@@ -1857,7 +1813,7 @@ unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_inf
     
     /*check and set frequency state and subfiles state*/
     if(dafs_de->file_type == NORMAL_DIRECTORY ){            
-        sub_num = le64_to_cpu(dafs_de->sub_num);
+        sub_num = dir_i->sub_num;
         if(sub_num < NR_ZONE_FILES)
             sub_s = NUMBER_OF_SUBFILES_FEW;         //not decided,few=1,large=2,none=0
         else 
