@@ -45,7 +45,15 @@ struct zone_ptr {
     struct dafs_dentry *z_entry;
 };
 
-
+struct dentry_ext_tail {
+    __le32 tail;
+    __le32 f_namelen;
+};
+struct dafs_entry_ext{
+    __le32 tail;
+    __le32 reserve;
+    char f_name[DAFS_PATH_LEN+1];
+};
 /*
  * dafs dir_struct*/
 struct dafs_dentry{
@@ -63,13 +71,17 @@ struct dafs_dentry{
     //__le64 sub_num;         /* the number of subfiles */
     //__le64 sub_pos[NR_DENTRY_IN_ZONE];         /* sub file position*/
     char name[NOVA_NAME_LEN+1];          /* file name*/
+    union {
+        struct dentry_ext_tail ext_tail; 
+        struct fulname ful_name;
+    };
     struct fulname ful_name;
 
 }__attribute((__packed__));
 
 struct fulname{
     __le64 f_namelen;
-    char f_name[NOVA_NAME_LEN+1];
+    char f_name[DAFS_PATH_LEN+1];
 };
 
 
