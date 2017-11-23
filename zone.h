@@ -27,6 +27,12 @@
 /*zone_entry */
 #define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE + BITS_PER_BYTE-1)/BITS_PER_BYTE)
 
+/*dafs_dentry*/
+#define SMALL_NAME_LEN 75
+#define LARGE_NAME_LEN 123
+#define DAFS_NAME_LEN 255
+
+
 /*
  * struct dir_zone
  * learn in f2fs*/
@@ -45,6 +51,12 @@ struct zone_ptr {
     struct dafs_dentry *z_entry;
 };
 
+struct name_ext {
+    char name[LARGE_NAME_LEN+1];
+    struct name_ext *next;
+};
+
+/*
 struct dentry_ext_tail {
     __le32 tail;
     __le32 f_namelen;
@@ -53,35 +65,43 @@ struct dafs_entry_ext{
     __le32 tail;
     __le32 reserve;
     char f_name[DAFS_PATH_LEN+1];
-};
+};*/
+
 /*
- * dafs dir_struct*/
+ * dafs dir_struct
+ * ext_flag->0 not ext
+ * ->1 name ext
+ * ->2 only fulname ext*/
 struct dafs_dentry{
     u8 entry_type;          
     u8 name_len;            /*length of the dentry name*/
     u8 file_type;           /* file type */
-    //u8  vroot;           /* root dir or ? */
-    u8 ext_flag;
+    u8  isr_sf;           /* root subfile or not*/
+    __le16 ext_flag;     /* need extension or not*/
     __le16 links_count;         /* links */
     __le32 mtime;
+    __le32 fname_len
     __le64 ino;             /* inode number*/
     __le64 par_ino;         /* parent inode_ino */
     __le64 size;            /* inode_size */
     __le64 dzt_hn;          /* hashname od dzr if root dir*/
-    //__le64 sub_num;         /* the number of subfiles */
-    //__le64 sub_pos[NR_DENTRY_IN_ZONE];         /* sub file position*/
-    char name[NOVA_NAME_LEN+1];          /* file name*/
     union {
-        struct dentry_ext_tail ext_tail; 
+        struct name_ext *next;
+        char name[SMALL_NAME_LEN+1];     /*file name*/
+    };
+    
+    union {
+        __le32 par_pos; 
         struct fulname ful_name;
     };
-    struct fulname ful_name;
-
 }__attribute((__packed__));
 
 struct fulname{
-    __le64 f_namelen;
-    char f_name[DAFS_PATH_LEN+1];
+    //__le64 f_namelen;
+    union {
+        struct name_ext *fn_ext;
+        char f_name[SMALL_NAME_LEN+1];
+    };
 };
 
 

@@ -298,6 +298,84 @@ END:
     return dzt_ei;
 }
 
+/*
+* extend dentry name
+* nameflag = 0 => name
+* nameflag = 1==> fulname*/
+void ext_de_name(struct dafs_zone_entry *ze, struct zone_ptr *p, int cur_pos, int name_len,\
+                const char *name, int name_flag)
+
+{
+    struct dafs_dentry *de;
+    struct name_ext *de_ext, *tem_ext;
+    int ext_len;
+    
+    de = ze->dentry[cur_pos];
+    if(name_flag == 0){
+        /*judge name len && set dentry name*/
+        if(name_len <= LARGE_NAME_LEN){
+            //ext_num = 1;
+            //de->ext_flag = 0;
+            ext_pos = find_invalid_id(p, cur_pos);
+            de_ext = (struct name_ext *)ze->dentry[ext_pos];
+            de->next = de_ext;
+            memcpy(de_ext->name, name, name_len);
+            de_ext->name[name_len]="/0";
+            de_ext->next = NULL;
+            nova_flush_buffer(de_ext, DAFS_DEF_DENTRY_SIZE, 0);
+        } else {
+            //de->ext_flag = 1;
+            ext_len = name_len - LARGE_NAME_LEN -1;
+            ext_pos = find_invalid_id(p, cur_pos);
+            de_ext = (struct name_ext *)ze->dentry[ext_pos];
+            memcpy(de_ext->name, name, LARGE_NAME_LEN+1);
+            //de_ext->name[name_len]="/0";
+            /*at most 2 extend dentry*/
+            ext_pos = find_invalid_id(p, ext_pos);
+            //de_ext->next = cpu_to_le64(ext_pos);
+            tem_ext = (struct name_ext *)ze->dentry[ext_pos];
+            de_ext->next = tem_ext;
+            memcpy(tem_ext->name, name + LARGE_NAME_LEN + 1, ext_len);
+            tem_ext->name[ext_len]="/0";
+            tem_ext->next = NULL;
+            nova_flush_buffer(de_ext, DAFS_DEF_DENTRY_SIZE, 0);
+            nova_flush_buffer(tem_ext, DAFS_DEF_DENTRY_SIZE, 0);
+        }
+    } else {
+        //if(!de->ext_flag)
+            //de->ext_flag = 2;
+        ext_pos = find_invalid_id(p, cur_pos);
+        de_ext = (struct name_ext *)ze->dentry[ext_pos];
+        de->ful_name->fn_next = de_ext;
+
+        if(name_len < =(LARGE_NAME_LEN)){
+            memcpy(de_ext->name, name, name_len);
+            de_ext->next = NULL;
+        }else {
+            ext_len = 0;
+            ext_num = name_len/(LARGE_NAME_LEN);
+            ext_pos = cur_pos;
+            if(name_len%(LARGE_NAME_LEN+1))
+                ext_num++;
+            while(ext_num > 1) {
+                ext_pos =  find_invalid_id(p, ext_pos);
+                tem_ext = (struct name_ext *)ze->dentry[ext_pos];
+                de_ext->next = tem_ext;
+                memcpy(tem_ext->name, name + ext_len, LARGE_NAME_LEN+1);
+                de_ext = tem_ext;
+                name_len -= LARGE_NAME_LEN+1;
+                ext_len += LARGE_NAME_LEN+1;
+                ext_num--;
+            }
+            ext_pos = find_invalid_id(p, ext_pos);
+            tem_ext = (struct name_ext *)ze->dentry[ext_pos];
+            de_ext->next = tem_ext;
+            memcpy(tem_ext->name, name+ext_len, name_len);
+            tem_ext->name[name_len] = "/0";
+            tem_ext->next = NULL;
+        }
+    }
+}
 
 /*dafs add dentry in the zone
 * and initialize direntry without name*/
@@ -315,12 +393,13 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
     struct dafs_dentry *dafs_de;
     struct dir_info *par_dir;
     struct file_p *tem_sf;
+    struct name_ext *de_ext;
     char *phname, *ph, *phn, *tem;
-    unsigned long phlen, temlen;
-    //unsigned short delen;
+    unsigned long phlen, temlen, ext_len, flen, re_len;
+    //unsigned short delen = DAFS_DEF_DENTRY_SIZE;
     unsigned short links_count;
-    unsigned long bitpos = 0, cur_pos = 0;
-    int ret = 0;
+    unsigned long bitpos = 0, cur_pos = 0, ext_pos, par_pos;
+    int ret = 0, ext_num = 1;
     u64 hashname, ht_addr, par_hn;
     timing_t add_dentry_time;
 
@@ -383,19 +462,67 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
     nova_dbg_verbose("dir ino 0x%llu is subfile of parent ino 0x%llu ", dafs_de->ino, dafs_de->par_ino);
     
     dafs_de->size = cpu_to_le64(dir->i_size);
-    dafs_de->zone_no = cpu_to_le64(dzt_ei->dzt_eno);
-    //dafs_de->prio = LEVEL_0;
-    //dafs_de->d_f = 0;
-    //dafs_de->sub_s = 0;
-    //dafs_de->f_s = 0;
-    //dafs_de->sub_num = 0;
-    //dafs_de->sub_pos[NR_DENTRY_IN_ZONE] = {0};
-    /*不存储名字字符在初始化的时候*/
-    memcpy(dafs_de->name,dentry->d_name.name,dentry->d_name.len);
-    dafs_de->name[dentry->d_name.len] = '\0';
-    dafs_de->ful_name->f_namelen = cpu_to_le64(phlen);
+    //dafs_de->zone_no = cpu_to_le64(dzt_ei->dzt_eno);
+    dafs_de->dzt_hn = 0;
+
+    /*judge name len && set dentry name*/
+    if(dentry->d_name.len <= SMALL_NAME_LEN){
+        dafs_de->ext_flag = 0;
+        memcpy(dafs_de->name,dentry->d_name.name,dentry->d_name.len);
+        dafs_de->name[dentry->d_name.len] = '\0'; 
+
+    } else {
+        dafs_de->ext_flag = 1;
+        ext_de_name(dafs_ze, zone_p, cur_pos, dentry->d_name.len, dentry->d_name.name, 0);
+    }
+
+    dafs_de->fname_len = cpu_to_le64(phlen);
+    /*set fulname
+    * use temlen to find par de*/
+    temlen = phlen - dentry->d_name.len;
+    if(temlen ==1){
+        dafs_de->isr_sf = 1;
+        if(dafs_de->ext_flag==0){
+            re_len = SMALL_NAME_LEN - dentry->d_name.len;
+            if(phlen<re_len){
+                memcpy(dafs_de->ful_name->f_name, phn, phlen);
+                dafs_de->ful_name->f_name[phlen]="/0";
+            } else {
+                dafs_de->ext_flag = 2;
+                ext_de_name(dafs_ze, zone_p, cur_pos, phlen, phn, 1);
+            }
+        } else
+            ext_de_name(dafs_ze, zone_p, cur_pos, phlen, phn, 1);
+    } else {
+        /*get par de pos*/
+        tem = kzalloc(temlen*sizeof(char), GFP_ATOMIC);
+        temlen--;
+        memcpy(tem, phn, temlen);
+        memcpy(tem+temlen, "/0", 1);
+        par_hn = BKDRHash(tem, temlen);
+        
+        dafs_de->isr_sf = 0;
+        if(file_type ==1){
+            if(dafs_de->ext_flag==0){
+                re_len = SMALL_NAME_LEN - dentry->d_name.len;
+                if(phlen<re_len){
+                    memcpy(dafs_de->ful_name->f_name, phn, phlen);
+                    dafs_de->ful_name->f_name[phlen]="/0";
+                } else {
+                    dafs_de->ext_flag = 2;
+                    ext_de_name(dafs_ze, zone_p, cur_pos, phlen, phn, 1);
+                }
+            } else
+                ext_de_name(dafs_ze, zone_p, cur_pos, phlen, phn, 1);
+        } else {
+            lookup_in_hashtable(dzt_ei->ht_head, par_hn, temlen, 1, &par_pos);
+            dafs_de->par_pos = cpu_to_le64(par_pos);
+        }
+    }
+
+    //dafs_de->ful_name->f_namelen = cpu_to_le64(phlen);
     /*那路径名称呢*/
-    memcpy(dafs->ful_name->f_name, phn, phlen+1);
+    //memcpy(dafs->ful_name->f_name, phn, phlen+1);
     /*not decided是不是每次写到nvm都需要这个接口*/ 
     nova_flush_buffer(dafs_de, DAFS_DEF_DENTRY_SIZE, 0);
     
@@ -411,13 +538,13 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
     ret = record_pos_htable(sb, ht_addr, hashname, phlen, cur_pos, 1);
 
     /*set pos in par_dir info*/
-    temlen = phlen - dentry->d_name.len;
+    //temlen = phlen - dentry->d_name.len;
     if(temlen>1){
-        tem = kzalloc(temlen*sizeof(char), GFP_ATOMIC);
-        temlen--;
-        memcpy(tem, phn, temlen);
-        memcpy(tem+temlen, "/0", 1);
-        par_hn = BKDRHash(tem, temlen);
+        //tem = kzalloc(temlen*sizeof(char), GFP_ATOMIC);
+        //temlen--;
+        //memcpy(tem, phn, temlen);
+        //memcpy(tem+temlen, "/0", 1);
+        //par_hn = BKDRHash(tem, temlen);
         par_dir = radix_tree_lookup(&dzt_ei->dir_tree, par_hn);
         par_dir->sub_num++;
         tem_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
@@ -427,7 +554,10 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
 
     /*add dir info if dentry is dir*/
     if(file_type==1){
+        dafs_de->file_type = NORMAL_DIRECTORY;
         add_dir_info(dzt_ei, hashname);
+    } else {
+        dafs_de->file_type = NORMAL_FILE;
     }
     /*new rf_entry*/
     //add_rf_entry(dzt_ei, hashname);

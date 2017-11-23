@@ -481,35 +481,35 @@ int nova_rebuild_dir_inode_tree(struct super_block *sb,
 
 	sih->i_size = le64_to_cpu(pi->i_size);
 	sih->i_mode = le64_to_cpu(pi->i_mode);
-	nova_flush_buffer(pi, sizeof(struct nova_inode), 0);
+    nova_flush_buffer(pi, sizeof(struct nova_inode), 0);
 
-	/* Keep traversing until log ends */
-	curr_p &= PAGE_MASK;
-	curr_page = (struct nova_inode_log_page *)nova_get_block(sb, curr_p);
-	while ((next = curr_page->page_tail.next_page) != 0) {
-		sih->log_pages++;
-		curr_p = next;
-		curr_page = (struct nova_inode_log_page *)
-			nova_get_block(sb, curr_p);
-	}
+    /* Keep traversing until log ends */
+    curr_p &= PAGE_MASK;
+    curr_page = (struct nova_inode_log_page *)nova_get_block(sb, curr_p);
+    while ((next = curr_page->page_tail.next_page) != 0) {
+        sih->log_pages++;
+        curr_p = next;
+        curr_page = (struct nova_inode_log_page *)
+        nova_get_block(sb, curr_p);
+    }
 
-	pi->i_blocks = sih->log_pages;
+    pi->i_blocks = sih->log_pages;
 
 //	nova_print_dir_tree(sb, sih, ino);
-	NOVA_END_TIMING(rebuild_dir_t, rebuild_time);
-	return 0;
+NOVA_END_TIMING(rebuild_dir_t, rebuild_time);
+return 0;
 }
 
 #if 0
 static int nova_readdir(struct file *file, struct dir_context *ctx)
 {
-	struct inode *inode = file_inode(file);
-	struct super_block *sb = inode->i_sb;
-	struct nova_inode *pidir;
-	struct nova_inode_info *si = NOVA_I(inode);
-	struct nova_inode_info_header *sih = &si->header;
-	struct nova_inode *child_pi;
-	struct nova_dentry *entry;
+    struct inode *inode = file_inode(file);
+    struct super_block *sb = inode->i_sb;
+    struct nova_inode *pidir;
+    struct nova_inode_info *si = NOVA_I(inode);
+    struct nova_inode_info_header *sih = &si->header;
+    struct nova_inode *child_pi;
+    struct nova_dentry *entry;
 	struct nova_dentry *entries[FREE_BATCH];
 	int nr_entries;
 	u64 pi_addr;
