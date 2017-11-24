@@ -700,6 +700,9 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
         }
 
         err =__rename_file_dentry(old_dentry, new_dentry);
+        if(err)
+            goto out;
+        err = dafs_remove_dentry(old_dentry);
     }
    
     
