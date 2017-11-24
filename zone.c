@@ -1682,6 +1682,11 @@ static unsigned long find_invalid_id(struct zone_ptr *z_p, unsigned long start_i
         }
     }
 
+    /* if not enough entries, negtive split*/
+    if(bitpos == NR_DENTRY_IN_ZONE){
+        dafs_split_zone(sb, dzt_ei);
+    }
+
     return start_id;
 }
 

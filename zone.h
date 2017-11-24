@@ -28,7 +28,7 @@
 #define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE + BITS_PER_BYTE-1)/BITS_PER_BYTE)
 
 /*dafs_dentry*/
-#define SMALL_NAME_LEN 75
+#define SMALL_NAME_LEN 38
 #define LARGE_NAME_LEN 123
 #define DAFS_NAME_LEN 255
 
@@ -80,20 +80,23 @@ struct dafs_dentry{
     __le16 ext_flag;     /* need extension or not*/
     __le16 links_count;         /* links */
     __le32 mtime;
-    __le32 fname_len
+    __le32 par_pos;
+    __le64 fname_len
     __le64 ino;             /* inode number*/
-    __le64 par_ino;         /* parent inode_ino */
+    //__le64 par_ino;         /* parent inode_ino */
     __le64 size;            /* inode_size */
-    __le64 dzt_hn;          /* hashname od dzr if root dir*/
+    union{
+        __le64 hname;      /*if not root dir record hashname*/
+        __le64 dzt_hn;      /*if root dir record dzt hn*/
+    };
+    //__le64 dzt_hn;          /* hashname od dzr if root dir*/
     union {
         struct name_ext *next;
         char name[SMALL_NAME_LEN+1];     /*file name*/
     };
     
-    union {
-        __le32 par_pos; 
-        struct fulname ful_name;
-    };
+    struct fulname ful_name;
+
 }__attribute((__packed__));
 
 struct fulname{
