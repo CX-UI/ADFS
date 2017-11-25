@@ -354,7 +354,7 @@ void ext_de_name(struct dafs_zone_entry *ze, struct zone_ptr *p, int cur_pos, in
             //de->ext_flag = 2;
         ext_pos = find_invalid_id(p, cur_pos);
         de_ext = (struct name_ext *)ze->dentry[ext_pos];
-        de->ful_name->fn_next = de_ext;
+        de->ful_name->fn_ext = de_ext;
 
         if(name_len < =(LARGE_NAME_LEN)){
             memcpy(de_ext->name, name, name_len);
@@ -402,8 +402,68 @@ void get_ext_name(struct name_ext *de_ext, char *name)
         tem_ext = tem_ext->next; 
     }while(tem_ext);
     
-    strcat(name,"\0");
+    strcat(name,"/0");
     kfree(tem);
+}
+
+/*get dentry name
+ * name_type 0 for name, 1 for fulname*/
+void get_de_name(struct dafs_dentry *de, struct dafs_zone_entry *ze, char *name, int name_type)
+{
+    struct dafs_dentry *par_de;
+    int nlen, flen;
+    char *end = "";
+    char *tem;
+    int par_pos;
+
+    nlen = de->name_len;
+    flen = de->fname_len;
+
+    if(name_type == 0){
+        if(de->ext_flag==1){
+            get_ext_name(de->next, name);
+        } else {
+            memcpy(name, de->name, nlen);
+            memcpy(name+nlen, end ,1);
+        }
+    } else {
+        if(de->isr_sf==1){
+            if(de->ext_flag==0){
+                memcpy(name, de->ful_name->f_name, flen);
+                memcpy(name. end, 1);
+            } else {
+                get_ext_name(de->ful_name->fn_ext, name);
+            }
+        } else {
+            if(de->file_type==NORMAL_FILE){
+                /*get name*/
+                tem = kzalloc(sizeof(char)*nlen, GFP_ATOMIC);
+                if(de->ext_flag==0){
+                    get_ext_name(de->next, tem);
+                } else {
+                    memcpy(tem, de->name, nlen);
+                    memcpy(tem, end, 1);
+                }
+
+                /*get par fulname*/
+                par_pos = le32_to_cpu(de->par_pos);
+                par_de = ze->dentry[par_pos];
+                get_de_name(de, ze, name, 1);
+
+                strcat(name, "/");
+                strcat(name, tem);
+                kfree(tem);
+            } else {
+                if(de->ext_flag == 0){
+                    memcpy(name, de->ful_name->f_name, flen);
+                    memcpy(name, end, 1);
+                } else {
+                    get_ext_name(de->ful_name->fn_ext, name);
+                }
+            }
+        }
+    }
+
 }
 
 /*dafs add dentry in the zone
