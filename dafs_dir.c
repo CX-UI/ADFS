@@ -144,7 +144,8 @@ int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname
         de_pos = ei->rden_pos;
         de = ze->dentry[de_pos];
         //memset(name, 0, strlen(name));
-        memcpy(name, de->ful_name->f_name,de->ful_name->f_namelen+1);
+        get_de_name(de, ze, name, 1);
+        //memcpy(name, de->ful_name->f_name,de->ful_name->f_namelen+1);
         strcat(name,path);
         //memset(path,0,strlen(path));
         memcpy(path, name, strlen(name)+1);
