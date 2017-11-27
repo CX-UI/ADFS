@@ -237,6 +237,7 @@ dafs_append_link_change_entry	dafs_namei.c	/^int dafs_append_link_change_entry(s
 dafs_apply_link_change_entry	dafs_namei.c	/^void dafs_apply_link_change_entry(struct nova_inode *pi,$/;"	f
 dafs_build_dzt	zone.c	/^static struct dzt_entry_info *dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \\$/;"	f	file:
 dafs_build_dzt_block	zone.c	/^int dafs_build_dzt_block(struct super_block *sb)$/;"	f
+dafs_build_zone	zone.c	/^int dafs_build_zone(struct super_block *sb)$/;"	f
 dafs_change_condition	zone.c	/^int dafs_change_condition(struct super_block *sb)$/;"	f
 dafs_check_zones	zone.c	/^int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)$/;"	f
 dafs_create	dafs_namei.c	/^static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, bool excl)$/;"	f	file:
@@ -255,6 +256,7 @@ dafs_get_parent	dafs_namei.c	/^struct dentry *dafs_get_parent(struct dentry *chi
 dafs_inh_zone	zone.c	/^int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei,\\$/;"	f
 dafs_init_dir_zone	zone.c	/^int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)$/;"	f
 dafs_init_dzt	zone.c	/^int dafs_init_dzt(struct super_block *sb)$/;"	f
+dafs_init_zone	zone.c	/^int dafs_init_zone(struct super_block *sb)$/;"	f
 dafs_inode_by_name	dafs_namei.c	/^static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\\$/;"	f	file:
 dafs_link	dafs_namei.c	/^static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentry *dentry)$/;"	f	file:
 dafs_lite_transaction_for_new_inode	dafs_namei.c	/^static void dafs_lite_transaction_for_new_inode(struct super_block *sb,$/;"	f	file:

@@ -2760,3 +2760,19 @@ int dzt_flush_dirty(struct super_block *sb)
     }
     return 0;
 }
+/*======================================build system===========================================================*/
+/*build zone
+ * first time set up fs*/
+int dafs_build_zone(struct super_block *sb)
+{
+   dafs_build_dzt_block(sb);
+   return 0;
+}
+/*init zone
+ * use in remount
+ * init system in dram*/
+int dafs_init_zone(struct super_block *sb)
+{
+    struct dentry root = sb->s_root;
+    dafs_init_dzt(sb); 
+}
