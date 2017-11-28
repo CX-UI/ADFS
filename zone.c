@@ -1021,6 +1021,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         test_and_clear_bit_le(bitpos, old_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, old_p->statemap);
+        delete_ext(old_p, old_de);
 
         /*make invalid in hashtable*/
         name_len = le64_to_cpu(fname_len);
@@ -1142,6 +1143,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         test_and_clear_bit_le(bitpos, old_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, old_p->statemap);
+        delete_ext(old_p, old_de);
 
         /*make invalid in hashtable*/
         if(old_de->ext_flag==0){
@@ -1277,6 +1279,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         test_and_clear_bit_le(bitpos, old_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, old_p->statemap);
+        delete_ext(old_p, old_de);
 
         /*make invalid in hashtable*/
         name_len = le64_to_cpu(old_de->ful_name->f_namelen);
@@ -1419,6 +1422,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         test_and_clear_bit_le(bitpos, cur_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
+        delete_ext(cur_p, cur_de);
 
 
         /*update par dir info entry*/
@@ -1510,6 +1514,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         test_and_clear_bit_le(bitpos, cur_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
+        delete_ext(cur_p, cur_de);
 
         /*update par dir info entry*/
         old_hn = BKDRHash(tem, rnamelen);
@@ -1780,6 +1785,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         test_and_clear_bit_le(bitpos, cur_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
+        delete_ext(cur_p, cur_de);
 
 
         /*update par dir info entry*/
@@ -1874,6 +1880,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         test_and_clear_bit_le(bitpos, cur_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
+        delete_ext(cur_p, cur_de);
 
         /*update par dir info entry*/
         //old_hn = BKDRHash(tem, rnamelen);
@@ -1984,6 +1991,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         test_and_clear_bit_le(bitpos, cur_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, cur_p->statemap);
+        delete_ext(cur_p, cur_de);
 
         /*update par dir info entry*/
         //old_hn = BKDRHash(tem, rnamelen);

@@ -324,6 +324,7 @@ void ext_de_name(struct dafs_zone_entry *ze, struct zone_ptr *p, int cur_pos, in
             de->next = de_ext;
             memcpy(de_ext->name, name, name_len);
             de_ext->name[name_len]='/0';
+            de_ext->ext_pos = cpu_to_le32(ext_pos);
             de_ext->next = NULL;
             bitpos = ext_pos*2+1;
             test_and_set_bit_le(bitpos, p->statemap);
@@ -334,6 +335,7 @@ void ext_de_name(struct dafs_zone_entry *ze, struct zone_ptr *p, int cur_pos, in
             ext_pos = find_invalid_id(p, cur_pos);
             de_ext = (struct name_ext *)ze->dentry[ext_pos];
             memcpy(de_ext->name, name, LARGE_NAME_LEN+1);
+            de_ext->ext_pos = cpu_to_le32(ext_pos);
             bitpos = ext_pos*2+1;
             test_and_set_bit_le(bitpos, p->statemap);
 
@@ -346,6 +348,7 @@ void ext_de_name(struct dafs_zone_entry *ze, struct zone_ptr *p, int cur_pos, in
             memcpy(tem_ext->name, name + LARGE_NAME_LEN + 1, ext_len);
             tem_ext->name[ext_len]='/0';
             tem_ext->next = NULL;
+            tem_ext->ext_pos = cpu_to_le32(ext_pos);
             bitpos = ext_pos *2 +1;
             test_and_set_bit_le(bitpos, p->statemap);
             nova_flush_buffer(de_ext, DAFS_DEF_DENTRY_SIZE, 0);
@@ -360,20 +363,33 @@ void ext_de_name(struct dafs_zone_entry *ze, struct zone_ptr *p, int cur_pos, in
 
         if(name_len < =(LARGE_NAME_LEN)){
             memcpy(de_ext->name, name, name_len);
+            de_ext->ext_pos = cpu_to_le32(ext_pos);
             de_ext->next = NULL;
+            bitpos = ext_pos *2+1;
+            test_and_set_bit_le(bitpos, p->statemap);
         }else {
             ext_len = 0;
             ext_num = name_len/(LARGE_NAME_LEN);
-            ext_pos = cur_pos;
+            //ext_pos = cur_pos;
             if(name_len%(LARGE_NAME_LEN+1))
                 ext_num++;
+            memcpy(de_ext->name, name, LARGE_NAME_LEN+1);
+            de_ext->ext_pos = cpu_to_le32(ext_pos);
+            bitpos = ext_pos *2+1;
+            test_and_set_bit_le(bitpos, p->statemap);
+            ext_num--;
+            ext_len += LARGE_NAME_LEN+1;
+            name_len -= LARGE_NAME_LEN+1;
             while(ext_num > 1) {
                 ext_pos =  find_invalid_id(p, ext_pos);
                 tem_ext = (struct name_ext *)ze->dentry[ext_pos];
                 de_ext->next = tem_ext;
                 memcpy(tem_ext->name, name + ext_len, LARGE_NAME_LEN+1);
+                tem_ext->ext_pos = cpu_to_le32(ext_pos);
+                bitpos = ext_pos *2;
+                test_and_set_bit_le(bitpos, p->statemap);
                 de_ext = tem_ext;
-                name_len -= LARGE_NAME_LEN+1;
+                name_len -= LARGE_NAME_LeN+1;
                 ext_len += LARGE_NAME_LEN+1;
                 ext_num--;
             }
@@ -381,8 +397,11 @@ void ext_de_name(struct dafs_zone_entry *ze, struct zone_ptr *p, int cur_pos, in
             tem_ext = (struct name_ext *)ze->dentry[ext_pos];
             de_ext->next = tem_ext;
             memcpy(tem_ext->name, name+ext_len, name_len);
+            tem_ext->ext_pos = cpu_to_le32(ext_pos);
             tem_ext->name[name_len] = '/0';
             tem_ext->next = NULL;
+            bitpos = ext_pos *2+1;
+            test_and_set_bit_le(bitpos, p->statemap);
         }
     }
 }
@@ -467,6 +486,39 @@ void get_de_name(struct dafs_dentry *de, struct dafs_zone_entry *ze, char *name,
         }
     }
 
+}
+
+/*clear ext bit*/
+void clear_ext(struct zone_ptr *p, struct name_ext *de_ext)
+{
+    int ext_pos, bitpos;
+    ext_pos = le32_to_cpu(de_ext->ext_pos);
+    bitpos = ext_pos*2+1;
+    test_and_clear_bit_le(bitpos, p->statemap);
+    if(de_ext->next)
+        clear_ext(p, de_ext->next);
+}
+
+/*test and delete ext name entry*/
+int delete_ext(struct zone_ptr *p, struct dafs_dentry *de)
+{
+    int ext_pos, bitpos, ext_flag;
+    struct name_ext *de_ext;
+
+    ext_flag = le16_to_cpu(de->ext_flag);
+    switch(ext_flag) {
+    case 0:
+        goto OUT;
+    case 1:
+        clear_ext(p, de->next);
+        clear_ext(p, de->ful_name->fn_ext);
+        break;
+    case 2:
+        clear_ext(p, de->fulname->fn_ext);
+        break;
+    }
+OUT:
+    return 0;
 }
 
 /*dafs add dentry in the zone
@@ -790,6 +842,7 @@ NEXT:
 	    bitpos++;
         test_and_clear_bit_le(bitpos, zone_p->statemap);
         ret = make_invalid_htable(dzt_ei->ht_head, d_hn, d_hlen, 1);
+        delete_ext(z_p, dafs_de);
         /*free dir_entry*/
         //delete_dir_info(dzt_ei, d_hn);
         
@@ -844,6 +897,7 @@ NEXT:
 	    bitpos++;
         test_and_clear_bit_le(bitpos, z_p->statemap);
         ret = make_invalid_htable(dzt_ei->ht_head, d_hn, d_hlen, 1);
+        delete_ext(z_p, dafs_de);
 
         if(!ret)
             return -EINVAL;
@@ -865,6 +919,7 @@ NEXT:
 	    bitpos++;
         test_and_clear_bit_le(bitpos, z_p->statemap);
         ret = make_invalid_htable(dzt_ei->ht_head, d_hn, d_hlen, 1);
+        delete_ext(z_p, dafs_de);
         /*free rf_entry*/
         //delete_rf_entry(dzt_ei, d_hn);
         if(!ret)
@@ -947,6 +1002,7 @@ int dafs_rm_dir(struct dentry *dentry)
 	bitpos++;
     test_and_clear_bit_le(bitpos, z_p->statemap);
     make_invalid_htable(dzt_ei->ht_head, ph_hash, phlen, 1);
+    delete_ext(z_p, dafs_de);
 
     /*free dir_entry*/
     delete_dir_info(dzt_ei, ph_hash);

@@ -30,7 +30,7 @@
 
 /*dafs_dentry*/
 #define SMALL_NAME_LEN 39
-#define LARGE_NAME_LEN 123
+#define LARGE_NAME_LEN 112
 #define DAFS_NAME_LEN 255
 #define DAFS_DEF_DENTRY_SIZE 128
 #define DAFS_DZT_SIZE 56
@@ -56,8 +56,10 @@ struct zone_ptr {
 };
 
 struct name_ext {
-    char name[LARGE_NAME_LEN+1];
+    __u8 reserved[4];
+    __le32  ext_pos;
     struct name_ext *next;
+    char name[LARGE_NAME_LEN+1];
 };
 
 

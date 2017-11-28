@@ -218,6 +218,7 @@ check_eof_blocks	nova.h	/^static inline void check_eof_blocks(struct super_block
 check_invalid_t	stats.h	/^	check_invalid_t,$/;"	e	enum:timing_category
 check_thread	nova.h	/^    struct zone_kthread *check_thread;$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::zone_kthread
 check_thread_func	zone.c	/^static int check_thread_func(void *data)$/;"	f	file:
+clear_ext	dafs_dir.c	/^void clear_ext(struct zone_ptr *p, struct name_ext *de_ext)$/;"	f
 clear_opt	nova.h	99;"	d
 copy_to_nvmm_t	stats.h	/^	copy_to_nvmm_t,$/;"	e	enum:timing_category
 cow_write_bytes	stats.h	/^	cow_write_bytes,$/;"	e	enum:stats_category
@@ -285,6 +286,7 @@ delete_dir_log	dafs_dir.c	/^void delete_dir_log(struct super_block *sb)$/;"	f
 delete_dir_tree	dafs_dir.c	/^int delete_dir_tree(struct dzt_entry_info *ei)$/;"	f
 delete_dir_tree_t	stats.h	/^	delete_dir_tree_t,$/;"	e	enum:timing_category
 delete_dzt_entry	zone.c	/^struct dzt_entry_info *delete_dzt_entry(struct super_block *sb, struct dzt_entry_info *old_rdei)$/;"	f
+delete_ext	dafs_dir.c	/^int delete_ext(struct zone_ptr *p, struct dafs_dentry *de)$/;"	f
 delete_file_tree_t	stats.h	/^	delete_file_tree_t,$/;"	e	enum:timing_category
 delete_rf_entry	dafs_dir.c	/^int delete_rf_entry(struct dzt_entry_info *ei, u64 hash_name)$/;"	f
 dentry	zone.h	/^    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];	$/;"	m	struct:dafs_zone_entry	typeref:struct:dafs_zone_entry::dafs_dentry
@@ -313,6 +315,7 @@ evict_inode_t	stats.h	/^	evict_inode_t,$/;"	e	enum:timing_category
 exit_nova_fs	super.c	/^static void __exit exit_nova_fs(void)$/;"	f	file:
 ext_de_name	dafs_dir.c	/^void ext_de_name(struct dafs_zone_entry *ze, struct zone_ptr *p, int cur_pos, int name_len,\\$/;"	f
 ext_flag	zone.h	/^    __le16 ext_flag;     \/* need extension or not*\/$/;"	m	struct:dafs_dentry
+ext_pos	zone.h	/^    __le32  ext_pos;$/;"	m	struct:name_ext
 f_name	zone.h	/^        char f_name[SMALL_NAME_LEN+1];$/;"	m	union:fulname::__anon8
 f_s	zone.h	/^    u16 f_s;         \/*frequency state*\/$/;"	v
 failure_thread_func	bbuild.c	/^static int failure_thread_func(void *data)$/;"	f	file:
@@ -826,6 +829,7 @@ remove_dentry_t	stats.h	/^	remove_dentry_t,$/;"	e	enum:timing_category
 rename_t	stats.h	/^	rename_t,$/;"	e	enum:timing_category
 reserved	zone.h	/^    __le32 reserved;$/;"	m	struct:hash_entry
 reserved	zone.h	/^    __u8 reserved[3];$/;"	m	struct:dafs_zone_entry
+reserved	zone.h	/^    __u8 reserved[4];$/;"	m	struct:name_ext
 reserved	zone.h	/^    __u8 reserved[7]; $/;"	m	struct:hash_table
 reserved	zone.h	/^    __u8 reserved[7];$/;"	m	struct:dafs_dzt_entry
 reserved	zone.h	/^    __u8 reserved[7];$/;"	m	struct:direntry_log
