@@ -548,11 +548,12 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 		goto out;
 	}
 
-    /*set_up dzt_manager*/
+    /*zone info
+    *set_up dzt_manager*/
     INIT_RADIX_TREE(&sbi->dzt_m_info, GFP_ATOMIC);
-
+ 
     /*start check zone kthread*/
-    retval = start_cz_thread(sbi);
+    //retval = start_cz_thread(sbi);
     if(retval)
         goto out;
 

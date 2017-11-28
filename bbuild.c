@@ -1381,6 +1381,7 @@ int nova_recovery(struct super_block *sb)
 	/* initialize free list info */
 	nova_init_blockmap(sb, 1);
 
+    /*key point for nova recovery*/
 	value = nova_can_skip_full_scan(sb);
 	if (value) {
 		nova_dbg("NOVA: Normal shutdown\n");
