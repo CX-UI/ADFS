@@ -159,8 +159,8 @@ struct nova_super_block {
 } __attribute((__packed__));
 
 
-static inline
-struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)
+/*static inline
+struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)*/
 #define NOVA_SB_STATIC_SIZE(ps) ((u64)&ps->s_start_dynamic - (u64)ps)
 
 /* the above fast mount fields take total 32 bytes in the super block */

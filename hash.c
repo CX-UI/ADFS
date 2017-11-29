@@ -54,7 +54,8 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
     struct ht_ptr *ht_p;
     struct hash_entry *he;
     //u64 bitpos;
-    u64 h_pos, tail;
+    u32 h_pos;
+    u64 tail;
     //int nr_table = 1;
     int key, i, offset;
     int buckets;
@@ -112,7 +113,7 @@ fill_he:
     he = ht->hash_entry[h_pos];
     he->hd_name = cpu_to_le64(hashname);
     he->name_len = cpu_to_le64(namelen);
-    he->hd_pos = cpu_to_le64(pos);
+    he->hd_pos = cpu_to_le32(pos);
     test_and_set_bit_le(h_pos, ht_p->hash_map);
     nova_flush_buffer(he, size(struct hash_entry),0);
 out:
@@ -128,7 +129,8 @@ int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, unsi
     struct hash_table *ht;
     struct hash_entry *he;
     struct ht_ptr *ht_p;
-    u64 h_pos, tail;
+    u32 h_pos;
+    u64 tail;
     int key, i, ret=0;
     u64 h_name, h_len;
 
@@ -166,7 +168,7 @@ int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, unsi
         h_name = le64_to_cpu(he->hd_name);
         h_len = le64_to_cpu(he->name_len);
         if(h_name==hashname && h_len==namelen){
-            *pos = le64_to_cpu(he->hd_pos);
+            *pos = le32_to_cpu(he->hd_pos);
             ret = 1;
             goto out;
         } else {
@@ -191,7 +193,8 @@ int make_invalid_htable(u64 block, u64 hashname, u64 namelen, int nr_table)
     struct hash_table *ht;
     struct hash_entry *he;
     struct ht_ptr *ht_p;
-    u64 h_pos, tail;
+    u32 h_pos;
+    u64 tail;
     int key, i, ret=0;
     u64 h_name, h_len;
 

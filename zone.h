@@ -22,7 +22,7 @@
 /*dzt_block*/
 #define SIZE_DZT_BITMAP ((DAFS_DZT_ENTRIES_IN_BLOCK + 1 + BITS_PER_BYTE -1)/BITS_PER_BYTE)
 #define DAFS_DZT_ENTRIES_IN_BLOCK 72
-#define SIZE_OF_RESERVED 53
+#define DZT_BLK_RESERVED 53
 
 /*zone_entry */
 #define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE*2 + BITS_PER_BYTE-1)/BITS_PER_BYTE)
@@ -35,17 +35,9 @@
 #define DAFS_DEF_DENTRY_SIZE 128
 #define DAFS_DZT_SIZE 56
 
-
-/*
- * struct dir_zone
- * learn in f2fs*/
-struct dafs_zone_entry{
-    __u8 zone_statemap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
-    __u8 reserved[3];
-    __le32 dz_no;           /*directory zone NO*/
-    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];	
-    // next is same attributes in this zone
-}__attribute((__packed__));
+/*hash table*/
+#define SIZE_HASH_BITMAP ((NR_HASH_ENTRIES + BITS_PER_BYTE - 1)/BITS_PER_BYTE)
+#define NR_HASH_ENTRIES 
 
 /*
  * zone ptr to find response */
@@ -62,6 +54,13 @@ struct name_ext {
     char name[LARGE_NAME_LEN+1];
 };
 
+struct fulname{
+    //__le64 f_namelen;
+    union {
+        struct name_ext *fn_ext;
+        char f_name[SMALL_NAME_LEN+1];
+    };
+};
 
 /*
  * dafs dir_struct
@@ -77,7 +76,7 @@ struct dafs_dentry{
     __le16 links_count;         /* links */
     __le32 mtime;
     __le32 par_pos;
-    __le64 fname_len
+    __le64 fname_len;
     __le64 ino;             /* inode number*/
     __le64 size;            /* inode_size */
     union{
@@ -91,16 +90,18 @@ struct dafs_dentry{
     
     struct fulname ful_name;
 
-}__attribute((__packed__));
-
-struct fulname{
-    //__le64 f_namelen;
-    union {
-        struct name_ext *fn_ext;
-        char f_name[SMALL_NAME_LEN+1];
-    };
 };
 
+/*
+ * struct dir_zone
+ * learn in f2fs*/
+struct dafs_zone_entry{
+    __u8 zone_statemap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
+    __u8 reserved[3];
+    __le32 dz_no;           /*directory zone NO*/
+    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];	
+    // next is same attributes in this zone
+}__attribute((__packed__));
 
 /*dir behavior log
 * 32Byte*/
@@ -111,19 +112,6 @@ struct direntry_log {
     __le32 des_dz_no;
     __le64 des_hashname;
     __le64 src_hashname;  /* record src dentry hashname*/
-}__attribute((__packed__));
-
-/*
- * 2017/09/13
- * zone entries in directory zone table block
- * 是不是应该在dram中保留一份
- * 4KB*/
-struct dafs_dzt_block{
-    __u8 dzt_bitmap[SIZE_DZT_BITMAP];               /*not decided the size of bitmap*/
-    __u8 reserved[DZT_BLK_RESERVED];
-    //__le64 dzt_tail_pos;
-    struct direntry_log dlog;
-    struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
 }__attribute((__packed__));
 
 /*
@@ -142,10 +130,31 @@ struct dafs_dzt_block{
     __le64 ht_head;       /*record hash table head*/
     __le64 pdz_addr;      /* parent zone address*/
     __le64 hash_name;
- }__attribute(__packed__);
+ }__attribute((__packed__));
+
+/*
+ * 2017/09/13
+ * zone entries in directory zone table block
+ * 是不是应该在dram中保留一份
+ * 4KB*/
+struct dafs_dzt_block{
+    __u8 dzt_bitmap[SIZE_DZT_BITMAP];               /*not decided the size of bitmap*/
+    __u8 reserved[DZT_BLK_RESERVED];
+    //__le64 dzt_tail_pos;
+    struct direntry_log dlog;
+    struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
+}__attribute((__packed__));
+
+
+struct hash_entry{
+    __le64 hd_name;         /* hash dafs_dentry name*/
+    __le64 name_len;
+    __le32 hd_pos;          /* dentry pos in zone*/
+    __le32 reserved;
+};
 
 struct hash_table{
-    __u8 hash_map[NR_HASH_ENTRIES]; /*hash table bit map*/
+    __u8 hash_map[SIZE_HASH_BITMAP]; /*hash table bit map*/
     __u8 reserved[7]; 
     //__u8 hash_key;            /* not necessary*/
     __le64 hash_tail;        /* hash tail for next hash table address max is four*/
@@ -158,12 +167,6 @@ struct ht_ptr{
     struct hash_entry *he;
 };
 
-struct hash_entry{
-    __le64 hd_name;         /* hash dafs_dentry name*/
-    __le64 name_len;
-    __le32 hd_pos;          /* dentry pos in zone*/
-    __le32 reserved;
-};
 
 /*rf_entry read frequence entry
  *
@@ -241,3 +244,21 @@ struct dzt_ptr {
     unsigned long max;
     struct dafs_dzt_entry *dzt_entry;
 };
+
+/*hash,c*/
+int  get_hash_table(struct super_block *sb, u64 *h_addr);
+int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
+        u64 namelen, u64 pos, int nr_table);
+int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, unsigned long *pos);
+int make_invalid_htable(u64 block, u64 hashname, u64 namelen, int nr_table);
+
+/*zone.c*/
+void make_dzt_ptr(struct nova_sb_info *sbi, struct dzt_ptr **dzt_p);
+void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e);
+u32 find_invalid_id(struct zone_ptr *z_P, u32 start_id);
+void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei);
+int start_cz_thread(struct nova_sb_info *sbi);
+void stop_cz_thread(struct hmfs_sb_info *sbi);
+int dzt_flush_dirty(struct super_block *sb);
+int dafs_build_zone(struct super_block *sb);
+int dafs_init_zone(struct super_block *sb);
