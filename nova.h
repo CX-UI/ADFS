@@ -157,6 +157,7 @@ enum nova_entry_type {
 	SET_ATTR,
 	LINK_CHANGE,
 	NEXT_PAGE,
+    DAFS_DIR_ENTRY,
 };
 
 static inline u8 nova_get_entry_type(void *p)
@@ -249,6 +250,7 @@ enum alloc_type {
 	LOG = 1,
 	DATA,
     ZONE,
+    HTABLE_TYPE;
 };
 
 #define	MMAP_WRITE_BIT	0x20UL	// mmaped for write

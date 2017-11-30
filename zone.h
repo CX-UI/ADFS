@@ -36,8 +36,21 @@
 #define DAFS_DZT_SIZE 56
 
 /*hash table*/
-#define SIZE_HASH_BITMAP ((NR_HASH_ENTRIES + BITS_PER_BYTE - 1)/BITS_PER_BYTE)
-#define NR_HASH_ENTRIES 
+//#define SIZE_HASH_BITMAP ((NR_HASH_ENTRIES + BITS_PER_BYTE - 1)/BITS_PER_BYTE)
+#define NR_HASH_ENTRIES_L1  (4096-1)*4
+#define NR_HASH_ENTRIES_L2  (2048-1)*4
+#define NR_HASH_ENTRIES_L3  (1024-1)*4
+#define NR_HASH_ENTRIES_L4  (512-1)*4
+#define NR_HASH_ENTRIES_L5  256;
+
+/*block size*/
+#define HTABLE_DEF_SIZE NOVA_BLOCK_TYPE_256K
+#define HTABLE_LS_SIZE  NOVA_BLOCK_TYPE_128K
+#define HTABLE_LT_SIZE  NOVA_BLOCK_TYPE_64K
+#define HTABLE_LF_SIZE  NOVA_BLOCK_TYPE_32K
+#define HTABLE_LE_SIZE  NOVA_BLOCK_TYPE_4K
+#define DAFS_BLOCK_TYPE_512K NOVA_BLOCK_TYPE_512K 
+
 
 /*
  * zone ptr to find response */
@@ -145,21 +158,65 @@ struct dafs_dzt_block{
     struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
 }__attribute((__packed__));
 
-
+/*
 struct hash_entry{
-    __le64 hd_name;         /* hash dafs_dentry name*/
+    __le64 hd_name;         // hash dafs_dentry name
     __le64 name_len;
-    __le32 hd_pos;          /* dentry pos in zone*/
+    __le32 hd_pos;          // dentry pos in zone
     __le32 reserved;
+};*/
+
+/*16Byte*/
+struct hash_entry {
+    u8 reserved[3];
+    u8 invalid;
+    __le32 hd_pos;        /*dentry pos*/
+    __le64 hd_name;      /*dentry name*/
 };
 
-struct hash_table{
-    __u8 hash_map[SIZE_HASH_BITMAP]; /*hash table bit map*/
-    __u8 reserved[7]; 
-    //__u8 hash_key;            /* not necessary*/
-    __le64 hash_tail;        /* hash tail for next hash table address max is four*/
-    struct hash_entry hash_entry[NR_HASH_ENTRIES]; /*dentry name-pos pairs*/
+/*256K
+ * first level*/
+struct hash_table {
+    u8 reserved[56];
+    __le64 hash_tail;
+    struct hash_entry hash_entry[NR_HASH_ENTRIES_L1];
 };
+
+/*128k*/
+struct hash_table_ls {
+    u8 reserved[56];
+    __le64 hash_tail;
+    struct hash_entry hash_entry[NR_HASH_ENTRIES_L2];
+};
+
+/*64K*/
+struct hash_table_lt {
+    u8 reserved[56];
+    __le64 hash_tail;
+    struct hash_entry hash_entryp[NR_HASH_ENTRIES_L3];
+};
+
+/*32K*/
+struct hash_table_lf {
+    u8 reserved[56];
+    __le64 hash_tail;
+    struct hash_entry hash_entry[NR_HASH_ENTRIES_L4];
+};
+
+/*4k 
+ * level end*/
+struct hash_table_le {
+    struct hash_entry hash_entry[NR_HASH_ENTRIES_L5];
+};
+
+/*
+struct hash_table{
+    __u8 hash_map[SIZE_HASH_BITMAP]; //hash table bit map
+    __u8 reserved[24]; 
+    //__u8 hash_key;            // not necessary
+    __le64 hash_tail;        // hash tail for next hash table address max is four
+    struct hash_entry hash_entry[NR_HASH_ENTRIES]; //dentry name-pos pairs
+};*/
 
 struct ht_ptr{
     const void *hash_map;
@@ -171,11 +228,11 @@ struct ht_ptr{
 /*rf_entry read frequence entry
  *
 struct rf_entry {
-    u16 r_f;         /*read frequency*/
-    u16 sub_s;       /*sub files number state*/
-    u16 f_s;         /*frequency state*/
-    u16 prio;        /*prio level*/  
-    u64 hash_name;   /*hashname for record dentry it belongs*/
+    u16 r_f;         //read frequency
+    u16 sub_s;       //sub files number state
+    u16 f_s;         //frequency state
+    u16 prio;        //prio level
+    u64 hash_name;   //hashname for record dentry it belongs
 
 };*/
 

@@ -10,22 +10,40 @@
 #include "nova.h"
 
 /*allocate htable blocks and get h_addr*/
-int  get_hash_table(struct super_block *sb, u64 *h_addr)
+int  get_hash_table(struct super_block *sb, u8 hlevel,  u64 *h_addr)
 {
     unsigned long blocknr, bp;
     int allocated;
     u64 block;
+    unsigned short btype;
 
+    switch(hlevel) {
+        case 1:
+            btype = HTABLE_DEF_SIZE;
+            break;
+        case 2:
+            btype = HTABLE_LS_SIZE;
+            break;
+        case 3:
+            btype = HTABLE_LT_SIZE;
+            break;
+        case 4:
+            btype = HTABLE_LF_SIZE;
+            break;
+        case 5:
+            btype = HTABLE_LE_SIZE;
+            break;
+    }
     /*not decideds HTABLE_TYPE
      * HTABLE_TYPE 8 blks*/
-    allocated = nova_new_blocks(sb, &blocknr, 1, HTABLE_SIZE, 1, HASH_TABLE);
+    allocated = nova_new_blocks(sb, &blocknr, 1, btype, 1, HASH_TABLE);
 
     nova_dbg_verbose("%s: allocate zone @ 0x%lx\n", __func__,
 							blocknr);
     if(allocated != 1 || blocknr == 0)
         return -ENOMEM;
 
-    block = nova_get_block_off(sb, blocknr, HTABLE_SIZE); 
+    block = nova_get_block_off(sb, blocknr, btype); 
     //bp = (unsigned long)nova_get_block(sb, block);
     /*偏移量*/
     h_addr = block;
@@ -45,141 +63,605 @@ void make_ht_ptr(struct ht_ptr **ht_p, struct hash_table *ht)
     *ht_p = p;
 }
 
+/
 /* record dentry-pos pairs in hash table
- * ht_addr comes from dzt_ei*/
-int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
-        u64 namelen, u64 pos, int nr_table)
+ * ht_addr comes from last level*/
+int record_pos_htable_le(struct super_block *sb, u64 block, u64 hashname,\
+         u64 pos, u8 hlevel)
 {
-    struct hash_table *ht;
-    struct ht_ptr *ht_p;
+    struct hash_table_lf *ht;
     struct hash_entry *he;
-    //u64 bitpos;
     u32 h_pos;
     u64 tail;
-    //int nr_table = 1;
-    int key, i, offset;
-    int buckets;
-    //unsigned long ht_addr;
+    int i =0;
+    int offset, buckets;
+    u8 valid_flag;
+    u8 level = hlevel;
 
-
-    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
-    ht = (struct hash_table *)nova_get_block(sb, block);  
-    //ht_addr = dzt_ei->ht_head;
-    //ht = (struct hash_table *)ht_addr;
+    ht = (struct hash_table_le *)nova_get_block(sb, block);  
     if(!ht)
         return -EINVAL;
-    make_ht_ptr(&ht_p, ht);
 
-    switch(nr_table){
-        case 1:
-            offset = 4;
-            break;
-        case 2:
-            offset = 3;
-            break;
-        case 3:
-            offset = 2;
-            break;
-        case 4:
-            offset = 1;
-            break;
-        case 5:
-            offset = 0;
-    }
-    key = nr_table << offset;
-    buckets = NR_HASH_ENTRIES / key;
-    h_pos = hashname % key;
+    h_pos = 0;
 
-    for(i = 0; i<buckets; i++){
-        if(!test_bit_le(h_pos, ht_p->hash_map))
+    while(i<NR_HASH_ENTRIES_L5){
+        he =  ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+        if(!valid_flag)
             goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+fill_he:
+    //he = ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+}
+
+/* record dentry-pos pairs in hash table
+ * ht_addr comes from last level*/
+int record_pos_htable_lt(struct super_block *sb, u64 block, u64 hashname,\
+         u64 pos, u8 hlevel)
+{
+    struct hash_table_lt *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int i =0;
+    int offset, buckets;
+    u8 valid_flag;
+    u8 level = hlevel;
+
+    buckets = 1023;
+    offset = 4;
+    ht = (struct hash_table_lt *)nova_get_block(sb, block);  
+    if(!ht)
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i<offset){
+        he =  ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+        if(!valid_flag)
+            goto fill_he;
+        i++;
         h_pos ++;
     }
 
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
-        get_hash_table(sb, &tail);
+        level ++;
+        get_hash_table(sb, hlevel, &tail);
         ht->hash_tail = cpu_to_le64(tail);
-        nr_table ++;
-        record_pos_htable(sb, tail, hashname, namelen, pos, nr_table);
+        record_pos_htable_lf(sb, tail, hashname, pos, level);
         goto out;
     } else {
-        nr_table ++;
-        record_pos_htable(sb, tail, hashname, namelen, pos, nr_table);
+        level ++;
+        record_pos_htable_lf(sb, tail, hashname,  pos, level);
         goto out;
     }
 
 fill_he:
-    he = ht->hash_entry[h_pos];
+    //he = ht->hash_entry[h_pos];
     he->hd_name = cpu_to_le64(hashname);
-    he->name_len = cpu_to_le64(namelen);
     he->hd_pos = cpu_to_le32(pos);
-    test_and_set_bit_le(h_pos, ht_p->hash_map);
-    nova_flush_buffer(he, size(struct hash_entry),0);
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
 out:
     return 0;
 }
 
+/* record dentry-pos pairs in hash table
+ * ht_addr comes from last level*/
+int record_pos_htable_ls(struct super_block *sb, u64 block, u64 hashname,\
+        u64 pos, u8 hlevel)
+{
+    struct hash_table_ls *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int i =0;
+    int offset, buckets;
+    u8 valid_flag;
+    u8 level = hlevel;
+
+    buckets = 2047;
+    offset = 4;
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    if(!ht)
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i<offset){
+        he =  ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+        if(!valid_flag)
+            goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+    if(!tail){
+        level ++;
+        get_hash_table(sb, hlevel, &tail);
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_lt(sb, tail, hashname, pos, level);
+        goto out;
+    } else {
+        level ++;
+        record_pos_htable_lt(sb, tail, hashname, pos, level);
+        goto out;
+    }
+
+fill_he:
+    //he = ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+}
+/* record dentry-pos pairs in hash table
+ * ht_addr comes from dzt_ei*/
+int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
+         u64 pos, u8 hlevel)
+{
+    struct hash_table *ht;
+    struct ht_ptr *ht_p;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int i =0;
+    int offset, buckets;
+    u8 valid_flag;
+
+
+    buckets = 4095; 
+    offset = 4;
+    ht = (struct hash_table *)nova_get_block(sb, block);  
+    if(!ht)
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i<offset){
+        he =  ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+        if(!valid_flag)
+            goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+    if(!tail){
+        hlevel ++;
+        get_hash_table(sb, hlevel, &tail);
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_ls(sb, tail, hashname,  pos, hlevel);
+        goto out;
+    } else {
+        hlevel ++;
+        record_pos_htable_ls(sb, tail, hashname, pos, hlevel);
+        goto out;
+    }
+
+fill_he:
+    //he = ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+    he->invalid = 1;
+    he->hd_pos = cpu_to_le32(pos);
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+}
+
+int lookup_ht_le(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)
+{
+    struct hash_table_lf *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int key, i = 0, ret=0;
+    u64 h_name, h_len;
+    u8 valid_flag;
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+
+    h_pos = 0;
+
+    while(h_pos< NR_HASH_ENTRIES_L5) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            h_pos++:
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+            ret = 1;
+            goto out;
+        } else {
+            h_pos++;
+        }
+    }
+
+out: 
+    return ret;
+}
+
+int lookup_ht_lf(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)
+{
+    struct hash_table_lf *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int key, i = 0, ret=0;
+    u64 h_name, h_len;
+    u8 valid_flag;
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    buckets = 511;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            i++;
+            h_pos++:
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = lookup_ht_le(tail, hashname, hlevel, &pos);
+    }
+out: 
+    return ret;
+}
+
+int lookup_ht_lt(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)
+{
+    struct hash_table_lt *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int key, i = 0, ret=0;
+    u64 h_name, h_len;
+    u8 valid_flag;
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    buckets = 1023;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            i++;
+            h_pos++:
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = lookup_ht_lf(tail, hashname, hlevel, &pos);
+    }
+out: 
+    return ret;
+}
+
 /*look up hashname in hash table for right position
  * &pos for position of dentry
- * nr_table for hash table level 
+ * hlevel for hash table level 
  * return 1 for found*/
-int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, unsigned long *pos)
+int lookup_ht_ls(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)
+{
+    struct hash_table_ls *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int key, i = 0, ret=0;
+    u64 h_name, h_len;
+    u8 valid_flag;
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    buckets = 2047;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            i++;
+            h_pos++:
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = lookup_ht_lt(tail, hashname, hlevel, &pos);
+    }
+out: 
+    return ret;
+}
+/*look up hashname in hash table for right position
+ * &pos for position of dentry
+ * hlevel for hash table level 
+ * return 1 for found*/
+int lookup_in_hashtable(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)
 {
     struct hash_table *ht;
     struct hash_entry *he;
     struct ht_ptr *ht_p;
     u32 h_pos;
     u64 tail;
-    int key, i, ret=0;
+    int key, i = 0, ret=0;
     u64 h_name, h_len;
+    u8 valid_flag;
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table *)nova_get_block(sb, block);  
-    make_ht_ptr(&ht_p, ht);
 
-    switch(nr_table){
-        case 1:
-            offset = 4;
-            break;
-        case 2:
-            offset = 3;
-            break;
-        case 3:
-            offset = 2;
-            break;
-        case 4:
-            offset = 1;
-            break;
-        case 5:
-            offset = 0;
-    }
-    key = nr_table << offset;
-    buckets = NR_HASH_ENTRIES / key;
-    h_pos = hashname % key;
+    buckets = 4095;
+    offset = 4;
 
-    for(i = 0; i < buckets; i++) {
-        if(!test_bit_le(h_pos, ht_p->hash_map)){
-            h_pos++;
-            continue;
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            i++;
+            h_pos++:
         }
         /*found valid pos*/
-        he = ht->hash_entry[h_pos];
         h_name = le64_to_cpu(he->hd_name);
-        h_len = le64_to_cpu(he->name_len);
-        if(h_name==hashname && h_len==namelen){
+        if(h_name==hashname){
             *pos = le32_to_cpu(he->hd_pos);
             ret = 1;
             goto out;
         } else {
-            continue;
+            i++;
+            h_pos++;
         }
     }
+
     /*not found pos*/
     tail = le64_to_cpu(ht->hash_tail);
     if(tail) {
-        nr_table++;
-        ret = lookup_in_hashtable(tail, hashname, namelen, nr_table, &pos);
+        hlevel++;
+        ret = lookup_ht_ls(tail, hashname, hlevel, &pos);
+    }
+out: 
+    return ret;
+}
+
+int make_invalid_ht_le(u64 block, u64 hashname, u8 hlevel)
+{
+    struct hash_table_lf *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int key, i = 0, ret=0;
+    u64 h_name, h_len;
+    u8 valid_flag;
+
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+
+    h_pos = 0;
+
+    while(h_pos< NR_HASH_ENTRIES_L5) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            h_pos++:
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+           he->invalid = 0;
+            ret = 1;
+            goto out;
+        } else {
+            h_pos++;
+        }
+    }
+out:
+    return ret;
+}
+
+int make_invalid_ht_lf(u64 block, u64 hashname, u8 hlevel)
+{
+    struct hash_table_lf *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int key, i = 0, ret=0;
+    u64 h_name, h_len;
+    u8 valid_flag;
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    buckets = 511;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            i++;
+            h_pos++:
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            he->invalid = 0;
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = make_invalid_ht_le(tail, hashname, hlevel);
+    }
+out: 
+    return ret;
+}
+
+int make_invalid_ht_lt(u64 block, u64 hashname, u8 hlevel)
+{
+    struct hash_table_lt *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int key, i = 0, ret=0;
+    u64 h_name, h_len;
+    u8 valid_flag;
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    buckets = 1023;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            i++;
+            h_pos++:
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            he->invalid = 0;
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = make_invalid_ht_lf(tail, hashname, hlevel);
+    }
+out: 
+    return ret;
+}
+
+int make_invalid_ht_ls(u64 block, u64 hashname, u8 hlevel)
+{
+    struct hash_table_ls *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    u64 tail;
+    int key, i = 0, ret=0;
+    u64 h_name, h_len;
+    u8 valid_flag;
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    buckets = 2047;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            i++;
+            h_pos++:
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            he->invalid = 0;
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = make_invalid_ht_lt(tail, hashname, hlevel);
     }
 out: 
     return ret;
@@ -188,63 +670,94 @@ out:
 /*make invalid 
  * return 1 for invalid successfully
  * return 0 for fail invalid*/
-int make_invalid_htable(u64 block, u64 hashname, u64 namelen, int nr_table)
+int make_invalid_htable(u64 block, u64 hashname, u8 hlevel)
 {
     struct hash_table *ht;
     struct hash_entry *he;
     struct ht_ptr *ht_p;
     u32 h_pos;
     u64 tail;
-    int key, i, ret=0;
+    int key, i = 0, ret=0;
     u64 h_name, h_len;
+    u8 valid_flag;
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table *)nova_get_block(sb, block);  
-    make_ht_ptr(&ht_p, ht);
 
-    switch(nr_table){
-        case 1:
-            offset = 4;
-            break;
-        case 2:
-            offset = 3;
-            break;
-        case 3:
-            offset = 2;
-            break;
-        case 4:
-            offset = 1;
-            break;
-        case 5:
-            offset = 0;
-    }
-    key = nr_table << offset;
-    buckets = NR_HASH_ENTRIES / key;
-    h_pos = hashname % key;
+    buckets = 4095;
+    offset = 4;
 
-    for(i = 0; i < buckets; i++) {
-        if(!test_bit_le(h_pos, ht_p->hash_map)){
-            h_pos++;
-            continue;
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+        he = ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos];
+        if(!valid_flag){
+            i++;
+            h_pos++:
         }
         /*found valid pos*/
-        he = ht->hash_entry[h_pos];
         h_name = le64_to_cpu(he->hd_name);
-        h_len = le64_to_cpu(he->name_len);
-        if(h_name==hashname && h_len==namelen){
-            clear_bit_le(h_pos, ht_p->hash_map);
+        if(h_name==hashname){
+            he->invalid =0;
             ret = 1;
             goto out;
         } else {
-            continue;
+            i++;
+            h_pos++;
         }
     }
+
     /*not found pos*/
     tail = le64_to_cpu(ht->hash_tail);
     if(tail) {
-        nr_table++;
-        ret = make_invalid_htable(tail, hashname, namelen, nr_table);
+        hlevel++;
+        ret = make_invalid_ht_ls(tail, hashname, hlevel);
     }
 out: 
     return ret;
+}
+
+int free_htable(strut super_block *sb, u64 ht_addr, u8 hlevel)
+{
+    struct hash_table *ht;
+    struct hash_table_ls *hts;
+    struct hash_table_lt *htt;
+    struct hash_table_lf *htf;
+    struct hash_table_le *hte;
+    u64 tail, tem;
+    unsigned short btype;
+
+    tail = ht_addr;
+    while(tail){
+        if(hlevel==1){
+            ht = (struct hash_table *)nova_get_block(sb, tail);
+            tem = le64_to_cpu(ht->tail);
+            btype = HTABLE_DEF_SIZE;
+            dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT,1);
+        } else if(hlevel ==2) {
+            hts = (struct hash_table_ls *)nova_get_block(sb, tail);
+            tem = le64_to_cpu(hts->tail);
+            btype = HTABLE_LS_SIZE;
+            dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+        } else if(hlevel == 3) {
+            htt = (struct hash_table_lt *)nova_get_block(sb, tail);
+            tem = le64_to_cpu(htt->tail);
+            btype = HTABLE_LT_SIZE;
+            dafs_free_htable_blocks(sb, btype,tail>>PAGE_SHIFT, 1);
+        } else if(hlevel == 4) {
+            htf = (struct hash_table_lf *)nova_get_block(sb, tail);
+            tem = le64_to_cpu(htf->tail);
+            btype = HTABLE_LF_SIZE;
+            dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+        } else {
+            hte = (struct hash_table_le *)nova_get_block(sb, tail);
+            tem = 0;
+            btype = HTABLE_LE_SIZE;
+            dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+        }
+        tail = tem;
+    }
+
+    return 0;
 }
