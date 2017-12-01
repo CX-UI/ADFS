@@ -250,7 +250,7 @@ enum alloc_type {
 	LOG = 1,
 	DATA,
     ZONE,
-    HTABLE_TYPE;
+    HASH_TABLE,
 };
 
 #define	MMAP_WRITE_BIT	0x20UL	// mmaped for write
@@ -410,6 +410,11 @@ struct zone_kthread{
 };
 
 
+/*
+ * dzt manager for radix_tree in DRAM */
+struct dzt_manager {
+    struct radix_tree_root dzt_root;
+};
 /*
  * NOVA super-block data in memory
  */
@@ -943,6 +948,10 @@ int nova_find_free_slot(struct nova_sb_info *sbi,
 	unsigned long range_high, struct nova_range_node **prev,
 	struct nova_range_node **next);
 
+inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero);
+int dafs_free_zone_blocks(struct super_block *sb, struct dzt_entry_info *dzt_ei,\
+        unsigned long blocknr, int num);
+
 /* bbuild.c */
 inline void set_bm(unsigned long bit, struct scan_bitmap *bm,
 	enum bm_type type);
@@ -1003,18 +1012,19 @@ extern const struct file_operations dafs_dir_operations;
 int delete_dir_info(struct dzt_entry_info *ei, u64 hashname);
 int delete_dir_tree(struct dzt_entry_info *ei);
 struct dir_info *add_dir_info(struct dzt_entry_info *ei, u64 hash_name);
-void ext_de_name(struct dafs_zone_entry *ze, struct zone_ptr *p, int cur_pos, int name_len,\
-                const char *name, int name_flag);
+void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_zone_entry *ze,
+                 struct zone_ptr *p, int cur_pos, int name_len, const char *name, int name_flag);
 void get_ext_name(struct name_ext *de_ext, char *name);
 void get_de_name(struct dafs_dentry *de, struct dafs_zone_entry *ze, char *name, int name_type);
 int delete_ext(struct zone_ptr *p, struct dafs_dentry *de);
 void clear_ext(struct zone_ptr *p, struct name_ext *de_ext);
 int dafs_rm_dir(struct dentry *dentry);
-int dafs_append_dir_init_entries(struct super_block *sb, int par_pos, struct dzt_entry_info *ei,
+int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt_entry_info *ei,
         u64 self_ino, u64 parent_ino, const char *ful_name);
 extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link);
 extern int dafs_remove_dentry(struct dentry *dentry);
-struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag)
+struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag);
+int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname, const char *dename);
 
 
 

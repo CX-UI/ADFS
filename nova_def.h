@@ -61,7 +61,7 @@
 //#define DAFS_BT_ENTRIES_IN_BLOCK 128-1
 
 
-#define DAFS_PATH_LEN 255
+//#define DAFS_PATH_LEN 255
 /* NOVA & dafs supported data blocks */
 #define NOVA_BLOCK_TYPE_4K     0
 #define NOVA_BLOCK_TYPE_32K    1

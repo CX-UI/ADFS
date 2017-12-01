@@ -279,9 +279,9 @@ static inline size_t nova_print_dentry(struct super_block *sb,
 	nova_dbg("dir logentry @ 0x%llx: inode %llu, "
 			"namelen %u, rec len %u\n", curr,
 			le64_to_cpu(entry->ino),
-			entry->name_len, le16_to_cpu(DAFS_DEF_ZONE_ENTRY_SIZE);//entry->de_len));
+			entry->name_len, DAFS_DEF_ZONE_ENTRY_SIZE);//entry->de_len));
 
-	return le16_to_cpu(DAFS_DEF_ZONE_ENTRY_SIZE);//entry->de_len);
+	return DAFS_DEF_ZONE_ENTRY_SIZE;//entry->de_len);
 }
 
 static u64 nova_print_log_entry(struct super_block *sb, u64 curr)
@@ -450,6 +450,7 @@ void nova_print_inode_log_pages(struct super_block *sb, struct inode *inode)
 	nova_print_nova_log_pages(sb, sih, pi);
 }
 
+
 void nova_print_free_lists(struct super_block *sb)
 {
 	struct nova_sb_info *sbi = NOVA_SB(sb);
@@ -469,7 +470,9 @@ void nova_print_free_lists(struct super_block *sb)
 			"allocated log pages %lu, alloc data count %lu, "
 			"allocated data pages %lu, free log count %lu, "
 			"freed log pages %lu, free data count %lu, "
-			"freed data pages %lu\n", i,
+			"freed data pages %lu, free zone count %lu,"
+            "freed zone pages %lu, free htable count %lu,"
+            "freed htable pages %lu\n", i,
 			free_list->alloc_log_count,
 			free_list->alloc_log_pages,
 			free_list->alloc_data_count,
@@ -477,7 +480,11 @@ void nova_print_free_lists(struct super_block *sb)
 			free_list->free_log_count,
 			free_list->freed_log_pages,
 			free_list->free_data_count,
-			free_list->freed_data_pages);
+			free_list->freed_data_pages,
+            free_list->free_zone_count,
+            free_list->freed_zone_pages,
+            free_list->free_htable_count,
+            free_list->freed_htable_pages);
 	}
 
 	i = SHARED_CPU;
@@ -492,10 +499,13 @@ void nova_print_free_lists(struct super_block *sb)
 		"allocated log pages %lu, alloc data count %lu, "
 		"allocated data pages %lu, free log count %lu, "
 		"freed log pages %lu, free data count %lu, "
-		"freed data pages %lu\n", i,
+        "freed data pages %lu, free zone count %lu, "
+        "freed zone pages %lu, free_htable count %lu, "
+        "freed htable pages %lu\n", i,
 		free_list->alloc_log_count, free_list->alloc_log_pages,
 		free_list->alloc_data_count, free_list->alloc_data_pages,
 		free_list->free_log_count, free_list->freed_log_pages,
-		free_list->free_data_count, free_list->freed_data_pages);
+		free_list->free_data_count, free_list->freed_data_pages,
+        free_list->free_zone_count, free_list->freed_zone_pages,
+        free_list->free_htable_count, free_list->freed_htable_pages);
 }
-

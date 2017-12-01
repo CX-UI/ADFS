@@ -1,25 +1,38 @@
-f*************************************************************************
+/*************************************************************************
 	> File Name: zone.c
 	> Author:CX
 	> Mail: tianfangmmr@126.com
 	> Created Time: 2017年09月14日 星期四 13时20分34秒
  ************************************************************************/
 
-#include <stdio.h>
-//#include <linux/slab.h>
 #include <linux/string.h>
+#include <linux/list.h>
+#include <linux/kthread.h>
 #include "nova.h"
 #include "nova_def.h"
 
 
+/*
+* dafs get dir_zonet_table
+* put dir zone table block addresss before journal block
+* not decided journal pos yet*/
+static inline
+struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+
+    return (struct dafs_dzt_block *)((char *)nova_get_block(sb,
+         NOVA_DEF_BLOCK_SIZE_4K));
+}
+
 /* 
 * make dzt bitmap pointer*/
-void make_dzt_ptr(struct nova_sb_info *sbi, struct dzt_ptr **dzt_p)
+void make_dzt_ptr(struct super_block *sb, struct dzt_ptr **dzt_p)
 {
     struct dafs_dzt_block *dzt_blk;
     struct dzt_ptr *p;
 
-    dzt_blk = dafs_get_dzt_block(sbi);
+    dzt_blk = dafs_get_dzt_block(sb);
 
     p->bitmap = dzt_blk->dzt_bitmap;
     p->max = DAFS_DZT_ENTRIES_IN_BLOCK;
@@ -29,44 +42,14 @@ void make_dzt_ptr(struct nova_sb_info *sbi, struct dzt_ptr **dzt_p)
 
 /*
 * make zone ptr to use statemap*/
-static inline void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e)
+void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e)
 {
     struct zone_ptr *p;
 
     p->statemap = z_e->zone_statemap;
     p->zone_max = NR_DENTRY_IN_ZONE * 2;
-    p->z_entry = z_e->dentry;
+    p->z_entry = &z_e->dentry;
     *z_p = p;
-}
-
-/*find invalid dentry in zone
-* start pos = start dentry id*/
-u32 find_invalid_id(struct zone_ptr *z_p, u32 start_id)
-{
-    struct dafs_dentry *dafs_de;
-    u32 bitpos = start_id*2;
-    while(bitpos<z_p->zone_max){
-        if(test_bit_le(bitpos, z_p->statemap)){
-            bitpos+=2;
-            start_id++;
-            continue;
-        }else{
-            bitpos++;
-            if(test_bit_le(bitpos, z_p->statemap)){
-                bitpos++;
-                start_id++;
-            }else{
-                break;
-            }
-        }
-    }
-
-    /* if not enough entries, negtive split*/
-    if(bitpos == NR_DENTRY_IN_ZONE){
-        dafs_split_zone(sb, dzt_ei);
-    }
-
-    return start_id;
 }
 
 /*
@@ -99,7 +82,7 @@ unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_inf
     struct dir_info *dir_i;
     unsigned long statement = STATEMAP_COLD;
     int mean;
-    int st_sub = STARDARD_SUBFILE_NUM;
+    //int st_sub = STARDARD_SUBFILE_NUM;
     int rcount;
     int sub_s=0;
     int f_s;
@@ -155,10 +138,10 @@ unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_inf
         }else if(sub_s==NUMBER_OF_SUBFILES_LARGE && f_s==DENTRY_FREQUENCY_COLD){
             
             statement = STATEMAP_WARM;
-            dir_i>prio = LEVEL_2;
+            dir_i->prio = LEVEL_2;
             //dafs_de->prio = LEVEL_2;
 
-        }else if(sub_s==NUMBER_OF_SUBFILES_FEW && f_S==DENTRY_FREQUENCY_WRITE){
+        }else if(sub_s==NUMBER_OF_SUBFILES_FEW && f_s==DENTRY_FREQUENCY_WRITE){
             
             statement = STATEMAP_WARM;
             dir_i->prio = LEVEL_2;
@@ -172,7 +155,7 @@ unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_inf
 
         }else if(sub_s==NUMBER_OF_SUBFILES_LARGE && f_s==DENTRY_FREQUENCY_WRITE){
             statement = STATEMAP_HOT;
-            dir_i>prio = LEVEL_4;
+            dir_i->prio = LEVEL_4;
             //dafs_DE->prio = LEVEL_4;
         }
     } else {
@@ -188,6 +171,32 @@ unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_inf
     return statement;
 }
 
+/*get ei from eno pos*/
+struct dzt_entry_info *DAFS_GET_EI(struct super_block *sb, u64 eno)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dafs_dzt_block *dzt_blk = dafs_get_dzt_block(sb);
+    struct dafs_dzt_entry *dzt_e;
+    struct dzt_ptr *dzt_p;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dzt_entry_info *ei;
+    u64 hashname;
+
+    make_dzt_ptr(sb, &dzt_p);
+    if(!test_bit_le(eno, dzt_p->bitmap)){
+        nova_err(sb, "not found dzt_entry");
+        return -EINVAL;
+    }
+    dzt_e = &dzt_blk->dzt_entry[eno];
+    hashname = le64_to_cpu(dzt_e->hash_name);
+    ei = radix_tree_lookup(&dzt_m->dzt_root, hashname);
+    if(!ei){
+        nova_err(sb, "not found ei");
+        return -EINVAL;
+    }
+    return ei;
+
+}
 /*
 * set state in statemap for each zone*/
 int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
@@ -218,7 +227,7 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
             id++;
 
         }else{      
-            dafs_de = ze->dentry[id];
+            dafs_de = &ze->dentry[id];
 
             if(dafs_de->file_type == NORMAL_DIRECTORY){
                 statement = set_dentry_state(dafs_de, par_ei);
@@ -231,13 +240,13 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
 
                 }else if(statement == STATEMAP_WARM){
                     test_and_set_bit_le(bitpos, z_p->statemap);
-                    bitpos++:
+                    bitpos++;
                     test_and_clear_bit_le(bitpos, z_p->statemap);
                     bitpos++;
 
                 }else if(statement == STATEMAP_HOT){
                     test_and_set_bit_le(bitpos, z_p->statemap);
-                    bitpos++:
+                    bitpos++;
                     test_and_set_bit_le(bitpos, z_p->statemap);
                     bitpos++;
 
@@ -257,14 +266,14 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
 * dafs get dir_zonet_table
 * put dir zone table block addresss before journal block
 * not decided journal pos yet*/
-static inline
+/*static inline
 struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
 
     return (struct dafs_dzt_block *)((char *)nova_get_block(sb,
          NOVA_DEF_BLOCK_SIZE_4K));
-}
+}*/
 
 /*
 * build dzt radix-tree
@@ -365,7 +374,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     hn = BKDRHash("/",1);
 
     /*create root directory*/
-    dafs_rde = zone_entry->dentry[0];
+    dafs_rde = &zone_entry->dentry[0];
     dafs_rde->entry_type = DAFS_DIR_ENTRY;             /*not decided yet*/
     dafs_rde->name_len = 1;
     dafs_rde->file_type = ROOT_DIRECTORY;
@@ -384,13 +393,13 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     //dafs_rde->sub_pos[NR_DENTRY_IN_ZONE]={0};
     memcpy(dafs_rde->name, "/",1);
     dafs_rde->fname_len = 1;
-    memcpy(dafs_rde->ful_name->f_name, "/");
+    memcpy(dafs_rde->ful_name.f_name, "/", 1);
     
     record_pos_htable(sb, ei->ht_head, hn, 0, 1);
     rdir = add_dir_info(ei, hn);
     zone_entry->dz_no = cpu_to_le32(ei->dzt_eno);
 
-    dafs_append_dir_init_entries(sb, ei, 1, 1, "/");
+    dafs_append_dir_init_entries(sb, 0, ei, 1, 1, "/");
 
     return 0;
 
@@ -399,7 +408,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
 /*compare dir name and file name,
 * then get subfile position*/
 int set_sf_pos(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
-               struct dir_sf_info *sf_info, int par_pos)
+               struct dir_info *sf_info, int par_pos)
 {
     struct dafs_zone_entry *ze;
     struct dafs_dentry *de;
@@ -418,11 +427,11 @@ int set_sf_pos(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
     //pathlen = strlen(dir);
     while(filepos<NR_DENTRY_IN_ZONE){
         if(test_bit_le(bitpos, z_p->statemap)){
-            de = ze->dentry[filepos];
+            de = &ze->dentry[filepos];
             //namelen = de->ful_name->f_namelen;
             if(de->isr_sf==0 ){
                 ppos = le32_to_cpu(de->par_pos);
-                //memcpy(name, de->ful_name->f_name, pathlen);
+                //memcpy(name, de->ful_name.f_name, pathlen);
                 if(par_pos==ppos) {
                     fp = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
                     fp->pos = filepos;
@@ -436,10 +445,10 @@ int set_sf_pos(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
         }else {
             bitpos ++;
             if(test_bit_le(bitpos, z_p->statemap)){
-                de = ze->dentry[filepos];
+                de = &ze->dentry[filepos];
                 //namelen = de->ful_name->f_namelen;
                 if(de->isr_sf==0){
-                    //memcpy(name, de->ful_name->f_name, pathlen);
+                    //memcpy(name, de->ful_name.f_name, pathlen);
                     ppos = le32_to_cpu(de->par_pos);
                     if(ppos==par_pos) {
                         fp = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
@@ -471,15 +480,15 @@ int init_dir_info(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     char *path;
     u64 hashname;
 
-    ze = (struct dafs_zone_entry *)nova_get_block(dzt_ei->dz_addr);
+    ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     make_zone_ptr(&zp, ze);
     //path = kzalloc(DAFS_PATH_LEN*sizeof(char), GFP_KERNEL);
     while(filepos<NR_DENTRY_IN_ZONE){
         if(test_bit_le(bitpos, zp->statemap)){
-            de = ze->dentry[filepos];
+            de = &ze->dentry[filepos];
             if(de->file_type==NORMAL_DIRECTORY){
-                //pathlen = le64_to_cpu(de->ful_name->f_namelen);
-                //memcpy(path, de->ful_name->f_name, pathlen);
+                //pathlen = le64_to_cpu(de->ful_name.f_namelen);
+                //memcpy(path, de->ful_name.f_name, pathlen);
                 //memcpy(path+pathlen, "/0", 1);
                 hashname = le64_to_cpu(de->hname);
                 dir_i = kzalloc(sizeof(struct dir_info), GFP_ATOMIC);
@@ -498,12 +507,12 @@ int init_dir_info(struct super_block *sb, struct dzt_entry_info *dzt_ei)
             bitpos+=2;
             filepos++;
         } else{
-            bitpos++:
+            bitpos++;
             if(test_bit_le(bitpos, zp->statemap)){
-                de = ze->dentry[filepos];
+                de = &ze->dentry[filepos];
                 if(de->file_type==NORMAL_DIRECTORY){
-                    //pathlen = le64_to_cpu(de->ful_name->f_namelen);
-                    //memcpy(path, de->ful_name->f_name, pathlen);
+                    //pathlen = le64_to_cpu(de->ful_name.f_namelen);
+                    //memcpy(path, de->ful_name.f_name, pathlen);
                     //memcpy(path+pathlen, "/0", 1);
                     hashname = le64_to_cpu(de->hname);
                     dir_i = kzalloc(sizeof(struct dir_info), GFP_ATOMIC);
@@ -545,28 +554,28 @@ int dafs_build_dzt_block(struct super_block *sb)
     * dir zone no is pos in bitmap*/
     dzt_block = dafs_get_dzt_block(sbi);
 
-    dzt_block-> dzt_entry[0].zone_blk_type = DAFS_BLOCK_TYPE_512K;
-    dzt_block-> dzt_entry[0].root_len = 1;
-    dzt_block-> dzt_entry[0].dzt_eno = 0;
-    dzt_block-> dzt_entry[0].pdz_addr = NULL;
-    dzt_block-> dzt_entry[0].rden_pos = NULL;
-    dzt_block-> dzt_entry[0].hash_name = cpu_to_le64(BKDRHash(name, 1));        
+    dzt_block-> dzt_entry[1].zone_blk_type = DAFS_BLOCK_TYPE_512K;
+    dzt_block-> dzt_entry[1].root_len = 1;
+    dzt_block-> dzt_entry[1].dzt_eno = 0;
+    dzt_block-> dzt_entry[1].pdz_addr = NULL;
+    dzt_block-> dzt_entry[1].rden_pos = NULL;
+    dzt_block-> dzt_entry[1].hash_name = cpu_to_le64(BKDRHash(name, 1));        
 
     /*alloc htable zone */
     get_hash_table(sb, 1, &ht_addr);
-    dzt_block->dzt_entry[0].ht_head = cpu_to_le64(ht_addr);
+    dzt_block->dzt_entry[1].ht_head = cpu_to_le64(ht_addr);
 
     /*alloc zone area
     * get zone addr*/
-    dafs_alloc_dir_zone(sbi, dzt_block->dzt_entry[0]);
+    dafs_alloc_dir_zone(sbi, &dzt_block->dzt_entry[1]);
     
     /*make valid*/
-    make_dzt_ptr(sbi, &dzt_p);
-    test_and_set_bit_le(0, dzt_p->bitmap);
+    make_dzt_ptr(sb, &dzt_p);
+    test_and_set_bit_le(1, dzt_p->bitmap);
 
     /*build radix search tree
     * initialize entry info*/ 
-    ei = dafs_build_dzt(sbi, dzt_block->dzt_entry[0]);
+    ei = dafs_build_dzt(sbi, &dzt_block->dzt_entry[1]);
 
     /*init dir_zone*/
     /*append . and .. into new zone*/
@@ -586,13 +595,13 @@ int dafs_build_dzt_block(struct super_block *sb)
 
 /*
  * make dzt entry valid*/
-void set_dzt_entry_valid(struct nova_sb_info *sbi, unsigned long bitpos)
+void set_dzt_entry_valid(struct super_block *sb, unsigned long bitpos)
 {
     //struct dafs_dzt_block *dzt_blk;
     struct dzt_ptr *dzt_p;
     int ret = 0;
 
-    make_dzt_ptr(sbi, &dzt_p);
+    make_dzt_ptr(sb, &dzt_p);
 
     test_and_set_bit(bitpos, dzt_p->bitmap);
 
@@ -603,7 +612,7 @@ void set_dzt_entry_valid(struct nova_sb_info *sbi, unsigned long bitpos)
 static void make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_ei)
 {
     struct dzt_entry_info *dzt_entry_info;
-    struct dzt_manager *dzt_m = sbi->dzt_manager;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
     //int ret = 0;
 
     dzt_entry_info = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
@@ -650,7 +659,7 @@ int dafs_init_dzt(struct super_block *sb)
             continue;
         }
 
-        dzt_entry = dzt_p->dzt_entry[bit_pos];
+        dzt_entry = &dzt_p->dzt_entry[bit_pos];
 
         dzt_ei->root_len = le64_to_cpu(dzt_entry->root_len);
         dzt_ei->dzt_eno = le32_to_cpu(dzt_entry->dzt_eno);
@@ -711,7 +720,7 @@ lookup:
  * destroy DRAM radix dzt tree*/
 int dafs_destroy_dzt(struct nova_sb_info *sbi)
 {
-    struct dzt_manager *dzt_m = sbi->dzt_manager;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
 
     /*destroy dzt_entries*/
 
@@ -725,6 +734,35 @@ int dafs_destroy_dzt(struct nova_sb_info *sbi)
 /*======================================= dzt&zone adaption =================================================*/
 
 /*
+*alloc dzt_entry
+* 1. append at tail 
+* 2. scan bitmap */
+u32 alloc_dzt_entry(struct super_block *sb)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);  
+    struct dafs_dzt_block *dzt_blk;
+    struct dzt_ptr *dzt_p;
+    //unsigned long tail_pos;
+    u32 bitpos = 1, i;
+    
+    dzt_blk = dafs_get_dzt_block(sbi);
+    //tail_pos = le64_to_cpu(dzt_blk->dzt_tail_pos);
+
+    make_dzt_ptr(sb, &dzt_p);
+    while(bitpos < dzt_p->max){
+        if(!test_bit_le(bitpos, dzt_p->bitmap))
+            goto end;
+        else
+            bitpos++;
+    }
+
+    nova_err(sb, "dzt_blk is full");
+    return ENOMEM;
+end:
+    return bitpos;
+}
+
+/*
 * add dzt entries in DRAM
 * used in split*/
 struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei,\ 
@@ -733,7 +771,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dzt_entry *new_dzt_e;
     struct dzt_entry_info *new_dzt_ei;
-    struct dzt_manager *dzt_m = sbi->dzt_manager;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dafs_dentry *dafs_rde;
     struct dafs_zone_entry *par_ze;
     u64 name_len;
@@ -751,7 +789,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     /* modify dzt_eno, dz_log_head, dz_addr */
     
 
-    dafs_rde = par_ze->dentry[sp_id];
+    dafs_rde = &par_ze->dentry[sp_id];
     de_nlen = le64_to_cpu(dafs_rde->fname_len);
 
     new_dzt_ei = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
@@ -760,15 +798,15 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     new_dzt_ei->pdz_addr = par_dei->dz_addr;
     new_dzt_ei->rden_pos = sp_id;
 
-    if(par_dei->eno!=1){
+    if(par_dei->dzt_eno!=1){
         /*not decided*/
         cur_name = kzalloc(sizeof(char)*(de_nlen+1), GFP_ATOMIC);
         /*get ful_name of rde*/
         if(!dafs_rde->ext_flag){
-            memcpy(cur_name, dafs_rde->ful_name->f_name, de_nlen);
+            memcpy(cur_name, dafs_rde->ful_name.f_name, de_nlen);
             memcpy(cur_name+de_nlen, end, 1);
         } else {
-            get_ext_name(dafs_rde->ful_name->fn_ext, cur_name);
+            get_ext_name(dafs_rde->ful_name.fn_ext, cur_name);
         }
 
         name_len = (u64)(par_dei->root_len) + de_nlen;
@@ -786,7 +824,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
         kfree(pname);
     } else {
         name_len = de_nlen;
-        //phash = BKDRHash(dafs_rde->ful_name->f_name, name_len);
+        //phash = BKDRHash(dafs_rde->ful_name.f_name, name_len);
         new_dzt_ei->root_len = (u32)name_len;
         new_dzt_ei->hash_name = le64_to_cpu(dafs_rde->dzt_hn);
     }
@@ -810,34 +848,6 @@ end:
 
 }
 
-/*
-*alloc dzt_entry
-* 1. append at tail 
-* 2. scan bitmap */
-u64 alloc_dzt_entry(struct super_block *sb)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);  
-    struct dafs_dzt_block *dzt_blk;
-    struct dzt_ptr *dzt_p;
-    unsigned long tail_pos;
-    u32 bitpos = 1, i;
-    
-    dzt_blk = dafs_get_dzt_block(sbi);
-    tail_pos = le64_to_cpu(dzt_blk->dzt_tail_pos);
-
-    make_dzt_ptr(sbi, &dzt_p);
-    while(bitpos < dzt_p->max){
-        if(!test_bit_le(bitpos, dzt_p->bitmap))
-            goto end;
-        else
-            bitpos++;
-    }
-
-    nova_err(sb, "dzt_blk is full");
-    return ENOMEM;
-end:
-    return bitpos;
-}
 
 /*
 * append dzt_entry in NVM
@@ -853,9 +863,9 @@ struct dafs_dzt_entry *append_dzt_entry(struct super_block *sb, struct dzt_entry
     en_pos = dzt_ei->dzt_eno;
     dzt_blk = dafs_get_dzt_block(sbi);
 
-    dzt_e = dzt_blk->dzt_entry[en_pos];
+    dzt_e = &dzt_blk->dzt_entry[en_pos];
 
-    dzt_e->zoon_blk_type = dzt_ei->zoon_blk_type;
+    dzt_e->zone_blk_type = dzt_ei->zone_blk_type;
     dzt_e->root_len = cpu_to_le64(dzt_ei->root_len);
     dzt_e->dzt_eno = cpu_to_le32(dzt_ei->dzt_eno);
     dzt_e->pdz_addr = cpu_to_le64(dzt_ei->pdz_addr);
@@ -879,7 +889,7 @@ struct dzt_entry_info *delete_dzt_entry(struct super_block *sb, struct dzt_entry
     unsigned long hash_name;
     u32 ch_pos;
 
-    make_dzt_ptr(sbi, &dzt_p);
+    make_dzt_ptr(sb, &dzt_p);
     ch_pos = old_rdei->dzt_eno;
     hash_name = old_rdei->hash_name;
     radix_tree_delete(&dzt_m->dzt_root, hash_name);
@@ -897,13 +907,13 @@ struct dzt_entry_info *delete_dzt_entry(struct super_block *sb, struct dzt_entry
 * ch_no is subfile_id
 * ch_pos is the star pos for copy*/
 static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_ei,\
-        struct dzt_entry_info *old_ei, unsigned long old_len, struct dafs_dentry *par_de,\
+        struct dzt_entry_info *old_ei, unsigned long old_len,
         int par_pos, struct dir_info *par_f, unsigned long ch_no, unsigned long *ch_pos, int isr_sf)
 {
-    struct dafs_dentry *new_de, *old_de, par_de;
+    struct dafs_dentry *new_de, *old_de, *par_de;
     struct zone_ptr *new_p, *old_p;
     struct dafs_zone_entry *new_ze, *old_ze;
-    struct list *head, *this;
+    struct list_head *head, *this;
     struct dir_info *o_dir, *new_dir;
     struct file_p *new_sf, *old_sf;
     //unsigned long old_len = r_ze->name_len;
@@ -923,12 +933,12 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
     //ch_len = par_de->sub_num;
     //for(i=0;i<ch_len;i++){
         //old_id = le64_to_cpu(ch_no[i]);
-    old_de = old_ze->dentry[ch_no];
-    new_de = new_ze->dentry[new_id];
+    old_de = &old_ze->dentry[ch_no];
+    new_de = &new_ze->dentry[new_id];
     name = kzalloc(sizeof(char)*NOVA_NAME_LEN, GFP_ATOMIC);
 
     if(isr_sf==0)
-        par_de = new_ze->dentry[par_pos];
+        par_de = &new_ze->dentry[par_pos];
 
     if(old_de->file_type == NORMAL_FILE){
         new_de->entry_type = old_de->entry_type;
@@ -947,7 +957,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             new_de->ext_flag = 1;
             nlen = old_de->name_len;
             get_ext_name(old_de->next, name);
-            ext_de_name(new_ze, new_p, new_id, nlen, name, 0);
+            ext_de_name(sb, old_ei, new_ze, new_p, new_id, nlen, name, 0);
         } else {
             new_de->ext_flag = old_de->ext_flag;
             nlen = old_de->name_len;
@@ -970,11 +980,11 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             } else {
                 new_de->ext_flag = 2;
                 get_ext_name(old_de->ful_name->fn_ext, fname);
-                ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
             }
         } else {
             get_ext_name(old_de->ful_name->fn_ext, fname);
-            ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+            ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
         }
         */
 
@@ -993,21 +1003,21 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             /*set ful name*/
             if(new_de->ext_flag ==0){
                 if(name_len<SMALL_NAME_LEN){
-                    memcpy(new_de->ful_name->f_name, fname, name_len);
-                    new_de->ful_name->f_name[name_len]="/0";
+                    memcpy(new_de->ful_name.f_name, fname, name_len);
+                    new_de->ful_name.f_name[name_len]="/0";
                 } else {
                     new_de->ext_flag = 2;
-                    //get_ext_name(old_de->ful_name->fn_ext, fname);
-                    ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                    //get_ext_name(old_de->ful_name.fn_ext, fname);
+                    ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
                 }
             } else {
-                //get_ext_name(old_de->ful_name->fn_ext, fname);
-                ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                //get_ext_name(old_de->ful_name.fn_ext, fname);
+                ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
             }
         } else {
             /*set par_pos and fulname*/
             new_de->par_pos = cpu_to_le32(par_pos);
-            new_de->ful_name->f_name[0]="/0";
+            new_de->ful_name.f_name[0]="/0";
             /*get ful_name*/
             get_de_name(old_de, old_ze, tname, 1);
             memcpy(fname, tname+old_len, name_len);
@@ -1041,7 +1051,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         delete_ext(old_p, old_de);
 
         /*make invalid in hashtable*/
-        name_len = le64_to_cpu(fname_len);
+        //name_len = le64_to_cpu(fname_len);
         hashname = le64_to_cpu(old_de->hname);
         make_invalid_htable(old_ei->ht_head, hashname, 1);
 
@@ -1068,7 +1078,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             new_de->ext_flag = 1;
             nlen = old_de->name_len;
             get_ext_name(old_de->next, name);
-            ext_de_name(new_ze, new_p, new_id, nlen, name, 0);
+            ext_de_name(sb, old_ei, new_ze, new_p, new_id, nlen, name, 0);
         } else {
             new_de->ext_flag = old_de->ext_flag;
             nlen = old_de->name_len;
@@ -1080,7 +1090,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         name_len = le64_to_cpu(old_de->fname_len) - old_len;
         new_de->fname_len = cpu_to_le64(name_len);
         fname = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
-        tename = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
+        tname = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
 
         /*set par_pos 
         * get fname
@@ -1097,44 +1107,44 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             /*set ful name*/
             if(new_de->ext_flag ==0){
                 if(name_len<SMALL_NAME_LEN){
-                    memcpy(new_de->ful_name->f_name, fname, name_len);
-                    new_de->ful_name->f_name[name_len]='/0';
+                    memcpy(new_de->ful_name.f_name, fname, name_len);
+                    new_de->ful_name.f_name[name_len]='/0';
                 } else {
                     new_de->ext_flag = 2;
                     //get_ext_name(old_de->ful_name->fn_ext, fname);
-                    ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                    ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
                 }
             } else {
-                //get_ext_name(old_de->ful_name->fn_ext, fname);
-                ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                //get_ext_name(old_de->ful_name.fn_ext, fname);
+                ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
             }
         } else {
             /*set par_pos and fulname*/
             new_de->par_pos = cpu_to_le32(par_pos);
-            //new_de->ful_name->f_name[0]="/0";
+            //new_de->ful_name.f_name[0]="/0";
 
             /*get ful_name
             * and set*/
-            if(new->ext_flag==0){
+            if(new_de->ext_flag==0){
                 if(name_len<SMALL_NAME_LEN){
-                    memcpy(fname, old_de->ful_name->f_name+old_len, name_len);
+                    memcpy(fname, old_de->ful_name.f_name+old_len, name_len);
                     memcpy(fname+name_len, end, 1);
-                    memcpy(new_de->ful_name->f_name, fname, name_len+1);
+                    memcpy(new_de->ful_name.f_name, fname, name_len+1);
                 } else {
                     new_de->ext_flag = 2;
                     //tname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
-                    get_ext_name(old_de->ful_name->fn_ext, tname);
+                    get_ext_name(old_de->ful_name.fn_ext, tname);
                     memcpy(fname, tname+old_len, name_len);
                     memcpy(fname+name_len, end, 1);
-                    ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                    ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
                     //kfree(tname);
                 }
             } else {               
                 //tname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
-                get_ext_name(old_de->ful_name->fn_ext, tname);
+                get_ext_name(old_de->ful_name.fn_ext, tname);
                 memcpy(fname, tname+old_len, name_len);
                 memcpy(fname+name_len, end, 1);
-                ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
                 //kfree(tname);
             }
         } 
@@ -1165,11 +1175,11 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         /*make invalid in hashtable*/
         if(old_de->ext_flag==0){
             name_len = le64_to_cpu(old_de->fname_len);
-            memcpy(tname, old_de->ful_name->f_name, name_len);
+            memcpy(tname, old_de->ful_name.f_name, name_len);
             memcpy(tname+name_len, end, 1);
         } else {
             name_len = le64_to_cpu(old_de->fname_len);
-            get_ext_name(old_de->ful_name->fn_ext, tname);
+            get_ext_name(old_de->ful_name.fn_ext, tname);
         }
             
         name_len = le64_to_cpu(old_de->fname_len);
@@ -1198,7 +1208,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             new_de->ext_flag = 1;
             nlen = old_de->name_len;
             get_ext_name(old_de->next, name);
-            ext_de_name(new_ze, new_p, new_id, nlen, name, 0);
+            ext_de_name(sb, old_ei, new_ze, new_p, new_id, nlen, name, 0);
         } else {
             new_de->ext_flag = old_de->ext_flag;
             nlen = old_de->name_len;
@@ -1211,7 +1221,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         name_len = le64_to_cpu(old_de->fname_len) - old_len;
         new_de->fname_len = cpu_to_le64(name_len);
         fname = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
-        tename = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
+        tname = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
         
         /*set par_pos 
         * get fname
@@ -1228,16 +1238,16 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             /*set ful name*/
             if(new_de->ext_flag ==0){
                 if(name_len<SMALL_NAME_LEN){
-                    memcpy(new_de->ful_name->f_name, fname, name_len);
-                    new_de->ful_name->f_name[name_len]='/0';
+                    memcpy(new_de->ful_name.f_name, fname, name_len);
+                    new_de->ful_name.f_name[name_len]='/0';
                 } else {
                     new_de->ext_flag = 2;
                     //get_ext_name(old_de->ful_name->fn_ext, fname);
-                    ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                    ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
                 }
             } else {
                 //get_ext_name(old_de->ful_name->fn_ext, fname);
-                ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
             }
         } else {
             /*set par_pos and fulname*/
@@ -1246,26 +1256,26 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
 
             /*get ful_name
             * and set*/
-            if(new->ext_flag==0){
+            if(new_de->ext_flag==0){
                 if(name_len<SMALL_NAME_LEN){
-                    memcpy(fname, old_de->ful_name->f_name+old_len, name_len);
+                    memcpy(fname, old_de->ful_name.f_name+old_len, name_len);
                     memcpy(fname+name_len, end, 1);
-                    memcpy(new_de->ful_name->f_name, fname, name_len+1);
+                    memcpy(new_de->ful_name.f_name, fname, name_len+1);
                 } else {
                     new_de->ext_flag = 2;
                     //tname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
-                    get_ext_name(old_de->ful_name->fn_ext, tname);
+                    get_ext_name(old_de->ful_name.fn_ext, tname);
                     memcpy(fname, tname+old_len, name_len);
                     memcpy(fname+name_len, end, 1);
-                    ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                    ext_de_name(sb, old_ei,new_ze, new_p, new_id, name_len, fname, 1);
                     //kfree(tname);
                 }
             } else {               
                 //tname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
-                get_ext_name(old_de->ful_name->fn_ext, tname);
+                get_ext_name(old_de->ful_name.fn_ext, tname);
                 memcpy(fname, tname+old_len, name_len);
                 memcpy(fname+name_len, end, 1);
-                ext_de_name(new_ze, new_p, new_id, name_len, fname, 1);
+                ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
                 //kfree(tname);
             }
         }
@@ -1281,7 +1291,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         }
 
         bitpos = new_id *2 +1;
-        set_bit_le(bitpos, z_p->statemap);
+        set_bit_le(bitpos, new_p->statemap);
             
         /*record pos in hashtable*/
         hashname = BKDRHash(fname, name_len);
@@ -1299,7 +1309,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         delete_ext(old_p, old_de);
 
         /*make invalid in hashtable*/
-        name_len = le64_to_cpu(old_de->ful_name->f_namelen);
+        //name_len = le64_to_cpu(old_de->fname_len);
         //o_hn = BKDRHash(old_de->ful_name->f_name, name_len);
         hashname = le64_to_cpu(old_de->hname);
         make_invalid_htable(old_ei->ht_head, hashname, 1);
@@ -1336,29 +1346,29 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
 
 /*
 * migrate zone entries */
-int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_entry_info *dzt_nei)
+int migrate_zone_entry(struct super_bolck *sb, u32 ch_pos, struct dzt_entry_info *dzt_nei)
 {
     //struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_zone_entry *old_ze, *new_ze;
     struct dafs_dentry *dafs_rde;
     struct dzt_entry_info *old_ei;
     struct dir_info *dir_i;
-    struct list *this, *head; 
+    struct list_head *this, *head; 
     struct file_p *o_sf;
     u64 ch_len, old_namelen;
-    u32 ch_no, ch_pos, old_id, sub_no, eno;
+    u32 ch_no, start_pos, old_id, sub_no, eno;
     u32 bitpos = 0,  new_id = 0;
     int i = 0;
     int oi = 0;
     int ret = 0;
     u64 hashname, name_len;
     
-    ch_pos = 0;
+    start_pos = 0;
 
     old_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_nei->pdz_addr);
     new_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_nei->dz_addr);
 
-    dafs_rde = old_ze->dentry[ch_pos];
+    dafs_rde = &old_ze->dentry[ch_pos];
     /*clear statemap of new zone*/
 
     //new_z_e->dz_no = dzt_ne->dzt_eno;
@@ -1386,7 +1396,7 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     list_for_each(this, head) {
         o_sf = list_entry(this, struct file_p, list);
         ch_no = o_sf->pos;
-        cpy_new_zentry(dzt_nei, old_ei, old_namelen, dafs_rde, dir_i, ch_no, &ch_pos, 1);
+        cpy_new_zentry(sb, dzt_nei, old_ei, old_namelen, dafs_rde, dir_i, ch_no, &start_pos, 1);
         //ch_pos ++;
         list_del(&o_sf->list);
         dir_i->sub_num--;
@@ -1394,7 +1404,7 @@ int migrate_zone_entry(struct super_bolck *sb, unsigned long ch_pos, struct dzt_
     }
    
     kfree(dir_i);
-    kfree(ch_no);
+    //kfree(ch_no);
     return ret;
 }
 
@@ -1406,17 +1416,19 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_zone_entry *new_ze, *par_ze;
     //struct dafs_dentry *dafs_rde;
-    struct dzt_manager *dzt_m = sbi->dzt_manager;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
     //struct dzt_entry_info *par_ei;
+    struct dzt_ptr *dzt_p;
     unsigned long blocknr;
     unsigned long par_root_len, name_len;
     int allocated;
-    char root_path[DAFS_PATH_LEN];
-    char *root = root_path;
+    u64 block;
+    //char root_path[DAFS_PATH_LEN];
+    //char *root = root_path;
     int i;
 
 
-    allocated = dafs_new_zone_blocks(sb, dzt_e, &blocknr, 1, 1);
+    allocated = dafs_new_zone_blocks(sb, n_dzt_e, &blocknr, 1, 1);
     
     if(allocated != 1 || blocknr == 0)
         return -ENOMEM;
@@ -1434,7 +1446,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     new_ze =(struct dafs_zone_entry *)nova_get_block(sb, n_dzt_ei->dz_addr);
 
     /* clear statemap of new zone*/
-    memset(new_ze->statemap, 0, SIZE_OF_ZONE_BITMAP);
+    memset(new_ze->zone_statemap, 0, SIZE_OF_ZONE_BITMAP);
 
     new_ze->dz_no = cpu_to_le64(n_dzt_ei->dzt_eno);
     /*clear dentry, memset after test null*/
@@ -1448,53 +1460,132 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     /*reset statemap*/
     zone_set_statemap(sb, par_ze);
 
-    make_dzt_entry_valid(sbi, n_dzt_e->dzt_eno);
+    make_dzt_ptr(sb, &dzt_p);
+    test_and_set_bit_le(n_dzt_ei->dzt_eno, dzt_p->bitmap);
+    //make_dzt_entry_valid(sbi, n_dzt_e->dzt_eno);
     radix_tree_insert(&dzt_m->dzt_root, n_dzt_ei->hash_name, n_dzt_ei);
 
     return new_ze;
 }
-/*get ei from eno pos*/
-struct dzt_entry_info *DAFS_GET_EI(sb, u64 eno)
+
+/*
+* split zone 
+* s_pos split pos
+* sp_id split id*/
+int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
+                    unsigned long sp_id, int SPLIT_TYPE)
 {
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dafs_dzt_block *dzt_blk = dafs_get_dzt_block(sb);
-    struct dafs_dzt_entry *dzt_e;
-    struct dzt_ptr *dzt_p;
-    struct dzt_manager *dzt_m = sbi->dzt_m_info;
-    struct dzt_entry_info *ei;
+    struct zone_ptr *z_p;
+    struct dafs_dentry *dafs_de;
+    struct dafs_dzt_entry *new_dzt_e;
+    struct dzt_entry_info *new_dzt_ei;
+    struct dafs_zone_entry *new_ze;
+    struct dafs_zone_entry *par_ze;
+    struct dir_info *dir_i;
+    //struct rf_e;
+    u32 bitpos = 0;
+    int ret = 0;
+    u32 ne_id = 0;
+    u32 name_len;
     u64 hashname;
 
-    make_dzt_ptr(sbi, &dzt_p);
-    if(!test_bit_le(eno, dzt_p->bitmap)){
-        nova_err(sb, "not found dzt_entry");
-        return -EINVAL;
-    }
-    dzt_e = dzt_blk->dzt_entry[eno];
-    hashname = le64_to_cpu(dzt_e->hash_name);
-    ei = radix_tree_lookup(&dzt_m->dzt_root, hashname);
-    if(!ei){
-        nova_err(sb, "not found ei");
-        return -EINVAL;
-    }
-    return ei;
+    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, par_dzt_ei->dz_addr);
 
+    if(SPLIT_TYPE == POSITIVE_SPLIT){
+        //dafs_rde = &par_ze->dentry[sp_id];
+        new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, sp_id);
+        new_dzt_e = append_dzt_entry(sb, new_dzt_ei);
+        new_ze = alloc_mi_zone(sb, new_dzt_e, new_dzt_ei, sp_id);
+        goto ret;
+
+    }else if(SPLIT_TYPE == NEGTIVE_SPLIT){
+        make_zone_ptr(&z_p, par_ze);
+        /* could split one time */
+        while(bitpos<z_p->zone_max){
+            if(test_bit_le(bitpos, z_p->statemap)){
+                bitpos++;
+                if(test_bit_le(bitpos, z_p->statemap)){
+                    dafs_de = &par_ze->dentry[ne_id];
+                    if(dafs_de->file_type!=NORMAL_DIRECTORY)
+                        continue;
+                    //name_len = le64_to_cpu(dafs_de->ful_name->f_namelen);
+                    hashname = dafs_de->hname;
+                    dir_i = radix_tree_lookup(&par_dzt_ei->dir_tree, hashname);
+                    if(dir_i->prio==LEVEL_3 || dir_i->prio==LEVEL_4){
+                        new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, ne_id);
+                        new_dzt_e = append_dzt_entry(sb, new_dzt_ei);
+                        new_ze = alloc_mi_zone(sb, new_dzt_e, new_dzt_ei, ne_id);
+                        goto ret;
+
+                    }else{
+                        bitpos++;
+                        ne_id++;
+                    }
+                }else{
+                    bitpos++;
+                    ne_id++;
+                }
+            }
+            else{
+                bitpos+=2;
+                ne_id++;
+            }
+        }
+        
+    }
+
+ret:
+    /*reset statemap in detail*/
+
+    return ret;
 }
 
+/*find invalid dentry in zone
+* start pos = start dentry id*/
+u32 find_invalid_id(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
+                    struct zone_ptr *z_p, u32 start_id)
+{
+    struct dafs_dentry *dafs_de;
+    u32 bitpos = start_id*2;
+    //u32 eno;
+    while(bitpos<z_p->zone_max){
+        if(test_bit_le(bitpos, z_p->statemap)){
+            bitpos+=2;
+            start_id++;
+            continue;
+        }else{
+            bitpos++;
+            if(test_bit_le(bitpos, z_p->statemap)){
+                bitpos++;
+                start_id++;
+            }else{
+                break;
+            }
+        }
+    }
+
+    /* if not enough entries, negtive split*/
+    if(bitpos == NR_DENTRY_IN_ZONE){
+        dafs_split_zone(sb, dzt_ei,NULL, NEGTIVE_SPLIT);
+    }
+
+    return start_id;
+}
 
 /*merge*/
 int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsigned long cur_pos,\
                   int rde_pos)
 {
-    struct dafs_zone_entry *des_ze, *cur_ze, *rde;
+    struct dafs_zone_entry *des_ze, *cur_ze;
     struct zone_ptr *par_p, *cur_p;
-    struct dafs_dentry *cur_de, *des_de;
+    struct dafs_dentry *cur_de, *des_de, *rde;
     struct dzt_entry_info *par_ei;
     //struct rf_entry *old_rf, *new_rf;
     struct dir_info *old_idir, *new_idir, *par_idir;
     struct file_p *fp, *o_sub; 
-    struct list *this, *head;
+    struct list_head *this, *head;
     u32 bitpos = 0, fpos = 0,eno, subnum, pos, f_num; 
-    u64 plen, old_hni, rnamelen;
+    u64 plen, old_hn, rnamelen, hn;
     int i, ret =0;
     char *name;
     char *tem;
@@ -1504,8 +1595,11 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
     des_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->pdz_addr);
     cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->dz_addr);
 
-    rde = des_ze->dentry[rde_pos];
-    cur_de = cur_ze->dentry[cur_pos];
+    eno = le64_to_cpu(des_ze->dz_no);
+    par_ei = DAFS_GET_EI(sb, eno);
+
+    rde = &des_ze->dentry[rde_pos];
+    cur_de = &cur_ze->dentry[cur_pos];
     //memcpy(name, rde->ful_name->f_name, le64_to_cpu(rde->ful_name->f_namelen));
     rnamelen = le64_to_cpu(rde->fname_len);
     rname = kzalloc(sizeof(char)*(rnamelen+1), GFP_ATOMIC);
@@ -1517,8 +1611,8 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
 
     make_zone_ptr(&par_p, des_ze);
     if(cur_de->file_type != NORMAL_DIRECTORY){
-        fpos = find_invalid_id(par_p, fpos);
-        des_de = des_ze->dentry[fpos];
+        fpos = find_invalid_id(sb, par_ei,par_p, fpos);
+        des_de = &des_ze->dentry[fpos];
         des_de->entry_type = cur_de->entry_type;
         des_de->name_len = cur_de->name_len;
         des_de->file_type = cur_de->file_type;
@@ -1534,7 +1628,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
             get_ext_name(cur_de->next, name);
-            ext_de_name(des_ze, par__p, fpos, nlen, name, 0);
+            ext_de_name(sb, par_ei, des_ze, par_p, fpos, nlen, name, 0);
         } else {
             des_de->ext_flag = cur_de->ext_flag;
             nlen = cur_de->name_len;
@@ -1551,28 +1645,28 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         strcat(rname, name);
 
         /*record pos in hash table*/
-        eno = le64_to_cpu(par_ze->dz_no);
-        par_ei = DAFS_GET_EI(sb, eno);
+        //eno = le64_to_cpu(par_ze->dz_no);
+        //par_ei = DAFS_GET_EI(sb, eno);
         hn = BKDRHash(rname, plen);
         record_pos_htable(sb, par_ei->ht_head, hn,fpos, 1);
 
         /*set fulname and dzt_hn or hnama*/
         if(des_de->file_type == NORMAL_FILE){
-            des_de->ful_name->f_name[0]='/0';
+            des_de->ful_name.f_name[0]='/0';
             des_de->par_pos = cpu_to_le32(rde_pos); 
 
             des_de->hname = cpu_to_le64(hn);
         } else {
             if(des_de->ext_flag==0){
                 if(plen<SMALL_NAME_LEN){
-                    memcpy(des_de->ful_name->f_name, rname, plen);
-                    des_de->ful_name->f_name[0] = '/0';
+                    memcpy(des_de->ful_name.f_name, rname, plen);
+                    des_de->ful_name.f_name[0] = '/0';
                 } else {
                     des_de->ext_flag = 2;
-                    ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+                    ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
                 }
             } else {
-                ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+                ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
             }
             des_de->dzt_hn = cur_de->dzt_hn;
         }
@@ -1597,8 +1691,8 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         list_add_tail(&fp->list, &par_idir->sub_file);
     } else {
         /*migrate dir*/  
-        fpos = find_invalid_id(par_p, fpos);
-        des_de = des_ze->dentry[fpos];
+        fpos = find_invalid_id(sb, par_ei, par_p, fpos);
+        des_de = &des_ze->dentry[fpos];
         des_de->entry_type = cur_de->entry_type;
         des_de->name_len = cur_de->name_len;
         des_de->file_type = cur_de->file_type;
@@ -1616,7 +1710,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
             get_ext_name(cur_de->next, name);
-            ext_de_name(des_ze, par__p, fpos, nlen, name, 0);
+            ext_de_name(sb, par_ei, des_ze, par_p, fpos, nlen, name, 0);
         } else {
             des_de->ext_flag = cur_de->ext_flag;
             nlen = cur_de->name_len;
@@ -1633,14 +1727,14 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         /*set ful name*/
         if(des_de->ext_flag==0){
             if(plen<SMALL_NAME_LEN){
-                memcpy(des_de->ful_name->f_name, rname, plen);
-                des_de->ful_name->f_name[0] = '/0';
+                memcpy(des_de->ful_name.f_name, rname, plen);
+                des_de->ful_name.f_name[0] = '/0';
             } else {
                 des_de->ext_flag = 2;
-                ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+                ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
             }
         } else {
-            ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+            ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
         }
 
         /*set par_pos*/
@@ -1648,8 +1742,8 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         //memcpy(des_de->ful_name->f_name, rname, plen);
 
         /*record pos in hash table*/
-        eno = le64_to_cpu(par_ze->dz_no);
-        par_ei = DAFS_GET_EI(sb, eno);
+        //eno = le64_to_cpu(par_ze->dz_no);
+        //par_ei = DAFS_GET_EI(sb, eno);
         hn = BKDRHash(rname, plen);
         record_pos_htable(sb, par_ei->ht_head, hn,fpos, 1);
 
@@ -1665,7 +1759,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         new_idir->sub_s = old_idir->sub_s;
         new_idir->f_s = 0;
         new_idir->prio = LEVEL_0;
-        new_idir->hash_name = hn;
+        new_idir->dir_hash = hn;
         INIT_LIST_HEAD(&new_idir->sub_file);
         radix_tree_insert(&par_ei->dir_tree, hn, new_idir); 
 
@@ -1713,7 +1807,7 @@ u64 get_par_hn(const char *name, u64 hash_name, u64 *len)
     pname = kzalloc(namelen*sizeof(char),GFP_KERNEL);
     memcpy(pname, name, namelen);
     tem = strrchr(name, "/");
-    templen = namelen - strlen(tem);
+    temlen = namelen - strlen(tem);
     //memset(ph, 0, temlen);
     //memcpy(ph, name, temlen);
     //hn = BKDRHash(ph, temlen);
@@ -1773,15 +1867,15 @@ int merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
     cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->dz_addr);
     par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->pdz_addr);
 
-    rde_pos = cur_ei->rde_pos;
-    rde = par_ze->dentry[rde_pos];
+    rde_pos = cur_ei->rden_pos;
+    rde = &par_ze->dentry[rde_pos];
     
     make_zone_ptr(&cur_p, cur_ze);
 
     bitpos = 0;
-    while(bitpos<z_p->zone_max){
+    while(bitpos<cur_p->zone_max){
         if(test_bit_le(bitpos, cur_p->statemap)){
-            de = cur_ze->dentry[filepos];
+            de = &cur_ze->dentry[filepos];
             //plen = le64_to_cpu(de->ful_name->f_namelen);
             //nlen = le64_to_cpu(de->name_len);
             if(de->isr_sf==1){
@@ -1807,7 +1901,7 @@ int merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
         }else {
             bitpos++;
             if(test_bit_le(bitpos, cur_p->statemap)){
-                de = cur_ze->dentry[filepos];
+                de = &cur_ze->dentry[filepos];
                 //plen = le64_to_cpu(de->ful_name->f_namelen);
                 //nlen = le64_to_cpu(de->name_len);
                 if(de->isr_sf==1){
@@ -1828,18 +1922,18 @@ int merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
 
 /*inherit*/
 int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsigned long cur_pos,\
-                  int rde_pos)
+                  u32 rde_pos)
 {
-    struct dafs_zone_entry *des_ze, *cur_ze, *rde;
+    struct dafs_zone_entry *des_ze, *cur_ze;
     struct zone_ptr *par_p, *cur_p;
-    struct dafs_dentry *cur_de, *des_de;
+    struct dafs_dentry *cur_de, *des_de, *rde;
     struct dzt_entry_info *par_ei;
     //struct rf_entry *old_rf, *new_rf;
     struct dir_info *old_idir, *new_idir, *par_idir;
     struct file_p *fp, *o_sub; 
-    struct list *this, *head;
-    u32 bitpos = 0, fpos = 0i, eno, subnum, pos, f_num;
-    u64 plen， hn, old_hn, par_hn, phash, rnamelen;
+    struct list_head *this, *head;
+    u32 bitpos = 0, fpos = 0, eno, subnum, pos, f_num;
+    u64 plen, hn, old_hn, par_hn, phash, rnamelen;
     int i, ret =0;
     char *name;
     char *pname;
@@ -1848,10 +1942,13 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
 
     des_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->pdz_addr);
     cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->dz_addr);
+        
+    eno = le64_to_cpu(des_ze->dz_no);
+    par_ei = DAFS_GET_EI(sb, eno);
 
-    rde = des_ze->dentry[rde_pos];
-    cur_de = cur_ze->dentry[cur_pos];
-    //memcpy(name, rde->ful_name->f_name, le64_to_cpu(rde->ful_name->f_namelen));
+    rde = &des_ze->dentry[rde_pos];
+    cur_de = &cur_ze->dentry[cur_pos];
+    //memcpy(name, rde->ful_name.f_name, le64_to_cpu(rde->ful_name.f_namelen));
     rnamelen = le64_to_cpu(rde->fname_len);
     rname = kzalloc(sizeof(char)*(rnamelen+1), GFP_ATOMIC);
     //tem = kzalloc(sizeof(char)*(rnamelen+1), GFP_ATOMIC);
@@ -1862,8 +1959,8 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
 
     make_zone_ptr(&par_p, des_ze);
     if(cur_de->file_type == NORMAL_FILE || cur_de->file_type == ROOT_DIRECTORY){
-        fpos = find_invalid_id(par_p, fpos);
-        des_de = des_ze->dentry[fpos];
+        fpos = find_invalid_id(sb, par_ei, par_p, fpos);
+        des_de = &des_ze->dentry[fpos];
         des_de->entry_type = cur_de->entry_type;
         des_de->name_len = cur_de->name_len;
         des_de->file_type = cur_de->file_type;
@@ -1881,7 +1978,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
             get_ext_name(cur_de->next, name);
-            ext_de_name(des_ze, par__p, fpos, nlen, name, 0);
+            ext_de_name(sb, par_ei, des_ze, par_p, fpos, nlen, name, 0);
         } else {
             des_de->ext_flag = cur_de->ext_flag;
             nlen = cur_de->name_len;
@@ -1896,18 +1993,18 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         /*get fulname*/
         strcat(rname, "/");
         strcat(rname, name);
-        //memcpy(des_de->ful_name->f_name, rname, plen);
+        //memcpy(des_de->ful_name.f_name, rname, plen);
 
         /*record pos in hash table*/
-        eno = le64_to_cpu(par_ze->dz_no);
-        par_ei = DAFS_GET_EI(sb, eno);
+        //eno = le64_to_cpu(par_ze->dz_no);
+        //par_ei = DAFS_GET_EI(sb, eno);
         hn = BKDRHash(rname, plen);
         record_pos_htable(sb, par_ei->ht_head, hn, fpos, 1);
 
         /*set fulname and dzt_hn or hnama
         * delete in hashtable*/
         if(des_de->file_type == NORMAL_FILE){
-            des_de->ful_name->f_name[0]='/0';
+            des_de->ful_name.f_name[0]='/0';
             des_de->par_pos = cpu_to_le32(rde_pos); 
 
             des_de->hname = cpu_to_le64(hn);
@@ -1919,14 +2016,14 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         } else {
             if(des_de->ext_flag==0){
                 if(plen<SMALL_NAME_LEN){
-                    memcpy(des_de->ful_name->f_name, rname, plen);
-                    des_de->ful_name->f_name[0] = '/0';
+                    memcpy(des_de->ful_name.f_name, rname, plen);
+                    des_de->ful_name.f_name[0] = '/0';
                 } else {
                     des_de->ext_flag = 2;
-                    ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+                    ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
                 }
             } else {
-                ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+                ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
             }
             des_de->dzt_hn = cur_de->dzt_hn;
             /*delete in previous hashtable*/
@@ -1958,8 +2055,8 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         list_add_tail(&fp->list, &par_idir->sub_file);
     } else if (cur_de->file_type == NORMAL_DIRECTORY){
         /*migrate dir*/  
-        fpos = find_invalid_id(par_p, fpos);
-        des_de = des_ze->dentry[fpos];
+        fpos = find_invalid_id(sb, par_ei, par_p, fpos);
+        des_de = &des_ze->dentry[fpos];
         des_de->entry_type = cur_de->entry_type;
         des_de->name_len = cur_de->name_len;
         des_de->file_type = cur_de->file_type;
@@ -1977,7 +2074,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
             get_ext_name(cur_de->next, name);
-            ext_de_name(des_ze, par__p, fpos, nlen, name, 0);
+            ext_de_name(sb, par_ei, des_ze, par_p, fpos, nlen, name, 0);
         } else {
             des_de->ext_flag = cur_de->ext_flag;
             nlen = cur_de->name_len;
@@ -1994,23 +2091,23 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         /*set ful name*/
         if(des_de->ext_flag==0){
             if(plen<SMALL_NAME_LEN){
-                memcpy(des_de->ful_name->f_name, rname, plen);
-                des_de->ful_name->f_name[0] = '/0';
+                memcpy(des_de->ful_name.f_name, rname, plen);
+                des_de->ful_name.f_name[plen] = '/0';
             } else {
                 des_de->ext_flag = 2;
-                ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+                ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
             }
         } else {
-            ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+            ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
         }
 
         /*set par_pos*/
         des_de->par_pos = cpu_to_le32(rde_pos);
-        //memcpy(des_de->ful_name->f_name, rname, plen);
+        //memcpy(des_de->ful_name.f_name, rname, plen);
 
         /*record pos in hash table*/
-        eno = le64_to_cpu(par_ze->dz_no);
-        par_ei = DAFS_GET_EI(sb, eno);
+        //eno = le64_to_cpu(par_ze->dz_no);
+        //par_ei = DAFS_GET_EI(sb, eno);
         hn = BKDRHash(rname, plen);
         record_pos_htable(sb, par_ei->ht_head, hn, fpos, 1);
 
@@ -2026,7 +2123,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         new_idir->sub_s = old_idir->sub_s;
         new_idir->f_s = 0;
         new_idir->prio = LEVEL_0;
-        new_idir->hash_name = hn;
+        new_idir->dir_hash = hn;
         INIT_LIST_HEAD(&new_idir->sub_file);
         radix_tree_insert(&par_ei->dir_tree, hn, new_idir); 
 
@@ -2064,8 +2161,8 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         delete_dir_info(cur_ei, old_hn);
 
     } else {
-        fpos = find_invalid_id(par_p, fpos);
-        des_de = des_ze->dentry[fpos];
+        fpos = find_invalid_id(sb, par_ei, par_p, fpos);
+        des_de = &des_ze->dentry[fpos];
         des_de->entry_type = cur_de->entry_type;
         des_de->name_len = cur_de->name_len;
         des_de->file_type = ROOT_DIRECTORY;
@@ -2080,7 +2177,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
             get_ext_name(cur_de->next, name);
-            ext_de_name(des_ze, par__p, fpos, nlen, name, 0);
+            ext_de_name(sb, par_ei, des_ze, par_p, fpos, nlen, name, 0);
         } else {
             des_de->ext_flag = cur_de->ext_flag;
             nlen = cur_de->name_len;
@@ -2095,35 +2192,35 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         /*set ful name*/
         if(des_de->ext_flag==0){
             if(plen<SMALL_NAME_LEN){
-                memcpy(des_de->ful_name->f_name, rname, plen);
-                des_de->ful_name->f_name[0] = '/0';
+                memcpy(des_de->ful_name.f_name, rname, plen);
+                des_de->ful_name.f_name[0] = '/0';
             } else {
                 des_de->ext_flag = 2;
-                ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+                ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
             }
         } else {
-            ext_de_name(des_de, par_p, fpos, plen, rname, 1);
+            ext_de_name(sb, par_ei, des_de, par_p, fpos, plen, rname, 1);
         }
 
         /*set par_pos*/
         des_de->par_pos = cpu_to_le32(rde_pos);
-        //memcpy(des_de->ful_name->f_name, rname, plen);
+        //memcpy(des_de->ful_name.f_name, rname, plen);
         //
         
         /*record pos in hash table*/
-        eno = le64_to_cpu(par_ze->dz_no);
-        par_ei = DAFS_GET_EI(sb, eno);
+        //eno = le64_to_cpu(par_ze->dz_no);
+        //par_ei = DAFS_GET_EI(sb, eno);
         hn = BKDRHash(rname, plen);
         record_pos_htable(sb, par_ei->ht_head, hn,fpos, 1);
 
         /*update cur_ei*/
         cur_ei->rden_pos = cpu_to_le32(fpos);
 
-        if(par_ei->eno !=1){
+        if(par_ei->dzt_eno !=1){
             zlen = par_ei->root_len + plen;
             pname = kzalloc(sizeof(char)*(zlen+1), GFP_ATOMIC);
             get_zone_path(sb, par_ei, pname, rname);
-            phash = BKDRHash(BKDRHash(pname. zlen));
+            phash = BKDRHash(pname, zlen);
             cur_ei->root_len = zlen;
             cur_ei->hash_name = phash;
             kfree(pname);
@@ -2183,24 +2280,24 @@ void inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
     int re;
 
     cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_ei->dz_addr);
-    rde_pos = cur_ei->rde_pos;
-    //rde = par_ze->dentry[rde_pos];
+    rde_pos = cur_ei->rden_pos;
+    //rde = &par_ze->dentry[rde_pos];
 
     make_zone_ptr(&cur_p, cur_ze);
 
     //name = kzalloc(DAFS_PATH_LEN*sizeof(char), GFP_ATOMIC);
     //tem = kzalloc((namelen+1)*sizeof(char),GFP_ATOMIC);
 
-    while(bitpos<z_p->zone_max){
+    while(bitpos<cur_p->zone_max){
         if(test_bit_le(bitpos, cur_p->statemap)) {
-            de = cur_ze->dentry[filepos];
+            de = &cur_ze->dentry[filepos];
             if(de->isr_sf==1)
                 __inherit_dentry(sb, cur_ei, filepos, rde_pos);
             bitpos++;
         } else {
             bitpos++;
             if(test_bit_le(bitpos, cur_p->statemap)){
-                de = cur_ze->dentry[filepos];
+                de = &cur_ze->dentry[filepos];
                 if(de->isr_sf==1) 
                     __inherit_dentry(sb, cur_ei, filepos, rde_pos);
             }
@@ -2208,10 +2305,10 @@ void inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
         filepos++;
         /*
         if(test_bit_le(bitpos, z_p->statemap)){
-            de = cur_ze->dentry[filepos];
-            plen = de->ful_name->f_namelen;
+            de = &cur_ze->dentry[filepos];
+            plen = de->ful_name.f_namelen;
             nlen = plen - le64_to_cpu(de->name_len); 
-            memcpy(name, de->ful_name->f_name, nlen);
+            memcpy(name, de->ful_name.f_name, nlen);
             memcpy(name+plen, end, 1);
             if(plen!=namelen ){
                 memcpy(tem, name, namelen);
@@ -2245,6 +2342,148 @@ void inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
 
 /*====================================== self adaption strategy==============================================*/
 
+/*
+*2017/09/12
+* merge zone
+* 1.small zone or cold zone will merge together
+* 2.subdirectory has more files will take place of parent dir to be root dir**/
+int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dafs_dentry *dafs_orde, *dafs_nrde;
+    struct dafs_zone_entry *par_ze, *cur_ze;
+    //struct hash_table *ht;
+    struct dzt_entry_info *par_ei; 
+    //struct zone_ptr *src_p, *des_p;
+    struct dzt_ptr *dzt_p;
+    u32 ch_pos, or_pos, eno;
+    struct dir_info *dir_sf;
+    u64 tail, tem, hash_name, root_hash;
+    char *rname;
+    u64 rlen;
+
+    cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->dz_addr);
+
+    /*delete entry info
+    * delete dzt on nvm*/
+    hash_name = cur_rdei->hash_name;
+    radix_tree_delete(&dzt_m->dzt_root, hash_name);
+    make_dzt_ptr(sb, &dzt_p);
+    ch_pos = cur_rdei->dzt_eno;
+    test_and_clear_bit_le(ch_pos, dzt_p->bitmap);
+
+    /* find and modify old_root dentry*/
+    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->pdz_addr);
+    or_pos = cur_rdei->rden_pos;
+    dafs_orde = &par_ze->dentry[or_pos];
+    dafs_orde->file_type = NORMAL_DIRECTORY;
+    dafs_orde->mtime = CURRENT_TIME_SEC.tv_sec;
+    //dafs_orde->vroot = 0;
+    //dafs_orde->dzt_hn = 0;
+
+    /*add dir_info*/
+    dir_sf = kzalloc(sizeof(struct dir_info), GFP_ATOMIC);
+    rlen = le64_to_cpu(dafs_orde->fname_len);
+    rname = kzalloc(sizeof(char)*(rlen+1), GFP_ATOMIC);
+    get_de_name(dafs_orde, par_ze, rname, 1);
+    root_hash = BKDRHash(rname, rlen);
+    dafs_orde->hname = cpu_to_le64(root_hash);
+    
+    /*add root dir info*/
+    eno = le64_to_cpu(par_ze->dz_no);
+    par_ei = DAFS_GET_EI(sb , eno);
+    add_dir_info(par_ei, root_hash);
+
+    /*merge, cur_rdei is not used*/
+    merge_dentry(sb, cur_rdei);
+    
+    /*delete dir tree*/
+    delete_dir_tree(cur_rdei);
+
+    /* kfree redi
+     * free hash table
+     * free zone
+    *  */
+
+    tail = le64_to_cpu(cur_rdei->ht_head);
+    free_htable(sb, tail, 1);
+    dafs_free_zone_blocks(sb, cur_rdei, cur_rdei->dz_addr >> PAGE_SHIFT, 1);
+    kfree(cur_rdei);
+    
+    kfree(rname);
+    return 0;
+
+}
+
+/*
+ * inherit zone
+ * when parent is not stranger than childs 
+ * nr_pos >> new root pos
+ * or_pos >> old root pos*/
+int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, u32 nr_pos)
+{
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dafs_zone_entry *par_ze, *cur_ze;
+    struct dafs_dentry *dafs_orde, *dafs_nrde;
+    struct dzt_entry_info *par_ei;
+    struct dzt_ptr *dzt_p;
+    struct dir_info *dir_sf;
+    //struct zone_ptr *cz_p;
+    u64 hash_name, cur_namelen;
+    u32 ch_pos, or_pos, eno;
+    char *rname;
+    u64 rlen;
+    u64 root_hash;
+
+    cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->dz_addr);
+
+    /*delete eni from radix tree*/
+    make_dzt_ptr(sb, &dzt_p);
+    ch_pos = cur_rdei->dzt_eno;
+    hash_name = cur_rdei->hash_name;
+    radix_tree_delete(&dzt_m->dzt_root, hash_name);
+    test_and_clear_bit(ch_pos, dzt_p->bitmap);
+
+    /*find old root dentry and modify*/
+    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->pdz_addr);
+    or_pos = cur_rdei->rden_pos;
+    dafs_orde = &par_ze->dentry[or_pos];
+    dafs_orde->file_type = NORMAL_DIRECTORY;
+    dafs_orde->mtime = CURRENT_TIME_SEC.tv_sec;
+    //dafs_orde->vroot = 0;
+    //dafs_orde->dzt_hn = 0;
+    
+    /*add dir_info*/
+    dir_sf = kzalloc(sizeof(struct dir_info), GFP_ATOMIC);
+    rlen = le64_to_cpu(dafs_orde->fname_len);
+    rname = kzalloc(sizeof(char)*(rlen+1), GFP_ATOMIC);
+    get_de_name(dafs_orde, par_ze, rname, 1);
+    root_hash = BKDRHash(rname, rlen);
+    dafs_orde->hname = cpu_to_le64(root_hash);
+    
+    /*add root dir info*/
+    eno = le64_to_cpu(par_ze->dz_no);
+    par_ei = DAFS_GET_EI(sb , eno);
+    add_dir_info(par_ei, root_hash);
+
+    /*modify new root dentry, atomic finished*/
+    dafs_nrde = &cur_ze->dentry[nr_pos];
+    dafs_nrde->file_type = INHE_ROOT_DIRECTORY;
+
+    /*inherit*/
+    inherit_dentry(sb, cur_rdei);
+
+    /* insert cur_rdei and make dirty*/
+    radix_tree_insert(&dzt_m->dzt_root, cur_rdei->hash_name, cur_rdei);
+    radix_tree_tag_set(&dzt_m->dzt_root, cur_rdei->hash_name, 1);
+
+    /* make valid*/
+    test_and_set_bit_le(ch_pos, dzt_p->bitmap);
+    kfree(rname);
+
+}
 
 /*
 * check zones
@@ -2260,11 +2499,11 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     struct dafs_dentry *dafs_de;
     struct dir_info *dir;
     unsigned long bitpos = 0;
-    uint64_t prio = NULL;
+    uint64_t prio = 0;
     u32 hot_num = 0, cold_num = 0, warm_num = 0, id = 0;
-    u32 cd_no = NULL;          /**/
+    u32 cd_no = 0;          /**/
     //int hd = 0;                /* counter for positive split*/
-    u32 hd_no[NR_DENTRY_IN_ZONE] = NULL;          /* hot dentry NO, not decided how many */
+    u32 hd_no[NR_DENTRY_IN_ZONE];          /* hot dentry NO, not decided how many */
     int ret = 0;
     u32 sp_id = 0;      /* impossible for pos_0 */
     int i;
@@ -2311,7 +2550,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 
     if(warm_num == 0 && hot_num ==1){
         if(sub_s!= NUMBER_OF_SUBFILES_LARGE)
-            inh_id = hd_np[0];
+            inh_id = hd_no[0];
             dafs_inh_zone(sb, dzt_ei, inh_id);
     
     } else if(hot_num == 0){
@@ -2321,7 +2560,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     }else if(hot_num!=0){
         for(i=0;i<hot_num;i++){
             sp_id = hd_no[i];
-            dafs_de = z_e->dentry[sp_id];
+            dafs_de = &z_e->dentry[sp_id];
             if(dafs_de->file_type!=NORMAL_DIRECTORY)
                 continue;
             hashname = le64_to_cpu(dafs_de->hname);
@@ -2345,221 +2584,6 @@ RET:
 }
 
 
-/*
-* split zone 
-* s_pos split pos
-* sp_id split id*/
-int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
-                    unsigned long sp_id, int SPLIT_TYPE)
-{
-    struct zone_ptr *z_p;
-    //struct dafs_dentry *dafs_rde;
-    struct dzt_entry_info *new_dzt_ei;
-    struct dafs_zone_entry *new_ze;
-    struct dafs_zone_entry *par_ze;
-    struct dir_info *dir_i;
-    //struct rf_e;
-    u32 bitpos = 0;
-    int ret = 0;
-    u32 ne_id = 0;
-    u32 name_len;
-    u64 hashname;
-
-    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, par_dzt_ei->dz_addr);
-
-    if(SPLIT_TYPE == POSITIVE_SPLIT){
-        //dafs_rde = par_ze->dentry[sp_id];
-        new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, sp_id);
-        new_dzt_e = append_dzt_entry(sb, new_dzt_ei);
-        new_ze = alloc_mi_zone(sb, new_dzt_e, new_dzt_ei, sp_id);
-        goto ret;
-
-    }else if(SPLIT_TYPE == NEGTIVE_SPLIT){
-        make_zone_ptr(&z_p, par_ze);
-        /* could split one time */
-        while(bitpos<z_p->zone_max){
-            if(test_bit_le(bitpos, z_p->statemap)){
-                bitpos++;
-                if(test_bit_le(bitpos, z_p->statemap)){
-                    dafs_de = par_ze->dentry[ne_id];
-                    if(dafs_de->file_type!=NORMAL_DIRECTORY)
-                        continue;
-                    //name_len = le64_to_cpu(dafs_de->ful_name->f_namelen);
-                    hashname = dafs_de->hname;
-                    dir_i = radix_tree_lookup(&par_dzt_ei->dir_tree, hashname);
-                    if(dir_i->prio==LEVEL_3 || dir_i->prio==LEVEL_4){
-                        new_dzt_ei = add_dzt_entry(sb, par_dzt_ei, ne_id);
-                        new_dzt_e = append_dzt_entry(sb, new_dzt_ei);
-                        new_ze = alloc_mi_zone(sb, new_dzt_e, new_dzt_ei, ne_id);
-                        goto ret;
-
-                    }else{
-                        bitpos++;
-                        ne_id++;
-                    }
-                }else{
-                    bitpos++;
-                    ne_id++;
-                }
-            }
-            else{
-                bitpos+=2;
-                neg_id++;
-            }
-        }
-        
-    }
-
-ret:
-    /*reset statemap in detail*/
-
-    return ret;
-}
-
-
-/*
-*2017/09/12
-* merge zone
-* 1.small zone or cold zone will merge together
-* 2.subdirectory has more files will take place of parent dir to be root dir**/
-int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dzt_manager *dzt_m = sbi->dzt_m_info;
-    struct dafs_dentry *dafs_orde, *dafs_nrde;
-    struct dafs_zone_entry *par_ze, *cur_ze;
-    //struct hash_table *ht;
-    struct dzt_entry_info *par_ei; 
-    //struct zone_ptr *src_p, *des_p;
-    struct dzt_ptr *dzt_p;
-    u32 ch_pos, or_pos, eno;
-    struct dir_info *dir_sf;
-    u64 tail, tem, hash_name, root_hash;
-    char *rname;
-    u64 rlen;
-
-    cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->dz_addr);
-
-    /*delete entry info
-    * delete dzt on nvm*/
-    hash_name = cur_rdei->hash_name;
-    radix_tree_delete(&dzt_m->dzt_root, hash_name);
-    make_dzt_ptr(sbi, &dzt_p);
-    ch_pos = cur_rdei->dzt_eno;
-    test_and_clear_bit_le(ch_pos, dzt_p->bitmap);
-
-    /* find and modify old_root dentry*/
-    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->pdz_addr);
-    or_pos = cur_rdei->rden_pos;
-    dafs_orde = par_ze->dentry[or_pos];
-    dafs_orde->file_type = NORMAL_DIRECTORY;
-    dafs_orde->mtime = CURRENT_TIME_SEC.tv_sec;
-    //dafs_orde->vroot = 0;
-    //dafs_orde->dzt_hn = 0;
-
-    /*add dir_info*/
-    dir_sf = kzalloc(sizeof(struct dir_sf_info), GFP_ATOMIC);
-    rlen = le64_to_cpu(dafs_orde->fname_len);
-    rname = kzalloc(sizeof(char)*(rlen+1), GFP_ATOMIC);
-    get_de_name(dafs_orde, par_ze, rname, 1);
-    root_hash = BKDRHash(rname, rlen);
-    dafs_orde->hname = cpu_to_le64(root_hash);
-    
-    /*add root dir info*/
-    eno = le64_to_cpu(par_ze->dz_no);
-    par_ei = DAFS_GET_EI(sb , eno);
-    add_dir_info(par_ei, root_hash);
-
-    /*merge, cur_rdei is not used*/
-    merge_dentry(sb, cur_rdei);
-    
-    /*delete dir tree*/
-    delete_dir_tree(cur_rdei);
-
-    /* kfree redi
-     * free hash table
-     * free zone
-    *  */
-
-    tail = le64_to_cpu(cur_rdei->ht_head);
-    free_htable(sb, tail, 1);
-    dafs_free_zone_blocks(sb, cur_rdei, cur_rdei->dz_addr >> PAGE_SHIFT, 1);
-    kfree(cur_rdei);
-    
-    kfree(rname);
-    return 0;
-
-}
-
-/*
- * inherit zone
- * when parent is not stranger than childs 
- * nr_pos >> new root pos
- * or_pos >> old root pos*/
-int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei,\
-                  struct unsigned long *nr_pos)
-{
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dzt_manager *dzt_m = sbi->dzt_m_info;
-    struct dafs_zone_entry *par_ze, *cur_ze;
-    struct dafs_dentry *dafs_orde, *dafs_nrde;
-    struct dzt_entry_info *par_ei;
-    struct dzt_ptr *dzt_p;
-    struct dir_info *dir_sf;
-    //struct zone_ptr *cz_p;
-    u64 hash_name, cur_namelen;
-    u32 ch_pos, or_pos;
-    char *rname;
-    u64 rlen;
-    u64 root_hash;
-
-    cur_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->dz_addr);
-
-    /*delete eni from radix tree*/
-    make_dzt_ptr(sbi, &dzt_p);
-    ch_pos = cur_rdei->dzt_eno;
-    hash_name = cur_rdei->hash_name;
-    radix_tree_delete(&dzt_m->dzt_root, hash_name);
-    test_and_clear_bit(ch_pos, dzt_p->bitmap);
-
-    /*find old root dentry and modify*/
-    par_ze = (struct dafs_zone_entry *)nova_get_block(sb, cur_rdei->pdz_addr);
-    or_pos = cur_rdei->rden_pos;
-    dafs_orde = par_ze->dentry[or_pos];
-    dafs_orde->file_type = NORMAL_DIRECTORY;
-    dafs_orde->mtime = CURRENT_TIME_SEC.tv_sec;
-    //dafs_orde->vroot = 0;
-    //dafs_orde->dzt_hn = 0;
-    
-    /*add dir_info*/
-    dir_sf = kzalloc(sizeof(struct dir_sf_info), GFP_ATOMIC);
-    rlen = le64_to_cpu(dafs_orde->fname_len);
-    rname = kzalloc(sizeof(char)*(rlen+1), GFP_ATOMIC);
-    get_de_name(dafs_orde, par_ze, rname, 1);
-    root_hash = BKDRHash(rname, rlen);
-    dafs_orde->hname = cpu_to_le64(root_hash);
-    
-    /*add root dir info*/
-    eno = le64_to_cpu(par_ze->dz_no);
-    par_ei = DAFS_GET_EI(sb , eno);
-    add_dir_info(par_ei, root_hash);
-
-    /*modify new root dentry, atomic finished*/
-    dafs_nrde = cur_ze->dentry[nr_pos];
-    dafs_nrde->file_type = INHE_ROOT_DIRECTORY;
-
-    /*inherit*/
-    inherit_dentry(sb, cur_r_dei);
-
-    /* insert cur_rdei and make dirty*/
-    radix_tree_insert(&dzt_m->dzt_root, cur_rdei->hash_name, cur_rdei);
-    radix_tree_tag_set(&dzt_m->dzt_root, cur_rdei->hash_name, 1);
-
-    /* make valid*/
-    test_and_set_bit_le(ch_pos, dzt_p->bitmap);
-    kfree(rname);
-
-}
 /*==============================================free zone======================================================*/
 void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 {
@@ -2571,7 +2595,7 @@ void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 
     /*make dzt invalid*/
     eno = dzt_ei->dzt_eno;
-    make_dzt_ptr(sbi, *dzt_p);
+    make_dzt_ptr(sb, &dzt_p);
     test_and_clear_bit_le(eno, dzt_p->bitmap);
 
     /*delete dir tree*/
@@ -2590,7 +2614,7 @@ void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 
 /*=================================================check zone thread======================================*/
 /*initialize thread*/
-static int check_thread_func(void *data)
+int check_thread_func(void *data)
 {
     struct nova_sb_info *sbi = data;
     struct dzt_entry *ei;
@@ -2622,25 +2646,28 @@ int start_cz_thread(struct nova_sb_info *sbi)
 
     sbi->check_thread = NULL;
     /*initialize zone check thread*/
-    check_thread = kmalloc(sizeof(struct zone_kthread), GFP_KERNEL);
+    check_thread = (struct zone_kthread *)kmalloc(sizeof(struct zone_kthread), GFP_KERNEL);
     if(!check_thread)
         return -ENOMEM;
 
     init_waitqueue_head(&(check_thread->wait_queue_head));
     check_thread->zone_task = kthread_run(check_thread_func, sbi, "DAFS_CHECK_ZONE");
     sbi->check_thread = check_thread;
+    
     if(IS_ERR(check_thread->zone_task)){
         err = PTR_ERR(check_thread->zone_task);
         goto free_check;
     }
+
     return 0;
+
 free_check:
     kfree(check_thread);
     return err;
 }
 
 /*stop check zones thread*/
-void stop_cz_thread(struct hmfs_sb_info *sbi)
+void stop_cz_thread(struct nova_sb_info *sbi)
 {
     if(sbi->check_thread) {
         kthread_stop(sbi->check_thread->zone_task);
@@ -2673,7 +2700,7 @@ int dzt_flush_dirty(struct super_block *sb)
     for(i=0; i<nr; i++) {
         ei = entries[i];
         eno = dzt_eno;
-        dzt_entry = dzt_blk->dzt_entry[eno];
+        dzt_entry = &dzt_blk->dzt_entry[eno];
         dzt_entry->zone_blk_type = ei->zone_blk_type;
         dzt_entry->rden_pos = cpu_to_le32(ei->rden_pos);
         dzt_entry->root_len = cpu_to_le64(ei->root_len);
@@ -2684,7 +2711,7 @@ int dzt_flush_dirty(struct super_block *sb)
     }
     return 0;
 }
-/*======================================build system===========================================================*/
+/*======================================build system=========================================================*/
 /*build zone
  * first time set up fs*/
 int dafs_build_zone(struct super_block *sb)

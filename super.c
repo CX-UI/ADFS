@@ -382,8 +382,8 @@ static struct nova_inode *nova_init(struct super_block *sb,
 
 	//nova_append_dir_init_entries(sb, root_i, NOVA_ROOT_INO,
 	//				NOVA_ROOT_INO);
-	dafs_append_dir_init_entries(sb, root_i, NOVA_ROOT_INO,
-					NOVA_ROOT_INO);
+	//dafs_append_dir_init_entries(sb, root_i, NOVA_ROOT_INO,
+	//				NOVA_ROOT_INO, "/");
 
 	PERSISTENT_MARK();
 	PERSISTENT_BARRIER();
@@ -472,6 +472,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 	struct nova_sb_info *sbi = NULL;
 	struct inode *root_i = NULL;
 	struct inode_map *inode_map;
+    struct dzt_manager *dzt_m;
 	unsigned long blocksize;
 	u32 random = 0;
 	int retval = -EINVAL;
@@ -517,6 +518,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 
 	sbi->inode_maps = kzalloc(sbi->cpus * sizeof(struct inode_map),
 					GFP_KERNEL);
+    dzt_m = sbi->dzt_m_info;
 	if (!sbi->inode_maps) {
 		retval = -ENOMEM;
 		goto out;
@@ -550,12 +552,12 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 
     /*zone info
     *set_up dzt_manager*/
-    INIT_RADIX_TREE(&sbi->dzt_m_info, GFP_ATOMIC);
+    INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);
  
     /*start check zone kthread*/
     //retval = start_cz_thread(sbi);
-    if(retval)
-        goto out;
+    //if(retval)
+        //goto out;
 
 	/* Init a new nova instance */
 	if (sbi->s_mount_opt & NOVA_MOUNT_FORMAT) {

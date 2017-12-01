@@ -32,6 +32,7 @@
 #define SMALL_NAME_LEN 39
 #define LARGE_NAME_LEN 112
 #define DAFS_NAME_LEN 255
+#define DAFS_PATH_LEN 255
 #define DAFS_DEF_DENTRY_SIZE 128
 #define DAFS_DZT_SIZE 56
 
@@ -41,7 +42,7 @@
 #define NR_HASH_ENTRIES_L2  (2048-1)*4
 #define NR_HASH_ENTRIES_L3  (1024-1)*4
 #define NR_HASH_ENTRIES_L4  (512-1)*4
-#define NR_HASH_ENTRIES_L5  256;
+#define NR_HASH_ENTRIES_L5  256
 
 /*block size*/
 #define HTABLE_DEF_SIZE NOVA_BLOCK_TYPE_256K
@@ -49,7 +50,47 @@
 #define HTABLE_LT_SIZE  NOVA_BLOCK_TYPE_64K
 #define HTABLE_LF_SIZE  NOVA_BLOCK_TYPE_32K
 #define HTABLE_LE_SIZE  NOVA_BLOCK_TYPE_4K
-#define DAFS_BLOCK_TYPE_512K NOVA_BLOCK_TYPE_512K 
+#define DAFS_BLOCK_TYPE_512K NOVA_BLOCK_TYPE_512K
+#define DAFS_DEF_ZONE_ENTRY_SIZE 128
+
+#define DAFS_DEF_DENTRY_SIZE 128
+/*zone movement*/
+#define POSITIVE_SPLIT 1
+#define NEGTIVE_SPLIT  0
+
+/*statement*/
+enum dafs_statement{
+    STATEMAP_COLD = 0,
+    STATEMAP_WARM,
+    STATEMAP_HOT
+};
+
+enum dafs_dir_size {
+    NUMBER_OF_SUBFILES_FEW = 0,
+    NUMBER_OF_SUBFILES_LARGE
+};
+
+enum dir_frequence {
+    DENTRY_FREQUENCY_COLD = 0,
+    DENTRY_FREQUENCY_WARM,
+    DENTRY_FREQUENCY_WRITE
+};
+
+enum dir_t {
+    NORMAL_FILE = 0,
+    NORMAL_DIRECTORY,
+    ROOT_DIRECTORY,
+    INHE_ROOT_DIRECTORY
+};
+
+enum dir_level {
+    LEVEL_0 = 0,
+    LEVEL_1,
+    LEVEL_2,
+    LEVEL_3,
+    LEVEL_4
+};
+#define NR_ZONE_FILES 500
 
 
 /*
@@ -241,7 +282,7 @@ struct rf_entry {
 struct file_p {
     struct list_head list;
     u32 pos;
-}__attribute__(packed);
+}__attribute__((__packed__));
 
 /*record dir subfile info*/
 /*
@@ -291,9 +332,9 @@ struct dzt_entry {
 
 /*
  * dzt manager for radix_tree in DRAM */
-struct dzt_manager {
+/*struct dzt_manager {
     struct radix_tree_root dzt_root;
-};
+};*/
 
 /* use for dzt_block operations */
 struct dzt_ptr {
@@ -303,19 +344,20 @@ struct dzt_ptr {
 };
 
 /*hash,c*/
-int  get_hash_table(struct super_block *sb, u64 *h_addr);
-int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
-        u64 namelen, u64 pos, int nr_table);
-int lookup_in_hashtable(u64 block, u64 hashname, u64 namelen, int nr_table, unsigned long *pos);
-int make_invalid_htable(u64 block, u64 hashname, u64 namelen, int nr_table);
+int  get_hash_table(struct super_block *sb, u8 hlevel, u64 *h_addr);
+int record_pos_htable(struct super_block *sb, u64 block, u64 hashname, u32 pos, u8 hlevel);
+int lookup_in_hashtable(u64 block, u64 hashname, u8 hlevel,  u32 *pos);
+int make_invalid_htable(u64 block, u64 hashname, u8 hlevel);
+int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel);
 
 /*zone.c*/
-void make_dzt_ptr(struct nova_sb_info *sbi, struct dzt_ptr **dzt_p);
+void make_dzt_ptr(struct super_block *sb, struct dzt_ptr **dzt_p);
 void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e);
-u32 find_invalid_id(struct zone_ptr *z_P, u32 start_id);
+u32 find_invalid_id(struct super_block *sb, struct dzt_entry_info *dzt_ei, struct zone_ptr *z_p, u32 start_id);
 void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei);
+int check_thread_func(void *data);
 int start_cz_thread(struct nova_sb_info *sbi);
-void stop_cz_thread(struct hmfs_sb_info *sbi);
+void stop_cz_thread(struct nova_sb_info *sbi);
 int dzt_flush_dirty(struct super_block *sb);
 int dafs_build_zone(struct super_block *sb);
 int dafs_init_zone(struct super_block *sb);

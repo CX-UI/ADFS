@@ -34,8 +34,6 @@ int  get_hash_table(struct super_block *sb, u8 hlevel,  u64 *h_addr)
             btype = HTABLE_LE_SIZE;
             break;
     }
-    /*not decideds HTABLE_TYPE
-     * HTABLE_TYPE 8 blks*/
     allocated = nova_new_blocks(sb, &blocknr, 1, btype, 1, HASH_TABLE);
 
     nova_dbg_verbose("%s: allocate zone @ 0x%lx\n", __func__,
@@ -67,7 +65,7 @@ void make_ht_ptr(struct ht_ptr **ht_p, struct hash_table *ht)
 /* record dentry-pos pairs in hash table
  * ht_addr comes from last level*/
 int record_pos_htable_le(struct super_block *sb, u64 block, u64 hashname,\
-         u64 pos, u8 hlevel)
+         u32 pos, u8 hlevel)
 {
     struct hash_table_lf *ht;
     struct hash_entry *he;
@@ -104,7 +102,7 @@ fill_he:
 /* record dentry-pos pairs in hash table
  * ht_addr comes from last level*/
 int record_pos_htable_lt(struct super_block *sb, u64 block, u64 hashname,\
-         u64 pos, u8 hlevel)
+         u32 pos, u8 hlevel)
 {
     struct hash_table_lt *ht;
     struct hash_entry *he;
@@ -159,7 +157,7 @@ out:
 /* record dentry-pos pairs in hash table
  * ht_addr comes from last level*/
 int record_pos_htable_ls(struct super_block *sb, u64 block, u64 hashname,\
-        u64 pos, u8 hlevel)
+        u32 pos, u8 hlevel)
 {
     struct hash_table_ls *ht;
     struct hash_entry *he;
@@ -213,7 +211,7 @@ out:
 /* record dentry-pos pairs in hash table
  * ht_addr comes from dzt_ei*/
 int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
-         u64 pos, u8 hlevel)
+         u32 pos, u8 hlevel)
 {
     struct hash_table *ht;
     struct ht_ptr *ht_p;
@@ -447,7 +445,7 @@ out:
  * &pos for position of dentry
  * hlevel for hash table level 
  * return 1 for found*/
-int lookup_in_hashtable(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)
+int lookup_in_hashtable(u64 block, u64 hashname, u8 hlevel, u32 *pos)
 {
     struct hash_table *ht;
     struct hash_entry *he;

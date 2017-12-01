@@ -1722,8 +1722,9 @@ static int nova_gc_assign_dentry(struct super_block *sb,
 	hash = BKDRHash(old_dentry->name, old_dentry->name_len);
 	nova_dbgv("%s: assign %s hash %lu\n", __func__,
 			old_dentry->name, hash);
-
+*/
 	/* FIXME: hash collision ignored here */
+    /*
 	pentry = radix_tree_lookup_slot(&sih->tree, hash);
 	if (pentry) {
 		temp = radix_tree_deref_slot(pentry);
