@@ -16,7 +16,6 @@
 * dafs get dir_zonet_table
 * put dir zone table block addresss before journal block
 * not decided journal pos yet*/
-static inline
 struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
@@ -1053,7 +1052,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         /*make invalid in hashtable*/
         //name_len = le64_to_cpu(fname_len);
         hashname = le64_to_cpu(old_de->hname);
-        make_invalid_htable(old_ei->ht_head, hashname, 1);
+        make_invalid_htable(sb, old_ei->ht_head, hashname, 1);
 
         new_id++;
         *ch_pos = new_id;
@@ -1184,7 +1183,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
             
         name_len = le64_to_cpu(old_de->fname_len);
         hashname = BKDRHash(fname, name_len);
-        make_invalid_htable(old_ei->ht_head, hashname, 1);
+        make_invalid_htable(sb, old_ei->ht_head, hashname, 1);
 
         new_id++;
         *ch_pos = new_id;
@@ -1312,7 +1311,7 @@ static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_e
         //name_len = le64_to_cpu(old_de->fname_len);
         //o_hn = BKDRHash(old_de->ful_name->f_name, name_len);
         hashname = le64_to_cpu(old_de->hname);
-        make_invalid_htable(old_ei->ht_head, hashname, 1);
+        make_invalid_htable(sb, old_ei->ht_head, hashname, 1);
 
         /* delete dir_info in old dir_info tree*/
         //delete_dir_info(old_ei, hashname);
@@ -1893,7 +1892,7 @@ int merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
                 hn = get_par_hn(name, cur_ei->hash_name, &len);
                 if(!hn)
                     nova_err(sb, "can not find par dir");
-                ret = lookup_in_hashtable(cur_ei->ht_head, hn, 1, &pos);
+                ret = lookup_in_hashtable(sb, cur_ei->ht_head, hn, 1, &pos);
                 __merge_dentry(sb, cur_ei, pos, rde);
 
             }*/
@@ -2011,7 +2010,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
 
             /*delete in  previous hashtable*/
             old_hn = le64_to_cpu(cur_de->hname);
-            make_invalid_htable(cur_ei->ht_head, old_hn, 1);
+            make_invalid_htable(sb, cur_ei->ht_head, old_hn, 1);
 
         } else {
             if(des_de->ext_flag==0){
@@ -2030,7 +2029,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             pname = kzalloc(sizeof(char)*plen,GFP_ATOMIC);
             get_de_name(cur_de, cur_ze, pname,1);
             old_hn = BKDRHash(pname, strlen(pname));
-            make_invalid_htable(cur_ei->ht_head, old_hn, 1);
+            make_invalid_htable(sb, cur_ei->ht_head, old_hn, 1);
             kfree(pname);
         }
 
@@ -2128,7 +2127,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         radix_tree_insert(&par_ei->dir_tree, hn, new_idir); 
 
         /*delete in hashtable*/
-        make_invalid_htable(cur_ei->ht_head, old_hn, 1);
+        make_invalid_htable(sb, cur_ei->ht_head, old_hn, 1);
 
         /*状态表*/
         bitpos = fpos*2+1;
@@ -2239,7 +2238,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         delete_dir_info(cur_ei, old_hn);
 
         /*delete in hashtable*/
-        make_invalid_htable(cur_ei->ht_head, old_hn, 1);
+        make_invalid_htable(sb, cur_ei->ht_head, old_hn, 1);
         
         /*状态表 set and clear*/
         bitpos = fpos*2+1;
@@ -2322,7 +2321,7 @@ void inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
                         hn = get_par_hn(name, cur_ei->hash_name, &len);
                         if(!hn)
                             nova_err(sb, "can not find par dir");
-                        ret = lookup_in_hashtable(cur_ei->ht_head, hn,1, &pos);
+                        ret = lookup_in_hashtable(sb, cur_ei->ht_head, hn,1, &pos);
                         __inherit_dentry(sb, cur_ei, pos, rde);
                     }
                 }
@@ -2617,7 +2616,7 @@ void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 int check_thread_func(void *data)
 {
     struct nova_sb_info *sbi = data;
-    struct dzt_entry *ei;
+    struct dzt_entry_info *ei;
     struct dzt_manager *dzt_m;
     struct dzt_entry_info *dzt_eis[DAFS_DZT_ENTRIES_IN_BLOCK];
     int nr, i;
@@ -2639,8 +2638,9 @@ int check_thread_func(void *data)
 }
 
 /*start kthread*/
-int start_cz_thread(struct nova_sb_info *sbi)
+int start_cz_thread(struct super_block *sb)
 {
+    struct nova_sb_info *sbi = NOVA_SB(sb);
     struct zone_kthread *check_thread = NULL;
     int err = 0;
 
@@ -2667,16 +2667,18 @@ free_check:
 }
 
 /*stop check zones thread*/
-void stop_cz_thread(struct nova_sb_info *sbi)
+int stop_cz_thread(struct super_block *sb)
 {
+    struct nova_sb_info *sbi = NOVA_SB(sb);
     if(sbi->check_thread) {
         kthread_stop(sbi->check_thread->zone_task);
         kfree(sbi->check_thread);
         sbi->check_thread = NULL;
     }
+    return 0;
 }
 
-/*=======================================dzt delete && flush=========================================*/i
+/*=======================================dzt delete && flush=========================================*/
 /*delete dzt tree*/
 
 
@@ -2696,10 +2698,10 @@ int dzt_flush_dirty(struct super_block *sb)
     u32 eno;
 
     dzt_blk = (struct dafs_dzt_block *)dafs_get_dzt_block(sbi);
-    nr = radix_tree_gang_lookup_tag(dzt_m->dzt_root, (void **)entries, 0, NR_DENTRY_IN_ZONE, 1);
+    nr = radix_tree_gang_lookup_tag(&dzt_m->dzt_root, (void **)entries, 0, NR_DENTRY_IN_ZONE, 1);
     for(i=0; i<nr; i++) {
         ei = entries[i];
-        eno = dzt_eno;
+        eno = ei->dzt_eno;
         dzt_entry = &dzt_blk->dzt_entry[eno];
         dzt_entry->zone_blk_type = ei->zone_blk_type;
         dzt_entry->rden_pos = cpu_to_le32(ei->rden_pos);
@@ -2707,7 +2709,7 @@ int dzt_flush_dirty(struct super_block *sb)
         dzt_entry->dz_addr = cpu_to_le64(ei->dz_addr);
         dzt_entry->ht_head = cpu_to_le64(ei->ht_head);
         dzt_entry->pdz_addr = cpu_to_le64(ei->pdz_addr);
-        dzt_entry->hash_name = cpu_to_le64(ei, hash_name);
+        dzt_entry->hash_name = cpu_to_le64(ei->hash_name);
     }
     return 0;
 }
@@ -2724,6 +2726,6 @@ int dafs_build_zone(struct super_block *sb)
  * init system in dram*/
 int dafs_init_zone(struct super_block *sb)
 {
-    struct dentry root = sb->s_root;
+    struct dentry *root = sb->s_root;
     dafs_init_dzt(sb); 
 }

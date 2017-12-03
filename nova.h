@@ -138,6 +138,16 @@ extern unsigned int nova_dbgmask;
 /*DAFS*/
 #define CHECK_ZONES_SLLEP_TIME 1000
 
+/*zone.h*/
+/*block size*/
+#define HTABLE_DEF_SIZE NOVA_BLOCK_TYPE_256K
+#define HTABLE_LS_SIZE  NOVA_BLOCK_TYPE_128K
+#define HTABLE_LT_SIZE  NOVA_BLOCK_TYPE_64K
+#define HTABLE_LF_SIZE  NOVA_BLOCK_TYPE_32K
+#define HTABLE_LE_SIZE  NOVA_BLOCK_TYPE_4K
+#define DAFS_BLOCK_TYPE_512K NOVA_BLOCK_TYPE_512K
+#define DAFS_DEF_ZONE_ENTRY_SIZE 128
+
 extern int measure_timing;
 
 extern unsigned int blk_type_to_shift[NOVA_BLOCK_TYPE_MAX];
@@ -931,6 +941,8 @@ extern int nova_free_data_blocks(struct super_block *sb, struct nova_inode *pi,
 	unsigned long blocknr, int num);
 extern int nova_free_log_blocks(struct super_block *sb, struct nova_inode *pi,
 	unsigned long blocknr, int num);
+int nova_new_blocks(struct super_block *sb, unsigned long *blocknr,
+	unsigned int num, unsigned short btype, int zero, enum alloc_type atype);
 extern int nova_new_data_blocks(struct super_block *sb, struct nova_inode *pi,
 	unsigned long *blocknr, unsigned int num, unsigned long start_blk,
 	int zero, int cow);
@@ -950,6 +962,8 @@ int nova_find_free_slot(struct nova_sb_info *sbi,
 
 inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero);
 int dafs_free_zone_blocks(struct super_block *sb, struct dzt_entry_info *dzt_ei,\
+        unsigned long blocknr, int num);
+int dafs_free_htable_blocks(struct super_block *sb, unsigned short btype,\
         unsigned long blocknr, int num);
 
 /* bbuild.c */
@@ -1008,6 +1022,9 @@ void dafs_apply_link_change_entry(struct nova_inode *pi,
 	struct nova_link_change_entry *entry);
 
 /* dafs_dir.c*/
+int dafs_empty_dir(struct inode *inode, struct dentry *dentry);
+void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *des, int type);
+void delete_dir_log(struct super_block *sb);
 extern const struct file_operations dafs_dir_operations;
 int delete_dir_info(struct dzt_entry_info *ei, u64 hashname);
 int delete_dir_tree(struct dzt_entry_info *ei);
@@ -1021,10 +1038,12 @@ void clear_ext(struct zone_ptr *p, struct name_ext *de_ext);
 int dafs_rm_dir(struct dentry *dentry);
 int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt_entry_info *ei,
         u64 self_ino, u64 parent_ino, const char *ful_name);
-extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link);
+extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type);
 extern int dafs_remove_dentry(struct dentry *dentry);
 struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag);
 int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname, const char *dename);
+int __rename_dir_direntry(struct dentry *old_dentry, struct dentry *new_dentry);
+int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry);
 
 
 
@@ -1109,6 +1128,13 @@ int nova_check_integrity(struct super_block *sb,
 	struct nova_super_block *super);
 void *nova_ioremap(struct super_block *sb, phys_addr_t phys_addr,
 	ssize_t size);
+
+/*hash,c*/
+int  get_hash_table(struct super_block *sb, u8 hlevel, u64 *h_addr);
+int record_pos_htable(struct super_block *sb, u64 block, u64 hashname, u32 pos, u8 hlevel);
+int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel,  u32 *pos);
+int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel);
+int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel);
 
 /* symlink.c */
 extern const struct inode_operations nova_symlink_inode_operations;

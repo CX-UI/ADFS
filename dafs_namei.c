@@ -8,7 +8,7 @@
 #include <linux/fs.h>
 #include <linux/pagemap.h>
 #include "nova.h"
-#include "zone.h"
+//#include "zone.h"
 
 static void dafs_lite_transaction_for_new_inode(struct super_block *sb,
 	struct nova_inode *pi, struct nova_inode *pidir, u64 pidir_tail)
@@ -125,7 +125,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     struct inode *inode = NULL;
     struct dafs_dentry *de;
     ino_t ino;
-    timing_t look_up_time;
+    timing_t lookup_time;
     
 	NOVA_START_TIMING(lookup_t, lookup_time);
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
@@ -258,7 +258,7 @@ static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentr
     struct nova_inode *pidir;
     u64 pidir_tail = 0, pi_tail = 0;
     int err = -ENOMEM;
-    time_t link_time;
+    timing_t link_time;
     int file_type;
 
     NOVA_START_TIMING(link_t, link_time);
@@ -281,12 +281,12 @@ static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentr
 			inode->i_ino, dir->i_ino);
     /*增加一条硬链接就是新建了一个direntry但是inode早已存在的故事
      * tail应该增加修改 not decided*/
-    if(S_ISDIR(inode))
+    if(S_ISDIR(inode->i_mode))
         file_type = 1;
     else 
         file_type = 0;
 
-    err = dafs_add_dentry(dentry, inode->i_no, 0, file_type);
+    err = dafs_add_dentry(dentry, inode->i_ino, 0, file_type);
 	if (err) {
 		iput(inode);
 		goto out;
@@ -373,7 +373,7 @@ static int dafs_symlink(struct inode *dir, struct dentry *dentry, const char *sy
     struct inode *inode;
     u64 pi_addr = 0;
     struct nova_inode *pidir, *pi;
-    u64 log_back = 0;
+    u64 log_block = 0;
     unsigned long name_blocknr = 0;
     int allocated;
     u64 tail = 0;
@@ -482,7 +482,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	}
 
 	pi = nova_get_inode(sb, inode);
-    dafs_append_dir_init_entries(sb, pi, inode->i, dir->i_ino);
+    //dafs_append_dir_init_entries(sb, pi, inode->i_ino, dir->i_ino);
    
     //dafs不需要rebuild dir tree
 
@@ -638,11 +638,12 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
     //char *head_addr = NULL;
     u64 old_tail = 0, new_tail = 0, new_pi_tail = 0, old_pi_tail = 0;
     int err = -ENOMEM;
+    int dec_link = 0, inc_link = 0;
     int entries = 0;
     int cpu;
     int change_parent = 0;
     u64 journal_tail;
-    timeing_t rename_time;
+    timing_t rename_time;
 
     
 	nova_dbgv("%s: rename %s to %s,\n", __func__,
@@ -656,7 +657,7 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
     /*检查rename的情况*/
     if(new_inode){
         err = -ENOMEM;
-        if(S_ISDIR(old_inode->i_mode) && !dafs_empty_dir(new_inode))
+        if(S_ISDIR(old_inode->i_mode) && !dafs_empty_dir(new_inode, new_dentry))
             goto out;
     } else {
         if(S_ISDIR(old_inode->i_mode)){

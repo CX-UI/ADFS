@@ -13,7 +13,7 @@
 #endif
 
 #include "nova_def.h"
-#include "nova.h"
+//#include "nova.h"
 
 #define DIR_RENAME 0
 #define DIR_RMDIR  1
@@ -45,6 +45,7 @@
 #define NR_HASH_ENTRIES_L5  256
 
 /*block size*/
+/*
 #define HTABLE_DEF_SIZE NOVA_BLOCK_TYPE_256K
 #define HTABLE_LS_SIZE  NOVA_BLOCK_TYPE_128K
 #define HTABLE_LT_SIZE  NOVA_BLOCK_TYPE_64K
@@ -52,7 +53,7 @@
 #define HTABLE_LE_SIZE  NOVA_BLOCK_TYPE_4K
 #define DAFS_BLOCK_TYPE_512K NOVA_BLOCK_TYPE_512K
 #define DAFS_DEF_ZONE_ENTRY_SIZE 128
-
+*/
 #define DAFS_DEF_DENTRY_SIZE 128
 /*zone movement*/
 #define POSITIVE_SPLIT 1
@@ -234,7 +235,7 @@ struct hash_table_ls {
 struct hash_table_lt {
     u8 reserved[56];
     __le64 hash_tail;
-    struct hash_entry hash_entryp[NR_HASH_ENTRIES_L3];
+    struct hash_entry hash_entry[NR_HASH_ENTRIES_L3];
 };
 
 /*32K*/
@@ -343,21 +344,18 @@ struct dzt_ptr {
     struct dafs_dzt_entry *dzt_entry;
 };
 
-/*hash,c*/
-int  get_hash_table(struct super_block *sb, u8 hlevel, u64 *h_addr);
-int record_pos_htable(struct super_block *sb, u64 block, u64 hashname, u32 pos, u8 hlevel);
-int lookup_in_hashtable(u64 block, u64 hashname, u8 hlevel,  u32 *pos);
-int make_invalid_htable(u64 block, u64 hashname, u8 hlevel);
-int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel);
 
 /*zone.c*/
+struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb);
 void make_dzt_ptr(struct super_block *sb, struct dzt_ptr **dzt_p);
 void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e);
 u32 find_invalid_id(struct super_block *sb, struct dzt_entry_info *dzt_ei, struct zone_ptr *z_p, u32 start_id);
+int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
+                    unsigned long sp_id, int SPLIT_TYPE);
 void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei);
 int check_thread_func(void *data);
-int start_cz_thread(struct nova_sb_info *sbi);
-void stop_cz_thread(struct nova_sb_info *sbi);
+int start_cz_thread(struct super_block *sb);
+int stop_cz_thread(struct super_block *sb);
 int dzt_flush_dirty(struct super_block *sb);
 int dafs_build_zone(struct super_block *sb);
 int dafs_init_zone(struct super_block *sb);

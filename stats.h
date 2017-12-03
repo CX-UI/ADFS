@@ -122,7 +122,9 @@ DECLARE_PER_CPU(u64[STATS_NUM], IOstats_percpu);
 typedef struct timespec timing_t;
 
 #define NOVA_START_TIMING(name, start) \
-	{if (measure_timing) getrawmonotonic(&start);}
+	{if (measure_timing) {\
+        timing_t start;\
+        getrawmonotonic(&start);}}
 
 #define NOVA_END_TIMING(name, start) \
 	{if (measure_timing) { \
