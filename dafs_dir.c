@@ -272,7 +272,7 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
 
     dzt_blk = dafs_get_dzt_block(sb);
     make_dzt_ptr(sb, &dzt_p);
-    test_and_set_bit_le(bitpos, dzt_p->bitmap);
+    test_and_set_bit_le(bitpos, (void *)dzt_p->bitmap);
 
     /*not decided*/
     dlog->type_d =  type;
@@ -293,7 +293,7 @@ void delete_dir_log(struct super_block *sb)
     u32 bitpos = 0;
 
     make_dzt_ptr(sb, &dzt_p);
-    test_and_clear_bit_le(bitpos, dzt_p->bitmap);
+    test_and_clear_bit_le(bitpos, (void *)dzt_p->bitmap);
 }
 
 /*
@@ -323,7 +323,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             de_ext->ext_pos = cpu_to_le32(ext_pos);
             de_ext->next = NULL;
             bitpos = ext_pos*2+1;
-            test_and_set_bit_le(bitpos, p->statemap);
+            test_and_set_bit_le(bitpos, (void *)p->statemap);
             nova_flush_buffer(de_ext, DAFS_DEF_DENTRY_SIZE, 0);
         } else {
             //de->ext_flag = 1;
@@ -333,7 +333,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             memcpy(de_ext->name, name, LARGE_NAME_LEN+1);
             de_ext->ext_pos = cpu_to_le32(ext_pos);
             bitpos = ext_pos*2+1;
-            test_and_set_bit_le(bitpos, p->statemap);
+            test_and_set_bit_le(bitpos, (void *)p->statemap);
 
             //de_ext->name[name_len]="/0";
             /*at most 2 extend dentry*/
@@ -346,7 +346,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             tem_ext->next = NULL;
             tem_ext->ext_pos = cpu_to_le32(ext_pos);
             bitpos = ext_pos *2 +1;
-            test_and_set_bit_le(bitpos, p->statemap);
+            test_and_set_bit_le(bitpos,(void *)p->statemap);
             nova_flush_buffer(de_ext, DAFS_DEF_DENTRY_SIZE, 0);
             nova_flush_buffer(tem_ext, DAFS_DEF_DENTRY_SIZE, 0);
         }
@@ -362,7 +362,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             de_ext->ext_pos = cpu_to_le32(ext_pos);
             de_ext->next = NULL;
             bitpos = ext_pos *2+1;
-            test_and_set_bit_le(bitpos, p->statemap);
+            test_and_set_bit_le(bitpos, (void *)p->statemap);
         }else {
             ext_len = 0;
             ext_num = name_len/(LARGE_NAME_LEN);
@@ -372,7 +372,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             memcpy(de_ext->name, name, LARGE_NAME_LEN+1);
             de_ext->ext_pos = cpu_to_le32(ext_pos);
             bitpos = ext_pos *2+1;
-            test_and_set_bit_le(bitpos, p->statemap);
+            test_and_set_bit_le(bitpos, (void *)p->statemap);
             ext_num--;
             ext_len += LARGE_NAME_LEN+1;
             name_len -= LARGE_NAME_LEN+1;
@@ -383,7 +383,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
                 memcpy(tem_ext->name, name + ext_len, LARGE_NAME_LEN+1);
                 tem_ext->ext_pos = cpu_to_le32(ext_pos);
                 bitpos = ext_pos *2;
-                test_and_set_bit_le(bitpos, p->statemap);
+                test_and_set_bit_le(bitpos, (void *)p->statemap);
                 de_ext = tem_ext;
                 name_len -= LARGE_NAME_LEN+1;
                 ext_len += LARGE_NAME_LEN+1;
@@ -397,7 +397,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             tem_ext->name[name_len] = '/0';
             tem_ext->next = NULL;
             bitpos = ext_pos *2+1;
-            test_and_set_bit_le(bitpos, p->statemap);
+            test_and_set_bit_le(bitpos, (void *)p->statemap);
         }
     }
 }
@@ -492,7 +492,7 @@ void clear_ext(struct zone_ptr *p, struct name_ext *de_ext)
     
     ext_pos = le32_to_cpu(de_ext->ext_pos);
     bitpos = ext_pos*2+1;
-    test_and_clear_bit_le(bitpos, p->statemap);
+    test_and_clear_bit_le(bitpos, (void *)p->statemap);
     if(de_ext->next)
         clear_ext(p, de_ext->next);
 }
@@ -563,7 +563,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
     dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb,dzt_ei->dz_addr);
     make_zone_ptr(&zone_p, dafs_ze);
     while(bitpos<zone_p->zone_max){
-        if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
+        if(test_bit_le(bitpos, (void *)zone_p->statemap)||test_bit_le(bitpos+1, (void *)zone_p->statemap)){
             bitpos+=2;
             cur_pos++;
         }else{
@@ -677,7 +677,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
     
     /*make valid*/
     bitpos++;
-    test_and_set_bit_le(bitpos, zone_p->statemap);
+    test_and_set_bit_le(bitpos, (void *)zone_p->statemap);
     
     //dir->i_blocks = pidir->i_blocks;
 
@@ -827,9 +827,9 @@ NEXT:
         bitpos = de_pos * 2;
         
         make_zone_ptr(&z_p, dafs_ze);
-        test_and_clear_bit_le(bitpos, z_p->statemap);
+        test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
 	    bitpos++;
-        test_and_clear_bit_le(bitpos, z_p->statemap);
+        test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
         ret = make_invalid_htable(sb, dzt_ei->ht_head, d_hn,  1);
         delete_ext(z_p, dafs_de);
         /*free dir_entry*/
@@ -854,7 +854,7 @@ NEXT:
         tail = le64_to_cpu(ei->ht_head);
         free_htable(sb, tail, 1);
         make_dzt_ptr(sb, &dzt_p);
-        test_and_clear_bit_le(dzt_rno, dzt_p->bitmap);
+        test_and_clear_bit_le(dzt_rno, (void *)dzt_p->bitmap);
         //delete_rf_tree(ei);
         dafs_free_zone_blocks(sb, ei, ei->dz_addr >> PAGE_SHIFT, 1);
         kfree(ei);
@@ -877,9 +877,9 @@ NEXT:
         bitpos = de_pos * 2;
         
         make_zone_ptr(&z_p, dafs_ze);
-        test_and_clear_bit_le(bitpos, z_p->statemap);
+        test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
 	    bitpos++;
-        test_and_clear_bit_le(bitpos, z_p->statemap);
+        test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
         ret = make_invalid_htable(sb, dzt_ei->ht_head, d_hn, 1);
         delete_ext(z_p, dafs_de);
 
@@ -899,9 +899,9 @@ NEXT:
         bitpos = de_pos * 2;
         
         make_zone_ptr(&z_p, dafs_ze);
-        test_and_clear_bit_le(bitpos, z_p->statemap);
+        test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
 	    bitpos++;
-        test_and_clear_bit_le(bitpos, z_p->statemap);
+        test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
         ret = make_invalid_htable(sb, dzt_ei->ht_head, d_hn, 1);
         delete_ext(z_p, dafs_de);
         /*free rf_entry*/
@@ -975,9 +975,9 @@ int dafs_rm_dir(struct dentry *dentry)
     bitpos = de_pos * 2;
     
     make_zone_ptr(&z_p, dafs_ze);
-    test_and_clear_bit_le(bitpos, z_p->statemap);
+    test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
 	bitpos++;
-    test_and_clear_bit_le(bitpos, z_p->statemap);
+    test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
     make_invalid_htable(sb, dzt_ei->ht_head, ph_hash, 1);
     delete_ext(z_p, dafs_de);
 
@@ -1130,7 +1130,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
     make_zone_ptr(&zone_p, dafs_ze);
     bitpos = 0;
     while(bitpos<zone_p->zone_max){
-        if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
+        if(test_bit_le(bitpos, (void *)zone_p->statemap)||test_bit_le(bitpos+1, (void *)zone_p->statemap)){
             bitpos+=2;
             cur_pos++;
         }else{
@@ -1176,7 +1176,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
      
     /*make valid*/
     bitpos++;
-    test_and_set_bit_le(bitpos, zone_p->statemap);
+    test_and_set_bit_le(bitpos, (void *)zone_p->statemap);
     bitpos++;
     //h_len = phlen + 2;
     hashname = BKDRHash(phn, p_len);
@@ -1195,7 +1195,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
     cur_pos++;
 
     while(bitpos<zone_p->zone_max){
-        if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
+        if(test_bit_le(bitpos, (void *)zone_p->statemap)||test_bit_le(bitpos+1, (void *)zone_p->statemap)){
             bitpos+=2;
             cur_pos++;
         }else{
@@ -1227,7 +1227,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
     
     /*make valid*/
     bitpos++;
-    test_and_set_bit_le(bitpos, zone_p->statemap);
+    test_and_set_bit_le(bitpos, (void *)zone_p->statemap);
     hashname = BKDRHash(phn, p_len);
     dafs_de->hname = cpu_to_le64(hashname);
     record_pos_htable(sb, dzt_ei->ht_head, hashname, cur_pos, 1);
@@ -1344,7 +1344,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
 
     make_zone_ptr(&zone_p, dafs_ze);
     while(bitpos<zone_p->zone_max){
-        if(test_bit_le(bitpos, zone_p->statemap)||test_bit_le(bitpos+1, zone_p->statemap)){
+        if(test_bit_le(bitpos, (void *)zone_p->statemap)||test_bit_le(bitpos+1, (void *)zone_p->statemap)){
             bitpos+=2;
             cur_pos++;
         }else{
@@ -1452,7 +1452,7 @@ int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *
     
     /*make valid*/
     bitpos++;
-    test_and_set_bit_le(bitpos, zone_p->statemap);
+    test_and_set_bit_le(bitpos, (void *)zone_p->statemap);
     
     dir->i_blocks = pidir->i_blocks;
 
@@ -1500,7 +1500,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     memcpy(new_ph, path, flen);
     /*set dir entry*/
     while(bitpos<z_p->zone_max){
-        if(test_bit_le(bitpos, z_p->statemap)||test_bit_le(bitpos+1, z_p->statemap)){
+        if(test_bit_le(bitpos, (void *)z_p->statemap)||test_bit_le(bitpos+1, (void *)z_p->statemap)){
             bitpos+=2;
             dir_pos++;
         }else{
@@ -1569,7 +1569,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
 
     /*make valid*/
     bitpos++;
-    test_and_set_bit_le(bitpos, z_p->statemap);
+    test_and_set_bit_le(bitpos, (void *)z_p->statemap);
     bitpos++;
     hashname = BKDRHash(new_ph, strlen(new_ph));
     record_pos_htable(sb, dzt_ei->ht_head, hashname, dir_pos, 1);
@@ -1612,7 +1612,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
             //delen = DAFS_DIR_LEN(str(s_name)+str(sub_ph));
             /*set dir entry*/
             while(bitpos<z_p->zone_max){
-                if(test_bit_le(bitpos, z_p->statemap)||test_bit_le(bitpos+1, z_p->statemap)){
+                if(test_bit_le(bitpos, (void *)z_p->statemap)||test_bit_le(bitpos+1, (void *)z_p->statemap)){
                     bitpos+=2;
                     dir_pos++;
                 }else{
@@ -1691,7 +1691,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
 
             /*make valid*/
             bitpos++;
-            test_and_set_bit_le(bitpos, z_p->statemap);
+            test_and_set_bit_le(bitpos, (void *)z_p->statemap);
             hashname = BKDRHash(sub_ph, strlen(sub_ph));
             
             /*
@@ -1831,7 +1831,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     phlen = strlen(phn);
     make_zone_ptr(&z_p, n_ze);
     while(bitpos<z_p->zone_max){
-        if(test_bit_le(bitpos, z_p->statemap)||test_bit_le(bitpos+1, z_p->statemap)){
+        if(test_bit_le(bitpos, (void *)z_p->statemap)||test_bit_le(bitpos+1, (void *)z_p->statemap)){
             bitpos+=2;
             cur_pos++;
         }else{
@@ -1901,7 +1901,7 @@ int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)
     
     /*make valid*/
     bitpos++;
-    test_and_set_bit_le(bitpos, z_p->statemap);
+    test_and_set_bit_le(bitpos, (void *)z_p->statemap);
    
     /*set pos in hash table for each zone*/
     hashname = BKDRHash(phn, phlen);
