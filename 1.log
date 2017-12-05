@@ -1,397 +1,12 @@
 make -C /lib/modules/4.3.0/build M=`pwd`
 make[1]: Entering directory '/usr/src/linux-4.3'
-  CC [M]  /home/cx-dir/git/ADFS/zone.o
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_build_dzt_block’:
-/home/cx-dir/git/ADFS/zone.c:586:24: warning: passing argument 1 of ‘dafs_init_dir_zone’ from incompatible pointer type [-Wincompatible-pointer-types]
-     dafs_init_dir_zone(sbi, ei);
-                        ^
-/home/cx-dir/git/ADFS/zone.c:365:5: note: expected ‘struct super_block *’ but argument is of type ‘struct nova_sb_info *’
- int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
-     ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘set_dzt_entry_valid’:
-/home/cx-dir/git/ADFS/zone.c:610:30: warning: passing argument 2 of ‘test_and_set_bit’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-     test_and_set_bit(bitpos, dzt_p->bitmap);
-                              ^
-In file included from include/linux/bitops.h:36:0,
-                 from include/linux/kernel.h:10,
-                 from include/linux/list.h:8,
-                 from /home/cx-dir/git/ADFS/zone.c:9:
-./arch/x86/include/asm/bitops.h:204:19: note: expected ‘volatile long unsigned int *’ but argument is of type ‘const void *’
- static inline int test_and_set_bit(long nr, volatile unsigned long *addr)
-                   ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘delete_dzt_entry’:
-/home/cx-dir/git/ADFS/zone.c:901:32: warning: passing argument 2 of ‘test_and_clear_bit’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-     test_and_clear_bit(ch_pos, dzt_p->bitmap);
-                                ^
-In file included from include/linux/bitops.h:36:0,
-                 from include/linux/kernel.h:10,
-                 from include/linux/list.h:8,
-                 from /home/cx-dir/git/ADFS/zone.c:9:
-./arch/x86/include/asm/bitops.h:250:19: note: expected ‘volatile long unsigned int *’ but argument is of type ‘const void *’
- static inline int test_and_clear_bit(long nr, volatile unsigned long *addr)
-                   ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘cpy_new_zentry’:
-/home/cx-dir/git/ADFS/zone.c:971:34: warning: multi-character character constant [-Wmultichar]
-             new_de->name[nlen] = '/0';
-                                  ^
-/home/cx-dir/git/ADFS/zone.c:971:34: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1012:55: warning: multi-character character constant [-Wmultichar]
-                     new_de->ful_name.f_name[name_len]='/0';
-                                                       ^
-/home/cx-dir/git/ADFS/zone.c:1012:55: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1025:40: warning: multi-character character constant [-Wmultichar]
-             new_de->ful_name.f_name[0]='/0';
-                                        ^
-/home/cx-dir/git/ADFS/zone.c:1025:40: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1092:34: warning: multi-character character constant [-Wmultichar]
-             new_de->name[nlen] = '/0';
-                                  ^
-/home/cx-dir/git/ADFS/zone.c:1092:34: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1116:55: warning: multi-character character constant [-Wmultichar]
-                     new_de->ful_name.f_name[name_len]='/0';
-                                                       ^
-/home/cx-dir/git/ADFS/zone.c:1116:55: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1222:34: warning: multi-character character constant [-Wmultichar]
-             new_de->name[nlen] = '/0';
-                                  ^
-/home/cx-dir/git/ADFS/zone.c:1222:34: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1247:55: warning: multi-character character constant [-Wmultichar]
-                     new_de->ful_name.f_name[name_len]='/0';
-                                                       ^
-/home/cx-dir/git/ADFS/zone.c:1247:55: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:927:9: warning: unused variable ‘ch_len’ [-Wunused-variable]
-     u64 ch_len;
-         ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘migrate_zone_entry’:
-/home/cx-dir/git/ADFS/zone.c:1367:9: warning: unused variable ‘oi’ [-Wunused-variable]
-     int oi = 0;
-         ^
-/home/cx-dir/git/ADFS/zone.c:1366:9: warning: unused variable ‘i’ [-Wunused-variable]
-     int i = 0;
-         ^
-/home/cx-dir/git/ADFS/zone.c:1365:22: warning: unused variable ‘new_id’ [-Wunused-variable]
-     u32 bitpos = 0,  new_id = 0;
-                      ^
-/home/cx-dir/git/ADFS/zone.c:1365:9: warning: unused variable ‘bitpos’ [-Wunused-variable]
-     u32 bitpos = 0,  new_id = 0;
-         ^
-/home/cx-dir/git/ADFS/zone.c:1364:35: warning: unused variable ‘sub_no’ [-Wunused-variable]
-     u32 ch_no, start_pos, old_id, sub_no, eno;
-                                   ^
-/home/cx-dir/git/ADFS/zone.c:1364:27: warning: unused variable ‘old_id’ [-Wunused-variable]
-     u32 ch_no, start_pos, old_id, sub_no, eno;
-                           ^
-/home/cx-dir/git/ADFS/zone.c:1363:9: warning: unused variable ‘ch_len’ [-Wunused-variable]
-     u64 ch_len, old_namelen;
-         ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘alloc_mi_zone’:
-/home/cx-dir/git/ADFS/zone.c:1439:16: warning: return makes pointer from integer without a cast [-Wint-conversion]
-         return -ENOMEM;
-                ^
-/home/cx-dir/git/ADFS/zone.c:1433:9: warning: unused variable ‘i’ [-Wunused-variable]
-     int i;
-         ^
-/home/cx-dir/git/ADFS/zone.c:1428:33: warning: unused variable ‘name_len’ [-Wunused-variable]
-     unsigned long par_root_len, name_len;
-                                 ^
-/home/cx-dir/git/ADFS/zone.c:1428:19: warning: unused variable ‘par_root_len’ [-Wunused-variable]
-     unsigned long par_root_len, name_len;
-                   ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_split_zone’:
-/home/cx-dir/git/ADFS/zone.c:1494:9: warning: unused variable ‘name_len’ [-Wunused-variable]
-     u32 name_len;
-         ^
-In file included from ./include/uapi/linux/posix_types.h:4:0,
-                 from include/uapi/linux/types.h:13,
-                 from include/linux/compiler.h:199,
-                 from include/linux/string.h:5,
-                 from /home/cx-dir/git/ADFS/zone.c:8:
-/home/cx-dir/git/ADFS/zone.c: In function ‘find_invalid_id’:
-include/linux/stddef.h:7:14: warning: passing argument 3 of ‘dafs_split_zone’ makes integer from pointer without a cast [-Wint-conversion]
- #define NULL ((void *)0)
-              ^
-/home/cx-dir/git/ADFS/zone.c:1574:36: note: in expansion of macro ‘NULL’
-         dafs_split_zone(sb, dzt_ei,NULL, NEGTIVE_SPLIT);
-                                    ^
-/home/cx-dir/git/ADFS/zone.c:1480:5: note: expected ‘long unsigned int’ but argument is of type ‘void *’
- int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
-     ^
-/home/cx-dir/git/ADFS/zone.c:1553:25: warning: unused variable ‘dafs_de’ [-Wunused-variable]
-     struct dafs_dentry *dafs_de;
-                         ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘__merge_dentry’:
-/home/cx-dir/git/ADFS/zone.c:1642:34: warning: multi-character character constant [-Wmultichar]
-             des_de->name[nlen] = '/0';
-                                  ^
-/home/cx-dir/git/ADFS/zone.c:1642:34: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1660:40: warning: multi-character character constant [-Wmultichar]
-             des_de->ful_name.f_name[0]='/0';
-                                        ^
-/home/cx-dir/git/ADFS/zone.c:1660:40: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1668:50: warning: multi-character character constant [-Wmultichar]
-                     des_de->ful_name.f_name[0] = '/0';
-                                                  ^
-/home/cx-dir/git/ADFS/zone.c:1668:50: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1724:34: warning: multi-character character constant [-Wmultichar]
-             des_de->name[nlen] = '/0';
-                                  ^
-/home/cx-dir/git/ADFS/zone.c:1724:34: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1736:46: warning: multi-character character constant [-Wmultichar]
-                 des_de->ful_name.f_name[0] = '/0';
-                                              ^
-/home/cx-dir/git/ADFS/zone.c:1736:46: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:1594:9: warning: unused variable ‘i’ [-Wunused-variable]
-     int i, ret =0;
-         ^
-/home/cx-dir/git/ADFS/zone.c:1592:48: warning: unused variable ‘f_num’ [-Wunused-variable]
-     u32 bitpos = 0, fpos = 0,eno, subnum, pos, f_num; 
-                                                ^
-/home/cx-dir/git/ADFS/zone.c:1592:35: warning: unused variable ‘subnum’ [-Wunused-variable]
-     u32 bitpos = 0, fpos = 0,eno, subnum, pos, f_num; 
-                                   ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘get_par_hn’:
-/home/cx-dir/git/ADFS/zone.c:1814:25: warning: passing argument 2 of ‘strrchr’ makes integer from pointer without a cast [-Wint-conversion]
-     tem = strrchr(name, "/");
-                         ^
-In file included from /home/cx-dir/git/ADFS/zone.c:8:0:
-include/linux/string.h:62:15: note: expected ‘int’ but argument is of type ‘char *’
- extern char * strrchr(const char *,int);
-               ^
-/home/cx-dir/git/ADFS/zone.c:1831:30: warning: passing argument 2 of ‘strrchr’ makes integer from pointer without a cast [-Wint-conversion]
-         tem = strrchr(pname, "/");
-                              ^
-In file included from /home/cx-dir/git/ADFS/zone.c:8:0:
-include/linux/string.h:62:15: note: expected ‘int’ but argument is of type ‘char *’
- extern char * strrchr(const char *,int);
-               ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘merge_dentry’:
-/home/cx-dir/git/ADFS/zone.c:1870:11: warning: unused variable ‘end’ [-Wunused-variable]
-     char *end = "";
-           ^
-/home/cx-dir/git/ADFS/zone.c:1867:23: warning: unused variable ‘len’ [-Wunused-variable]
-     u64 nlen,plen,hn, len;
-                       ^
-/home/cx-dir/git/ADFS/zone.c:1867:19: warning: unused variable ‘hn’ [-Wunused-variable]
-     u64 nlen,plen,hn, len;
-                   ^
-/home/cx-dir/git/ADFS/zone.c:1867:14: warning: unused variable ‘plen’ [-Wunused-variable]
-     u64 nlen,plen,hn, len;
-              ^
-/home/cx-dir/git/ADFS/zone.c:1867:9: warning: unused variable ‘nlen’ [-Wunused-variable]
-     u64 nlen,plen,hn, len;
-         ^
-/home/cx-dir/git/ADFS/zone.c:1864:39: warning: unused variable ‘eno’ [-Wunused-variable]
-     u32 bitpos, filepos = 0, rde_pos, eno;
-                                       ^
-/home/cx-dir/git/ADFS/zone.c:1863:28: warning: unused variable ‘des_ei’ [-Wunused-variable]
-     struct dzt_entry_info *des_ei;
-                            ^
-/home/cx-dir/git/ADFS/zone.c:1861:24: warning: unused variable ‘he’ [-Wunused-variable]
-     struct hash_entry *he;
-                        ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘__inherit_dentry’:
-/home/cx-dir/git/ADFS/zone.c:1992:34: warning: multi-character character constant [-Wmultichar]
-             des_de->name[nlen] = '/0';
-                                  ^
-/home/cx-dir/git/ADFS/zone.c:1992:34: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:2012:40: warning: multi-character character constant [-Wmultichar]
-             des_de->ful_name.f_name[0]='/0';
-                                        ^
-/home/cx-dir/git/ADFS/zone.c:2012:40: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:2025:50: warning: multi-character character constant [-Wmultichar]
-                     des_de->ful_name.f_name[0] = '/0';
-                                                  ^
-/home/cx-dir/git/ADFS/zone.c:2025:50: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:2088:34: warning: multi-character character constant [-Wmultichar]
-             des_de->name[nlen] = '/0';
-                                  ^
-/home/cx-dir/git/ADFS/zone.c:2088:34: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:2100:49: warning: multi-character character constant [-Wmultichar]
-                 des_de->ful_name.f_name[plen] = '/0';
-                                                 ^
-/home/cx-dir/git/ADFS/zone.c:2100:49: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:2191:34: warning: multi-character character constant [-Wmultichar]
-             des_de->name[nlen] = '/0';
-                                  ^
-/home/cx-dir/git/ADFS/zone.c:2191:34: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:2201:46: warning: multi-character character constant [-Wmultichar]
-                 des_de->ful_name.f_name[0] = '/0';
-                                              ^
-/home/cx-dir/git/ADFS/zone.c:2201:46: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/zone.c:2207:37: warning: passing argument 3 of ‘ext_de_name’ from incompatible pointer type [-Wincompatible-pointer-types]
-             ext_de_name(sb, par_ei, des_de, par_p, fpos, plen, rname, 1);
-                                     ^
-In file included from /home/cx-dir/git/ADFS/zone.c:11:0:
-/home/cx-dir/git/ADFS/nova.h:1032:6: note: expected ‘struct dafs_zone_entry *’ but argument is of type ‘struct dafs_dentry *’
- void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_zone_entry *ze,
-      ^
-/home/cx-dir/git/ADFS/zone.c:1942:9: warning: unused variable ‘i’ [-Wunused-variable]
-     int i, ret =0;
-         ^
-/home/cx-dir/git/ADFS/zone.c:1940:49: warning: unused variable ‘f_num’ [-Wunused-variable]
-     u32 bitpos = 0, fpos = 0, eno, subnum, pos, f_num;
-                                                 ^
-/home/cx-dir/git/ADFS/zone.c:1940:36: warning: unused variable ‘subnum’ [-Wunused-variable]
-     u32 bitpos = 0, fpos = 0, eno, subnum, pos, f_num;
-                                    ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘inherit_dentry’:
-/home/cx-dir/git/ADFS/zone.c:2285:9: warning: unused variable ‘re’ [-Wunused-variable]
-     int re;
-         ^
-/home/cx-dir/git/ADFS/zone.c:2284:41: warning: unused variable ‘pos’ [-Wunused-variable]
-     u32 bitpos = 0, rde_pos, filepos=0, pos;
-                                         ^
-/home/cx-dir/git/ADFS/zone.c:2283:35: warning: unused variable ‘len’ [-Wunused-variable]
-     u64 namelen, phlen, nlen, hn, len;
-                                   ^
-/home/cx-dir/git/ADFS/zone.c:2283:31: warning: unused variable ‘hn’ [-Wunused-variable]
-     u64 namelen, phlen, nlen, hn, len;
-                               ^
-/home/cx-dir/git/ADFS/zone.c:2283:25: warning: unused variable ‘nlen’ [-Wunused-variable]
-     u64 namelen, phlen, nlen, hn, len;
-                         ^
-/home/cx-dir/git/ADFS/zone.c:2283:18: warning: unused variable ‘phlen’ [-Wunused-variable]
-     u64 namelen, phlen, nlen, hn, len;
-                  ^
-/home/cx-dir/git/ADFS/zone.c:2283:9: warning: unused variable ‘namelen’ [-Wunused-variable]
-     u64 namelen, phlen, nlen, hn, len;
-         ^
-/home/cx-dir/git/ADFS/zone.c:2282:32: warning: unused variable ‘end’ [-Wunused-variable]
-     char *iname, *name, *tem, *end;
-                                ^
-/home/cx-dir/git/ADFS/zone.c:2282:26: warning: unused variable ‘tem’ [-Wunused-variable]
-     char *iname, *name, *tem, *end;
-                          ^
-/home/cx-dir/git/ADFS/zone.c:2282:19: warning: unused variable ‘name’ [-Wunused-variable]
-     char *iname, *name, *tem, *end;
-                   ^
-/home/cx-dir/git/ADFS/zone.c:2282:11: warning: unused variable ‘iname’ [-Wunused-variable]
-     char *iname, *name, *tem, *end;
-           ^
-/home/cx-dir/git/ADFS/zone.c:2280:35: warning: unused variable ‘rde’ [-Wunused-variable]
-     struct dafs_dentry *inhe_de, *rde, *de;
-                                   ^
-/home/cx-dir/git/ADFS/zone.c:2280:25: warning: unused variable ‘inhe_de’ [-Wunused-variable]
-     struct dafs_dentry *inhe_de, *rde, *de;
-                         ^
-/home/cx-dir/git/ADFS/zone.c:2279:38: warning: unused variable ‘par_ze’ [-Wunused-variable]
-     struct dafs_zone_entry *cur_ze, *par_ze;
-                                      ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_merge_zone’:
-/home/cx-dir/git/ADFS/zone.c:2367:15: warning: unused variable ‘tem’ [-Wunused-variable]
-     u64 tail, tem, hash_name, root_hash;
-               ^
-/home/cx-dir/git/ADFS/zone.c:2359:37: warning: unused variable ‘dafs_nrde’ [-Wunused-variable]
-     struct dafs_dentry *dafs_orde, *dafs_nrde;
-                                     ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_inh_zone’:
-/home/cx-dir/git/ADFS/zone.c:2452:32: warning: passing argument 2 of ‘test_and_clear_bit’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-     test_and_clear_bit(ch_pos, dzt_p->bitmap);
-                                ^
-In file included from include/linux/bitops.h:36:0,
-                 from include/linux/kernel.h:10,
-                 from include/linux/list.h:8,
-                 from /home/cx-dir/git/ADFS/zone.c:9:
-./arch/x86/include/asm/bitops.h:250:19: note: expected ‘volatile long unsigned int *’ but argument is of type ‘const void *’
- static inline int test_and_clear_bit(long nr, volatile unsigned long *addr)
-                   ^
-/home/cx-dir/git/ADFS/zone.c:2439:20: warning: unused variable ‘cur_namelen’ [-Wunused-variable]
-     u64 hash_name, cur_namelen;
-                    ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_check_zones’:
-/home/cx-dir/git/ADFS/zone.c:2572:36: warning: left-hand operand of comma expression has no effect [-Wunused-value]
-             dir = (dzt_ei->dir_tree, hashname);
-                                    ^
-/home/cx-dir/git/ADFS/zone.c:2572:17: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
-             dir = (dzt_ei->dir_tree, hashname);
-                 ^
-/home/cx-dir/git/ADFS/zone.c:2509:9: warning: unused variable ‘cd_no’ [-Wunused-variable]
-     u32 cd_no = 0;          /**/
-         ^
-/home/cx-dir/git/ADFS/zone.c:2501:26: warning: unused variable ‘sbi’ [-Wunused-variable]
-     struct nova_sb_info *sbi = NOVA_SB(sb);
-                          ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘free_zone_area’:
-/home/cx-dir/git/ADFS/zone.c:2597:15: warning: unused variable ‘tem’ [-Wunused-variable]
-     u64 tail, tem;
-               ^
-/home/cx-dir/git/ADFS/zone.c:2595:26: warning: unused variable ‘sbi’ [-Wunused-variable]
-     struct nova_sb_info *sbi = NOVA_SB(sb);
-                          ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dzt_flush_dirty’:
-/home/cx-dir/git/ADFS/zone.c:2706:59: warning: passing argument 1 of ‘dafs_get_dzt_block’ from incompatible pointer type [-Wincompatible-pointer-types]
-     dzt_blk = (struct dafs_dzt_block *)dafs_get_dzt_block(sbi);
-                                                           ^
-/home/cx-dir/git/ADFS/zone.c:19:24: note: expected ‘struct super_block *’ but argument is of type ‘struct nova_sb_info *’
- struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)
-                        ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_init_zone’:
-/home/cx-dir/git/ADFS/zone.c:2735:20: warning: unused variable ‘root’ [-Wunused-variable]
-     struct dentry *root = sb->s_root;
-                    ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_inh_zone’:
-/home/cx-dir/git/ADFS/zone.c:2491:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_init_zone’:
-/home/cx-dir/git/ADFS/zone.c:2737:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘make_dzt_ptr’:
-/home/cx-dir/git/ADFS/zone.c:36:15: warning: ‘p’ is used uninitialized in this function [-Wuninitialized]
-     p->bitmap = dzt_blk->dzt_bitmap;
-               ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘make_zone_ptr’:
-/home/cx-dir/git/ADFS/zone.c:48:17: warning: ‘p’ is used uninitialized in this function [-Wuninitialized]
-     p->statemap = z_e->zone_statemap;
-                 ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_init_dzt’:
-/home/cx-dir/git/ADFS/zone.c:656:19: warning: ‘dzt_p’ is used uninitialized in this function [-Wuninitialized]
-     dzt_p->bitmap = dzt_blk->dzt_bitmap;
-                   ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘cpy_new_zentry’:
-/home/cx-dir/git/ADFS/zone.c:1174:16: warning: ‘old_id’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-         bitpos = old_id*2;
-                ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_rec_mf’:
-/home/cx-dir/git/ADFS/zone.c:73:1: warning: the frame size of 32712 bytes is larger than 1024 bytes [-Wframe-larger-than=]
- }
- ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘set_dentry_state’:
-/home/cx-dir/git/ADFS/zone.c:137:17: warning: ‘f_s’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-         }else if(sub_s==NUMBER_OF_SUBFILES_LARGE && f_s==DENTRY_FREQUENCY_COLD){
-                 ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_init_dzt’:
-/home/cx-dir/git/ADFS/zone.c:668:26: warning: ‘dzt_ei’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-         dzt_ei->root_len = le64_to_cpu(dzt_entry->root_len);
-                          ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘add_dzt_entry’:
-/home/cx-dir/git/ADFS/zone.c:776:28: warning: ‘new_dzt_ei’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-     struct dzt_entry_info *new_dzt_ei;
-                            ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘__merge_dentry’:
-/home/cx-dir/git/ADFS/zone.c:1684:52: warning: ‘cur_p’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-         test_and_clear_bit_le(bitpos, (void *)cur_p->statemap);
-                                                    ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘__inherit_dentry’:
-/home/cx-dir/git/ADFS/zone.c:2048:52: warning: ‘cur_p’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-         test_and_clear_bit_le(bitpos, (void *)cur_p->statemap);
-                                                    ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_check_zones’:
-/home/cx-dir/git/ADFS/zone.c:2589:1: warning: the frame size of 16360 bytes is larger than 1024 bytes [-Wframe-larger-than=]
- }
- ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dzt_flush_dirty’:
-/home/cx-dir/git/ADFS/zone.c:2721:1: warning: the frame size of 32712 bytes is larger than 1024 bytes [-Wframe-larger-than=]
- }
- ^
   CC [M]  /home/cx-dir/git/ADFS/dafs_dir.o
 In file included from include/linux/spinlock.h:274:0,
                  from include/linux/wait.h:8,
                  from include/linux/fs.h:5,
                  from /home/cx-dir/git/ADFS/dafs_dir.c:8:
 /home/cx-dir/git/ADFS/dafs_dir.c: In function ‘get_dentry_path’:
-/home/cx-dir/git/ADFS/dafs_dir.c:179:15: warning: passing argument 1 of ‘_raw_read_lock’ from incompatible pointer type [-Wincompatible-pointer-types]
+/home/cx-dir/git/ADFS/dafs_dir.c:184:15: warning: passing argument 1 of ‘_raw_read_lock’ from incompatible pointer type [-Wincompatible-pointer-types]
      read_lock(&fs->lock);
                ^
 include/linux/rwlock.h:65:41: note: in definition of macro ‘read_lock’
@@ -405,480 +20,22 @@ In file included from include/linux/spinlock_api_smp.h:192:0,
 include/linux/rwlock_api_smp.h:18:17: note: expected ‘rwlock_t * {aka struct <anonymous> *}’ but argument is of type ‘spinlock_t * {aka struct spinlock *}’
  void __lockfunc _raw_read_lock(rwlock_t *lock)  __acquires(lock);
                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:181:17: warning: passing argument 1 of ‘__raw_read_unlock’ from incompatible pointer type [-Wincompatible-pointer-types]
+/home/cx-dir/git/ADFS/dafs_dir.c:186:17: warning: passing argument 1 of ‘__raw_read_unlock’ from incompatible pointer type [-Wincompatible-pointer-types]
      read_unlock(&fs->lock);
                  ^
 include/linux/rwlock_api_smp.h:84:50: note: in definition of macro ‘_raw_read_unlock’
  #define _raw_read_unlock(lock) __raw_read_unlock(lock)
                                                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:181:5: note: in expansion of macro ‘read_unlock’
+/home/cx-dir/git/ADFS/dafs_dir.c:186:5: note: in expansion of macro ‘read_unlock’
      read_unlock(&fs->lock);
      ^
 include/linux/rwlock_api_smp.h:223:20: note: expected ‘rwlock_t * {aka struct <anonymous> *}’ but argument is of type ‘spinlock_t * {aka struct spinlock *}’
  static inline void __raw_read_unlock(rwlock_t *lock)
                     ^
-/home/cx-dir/git/ADFS/dafs_dir.c:170:26: warning: unused variable ‘root’ [-Wunused-variable]
-     struct vfsmount *p, *root;
-                          ^
-/home/cx-dir/git/ADFS/dafs_dir.c:170:22: warning: unused variable ‘p’ [-Wunused-variable]
-     struct vfsmount *p, *root;
-                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘find_dzt’:
-/home/cx-dir/git/ADFS/dafs_dir.c:216:30: warning: passing argument 2 of ‘strrchr’ makes integer from pointer without a cast [-Wint-conversion]
-         tem = strrchr(phstr, "/");
-                              ^
-In file included from include/linux/bitmap.h:8:0,
-                 from include/linux/cpumask.h:11,
-                 from ./arch/x86/include/asm/cpumask.h:4,
-                 from ./arch/x86/include/asm/msr.h:10,
-                 from ./arch/x86/include/asm/processor.h:20,
-                 from ./arch/x86/include/asm/thread_info.h:52,
-                 from include/linux/thread_info.h:54,
-                 from ./arch/x86/include/asm/preempt.h:6,
-                 from include/linux/preempt.h:64,
-                 from include/linux/spinlock.h:50,
-                 from include/linux/wait.h:8,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-include/linux/string.h:62:15: note: expected ‘int’ but argument is of type ‘char *’
- extern char * strrchr(const char *,int);
-               ^
-/home/cx-dir/git/ADFS/dafs_dir.c:209:9: warning: unused variable ‘dzt_eno’ [-Wunused-variable]
-     u32 dzt_eno;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:204:37: warning: unused variable ‘dzt_ei_tem’ [-Wunused-variable]
-     struct dzt_entry_info *dzt_ei, *dzt_ei_tem;
-                                     ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘record_dir_log’:
-/home/cx-dir/git/ADFS/dafs_dir.c:250:11: warning: unused variable ‘name’ [-Wunused-variable]
-     char *name, *phname, *src_pn, *ph, *phn;
-           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:242:26: warning: unused variable ‘sbi’ [-Wunused-variable]
-     struct nova_sb_info *sbi = NOVA_SB(sb);
-                          ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘delete_dir_log’:
-/home/cx-dir/git/ADFS/dafs_dir.c:291:26: warning: unused variable ‘sbi’ [-Wunused-variable]
-     struct nova_sb_info *sbi = NOVA_SB(sb);
-                          ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘ext_de_name’:
-/home/cx-dir/git/ADFS/dafs_dir.c:322:36: warning: multi-character character constant [-Wmultichar]
-             de_ext->name[name_len]='/0';
-                                    ^
-/home/cx-dir/git/ADFS/dafs_dir.c:322:36: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:345:36: warning: multi-character character constant [-Wmultichar]
-             tem_ext->name[ext_len]='/0';
-                                    ^
-/home/cx-dir/git/ADFS/dafs_dir.c:345:36: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:397:39: warning: multi-character character constant [-Wmultichar]
-             tem_ext->name[name_len] = '/0';
-                                       ^
-/home/cx-dir/git/ADFS/dafs_dir.c:397:39: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:311:26: warning: unused variable ‘eno’ [-Wunused-variable]
-     u32 bitpos, ext_pos, eno, ext_num;
-                          ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘delete_ext’:
-/home/cx-dir/git/ADFS/dafs_dir.c:505:22: warning: unused variable ‘de_ext’ [-Wunused-variable]
-     struct name_ext *de_ext;
-                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:503:18: warning: unused variable ‘bitpos’ [-Wunused-variable]
-     u32 ext_pos, bitpos;
-                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:503:9: warning: unused variable ‘ext_pos’ [-Wunused-variable]
-     u32 ext_pos, bitpos;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_add_dentry’:
-/home/cx-dir/git/ADFS/dafs_dir.c:584:30: warning: argument to ‘sizeof’ in ‘memset’ call is the same expression as the destination; did you mean to dereference it? [-Wsizeof-pointer-memaccess]
-     memset(dafs_de, 0, sizeof(dafs_de));
-                              ^
-/home/cx-dir/git/ADFS/dafs_dir.c:633:50: warning: multi-character character constant [-Wmultichar]
-                 dafs_de->ful_name.f_name[phlen]= '/0';
-                                                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:633:50: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:650:9: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
-         if(file_type = 1){
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:655:53: warning: multi-character character constant [-Wmultichar]
-                     dafs_de->ful_name.f_name[phlen]='/0';
-                                                     ^
-/home/cx-dir/git/ADFS/dafs_dir.c:655:53: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:663:40: warning: assignment makes integer from pointer without a cast [-Wint-conversion]
-             dafs_de->ful_name.f_name[0]="/0";
-                                        ^
-/home/cx-dir/git/ADFS/dafs_dir.c:544:18: warning: unused variable ‘ext_num’ [-Wunused-variable]
-     int ret = 0, ext_num = 1;
-                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:543:34: warning: unused variable ‘ext_pos’ [-Wunused-variable]
-     u32 bitpos = 0, cur_pos = 0, ext_pos, par_pos;
-                                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:541:49: warning: unused variable ‘re_len’ [-Wunused-variable]
-     unsigned long phlen, temlen, ext_len, flen, re_len;
-                                                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c:541:43: warning: unused variable ‘flen’ [-Wunused-variable]
-     unsigned long phlen, temlen, ext_len, flen, re_len;
-                                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:541:34: warning: unused variable ‘ext_len’ [-Wunused-variable]
-     unsigned long phlen, temlen, ext_len, flen, re_len;
-                                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:539:22: warning: unused variable ‘de_ext’ [-Wunused-variable]
-     struct name_ext *de_ext;
-                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:532:25: warning: unused variable ‘direntry’ [-Wunused-variable]
-     struct dafs_dentry *direntry;
-                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_find_direntry’:
-/home/cx-dir/git/ADFS/dafs_dir.c:755:16: warning: return makes pointer from integer without a cast [-Wint-conversion]
-         return -EINVAL;
-                ^
-/home/cx-dir/git/ADFS/dafs_dir.c:735:27: warning: unused variable ‘par_hash’ [-Wunused-variable]
-     u64 ph_hash, ht_addr, par_hash;
-                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘__remove_direntry’:
-/home/cx-dir/git/ADFS/dafs_dir.c:794:8: warning: unused variable ‘hlevel’ [-Wunused-variable]
-     u8 hlevel = 1;
-        ^
-/home/cx-dir/git/ADFS/dafs_dir.c:792:25: warning: unused variable ‘d_hlen’ [-Wunused-variable]
-     u64 hashname, d_hn, d_hlen, tail, par_hn;
-                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:791:22: warning: unused variable ‘tem’ [-Wunused-variable]
-     char *par_name, *tem;
-                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:791:11: warning: unused variable ‘par_name’ [-Wunused-variable]
-     char *par_name, *tem;
-           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:790:51: warning: unused variable ‘i’ [-Wunused-variable]
-     u32 bitpos, par_id=0, par_pos, sub_p, sub_id, i;
-                                                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:790:36: warning: unused variable ‘sub_p’ [-Wunused-variable]
-     u32 bitpos, par_id=0, par_pos, sub_p, sub_id, i;
-                                    ^
-/home/cx-dir/git/ADFS/dafs_dir.c:790:27: warning: unused variable ‘par_pos’ [-Wunused-variable]
-     u32 bitpos, par_id=0, par_pos, sub_p, sub_id, i;
-                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:789:9: warning: unused variable ‘dzt_eno’ [-Wunused-variable]
-     u32 dzt_eno, dzt_rno;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:788:34: warning: unused variable ‘temlen’ [-Wunused-variable]
-     unsigned long phlen, parlen, temlen;
-                                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:788:26: warning: unused variable ‘parlen’ [-Wunused-variable]
-     unsigned long phlen, parlen, temlen;
-                          ^
-/home/cx-dir/git/ADFS/dafs_dir.c:788:19: warning: unused variable ‘phlen’ [-Wunused-variable]
-     unsigned long phlen, parlen, temlen;
-                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:787:24: warning: unused variable ‘ht’ [-Wunused-variable]
-     struct hash_table *ht;
-                        ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_rm_dir’:
-/home/cx-dir/git/ADFS/dafs_dir.c:964:64: warning: passing argument 5 of ‘lookup_in_hashtable’ from incompatible pointer type [-Wincompatible-pointer-types]
-     ret = lookup_in_hashtable(sb, dzt_ei->ht_head, ph_hash, 1, &de_pos);
-                                                                ^
-In file included from /home/cx-dir/git/ADFS/dafs_dir.c:16:0:
-/home/cx-dir/git/ADFS/nova.h:1135:5: note: expected ‘u32 * {aka unsigned int *}’ but argument is of type ‘long unsigned int *’
- int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel,  u32 *pos);
-     ^
-/home/cx-dir/git/ADFS/dafs_dir.c:938:18: warning: unused variable ‘de_addr’ [-Wunused-variable]
-     u64 ph_hash, de_addr, ei_hash;
-                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:937:20: warning: unused variable ‘links_count’ [-Wunused-variable]
-     unsigned short links_count;
-                    ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_remove_dentry’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1018:27: warning: unused variable ‘ei_hash’ [-Wunused-variable]
-     u64 ph_hash, de_addr, ei_hash;
-                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1018:18: warning: unused variable ‘de_addr’ [-Wunused-variable]
-     u64 ph_hash, de_addr, ei_hash;
-                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1017:20: warning: unused variable ‘links_count’ [-Wunused-variable]
-     unsigned short links_count;
-                    ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1016:26: warning: unused variable ‘bitpos’ [-Wunused-variable]
-     u32 dzt_eno, de_pos, bitpos;
-                          ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1014:25: warning: unused variable ‘dzt_m’ [-Wunused-variable]
-     struct dzt_manager *dzt_m = sbi->dzt_m_info;
-                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1013:22: warning: unused variable ‘z_p’ [-Wunused-variable]
-     struct zone_ptr *z_p;
-                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1011:37: warning: unused variable ‘sub_ei’ [-Wunused-variable]
-     struct dzt_entry_info *dzt_ei, *sub_ei;
-                                     ^
-/home/cx-dir/git/ADFS/dafs_dir.c: At top level:
-/home/cx-dir/git/ADFS/dafs_dir.c:1067:101: warning: backslash and newline separated by space
- int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt_entry_info *dzt_ei,\ 
-                                                                                                     ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_append_dir_init_entries’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1143:38: warning: passing argument 4 of ‘dafs_split_zone’ makes integer from pointer without a cast [-Wint-conversion]
-         dafs_split_zone(sb, NULL, 0, dzt_ei);
-                                      ^
-In file included from /home/cx-dir/git/ADFS/nova.h:49:0,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:16:
-/home/cx-dir/git/ADFS/zone.h:353:5: note: expected ‘int’ but argument is of type ‘struct dzt_entry_info *’
- int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
-     ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1171:41: warning: multi-character character constant [-Wmultichar]
-         dafs_de->ful_name.f_name[p_len]='/0';
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1171:41: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1222:41: warning: multi-character character constant [-Wmultichar]
-         dafs_de->ful_name.f_name[p_len]='/0';
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1222:41: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1085:9: warning: unused variable ‘ret’ [-Wunused-variable]
-     int ret;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1083:19: warning: unused variable ‘h_len’ [-Wunused-variable]
-     u64 hashname, h_len, p_len;
-                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1080:35: warning: unused variable ‘dafs_rde’ [-Wunused-variable]
-     struct dafs_dentry *dafs_de, *dafs_rde;
-                                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1076:27: warning: unused variable ‘depos’ [-Wunused-variable]
-     unsigned long bitpos ,depos;
-                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1075:19: warning: unused variable ‘phlen’ [-Wunused-variable]
-     unsigned long phlen;
-                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1073:9: warning: unused variable ‘phhash’ [-Wunused-variable]
-     u64 phhash;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1072:9: warning: unused variable ‘curr_p’ [-Wunused-variable]
-     u64 curr_p;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1071:9: warning: unused variable ‘new_block’ [-Wunused-variable]
-     u64 new_block;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1070:9: warning: unused variable ‘allocated’ [-Wunused-variable]
-     int allocated;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_empty_dir’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1267:9: warning: assignment makes integer from pointer without a cast [-Wint-conversion]
-     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1269:35: warning: passing argument 3 of ‘find_dzt’ makes pointer from integer without a cast [-Wint-conversion]
-     dzt_ei = find_dzt(sb, phname, phn);
-                                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:202:38: note: expected ‘char *’ but argument is of type ‘char’
- static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char *phstr, char *ph)
-                                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1271:20: warning: passing argument 1 of ‘strlen’ makes pointer from integer without a cast [-Wint-conversion]
-     phlen = strlen(phn);
-                    ^
-In file included from include/linux/bitmap.h:8:0,
-                 from include/linux/cpumask.h:11,
-                 from ./arch/x86/include/asm/cpumask.h:4,
-                 from ./arch/x86/include/asm/msr.h:10,
-                 from ./arch/x86/include/asm/processor.h:20,
-                 from ./arch/x86/include/asm/thread_info.h:52,
-                 from include/linux/thread_info.h:54,
-                 from ./arch/x86/include/asm/preempt.h:6,
-                 from include/linux/preempt.h:64,
-                 from include/linux/spinlock.h:50,
-                 from include/linux/wait.h:8,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-include/linux/string.h:80:24: note: expected ‘const char *’ but argument is of type ‘char’
- extern __kernel_size_t strlen(const char *);
-                        ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1273:24: warning: passing argument 1 of ‘BKDRHash’ makes pointer from integer without a cast [-Wint-conversion]
-     ph_hash = BKDRHash(phn, phlen);
-                        ^
-In file included from /home/cx-dir/git/ADFS/dafs_dir.c:16:0:
-/home/cx-dir/git/ADFS/nova.h:595:29: note: expected ‘const char *’ but argument is of type ‘char’
- static inline unsigned long BKDRHash(const char *str, int length)
-                             ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1251:25: warning: unused variable ‘direntry’ [-Wunused-variable]
-     struct dafs_dentry *direntry, *denties[4];
-                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘add_rename_zone_dir’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1362:30: warning: argument to ‘sizeof’ in ‘memset’ call is the same expression as the destination; did you mean to dereference it? [-Wsizeof-pointer-memaccess]
-     memset(dafs_de, 0, sizeof(dafs_de));
-                              ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1399:31: warning: multi-character character constant [-Wmultichar]
-         memcpy(par_ph+temlen, '/0', 1);
-                               ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1399:31: warning: passing argument 2 of ‘memcpy’ makes pointer from integer without a cast [-Wint-conversion]
-In file included from ./arch/x86/include/asm/string.h:4:0,
-                 from include/linux/string.h:17,
-                 from include/linux/bitmap.h:8,
-                 from include/linux/cpumask.h:11,
-                 from ./arch/x86/include/asm/cpumask.h:4,
-                 from ./arch/x86/include/asm/msr.h:10,
-                 from ./arch/x86/include/asm/processor.h:20,
-                 from ./arch/x86/include/asm/thread_info.h:52,
-                 from include/linux/thread_info.h:54,
-                 from ./arch/x86/include/asm/preempt.h:6,
-                 from include/linux/preempt.h:64,
-                 from include/linux/spinlock.h:50,
-                 from include/linux/wait.h:8,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-./arch/x86/include/asm/string_64.h:30:14: note: expected ‘const void *’ but argument is of type ‘int’
- extern void *memcpy(void *to, const void *from, size_t len);
-              ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1419:45: warning: multi-character character constant [-Wmultichar]
-             dafs_de->ful_name.f_name[phlen]='/0';
-                                             ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1419:45: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1326:18: warning: unused variable ‘isr_sf’ [-Wunused-variable]
-     int ret = 0, isr_sf;
-                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1324:43: warning: unused variable ‘old_pos’ [-Wunused-variable]
-     u32 bitpos = 0, cur_pos = 0, par_pos, old_pos;
-                                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1314:25: warning: unused variable ‘direntry’ [-Wunused-variable]
-     struct dafs_dentry *direntry;
-                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1312:17: warning: unused variable ‘name’ [-Wunused-variable]
-     const char *name = dentry->d_name.name;
-                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘__rename_dir’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1512:29: warning: argument to ‘sizeof’ in ‘memset’ call is the same expression as the destination; did you mean to dereference it? [-Wsizeof-pointer-memaccess]
-     memset(new_de, 0, sizeof(new_de));    
-                             ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1527:30: warning: multi-character character constant [-Wmultichar]
-         new_de->name[nlen] = '/0';
-                              ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1527:30: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1538:43: warning: multi-character character constant [-Wmultichar]
-             new_de->ful_name.f_name[flen]='/0';
-                                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1538:43: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1557:27: warning: multi-character character constant [-Wmultichar]
-         memcpy(tem+temlen,'/0',1);
-                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1557:27: warning: passing argument 2 of ‘memcpy’ makes pointer from integer without a cast [-Wint-conversion]
-In file included from ./arch/x86/include/asm/string.h:4:0,
-                 from include/linux/string.h:17,
-                 from include/linux/bitmap.h:8,
-                 from include/linux/cpumask.h:11,
-                 from ./arch/x86/include/asm/cpumask.h:4,
-                 from ./arch/x86/include/asm/msr.h:10,
-                 from ./arch/x86/include/asm/processor.h:20,
-                 from ./arch/x86/include/asm/thread_info.h:52,
-                 from include/linux/thread_info.h:54,
-                 from ./arch/x86/include/asm/preempt.h:6,
-                 from include/linux/preempt.h:64,
-                 from include/linux/spinlock.h:50,
-                 from include/linux/wait.h:8,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-./arch/x86/include/asm/string_64.h:30:14: note: expected ‘const void *’ but argument is of type ‘int’
- extern void *memcpy(void *to, const void *from, size_t len);
-              ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1604:38: warning: argument to ‘sizeof’ in ‘memcpy’ call is the same pointer type ‘char *’ as the destination; expected ‘char’ or an explicit length [-Wsizeof-pointer-memaccess]
-         memcpy(sub_ph, new_ph, sizeof(new_ph));
-                                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1623:37: warning: argument to ‘sizeof’ in ‘memset’ call is the same expression as the destination; did you mean to dereference it? [-Wsizeof-pointer-memaccess]
-             memset(new_de, 0, sizeof(new_de));    
-                                     ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1642:41: warning: multi-character character constant [-Wmultichar]
-                 new_de->name[sub_len] = '/0';
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1642:41: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1659:56: warning: multi-character character constant [-Wmultichar]
-                         new_de->ful_name.f_name[phlen]='/0';
-                                                        ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1659:56: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1687:44: warning: multi-character character constant [-Wmultichar]
-                 new_de->ful_name.f_name[0]='/0';
-                                            ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1687:44: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1491:15: warning: unused variable ‘src_len’ [-Wunused-variable]
-     u64 phlen,src_len, hashname, dzt_hn, ch_len, sub_len, old_hn, par_hash;
-               ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1489:8: warning: unused variable ‘isr_sf’ [-Wunused-variable]
-     u8 isr_sf;
-        ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1487:9: warning: unused variable ‘i’ [-Wunused-variable]
-     int i, ret=0;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1479:43: warning: unused variable ‘sub_nde’ [-Wunused-variable]
-     struct dafs_dentry *new_de, *sub_de, *sub_nde;
-                                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘add_rename_dir’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1748:12: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-     n_name = n_dentry->d_name.name;
-            ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1737:9: warning: unused variable ‘i’ [-Wunused-variable]
-     int i;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1736:17: warning: unused variable ‘cur_pos’ [-Wunused-variable]
-     u32 bitpos, cur_pos;
-                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1736:9: warning: unused variable ‘bitpos’ [-Wunused-variable]
-     u32 bitpos, cur_pos;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1734:29: warning: unused variable ‘o_ze’ [-Wunused-variable]
-     struct dafs_zone_entry *o_ze, *n_ze;
-                             ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1733:28: warning: unused variable ‘o_ei’ [-Wunused-variable]
-     struct dzt_entry_info *o_ei, *n_ei;
-                            ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1732:25: warning: unused variable ‘new_de’ [-Wunused-variable]
-     struct dafs_dentry *new_de;
-                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘__rename_dir_direntry’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1773:9: warning: unused variable ‘dz_no’ [-Wunused-variable]
-     u32 dz_no;
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1769:19: warning: unused variable ‘old_inode’ [-Wunused-variable]
-     struct inode *old_inode = old_dentry->d_inode;
-                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1768:19: warning: unused variable ‘new_inode’ [-Wunused-variable]
-     struct inode *new_inode = new_dentry->d_inode;
-                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1767:22: warning: unused variable ‘z_p’ [-Wunused-variable]
-     struct zone_ptr *z_p;
-                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1766:29: warning: unused variable ‘ze’ [-Wunused-variable]
-     struct dafs_zone_entry *ze;
-                             ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1765:34: warning: unused variable ‘new_de’ [-Wunused-variable]
-     struct dafs_dentry *old_de, *new_de;
-                                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘__rename_file_dentry’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1814:27: warning: initialization discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-     char *n_phname, *name=new_dentry->d_name.name, *phname, *ph, *phn, *tem;
-                           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1823:35: warning: passing argument 2 of ‘dafs_find_direntry’ from incompatible pointer type [-Wincompatible-pointer-types]
-     o_de = dafs_find_direntry(sb, o_de, 0);
-                                   ^
-/home/cx-dir/git/ADFS/dafs_dir.c:728:21: note: expected ‘struct dentry *’ but argument is of type ‘struct dafs_dentry *’
- struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag)
-                     ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1849:30: warning: argument to ‘sizeof’ in ‘memset’ call is the same expression as the destination; did you mean to dereference it? [-Wsizeof-pointer-memaccess]
-     memset(dafs_de, 0, sizeof(dafs_de));
-                              ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1869:49: warning: multi-character character constant [-Wmultichar]
-         dafs_de->name[new_dentry->d_name.len] = '/0'; 
-                                                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1869:49: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1877:34: warning: multi-character character constant [-Wmultichar]
-     dafs_de->ful_name.f_name[0]= '/0';
-                                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1877:34: warning: overflow in implicit constant conversion [-Woverflow]
-/home/cx-dir/git/ADFS/dafs_dir.c:1817:8: warning: unused variable ‘isr_sf’ [-Wunused-variable]
-     u8 isr_sf;
-        ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1816:20: warning: unused variable ‘namelen’ [-Wunused-variable]
-     unsigned short namelen = new_dentry->d_name.len;
-                    ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1814:22: warning: unused variable ‘name’ [-Wunused-variable]
-     char *n_phname, *name=new_dentry->d_name.name, *phname, *ph, *phn, *tem;
-                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1814:11: warning: unused variable ‘n_phname’ [-Wunused-variable]
-     char *n_phname, *name=new_dentry->d_name.name, *phname, *ph, *phn, *tem;
-           ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1809:36: warning: unused variable ‘o_ze’ [-Wunused-variable]
-     struct dafs_zone_entry *n_ze, *o_ze;
-                                    ^
 In file included from /home/cx-dir/git/ADFS/dafs_dir.c:16:0:
 /home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_readdir’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1963:18: warning: passing argument 1 of ‘nova_error_mng’ from incompatible pointer type [-Wincompatible-pointer-types]
-         nova_err("ei with dentry %lu not exist!\n", dentry->d_inode->i_ino);
+/home/cx-dir/git/ADFS/dafs_dir.c:1984:18: warning: passing argument 1 of ‘nova_error_mng’ from incompatible pointer type [-Wincompatible-pointer-types]
+         nova_err("ei with dentry %llu not exist!\n", (u64)dentry->d_inode->i_ino);
                   ^
 /home/cx-dir/git/ADFS/nova.h:71:56: note: in definition of macro ‘nova_err’
  #define nova_err(sb, s, args ...)       nova_error_mng(sb, s, ## args)
@@ -888,14 +45,14 @@ In file included from /home/cx-dir/git/ADFS/dafs_dir.c:16:0:
  extern void nova_error_mng(struct super_block *sb, const char *fmt, ...);
              ^
 In file included from /home/cx-dir/git/ADFS/dafs_dir.c:16:0:
-/home/cx-dir/git/ADFS/dafs_dir.c:1963:53: warning: passing argument 2 of ‘nova_error_mng’ makes pointer from integer without a cast [-Wint-conversion]
-         nova_err("ei with dentry %lu not exist!\n", dentry->d_inode->i_ino);
-                                                     ^
+/home/cx-dir/git/ADFS/dafs_dir.c:1984:54: warning: passing argument 2 of ‘nova_error_mng’ makes pointer from integer without a cast [-Wint-conversion]
+         nova_err("ei with dentry %llu not exist!\n", (u64)dentry->d_inode->i_ino);
+                                                      ^
 /home/cx-dir/git/ADFS/nova.h:71:60: note: in definition of macro ‘nova_err’
  #define nova_err(sb, s, args ...)       nova_error_mng(sb, s, ## args)
                                                             ^
 In file included from /home/cx-dir/git/ADFS/dafs_dir.c:16:0:
-/home/cx-dir/git/ADFS/nova.h:927:13: note: expected ‘const char *’ but argument is of type ‘long unsigned int’
+/home/cx-dir/git/ADFS/nova.h:927:13: note: expected ‘const char *’ but argument is of type ‘long long unsigned int’
  extern void nova_error_mng(struct super_block *sb, const char *fmt, ...);
              ^
 In file included from include/linux/printk.h:6:0,
@@ -922,44 +79,15 @@ include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
 /home/cx-dir/git/ADFS/nova.h:92:32: note: in expansion of macro ‘nova_dbg_verbose’
  #define nova_dbgv(s, args ...) nova_dbg_verbose(s, ##args)
                                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1999:3: note: in expansion of macro ‘nova_dbgv’
+/home/cx-dir/git/ADFS/dafs_dir.c:2020:3: note: in expansion of macro ‘nova_dbgv’
    nova_dbgv("pos %lu, type %d, ino %llu, "
    ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘record_dir_log’:
-/home/cx-dir/git/ADFS/dafs_dir.c:278:18: warning: ‘dlog’ is used uninitialized in this function [-Wuninitialized]
-     dlog->type_d =  type;
-                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘get_zone_path’:
-/home/cx-dir/git/ADFS/dafs_dir.c:144:41: warning: ‘phlen’ is used uninitialized in this function [-Wuninitialized]
-     char *path = kzalloc((sizeof(char *)*phlen), GFP_KERNEL);
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘__rename_file_dentry’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1823:10: warning: ‘o_de’ is used uninitialized in this function [-Wuninitialized]
-     o_de = dafs_find_direntry(sb, o_de, 0);
-          ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘delete_dir_tree’:
-/home/cx-dir/git/ADFS/dafs_dir.c:68:1: warning: the frame size of 32728 bytes is larger than 1024 bytes [-Wframe-larger-than=]
- }
- ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘record_dir_log’:
-/home/cx-dir/git/ADFS/dafs_dir.c:285:5: warning: ‘ph’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-     kfree(ph);
-     ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘ext_de_name’:
-/home/cx-dir/git/ADFS/dafs_dir.c:320:22: warning: ‘de’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-             de->next = de_ext;
-                      ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘__remove_direntry’:
-/home/cx-dir/git/ADFS/dafs_dir.c:833:13: warning: ‘d_hn’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-         ret = make_invalid_htable(sb, dzt_ei->ht_head, d_hn,  1);
-             ^
 In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
                  from /home/cx-dir/git/ADFS/dafs_dir.c:16:
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_readdir’:
 /home/cx-dir/git/ADFS/stats.h:134:16: warning: ‘readdir_time.tv_sec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
     (end.tv_sec - start.tv_sec) * 1000000000 + \
                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1945:14: note: ‘readdir_time.tv_sec’ was declared here
+/home/cx-dir/git/ADFS/dafs_dir.c:1966:14: note: ‘readdir_time.tv_sec’ was declared here
      timing_t readdir_time;
               ^
 In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
@@ -967,7 +95,7 @@ In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
 /home/cx-dir/git/ADFS/stats.h:135:17: warning: ‘readdir_time.tv_nsec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
     (end.tv_nsec - start.tv_nsec)); \
                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1945:14: note: ‘readdir_time.tv_nsec’ was declared here
+/home/cx-dir/git/ADFS/dafs_dir.c:1966:14: note: ‘readdir_time.tv_nsec’ was declared here
      timing_t readdir_time;
               ^
 In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
@@ -976,7 +104,7 @@ In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
 /home/cx-dir/git/ADFS/stats.h:134:16: warning: ‘remove_dentry_time.tv_sec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
     (end.tv_sec - start.tv_sec) * 1000000000 + \
                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1021:11: note: ‘remove_dentry_time.tv_sec’ was declared here
+/home/cx-dir/git/ADFS/dafs_dir.c:1037:11: note: ‘remove_dentry_time.tv_sec’ was declared here
   timing_t remove_dentry_time;
            ^
 In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
@@ -984,7 +112,7 @@ In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
 /home/cx-dir/git/ADFS/stats.h:135:17: warning: ‘remove_dentry_time.tv_nsec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
     (end.tv_nsec - start.tv_nsec)); \
                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1021:11: note: ‘remove_dentry_time.tv_nsec’ was declared here
+/home/cx-dir/git/ADFS/dafs_dir.c:1037:11: note: ‘remove_dentry_time.tv_nsec’ was declared here
   timing_t remove_dentry_time;
            ^
 In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
@@ -993,7 +121,7 @@ In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
 /home/cx-dir/git/ADFS/stats.h:134:16: warning: ‘add_dentry_time.tv_sec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
     (end.tv_sec - start.tv_sec) * 1000000000 + \
                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c:546:14: note: ‘add_dentry_time.tv_sec’ was declared here
+/home/cx-dir/git/ADFS/dafs_dir.c:553:14: note: ‘add_dentry_time.tv_sec’ was declared here
      timing_t add_dentry_time;
               ^
 In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
@@ -1001,19 +129,16 @@ In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
 /home/cx-dir/git/ADFS/stats.h:135:17: warning: ‘add_dentry_time.tv_nsec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
     (end.tv_nsec - start.tv_nsec)); \
                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:546:14: note: ‘add_dentry_time.tv_nsec’ was declared here
+/home/cx-dir/git/ADFS/dafs_dir.c:553:14: note: ‘add_dentry_time.tv_nsec’ was declared here
      timing_t add_dentry_time;
               ^
-/home/cx-dir/git/ADFS/dafs_dir.c:720:5: warning: ‘tem’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-     kfree(tem);
-     ^
 In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
                  from /home/cx-dir/git/ADFS/dafs_dir.c:16:
 /home/cx-dir/git/ADFS/dafs_dir.c: In function ‘add_rename_zone_dir’:
 /home/cx-dir/git/ADFS/stats.h:134:16: warning: ‘add_dentry_time.tv_sec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
     (end.tv_sec - start.tv_sec) * 1000000000 + \
                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1327:14: note: ‘add_dentry_time.tv_sec’ was declared here
+/home/cx-dir/git/ADFS/dafs_dir.c:1344:14: note: ‘add_dentry_time.tv_sec’ was declared here
      timing_t add_dentry_time;
               ^
 In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
@@ -1021,19 +146,9 @@ In file included from /home/cx-dir/git/ADFS/nova.h:48:0,
 /home/cx-dir/git/ADFS/stats.h:135:17: warning: ‘add_dentry_time.tv_nsec’ may be used uninitialized in this function [-Wmaybe-uninitialized]
     (end.tv_nsec - start.tv_nsec)); \
                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1327:14: note: ‘add_dentry_time.tv_nsec’ was declared here
+/home/cx-dir/git/ADFS/dafs_dir.c:1344:14: note: ‘add_dentry_time.tv_nsec’ was declared here
      timing_t add_dentry_time;
               ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘__rename_dir’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1659:55: warning: ‘phlen’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-                         new_de->ful_name.f_name[phlen]='/0';
-                                                       ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1596:37: warning: ‘sub_de’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-         sub_len = le64_to_cpu(sub_de->name_len);
-                                     ^
-/home/cx-dir/git/ADFS/dafs_dir.c:1722:5: warning: ‘tem’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-     kfree(tem);
-     ^
   LD [M]  /home/cx-dir/git/ADFS/nova.o
   Building modules, stage 2.
   MODPOST 1 modules

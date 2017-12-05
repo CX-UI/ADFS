@@ -29,7 +29,7 @@ struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)
 void make_dzt_ptr(struct super_block *sb, struct dzt_ptr **dzt_p)
 {
     struct dafs_dzt_block *dzt_blk;
-    struct dzt_ptr *p;
+    struct dzt_ptr *p=NULL;
 
     dzt_blk = dafs_get_dzt_block(sb);
 
@@ -43,7 +43,7 @@ void make_dzt_ptr(struct super_block *sb, struct dzt_ptr **dzt_p)
 * make zone ptr to use statemap*/
 void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e)
 {
-    struct zone_ptr *p;
+    struct zone_ptr *p=NULL;
 
     p->statemap = z_e->zone_statemap;
     p->zone_max = NR_DENTRY_IN_ZONE * 2;
@@ -53,20 +53,30 @@ void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e)
 
 /*
 * record mean frequency 
-* bring reference(&) in*/
-int dafs_rec_mf(struct dzt_entry_info *ei)
+* bring reference(&) in
+* FREE_BATCH not NR_DENTRY_IN_ZONE for considering number is not allowed more than 1024*/
+u32 dafs_rec_mf(struct dzt_entry_info *ei)
 {
     //struct rf_entry *rf_e;
     struct dir_info *dir_i;
-    struct dir_info *entries[NR_DENTRY_IN_ZONE];
-    int nr,i,rcount=0;
-    int mean = 0;
+    struct dir_info *entries[FREE_BATCH];
+    u32 nr,i;
+    u32 rcount=0;
+    u32 mean = 0;
 
+    do{
+        nr = radix_tree_gang_lookup(&ei->dir_tree, (void **)entries, 0, FREE_BATCH);
+        for(i=0;i<nr;i++){
+            dir_i = entries[i];
+            rcount += dir_i->r_f;
+        }
+    }while (nr == FREE_BATCH);
+    /*
     nr = radix_tree_gang_lookup(&ei->dir_tree, (void **)entries, 0, NR_DENTRY_IN_ZONE);
     for(i=0; i<nr; i++){
         dir_i = entries[i];
-        rcount+=dir_i->r_f;
-    }
+        rcount+=(u32)dir_i->r_f;
+    }*/
 
     mean = rcount/(nr);
     return mean;
@@ -122,7 +132,8 @@ unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_inf
             //dafs_de->f_s = cpu_to_le64(f_s);
         }
         dir_i->f_s = f_s;
-    }
+    } else 
+        f_s = DENTRY_FREQUENCY_WRITE;
 
     /*sub_s=0 =>is a file, or . ..
     * sub =1, 2 => is NORMAL_DIRECTORY */
@@ -546,7 +557,7 @@ int init_dir_info(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 *build dir zone table for first time run*/
 int dafs_build_dzt_block(struct super_block *sb)
 {
-    struct nova_sb_info *sbi = NOVA_SB(sb);
+    //struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dzt_block *dzt_block;
     struct dzt_entry_info *ei;
     struct dzt_ptr *dzt_p;
@@ -611,8 +622,10 @@ void set_dzt_entry_valid(struct super_block *sb, unsigned long bitpos)
 
 }
 
+
 /*
  * make radix tree by inserting*/
+/*
 static void make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_ei)
 {
     struct dzt_entry_info *dzt_entry_info;
@@ -629,12 +642,12 @@ static void make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_e
     //INIT_RADIX_TREE(&dzt_entry_info->rf_root, GFP_ATOMIC);
     //init_rf_entry(sbi->sb, dzt_entry_info);
     
-    /*init sub file pos*/
+    //init sub file pos
     INIT_RADIX_TREE(&dzt_entry_info->dir_tree, GFP_ATOMIC);
     init_dir_info(sbi->sb, dzt_entry_info);
     radix_tree_insert(&dzt_m->dzt_root, dzt_entry_info->hash_name, dzt_entry_info);
 
-}
+}*/
 
 /*
  * init dzt tree
@@ -642,10 +655,10 @@ static void make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_e
 int dafs_init_dzt(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    //struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dafs_dzt_entry *dzt_entry;
     struct dafs_dzt_block *dzt_blk;
-    struct dzt_ptr *dzt_p;
+    struct dzt_ptr *dzt_p=NULL;
     struct dzt_entry_info *dzt_ei;
     u32 bit_pos = 0;
     int ret = 0;
@@ -664,15 +677,19 @@ int dafs_init_dzt(struct super_block *sb)
         }
 
         dzt_entry = &dzt_p->dzt_entry[bit_pos];
+        dzt_ei = kzalloc(sizeof(struct dzt_entry_info), GFP_ATOMIC);
 
         dzt_ei->root_len = le64_to_cpu(dzt_entry->root_len);
+        dzt_ei->zone_blk_type = dzt_entry->zone_blk_type; 
         dzt_ei->dzt_eno = le32_to_cpu(dzt_entry->dzt_eno);
         //dzt_ei->dz_no = le32_to_cpu(dzt_entry->dz_no);
         dzt_ei->dz_addr = le64_to_cpu(dzt_entry->dz_addr);
         dzt_ei->hash_name = le64_to_cpu(dzt_entry->hash_name);
 
-        /*not decided 不设置有效位么*/
-        make_dzt_tree(sbi, dzt_ei);
+        INIT_RADIX_TREE(&dzt_ei->dir_tree, GFP_ATOMIC);
+        init_dir_info(sb, dzt_ei);
+        radix_tree_insert(&dzt_m->dzt_root, dzt_ei->hash_name, dzt_ei);
+
     }
 
     return ret;
@@ -795,7 +812,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     dafs_rde = &par_ze->dentry[sp_id];
     de_nlen = le64_to_cpu(dafs_rde->fname_len);
 
-    new_dzt_ei = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
+    new_dzt_ei = (struct dzt_entry_info *)kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
     new_dzt_ei->zone_blk_type = DAFS_BLOCK_TYPE_512K;
     new_dzt_ei->dzt_eno = eno_pos;
     new_dzt_ei->pdz_addr = par_dei->dz_addr;
@@ -820,7 +837,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
             goto end;
         }
         phash = BKDRHash(pname, name_len);
-        new_dzt_ei->root_len =(u32) name_len;
+        new_dzt_ei->root_len =(u64) name_len;
         new_dzt_ei->hash_name = phash;
 
         kfree(cur_name);
@@ -828,7 +845,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     } else {
         name_len = de_nlen;
         //phash = BKDRHash(dafs_rde->ful_name.f_name, name_len);
-        new_dzt_ei->root_len = (u32)name_len;
+        new_dzt_ei->root_len = (u64)name_len;
         new_dzt_ei->hash_name = le64_to_cpu(dafs_rde->dzt_hn);
     }
 
@@ -923,7 +940,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
     struct file_p *new_sf, *old_sf;
     //unsigned long old_len = r_ze->name_len;
     char *name, *fname, *tname, *end = ""; 
-    u32 old_id, sub_no;
+    u32 sub_no;
     //u64 ch_len;
     u32 new_id = *ch_pos;  /* ch_pos initalized as 0*/
     u32 bitpos = 0;
@@ -968,7 +985,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             nlen = old_de->name_len;
             memcpy(name, old_de->name, nlen);
             memcpy(new_de->name, name, nlen);
-            new_de->name[nlen] = '/0';
+            new_de->name[nlen] = '\0';
         }
 
         //memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
@@ -1009,7 +1026,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             if(new_de->ext_flag ==0){
                 if(name_len<SMALL_NAME_LEN){
                     memcpy(new_de->ful_name.f_name, fname, name_len);
-                    new_de->ful_name.f_name[name_len]='/0';
+                    new_de->ful_name.f_name[name_len]='\0';
                 } else {
                     new_de->ext_flag = 2;
                     //get_ext_name(old_de->ful_name.fn_ext, fname);
@@ -1022,7 +1039,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         } else {
             /*set par_pos and fulname*/
             new_de->par_pos = cpu_to_le32(par_pos);
-            new_de->ful_name.f_name[0]='/0';
+            new_de->ful_name.f_name[0]='\0';
             /*get ful_name*/
             get_de_name(old_de, old_ze, tname, 1);
             memcpy(fname, tname+old_len, name_len);
@@ -1089,7 +1106,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             nlen = old_de->name_len;
             memcpy(name, old_de->name, nlen);
             memcpy(new_de->name, name, nlen);
-            new_de->name[nlen] = '/0';
+            new_de->name[nlen] = '\0';
         }
         //memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
         name_len = le64_to_cpu(old_de->fname_len) - old_len;
@@ -1113,7 +1130,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             if(new_de->ext_flag ==0){
                 if(name_len<SMALL_NAME_LEN){
                     memcpy(new_de->ful_name.f_name, fname, name_len);
-                    new_de->ful_name.f_name[name_len]='/0';
+                    new_de->ful_name.f_name[name_len]='\0';
                 } else {
                     new_de->ext_flag = 2;
                     //get_ext_name(old_de->ful_name->fn_ext, fname);
@@ -1171,7 +1188,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         record_pos_htable(sb, new_ei->ht_head, hashname, new_id, 1);
 
         /*set old invalid*/
-        bitpos = old_id*2;
+        bitpos = ch_no*2;
         test_and_clear_bit_le(bitpos, (void *)old_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, (void *)old_p->statemap);
@@ -1219,7 +1236,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             nlen = old_de->name_len;
             memcpy(name, old_de->name, nlen);
             memcpy(new_de->name, name, nlen);
-            new_de->name[nlen] = '/0';
+            new_de->name[nlen] = '\0';
         }
 
         //memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
@@ -1244,7 +1261,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             if(new_de->ext_flag ==0){
                 if(name_len<SMALL_NAME_LEN){
                     memcpy(new_de->ful_name.f_name, fname, name_len);
-                    new_de->ful_name.f_name[name_len]='/0';
+                    new_de->ful_name.f_name[name_len]='\0';
                 } else {
                     new_de->ext_flag = 2;
                     //get_ext_name(old_de->ful_name->fn_ext, fname);
@@ -1307,7 +1324,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         new_dir = add_dir_info(new_ei, hashname);
         
         /*set old invalid*/
-        bitpos = old_id*2;
+        bitpos = ch_no*2;
         test_and_clear_bit_le(bitpos, (void *)old_p->statemap);
         bitpos++;
         test_and_clear_bit_le(bitpos, (void *)old_p->statemap);
@@ -1492,7 +1509,7 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
     u32 bitpos = 0;
     int ret = 0;
     u32 ne_id = 0;
-    u32 name_len;
+    //u32 name_len;
     u64 hashname;
 
     par_ze = (struct dafs_zone_entry *)nova_get_block(sb, par_dzt_ei->dz_addr);
@@ -1616,6 +1633,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
     memcpy(tem, rname, rnamelen);
 
     make_zone_ptr(&par_p, des_ze);
+    make_zone_ptr(&cur_p, cur_ze);
     if(cur_de->file_type != NORMAL_DIRECTORY){
         fpos = find_invalid_id(sb, par_ei,par_p, fpos);
         des_de = &des_ze->dentry[fpos];
@@ -1640,7 +1658,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
             nlen = cur_de->name_len;
             memcpy(name, cur_de->name, nlen);
             memcpy(des_de->name, name, nlen);
-            des_de->name[nlen] = '/0';
+            des_de->name[nlen] = '\0';
         }
 
         //memcpy(des_de->name, cur_de->name, le64_to_cpu(cur_de->name_len));
@@ -1658,7 +1676,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
 
         /*set fulname and dzt_hn or hnama*/
         if(des_de->file_type == NORMAL_FILE){
-            des_de->ful_name.f_name[0]='/0';
+            des_de->ful_name.f_name[0]='\0';
             des_de->par_pos = cpu_to_le32(rde_pos); 
 
             des_de->hname = cpu_to_le64(hn);
@@ -1666,7 +1684,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
             if(des_de->ext_flag==0){
                 if(plen<SMALL_NAME_LEN){
                     memcpy(des_de->ful_name.f_name, rname, plen);
-                    des_de->ful_name.f_name[0] = '/0';
+                    des_de->ful_name.f_name[0] = '\0';
                 } else {
                     des_de->ext_flag = 2;
                     ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
@@ -1722,7 +1740,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
             nlen = cur_de->name_len;
             memcpy(name, cur_de->name, nlen);
             memcpy(des_de->name, name, nlen);
-            des_de->name[nlen] = '/0';
+            des_de->name[nlen] = '\0';
         }
 
         //memcpy(des_de->name, cur_de->name, le64_to_cpu(cur_de->name_len));
@@ -1734,7 +1752,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
         if(des_de->ext_flag==0){
             if(plen<SMALL_NAME_LEN){
                 memcpy(des_de->ful_name.f_name, rname, plen);
-                des_de->ful_name.f_name[0] = '/0';
+                des_de->ful_name.f_name[0] = '\0';
             } else {
                 des_de->ext_flag = 2;
                 ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
@@ -1964,6 +1982,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
     par_idir = radix_tree_lookup(&par_ei->dir_tree, par_hn);
 
     make_zone_ptr(&par_p, des_ze);
+    make_zone_ptr(&cur_p, cur_ze);
     if(cur_de->file_type == NORMAL_FILE || cur_de->file_type == ROOT_DIRECTORY){
         fpos = find_invalid_id(sb, par_ei, par_p, fpos);
         des_de = &des_ze->dentry[fpos];
@@ -1984,13 +2003,13 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
             get_ext_name(cur_de->next, name);
-            ext_de_name(sb, par_ei, des_ze, par_p, fpos, nlen, name, 0);
+            ext_de_name(sb, par_ei, des_ze, par_p, cur_pos, nlen, name, 0);
         } else {
             des_de->ext_flag = cur_de->ext_flag;
             nlen = cur_de->name_len;
             memcpy(name, cur_de->name, nlen);
             memcpy(des_de->name, name, nlen);
-            des_de->name[nlen] = '/0';
+            des_de->name[nlen] = '\0';
         }
 
         //memcpy(des_de->name, cur_de->name, le64_to_cpu(cur_de->name_len));
@@ -2010,7 +2029,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         /*set fulname and dzt_hn or hnama
         * delete in hashtable*/
         if(des_de->file_type == NORMAL_FILE){
-            des_de->ful_name.f_name[0]='/0';
+            des_de->ful_name.f_name[0]='\0';
             des_de->par_pos = cpu_to_le32(rde_pos); 
 
             des_de->hname = cpu_to_le64(hn);
@@ -2023,7 +2042,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             if(des_de->ext_flag==0){
                 if(plen<SMALL_NAME_LEN){
                     memcpy(des_de->ful_name.f_name, rname, plen);
-                    des_de->ful_name.f_name[0] = '/0';
+                    des_de->ful_name.f_name[0] = '\0';
                 } else {
                     des_de->ext_flag = 2;
                     ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
@@ -2086,7 +2105,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             nlen = cur_de->name_len;
             memcpy(name, cur_de->name, nlen);
             memcpy(des_de->name, name, nlen);
-            des_de->name[nlen] = '/0';
+            des_de->name[nlen] = '\0';
         }
 
         //memcpy(des_de->name, cur_de->name, le64_to_cpu(cur_de->name_len));
@@ -2098,7 +2117,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         if(des_de->ext_flag==0){
             if(plen<SMALL_NAME_LEN){
                 memcpy(des_de->ful_name.f_name, rname, plen);
-                des_de->ful_name.f_name[plen] = '/0';
+                des_de->ful_name.f_name[plen] = '\0';
             } else {
                 des_de->ext_flag = 2;
                 ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
@@ -2189,7 +2208,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             nlen = cur_de->name_len;
             memcpy(name, cur_de->name, nlen);
             memcpy(des_de->name, name, nlen);
-            des_de->name[nlen] = '/0';
+            des_de->name[nlen] = '\0';
         }
         plen = le64_to_cpu(cur_de->fname_len)+rnamelen;
         des_de->fname_len = cpu_to_le64(plen);
@@ -2199,7 +2218,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         if(des_de->ext_flag==0){
             if(plen<SMALL_NAME_LEN){
                 memcpy(des_de->ful_name.f_name, rname, plen);
-                des_de->ful_name.f_name[0] = '/0';
+                des_de->ful_name.f_name[0] = '\0';
             } else {
                 des_de->ext_flag = 2;
                 ext_de_name(sb, par_ei, des_ze, par_p, fpos, plen, rname, 1);
@@ -2488,7 +2507,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, u32 n
     /* make valid*/
     test_and_set_bit_le(ch_pos, (void *)dzt_p->bitmap);
     kfree(rname);
-
+    return 0;
 }
 
 /*
@@ -2509,7 +2528,8 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     u32 hot_num = 0, cold_num = 0, warm_num = 0, id = 0;
     //u32 cd_no = 0;          /**/
     //int hd = 0;                /* counter for positive split*/
-    u32 hd_no[NR_DENTRY_IN_ZONE];          /* hot dentry NO, not decided how many */
+    //u32 hd_no[NR_DENTRY_IN_ZONE];          /* hot dentry NO, not decided how many */
+    u32 hd_no[FREE_BATCH];    /*not more 1024 has no warning*/
     int ret = 0;
     u32 sp_id = 0;      /* impossible for pos_0 */
     int i;
@@ -2540,6 +2560,8 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
                 id++;
             }else{
                 bitpos++;
+                if(hot_num >= FREE_BATCH)
+                    continue;
                 hd_no[hot_num] = id;
                 hot_num++;
                 id++;
@@ -2699,25 +2721,27 @@ int dzt_flush_dirty(struct super_block *sb)
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dafs_dzt_entry *dzt_entry;
     struct dafs_dzt_block *dzt_blk;
-    struct dzt_entry_info *entries[NR_DENTRY_IN_ZONE];
+    struct dzt_entry_info *entries[FREE_BATCH];
     struct dzt_entry_info *ei;
     int nr, i;
     u32 eno;
 
     dzt_blk = (struct dafs_dzt_block *)dafs_get_dzt_block(sb);
-    nr = radix_tree_gang_lookup_tag(&dzt_m->dzt_root, (void **)entries, 0, NR_DENTRY_IN_ZONE, 1);
-    for(i=0; i<nr; i++) {
-        ei = entries[i];
-        eno = ei->dzt_eno;
-        dzt_entry = &dzt_blk->dzt_entry[eno];
-        dzt_entry->zone_blk_type = ei->zone_blk_type;
-        dzt_entry->rden_pos = cpu_to_le32(ei->rden_pos);
-        dzt_entry->root_len = cpu_to_le64(ei->root_len);
-        dzt_entry->dz_addr = cpu_to_le64(ei->dz_addr);
-        dzt_entry->ht_head = cpu_to_le64(ei->ht_head);
-        dzt_entry->pdz_addr = cpu_to_le64(ei->pdz_addr);
-        dzt_entry->hash_name = cpu_to_le64(ei->hash_name);
-    }
+    do {
+        nr = radix_tree_gang_lookup_tag(&dzt_m->dzt_root, (void **)entries, 0, FREE_BATCH, 1);
+        for(i=0; i<nr; i++) {
+            ei = entries[i];
+            eno = ei->dzt_eno;
+            dzt_entry = &dzt_blk->dzt_entry[eno];
+            dzt_entry->zone_blk_type = ei->zone_blk_type;
+            dzt_entry->rden_pos = cpu_to_le32(ei->rden_pos);
+            dzt_entry->root_len = cpu_to_le64(ei->root_len);
+            dzt_entry->dz_addr = cpu_to_le64(ei->dz_addr);
+            dzt_entry->ht_head = cpu_to_le64(ei->ht_head);
+            dzt_entry->pdz_addr = cpu_to_le64(ei->pdz_addr);
+            dzt_entry->hash_name = cpu_to_le64(ei->hash_name);
+        }
+    } while(nr==FREE_BATCH); 
     return 0;
 }
 /*======================================build system=========================================================*/
@@ -2734,5 +2758,6 @@ int dafs_build_zone(struct super_block *sb)
 int dafs_init_zone(struct super_block *sb)
 {
     //struct dentry *root = sb->s_root;
-    dafs_init_dzt(sb); 
+    dafs_init_dzt(sb);
+    return 0;
 }
