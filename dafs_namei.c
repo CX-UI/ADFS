@@ -512,8 +512,8 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
     u64 pidir_tail = 0, pi_tail = 0;
     struct nova_inode_info *si = NOVA_I(inode);
-    struct nova_inode_info_header *sih = &si->header;
-    struct dafs_dzt_block *dzt_blk;
+    //struct nova_inode_info_header *sih = &si->header;
+    //struct dafs_dzt_block *dzt_blk;
     int err = -ENOTEMPTY;
     timing_t rmdir_time;
 
@@ -574,8 +574,7 @@ end_rmdir:
 	return err;
 }
 
-static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,\ 
-        dev_t rdev)
+static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t rdev)
 {
     struct inode *inode = NULL;
     int err = PTR_ERR(inode);
@@ -624,25 +623,25 @@ out_err:
 	return err;
 }
 
-static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\ 
+static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry, 
         struct inode *new_dir, struct dentry *new_dentry)
 {
     struct inode *old_inode = old_dentry->d_inode;
     struct inode *new_inode = new_dentry->d_inode;
     struct super_block *sb = old_inode->i_sb;
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct nova_inode *old_pi = NULL, *new_pi = NULL;
-    struct nova_inode *new_pidir = NULL, *old_pidir = NULL;
-    struct nova_lite_journal_entry entry, entry1;
-    struct nova_dentry *father_entry = NULL;
+    //struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct nova_inode *new_pi = NULL;
+    //struct nova_inode *new_pidir = NULL, *old_pidir = NULL;
+    //struct nova_lite_journal_entry entry, entry1;
+    //struct nova_dentry *father_entry = NULL;
     //char *head_addr = NULL;
-    u64 old_tail = 0, new_tail = 0, new_pi_tail = 0, old_pi_tail = 0;
+    u64 new_pi_tail = 0;
     int err = -ENOMEM;
     int dec_link = 0, inc_link = 0;
-    int entries = 0;
-    int cpu;
-    int change_parent = 0;
-    u64 journal_tail;
+    //int entries = 0;
+    //int cpu;
+    //int change_parent = 0;
+    //u64 journal_tail;
     timing_t rename_time;
 
     
@@ -727,7 +726,7 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\
 		if (new_inode->i_nlink)
 			drop_nlink(new_inode);
 
-		err = nova_append_link_change_entry(sb, new_pi,
+		err = dafs_append_link_change_entry(sb, new_pi,
 						new_inode, 0, &new_pi_tail);
 		if (err)
 			goto out;

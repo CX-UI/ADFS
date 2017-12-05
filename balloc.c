@@ -436,7 +436,7 @@ int dafs_free_zone_blocks(struct super_block *sb, struct dzt_entry_info *dzt_ei,
     int ret;
     timing_t free_time;
 
-	nova_dbgv("zone %llu: free %d log block from %lu to %lu\n",
+	nova_dbgv("zone %d: free %d log block from %lu to %lu\n",
 			dzt_ei->dzt_eno, num, blocknr, blocknr + num - 1);
 
 	if (blocknr == 0) {
@@ -448,7 +448,7 @@ int dafs_free_zone_blocks(struct super_block *sb, struct dzt_entry_info *dzt_ei,
     ret = nova_free_blocks(sb, blocknr, num, dzt_ei->zone_blk_type, 2);
 	
 	if (ret)
-		nova_err(sb, "Zone %llu: free %d log block from %lu to %lu "
+		nova_err(sb, "Zone %lu: free %d log block from %lu to %lu "
 				"failed!\n", dzt_ei->dzt_eno, num, blocknr,
 				blocknr + num - 1);
 	NOVA_END_TIMING(free_log_t, free_time);
@@ -686,8 +686,8 @@ inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *d
 	allocated = nova_new_blocks(sb, blocknr, num,
 					dzt_e->zone_blk_type, zero, ZONE);
 	NOVA_END_TIMING(new_zone_blocks_t, alloc_time);
-	nova_dbgv("Zone %llu, alloc %d zone blocks from %lu to %lu\n",
-			dzt_e->dzt_eno, allocated, *blocknr,
+	nova_dbgv("Zone %d, alloc %d zone blocks from %lu to %lu\n",
+			le32_to_cpu(dzt_e->dzt_eno), allocated, *blocknr,
 			*blocknr + allocated - 1);
 	return allocated;
 }

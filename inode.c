@@ -580,14 +580,17 @@ static int nova_read_inode(struct super_block *sb, struct inode *inode,
 		inode->i_fop = &nova_dax_file_operations;
 		break;
 	case S_IFDIR:
-		inode->i_op = &nova_dir_inode_operations;
-		inode->i_fop = &nova_dir_operations;
+		//inode->i_op = &nova_dir_inode_operations;
+		inode->i_op = &dafs_dir_inode_operations;
+		//inode->i_fop = &nova_dir_operations;
+		inode->i_fop = &dafs_dir_operations;
 		break;
 	case S_IFLNK:
 		inode->i_op = &nova_symlink_inode_operations;
 		break;
 	default:
-		inode->i_op = &nova_special_inode_operations;
+		//inode->i_op = &nova_special_inode_operations;
+		inode->i_op = &dafs_special_inode_operations;
 		init_special_inode(inode, inode->i_mode,
 				   le32_to_cpu(pi->dev.rdev));
 		break;
@@ -1069,15 +1072,18 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 			break;
 		case TYPE_MKNOD:
 			init_special_inode(inode, mode, rdev);
-			inode->i_op = &nova_special_inode_operations;
+			//inode->i_op = &nova_special_inode_operations;
+			inode->i_op = &dafs_special_inode_operations;
 			break;
 		case TYPE_SYMLINK:
 			inode->i_op = &nova_symlink_inode_operations;
 			inode->i_mapping->a_ops = &nova_aops_dax;
 			break;
 		case TYPE_MKDIR:
-			inode->i_op = &nova_dir_inode_operations;
-			inode->i_fop = &nova_dir_operations;
+			//inode->i_op = &nova_dir_inode_operations;
+			//inode->i_fop = &nova_dir_operations;
+			inode->i_op = &dafs_dir_inode_operations;
+			inode->i_fop = &dafs_dir_operations;
 			inode->i_mapping->a_ops = &nova_aops_dax;
 			set_nlink(inode, 2);
 			break;

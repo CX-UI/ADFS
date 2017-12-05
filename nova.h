@@ -994,6 +994,7 @@ int nova_dax_get_block(struct inode *inode, sector_t iblock,
 int nova_dax_file_mmap(struct file *file, struct vm_area_struct *vma);
 
 /* dir.c */
+/*
 extern const struct file_operations nova_dir_operations;
 int nova_append_dir_init_entries(struct super_block *sb,
 	struct nova_inode *pi, u64 self_ino, u64 parent_ino);
@@ -1011,6 +1012,7 @@ struct nova_dentry *nova_find_dentry(struct super_block *sb,
 int nova_rebuild_dir_inode_tree(struct super_block *sb,
 	struct nova_inode *pi, u64 pi_addr,
 	struct nova_inode_info_header *sih);
+*/
 
 /*dafs_namei.c*/
 extern const struct inode_operations dafs_dir_inode_operations;
@@ -1040,7 +1042,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
         u64 self_ino, u64 parent_ino, const char *ful_name);
 extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type);
 extern int dafs_remove_dentry(struct dentry *dentry);
-struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag);
+struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dentry *dentry, int update_flag);
 int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname, const char *dename);
 int __rename_dir_direntry(struct dentry *old_dentry, struct dentry *new_dentry);
 int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry);
@@ -1111,6 +1113,7 @@ extern long nova_compat_ioctl(struct file *file, unsigned int cmd,
 #endif
 
 /* namei.c */
+/*
 extern const struct inode_operations nova_dir_inode_operations;
 extern const struct inode_operations nova_special_inode_operations;
 extern struct dentry *nova_get_parent(struct dentry *child);
@@ -1118,6 +1121,7 @@ int nova_append_link_change_entry(struct super_block *sb,
 	struct nova_inode *pi, struct inode *inode, u64 tail, u64 *new_tail);
 void nova_apply_link_change_entry(struct nova_inode *pi,
 	struct nova_link_change_entry *entry);
+*/
 
 /* super.c */
 extern struct super_block *nova_read_super(struct super_block *sb, void *data,
@@ -1129,7 +1133,7 @@ int nova_check_integrity(struct super_block *sb,
 void *nova_ioremap(struct super_block *sb, phys_addr_t phys_addr,
 	ssize_t size);
 
-/*hash,c*/
+/*hash.c*/
 int  get_hash_table(struct super_block *sb, u8 hlevel, u64 *h_addr);
 int record_pos_htable(struct super_block *sb, u64 block, u64 hashname, u32 pos, u8 hlevel);
 int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel,  u32 *pos);

@@ -732,7 +732,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
  * add read frequency*/
 
 
-struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag)
+struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dentry *dentry, int update_flag)
 {
     struct dafs_dentry *direntry;
     struct dzt_entry_info *dzt_ei;
