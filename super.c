@@ -298,7 +298,8 @@ static struct nova_inode *nova_init(struct super_block *sb,
 		return ERR_PTR(-EINVAL);
 	}
 
-	nova_dbg_verbose("nova: Default block size set to 4K\n");
+	nova_dbg("nova: Default block size set to 4K\n");
+	//nova_dbg_verbose("nova: Default block size set to 4K\n");
 	blocksize = sbi->blocksize = NOVA_DEF_BLOCK_SIZE_4K;
 
 	nova_set_blocksize(sb, blocksize);
@@ -518,7 +519,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 
 	sbi->inode_maps = kzalloc(sbi->cpus * sizeof(struct inode_map),
 					GFP_KERNEL);
-    dzt_m = sbi->dzt_m_info;
+    //dzt_m = sbi->dzt_m_info;
 	if (!sbi->inode_maps) {
 		retval = -ENOMEM;
 		goto out;
@@ -552,7 +553,11 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 
     /*zone info
     *set_up dzt_manager*/
+    nova_dbg("start init radix tree");
+    dzt_m = kzalloc(sizeof(struct dzt_manager), GFP_KERNEL);
     INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);
+    sbi->dzt_m_info = dzt_m;
+    nova_dbg("finish init radix tree");
  
     /*start check zone kthread*/
     //retval = start_cz_thread(sbi);
@@ -560,6 +565,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
         //goto out;
 
 	/* Init a new nova instance */
+    nova_dbg("start nova init");
 	if (sbi->s_mount_opt & NOVA_MOUNT_FORMAT) {
 		root_pi = nova_init(sb, sbi->initsize);
 		if (IS_ERR(root_pi))
@@ -567,7 +573,8 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 		super = nova_get_super(sb);
 		goto setup_sb;
 	}
-
+    nova_dbg("end nova_init");
+    
 	nova_dbg_verbose("checking physical address 0x%016llx for nova image\n",
 		  (u64)sbi->phys_addr);
 
@@ -601,6 +608,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 
 	/* Set it all up.. */
 setup_sb:
+    nova_dbg("dafs start setting sb");
 	sb->s_magic = le32_to_cpu(super->s_magic);
 	sb->s_op = &nova_sops;
 	sb->s_maxbytes = nova_max_size(sb->s_blocksize_bits);
@@ -609,10 +617,13 @@ setup_sb:
 	sb->s_xattr = NULL;
 	sb->s_flags |= MS_NOSEC;
 
+    nova_dbg("dafs end setting sb");
 	/* If the FS was not formatted on this mount, scan the meta-data after
 	 * truncate list has been processed */
-	if ((sbi->s_mount_opt & NOVA_MOUNT_FORMAT) == 0)
-		nova_recovery(sb);
+	if ((sbi->s_mount_opt & NOVA_MOUNT_FORMAT) == 0){
+		nova_dbg("dafs gointo recovery mode");
+        nova_recovery(sb);
+    }
 
 	root_i = nova_iget(sb, NOVA_ROOT_INO);
 	if (IS_ERR(root_i)) {
@@ -649,6 +660,7 @@ setup_sb:
 	retval = 0;
 
 	NOVA_END_TIMING(mount_t, mount_time);
+    nova_dbg("dafs end fill super");
 	return retval;
 out:
 	if (sbi->zeroed_page) {
@@ -940,6 +952,7 @@ static struct super_operations nova_sops = {
 static struct dentry *nova_mount(struct file_system_type *fs_type,
 				  int flags, const char *dev_name, void *data)
 {
+    nova_dbg("nova start to mount");
 	return mount_bdev(fs_type, flags, dev_name, data, nova_fill_super);
 }
 
@@ -1038,6 +1051,7 @@ static int __init init_nova_fs(void)
 		goto out2;
 
 	NOVA_END_TIMING(init_t, init_time);
+    nova_dbg("dafs end init_fs");
 	return 0;
 
 out2:
