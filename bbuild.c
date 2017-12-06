@@ -353,6 +353,12 @@ static bool nova_can_skip_full_scan(struct super_block *sb)
 		return false;
 	}
 
+    ret = dafs_init_zone(sb);
+    if(ret) {
+        nova_err(sb, "init zone failed,"
+                "fail back to failuer recouvery\n");
+        return false;
+    }
 	return true;
 }
 

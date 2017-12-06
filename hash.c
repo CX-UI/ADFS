@@ -360,7 +360,7 @@ int lookup_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
 {
     struct hash_table_lf *ht;
     struct hash_entry *he;
-    u32 h_pos, buckets, offset, s_pos;
+    u32 h_pos, buckets, offset, s_pos = 0;
     u64 tail;
     int i = 0, ret=0;
     u64 h_name;
@@ -407,7 +407,7 @@ int lookup_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
 {
     struct hash_table_lt *ht;
     struct hash_entry *he;
-    u32 h_pos, buckets, offset, s_pos;
+    u32 h_pos, buckets, offset, s_pos = 0;
     u64 tail;
     int i = 0, ret=0;
     u64 h_name;
@@ -458,7 +458,7 @@ int lookup_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
 {
     struct hash_table_ls *ht;
     struct hash_entry *he;
-    u32 h_pos, buckets, offset, s_pos;
+    u32 h_pos, buckets, offset, s_pos = 0;
     u64 tail;
     int i = 0, ret=0;
     u64 h_name;
@@ -509,7 +509,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     struct hash_table *ht;
     struct hash_entry *he;
     //struct ht_ptr *ht_p;
-    u32 h_pos, buckets, offset, s_pos;
+    u32 h_pos, buckets, offset, s_pos=0;
     u64 tail;
     int i = 0, ret=0;
     u64 h_name;

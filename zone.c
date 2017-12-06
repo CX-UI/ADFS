@@ -660,7 +660,7 @@ int dafs_init_dzt(struct super_block *sb)
     struct dafs_dzt_block *dzt_blk;
     struct dzt_ptr *dzt_p=NULL;
     struct dzt_entry_info *dzt_ei;
-    u32 bit_pos = 0;
+    u32 bit_pos = 1;
     int ret = 0;
     //unsigned long max = DAFS_DZT_ENTRIES_IN_BLOCK;
 
@@ -687,7 +687,7 @@ int dafs_init_dzt(struct super_block *sb)
         dzt_ei->hash_name = le64_to_cpu(dzt_entry->hash_name);
 
         INIT_RADIX_TREE(&dzt_ei->dir_tree, GFP_ATOMIC);
-        init_dir_info(sb, dzt_ei);
+        ret = init_dir_info(sb, dzt_ei);
         radix_tree_insert(&dzt_m->dzt_root, dzt_ei->hash_name, dzt_ei);
 
     }
@@ -2758,6 +2758,7 @@ int dafs_build_zone(struct super_block *sb)
 int dafs_init_zone(struct super_block *sb)
 {
     //struct dentry *root = sb->s_root;
-    dafs_init_dzt(sb);
-    return 0;
+    int ret = 0;
+    ret = dafs_init_dzt(sb);
+    return ret;
 }

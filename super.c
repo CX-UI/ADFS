@@ -595,6 +595,9 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 
 	/* Check that the root inode is in a sane state */
 	nova_root_check(sb, root_pi);
+    
+    /*build root zone*/
+    dafs_build_zone(sb);
 
 	/* Set it all up.. */
 setup_sb:
@@ -623,6 +626,9 @@ setup_sb:
 		retval = -ENOMEM;
 		goto out;
 	}
+
+    /*build root zone*/
+    //dafs_build_zone(sb);
 
 	if (!(sb->s_flags & MS_RDONLY)) {
 		u64 mnt_write_time;
@@ -798,7 +804,7 @@ static void nova_put_super(struct super_block *sb)
 	nova_sysfs_exit(sb);
 
     /*stop check zone thread*/
-    stop_cz_thread(sbi);
+    //stop_cz_thread(sb);
 
 	kfree(sbi);
 	sb->s_fs_info = NULL;

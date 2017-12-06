@@ -169,7 +169,7 @@ int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname
 }
 
 /*get dentry path except filename*/
-static inline char* get_dentry_path(struct dentry *dentry)
+static inline char* get_dentry_path(const struct dentry *dentry)
 {
     char *ph="", *buf=NULL;
     //struct vfsmount *p;
