@@ -567,12 +567,13 @@ static inline
 struct ptr_pair *nova_get_journal_pointers(struct super_block *sb, int cpu)
 {
 	struct nova_sb_info *sbi = NOVA_SB(sb);
-
+    
+    nova_dbg("dafs start get journal blk");
 	if (cpu >= sbi->cpus)
 		return NULL;
-
+    nova_dbg("dafs_get journal blk");
 	return (struct ptr_pair *)((char *)nova_get_block(sb,
-		NOVA_DEF_BLOCK_SIZE_4K)	+ cpu * CACHELINE_SIZE);
+		NOVA_DEF_BLOCK_SIZE_4K*2)	+ cpu * CACHELINE_SIZE);
 }
 
 struct inode_table {
@@ -586,9 +587,9 @@ struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)
 
 	if (cpu >= sbi->cpus)
 		return NULL;
-
+    nova_dbg("dafs get inode table");
 	return (struct inode_table *)((char *)nova_get_block(sb,
-		NOVA_DEF_BLOCK_SIZE_4K * 2) + cpu * CACHELINE_SIZE);
+		NOVA_DEF_BLOCK_SIZE_4K * 3) + cpu * CACHELINE_SIZE);
 }
 
 // BKDR String Hash Function
@@ -960,6 +961,8 @@ int nova_find_free_slot(struct nova_sb_info *sbi,
 	unsigned long range_high, struct nova_range_node **prev,
 	struct nova_range_node **next);
 
+inline int dafs_new_dzt_blocks(struct super_block *sb, unsigned short btype, unsigned long *blocknr, \
+        unsigned int num, int zero);
 inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero);
 int dafs_free_zone_blocks(struct super_block *sb, struct dzt_entry_info *dzt_ei,\
         unsigned long blocknr, int num);

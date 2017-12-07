@@ -335,6 +335,12 @@ static struct nova_inode *nova_init(struct super_block *sb,
 
 	nova_init_blockmap(sb, 0);
 
+    /*build root zone*/
+    //dafs_build_zone(sb);
+    if(dafs_init_dzt_block(sb)<0){
+        printk(KERN_ERR "dzt initializationtion fialed\n");
+        return ERR_PTR(-EINVAL);
+    }
 	if (nova_lite_journal_hard_init(sb) < 0) {
 		printk(KERN_ERR "Lite journal hard initialization failed\n");
 		return ERR_PTR(-EINVAL);
@@ -361,7 +367,7 @@ static struct nova_inode *nova_init(struct super_block *sb,
 	nova_flush_buffer(super, NOVA_SB_SIZE, false);
 	nova_flush_buffer((char *)super + NOVA_SB_SIZE, sizeof(*super), false);
 
-	nova_dbg_verbose("Allocate root inode\n");
+	nova_dbg("Allocate root inode\n");
 	root_i = nova_get_inode_by_ino(sb, NOVA_ROOT_INO);
 
 	nova_memunlock_inode(sb, root_i);
@@ -381,6 +387,8 @@ static struct nova_inode *nova_init(struct super_block *sb,
 	nova_memlock_inode(sb, root_i);
 	nova_flush_buffer(root_i, sizeof(*root_i), false);
 
+    if(dafs_build_zone(sb)<0)
+        return ERR_PTR(-EINVAL);
 	//nova_append_dir_init_entries(sb, root_i, NOVA_ROOT_INO,
 	//				NOVA_ROOT_INO);
 	//dafs_append_dir_init_entries(sb, root_i, NOVA_ROOT_INO,
@@ -389,6 +397,7 @@ static struct nova_inode *nova_init(struct super_block *sb,
 	PERSISTENT_MARK();
 	PERSISTENT_BARRIER();
 	NOVA_END_TIMING(new_init_t, init_time);
+    nova_dbg("dafs finish nova_init");
 	return root_i;
 }
 

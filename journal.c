@@ -185,6 +185,7 @@ int nova_lite_journal_soft_init(struct super_block *sb)
 		spin_lock_init(&sbi->journal_locks[i]);
 
 	for (i = 0; i < sbi->cpus; i++) {
+        nova_dbg("dafs get soft journal");
 		pair = nova_get_journal_pointers(sb, i);
 		if (pair->journal_head == pair->journal_tail)
 			continue;
@@ -227,11 +228,12 @@ int nova_lite_journal_hard_init(struct super_block *sb)
 
 	for (i = 0; i < sbi->cpus; i++) {
 		pair = nova_get_journal_pointers(sb, i);
+        nova_dbg("dafs get hard journal");
 		if (!pair)
 			return -EINVAL;
 
 		allocated = nova_new_log_blocks(sb, &fake_pi, &blocknr, 1, 1);
-		nova_dbg_verbose("%s: allocate log @ 0x%lx\n", __func__,
+		nova_dbg("%s: allocate log @ 0x%lx\n", __func__,
 							blocknr);
 		if (allocated != 1 || blocknr == 0)
 			return -ENOSPC;

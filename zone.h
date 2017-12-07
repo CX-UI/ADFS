@@ -22,7 +22,7 @@
 /*dzt_block*/
 #define SIZE_DZT_BITMAP ((DAFS_DZT_ENTRIES_IN_BLOCK + 1 + BITS_PER_BYTE -1)/BITS_PER_BYTE)
 #define DAFS_DZT_ENTRIES_IN_BLOCK 72
-#define DZT_BLK_RESERVED 53
+#define DZT_BLK_RESERVED 45
 
 /*zone_entry */
 #define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE*2 + BITS_PER_BYTE-1)/BITS_PER_BYTE)
@@ -195,6 +195,7 @@ struct direntry_log {
 struct dafs_dzt_block{
     __u8 dzt_bitmap[SIZE_DZT_BITMAP];               /*not decided the size of bitmap*/
     __u8 reserved[DZT_BLK_RESERVED];
+    __le64 dzt_head;
     //__le64 dzt_tail_pos;
     struct direntry_log dlog;
     struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];      /*128-1 entries in BT block*/
@@ -357,5 +358,6 @@ int check_thread_func(void *data);
 int start_cz_thread(struct super_block *sb);
 int stop_cz_thread(struct super_block *sb);
 int dzt_flush_dirty(struct super_block *sb);
+int dafs_init_dzt_block(struct super_block *sb);
 int dafs_build_zone(struct super_block *sb);
 int dafs_init_zone(struct super_block *sb);

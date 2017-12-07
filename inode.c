@@ -92,7 +92,7 @@ int nova_init_inode_table(struct super_block *sb)
     
         //每个inode table都对应512blk
 		allocated = nova_new_log_blocks(sb, pi, &blocknr, 1, 1);
-		nova_dbg_verbose("%s: allocate log @ 0x%lx\n", __func__,
+		nova_dbg("%s: allocate log @ 0x%lx\n", __func__,
 							blocknr);
 		if (allocated != 1 || blocknr == 0)
 			return -ENOSPC;  
@@ -847,7 +847,7 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
 
 	si = NOVA_I(inode);
 
-	nova_dbgv("%s: inode %lu\n", __func__, ino);
+	nova_dbg("%s: inode %lu\n", __func__, ino);
 
 	if (ino == NOVA_ROOT_INO) {
 		pi_addr = NOVA_ROOT_INO_START;
@@ -875,6 +875,7 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
 	inode->i_ino = ino;
 
 	unlock_new_inode(inode);
+    nova_dbg("sucessfully get inode");
 	return inode;
 fail:
 	iget_failed(inode);

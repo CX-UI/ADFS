@@ -17,6 +17,7 @@ int  get_hash_table(struct super_block *sb, u8 hlevel,  u64 *h_addr)
     u64 block;
     unsigned short btype = 0;
 
+    nova_dbg("dafs allocate hash table");
     switch(hlevel) {
         case 1:
             btype = HTABLE_DEF_SIZE;
@@ -278,7 +279,7 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
     int offset, buckets;
     u8 valid_flag;
 
-
+    nova_dbg("dafs record pos in hash table");
     buckets = 4095; 
     offset = 4;
     ht = (struct hash_table *)nova_get_block(sb, block);  
@@ -317,6 +318,7 @@ fill_he:
     nova_flush_buffer(he, sizeof(struct hash_entry),0);
     
 out:
+    nova_dbg("dafs finish recording pos in hash table");
     return 0;
 }
 

@@ -11,6 +11,8 @@
 #include "nova.h"
 #include "nova_def.h"
 
+//static struct zone_ptr *def_zp;
+//static struct dzt_ptr *def_dp;
 
 /*
 * dafs get dir_zonet_table
@@ -18,37 +20,42 @@
 * not decided journal pos yet*/
 struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)
 {
-    //struct nova_sb_info *sbi = NOVA_SB(sb);
-
+    //struct nova_sb_info *sbi = NOVA_SB(sb); 
+    nova_dbg("dafs_get dzt blk");
     return (struct dafs_dzt_block *)((char *)nova_get_block(sb,
          NOVA_DEF_BLOCK_SIZE_4K));
 }
+
 
 /* 
 * make dzt bitmap pointer*/
 void make_dzt_ptr(struct super_block *sb, struct dzt_ptr **dzt_p)
 {
     struct dafs_dzt_block *dzt_blk;
-    struct dzt_ptr *p=NULL;
+    struct dzt_ptr *def_dp = (struct dzt_ptr *)kzalloc(sizeof(struct dzt_ptr), GFP_KERNEL);
+    //struct dzt_ptr *p;
 
+    nova_dbg("dafs make dzt pointer");
     dzt_blk = dafs_get_dzt_block(sb);
 
-    p->bitmap = dzt_blk->dzt_bitmap;
-    p->max = DAFS_DZT_ENTRIES_IN_BLOCK;
-    p->dzt_entry = dzt_blk->dzt_entry;
-    *dzt_p = p;
+    def_dp->bitmap = dzt_blk->dzt_bitmap;
+    def_dp->max = DAFS_DZT_ENTRIES_IN_BLOCK;
+    def_dp->dzt_entry = dzt_blk->dzt_entry;
+    *dzt_p = def_dp;
+    nova_dbg("dafs finish make dzt bitmap pointer");
 }
 
 /*
 * make zone ptr to use statemap*/
 void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e)
 {
-    struct zone_ptr *p=NULL;
+    //struct zone_ptr *p;
+    struct zone_ptr *def_zp = (struct zone_ptr *)kzalloc(sizeof(struct zone_ptr), GFP_KERNEL);
 
-    p->statemap = z_e->zone_statemap;
-    p->zone_max = NR_DENTRY_IN_ZONE * 2;
-    p->z_entry = z_e->dentry;
-    *z_p = p;
+    def_zp->statemap = z_e->zone_statemap;
+    def_zp->zone_max = NR_DENTRY_IN_ZONE * 2;
+    def_zp->z_entry = z_e->dentry;
+    *z_p = def_zp;
 }
 
 /*
@@ -207,6 +214,8 @@ struct dzt_entry_info *DAFS_GET_EI(struct super_block *sb, u64 eno)
         return NULL;
         //return -EINVAL;
     }
+
+    kfree(dzt_p);
     return ei;
 
 }
@@ -270,7 +279,8 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
         }    
         
     }
-
+    
+    kfree(z_p);
     return ret;
     
 }
@@ -294,10 +304,11 @@ struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)
 static struct dzt_entry_info *dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \
                      *dafs_dzt_entry)
 {
-    //struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dzt_entry_info *entry_info;
-    struct dzt_manager *dzt_m;
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
 
+    nova_dbg("dafs start build dzt");
     /*take into acount when to destroy this entry*/
     entry_info = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);  //move dzt entry into DRAM B-tree
     
@@ -315,19 +326,19 @@ static struct dzt_entry_info *dafs_build_dzt(struct super_block *sb, struct dafs
 
     //INIT_LIST_HEAD(&entry_info->child_list);
 
-    dzt_m = kzalloc(sizeof(struct dzt_manager), GFP_KERNEL);
+    //dzt_m = kzalloc(sizeof(struct dzt_manager), GFP_KERNEL);
 
     if(!dzt_m)
         return NULL;
         //return -ENOMEM;
     
-    INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);
+    //INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);
 
     INIT_RADIX_TREE(&entry_info->dir_tree, GFP_ATOMIC);
 
     radix_tree_insert(&dzt_m->dzt_root, entry_info->hash_name, entry_info);
 
-    
+    nova_dbg("dafs finish build dzt_e");
     return entry_info;
 }
 
@@ -351,8 +362,9 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
     //unsigned long bp;
     int ret = 0;
 
+    nova_dbg("dafs allocate zone blocks");
     allocated = dafs_new_zone_blocks(sb, dzt_e, &blocknr, 1, 1);
-    nova_dbg_verbose("%s: allocate zone @ 0x%lx\n", __func__,
+    nova_dbg("%s: allocate zone @ 0x%lx\n", __func__,
 							blocknr);
     if(allocated != 1 || blocknr == 0)
         return -ENOMEM;
@@ -378,15 +390,18 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     //struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_zone_entry *zone_entry;
     struct dafs_dentry *dafs_rde;
-    //struct zone_ptr *z_p;
+    struct zone_ptr *z_p;
     struct dir_info *rdir;
     //u32 bitpos = 0;
     //int i;
     u64 hn;
 
+    nova_dbg("dafs start init dir zones");
     zone_entry = (struct dafs_zone_entry *)nova_get_block(sb, ei->dz_addr);
+    nova_dbg("root ze addr is %llu", ei->dz_addr);
 
     hn = BKDRHash("/",1);
+    nova_dbg("the root dir hashname is %llu", hn);
 
     /*create root directory*/
     dafs_rde = &zone_entry->dentry[0];
@@ -401,7 +416,8 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     //dafs_rde->par_ino = 0;   /*not decided*/
     dafs_rde->par_pos = 0;
     dafs_rde->size = sb->s_blocksize; /*not decided*/
-    dafs_rde->dzt_hn = cpu_to_le64(hn); 
+    dafs_rde->dzt_hn = cpu_to_le64(hn);
+    nova_dbg("test root hash name is %llu", le64_to_cpu(dafs_rde->dzt_hn));
     dafs_rde->ext_flag =0;
     //dafs_rde->prio = LEVEL_0;
     //dafs_rde->sub_num = 0;
@@ -409,13 +425,18 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     memcpy(dafs_rde->name, "/",1);
     dafs_rde->fname_len = 1;
     memcpy(dafs_rde->ful_name.f_name, "/", 1);
-    
+    nova_dbg("dafs finish creat root directory");
+
     record_pos_htable(sb, ei->ht_head, hn, 0, 1);
     rdir = add_dir_info(ei, hn);
+    make_zone_ptr(&z_p, zone_entry);
+    test_and_clear_bit_le(0, (void *)z_p->statemap);
+    test_and_set_bit_le(1, (void *)z_p->statemap);
     zone_entry->dz_no = cpu_to_le32(ei->dzt_eno);
 
     dafs_append_dir_init_entries(sb, 0, ei, 1, 1, "/");
 
+    nova_dbg("dafs finish init dir zones");
     return 0;
 
 }
@@ -478,7 +499,7 @@ int set_sf_pos(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
         }
     }
 
-    //kfree(s_name);
+    kfree(z_p);
     return ret;
 }
 
@@ -495,6 +516,7 @@ int init_dir_info(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     //char *path;
     u64 hashname;
 
+    nova_dbg("dafs init dir info tree");
     ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     make_zone_ptr(&zp, ze);
     //path = kzalloc(DAFS_PATH_LEN*sizeof(char), GFP_KERNEL);
@@ -548,10 +570,30 @@ int init_dir_info(struct super_block *sb, struct dzt_entry_info *dzt_ei)
             filepos++;
         }
     }
-    //kfree(path);
+    kfree(zp);
+    nova_dbg("dafs finish initial dir info tree");
     return ret;
 }
 
+int dafs_init_dzt_block(struct super_block *sb)
+{
+    struct dafs_dzt_block *dzt_block;
+    int allocated;
+    unsigned long blocknr;
+    u64 block;
+   
+    nova_dbg("dafs init dzt block");
+    dzt_block = dafs_get_dzt_block(sb);
+    if(!dzt_block)
+        return -EINVAL;
+    allocated = dafs_new_dzt_blocks(sb, NOVA_BLOCK_TYPE_4K, &blocknr, 1, 1);
+	nova_dbg("%s: allocate log @ 0x%lx\n", __func__, blocknr);
+	if (allocated != 1 || blocknr == 0)
+		return -ENOSPC; 
+    block = nova_get_block_off(sb, blocknr, NOVA_DEF_BLOCK_SIZE_4K);
+    dzt_block->dzt_head = cpu_to_le64(block);
+    return 0;
+}
 
 /*
 *build dir zone table for first time run*/
@@ -561,6 +603,9 @@ int dafs_build_dzt_block(struct super_block *sb)
     struct dafs_dzt_block *dzt_block;
     struct dzt_entry_info *ei;
     struct dzt_ptr *dzt_p;
+    //int allocated;
+    //unsigned long blocknr;
+    //u64 block;
     char *name = "/"; 
     int ret = 0;
     u64 ht_addr;
@@ -568,6 +613,16 @@ int dafs_build_dzt_block(struct super_block *sb)
     /*init linux root directory '/' 
     * dir zone no is pos in bitmap*/
     dzt_block = dafs_get_dzt_block(sb);
+    if(!dzt_block)
+        return -EINVAL;
+    /*
+    allocated = dafs_new_dzt_blocks(sb, NOVA_BLOCK_TYPE_4K, &blocknr, 1, 1);
+	nova_dbg("%s: allocate log @ 0x%lx\n", __func__, blocknr);
+	if (allocated != 1 || blocknr == 0)
+		return -ENOSPC; 
+    block = nova_get_block_off(sb, blocknr, NOVA_DEF_BLOCK_SIZE_4K);
+    dzt_block->dzt_head = cpu_to_le64(block);
+    */
 
     dzt_block-> dzt_entry[1].zone_blk_type = DAFS_BLOCK_TYPE_512K;
     dzt_block-> dzt_entry[1].root_len = 1;
@@ -600,7 +655,7 @@ int dafs_build_dzt_block(struct super_block *sb)
     //init_rf_entry(sb, ei);
     init_dir_info(sb, ei);
     
-
+    kfree(dzt_p);
     return ret;
 }
 
@@ -618,6 +673,7 @@ void set_dzt_entry_valid(struct super_block *sb, unsigned long bitpos)
 
     make_dzt_ptr(sb, &dzt_p);
 
+    kfree(dzt_p);
     test_and_set_bit(bitpos, (void *)dzt_p->bitmap);
 
 }
@@ -658,7 +714,7 @@ int dafs_init_dzt(struct super_block *sb)
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dafs_dzt_entry *dzt_entry;
     struct dafs_dzt_block *dzt_blk;
-    struct dzt_ptr *dzt_p=NULL;
+    struct dzt_ptr *dzt_p;
     struct dzt_entry_info *dzt_ei;
     u32 bit_pos = 1;
     int ret = 0;
@@ -780,6 +836,7 @@ u32 alloc_dzt_entry(struct super_block *sb)
     nova_err(sb, "dzt_blk is full");
     return ENOMEM;
 end:
+    kfree(dzt_p);
     return bitpos;
 }
 
@@ -790,7 +847,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
 {
     //struct nova_sb_info *sbi = NOVA_SB(sb);
     //struct dafs_dzt_entry *new_dzt_e;
-    struct dzt_entry_info *new_dzt_ei;
+    struct dzt_entry_info *new_dzt_ei = NULL;
     //struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dafs_dentry *dafs_rde;
     struct dafs_zone_entry *par_ze;
@@ -917,6 +974,7 @@ struct dzt_entry_info *delete_dzt_entry(struct super_block *sb, struct dzt_entry
     radix_tree_delete(&dzt_m->dzt_root, hash_name);
     test_and_clear_bit(ch_pos, (void *)dzt_p->bitmap);
 
+    kfree(dzt_p);
     return old_rdei;
 }
 
@@ -1363,7 +1421,8 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
     }
     
     kfree(name);
-    
+    kfree(old_p);
+    kfree(new_p);
 }
 
 /*
@@ -1488,6 +1547,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     //make_dzt_entry_valid(sbi, n_dzt_e->dzt_eno);
     radix_tree_insert(&dzt_m->dzt_root, n_dzt_ei->hash_name, n_dzt_ei);
 
+    kfree(dzt_p);
     return new_ze;
 }
 
@@ -1555,11 +1615,12 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
             }
         }
         
+        kfree(z_p);
     }
 
 ret:
+    //kfree(z_p);
     /*reset statemap in detail*/
-
     return ret;
 }
 
@@ -1817,6 +1878,8 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsign
     kfree(rname);
     kfree(tem);
     kfree(name);
+    kfree(par_p);
+    kfree(cur_p);
     return ret;
 }
 
@@ -1939,7 +2002,7 @@ int merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
     }
     
 
-    //kfree(name);
+    kfree(cur_p);
     return ret;
 }
 
@@ -2288,6 +2351,8 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
     kfree(rname);
     //kfree(tem);
     kfree(name);
+    kfree(par_p);
+    kfree(cur_p);
     return ret;
 }
 
@@ -2359,7 +2424,7 @@ void inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
     }
     //kfree(iname);
     //kfree(tem);
-    //kfree(name);
+    kfree(cur_p);
 
 }
 
@@ -2437,6 +2502,7 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei)
     kfree(cur_rdei);
     
     kfree(rname);
+    kfree(dzt_p);
     return 0;
 
 }
@@ -2507,6 +2573,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, u32 n
     /* make valid*/
     test_and_set_bit_le(ch_pos, (void *)dzt_p->bitmap);
     kfree(rname);
+    kfree(dzt_p);
     return 0;
 }
 
@@ -2607,7 +2674,8 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
         }
     }
 
-RET: 
+RET:
+    kfree(z_p);
     return ret;
 }
 
@@ -2638,6 +2706,7 @@ void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     free_htable(sb, tail, 1);
     dafs_free_zone_blocks(sb, dzt_ei, dzt_ei->dz_addr >> PAGE_SHIFT, 1);
     kfree(dzt_ei);
+    kfree(dzt_p);
 }
 
 /*=================================================check zone thread======================================*/
@@ -2750,6 +2819,7 @@ int dzt_flush_dirty(struct super_block *sb)
 int dafs_build_zone(struct super_block *sb)
 {
    dafs_build_dzt_block(sb);
+   //make_dzt_ptr(sb);
    return 0;
 }
 /*init zone

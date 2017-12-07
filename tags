@@ -12,7 +12,7 @@ BM_4K	nova.h	/^	BM_4K = 0,$/;"	e	enum:bm_type
 CACHELINE_ALIGN	nova_def.h	190;"	d
 CACHELINE_MASK	nova_def.h	189;"	d
 CACHELINE_SIZE	nova_def.h	188;"	d
-CACHE_ALIGN	nova.h	874;"	d
+CACHE_ALIGN	nova.h	875;"	d
 CHECK_ZONES_SLLEP_TIME	nova.h	139;"	d
 CPUID_MASK	bbuild.c	257;"	d	file:
 Countstats	stats.c	/^u64 Countstats[TIMING_NUM];$/;"	v
@@ -34,7 +34,7 @@ DIR_CREATE	zone.h	20;"	d
 DIR_LOG	nova.h	/^	DIR_LOG,$/;"	e	enum:nova_entry_type
 DIR_RENAME	zone.h	18;"	d
 DIR_RMDIR	zone.h	19;"	d
-DT2IF	dafs_dir.c	15;"	d	file:
+DT2IF	dafs_dir.c	19;"	d	file:
 DT2IF	dir.c	22;"	d	file:
 DZT_BLK_RESERVED	zone.h	25;"	d
 ENTRY_LOC	nova.h	162;"	d
@@ -47,7 +47,7 @@ HTABLE_LE_SIZE	nova.h	147;"	d
 HTABLE_LF_SIZE	nova.h	146;"	d
 HTABLE_LS_SIZE	nova.h	144;"	d
 HTABLE_LT_SIZE	nova.h	145;"	d
-IF2DT	dafs_dir.c	16;"	d	file:
+IF2DT	dafs_dir.c	20;"	d	file:
 IF2DT	dir.c	23;"	d	file:
 INHE_ROOT_DIRECTORY	zone.h	/^    INHE_ROOT_DIRECTORY$/;"	e	enum:dir_t
 INVALID_CPU	nova.h	134;"	d
@@ -63,7 +63,7 @@ LEVEL_3	zone.h	/^    LEVEL_3,$/;"	e	enum:dir_level
 LEVEL_4	zone.h	/^    LEVEL_4$/;"	e	enum:dir_level
 LINK_CHANGE	nova.h	/^	LINK_CHANGE,$/;"	e	enum:nova_entry_type
 LOG	nova.h	/^	LOG = 1,$/;"	e	enum:alloc_type
-MAX_PGOFF	bbuild.c	770;"	d	file:
+MAX_PGOFF	bbuild.c	776;"	d	file:
 META_BLK_SHIFT	nova_def.h	76;"	d
 MMAP_ADDR	nova.h	268;"	d
 MMAP_WRITE_BIT	nova.h	266;"	d
@@ -202,13 +202,16 @@ __remove_direntry	dafs_dir.c	/^static int __remove_direntry(struct super_block *
 __rename_dir	dafs_dir.c	/^int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \\$/;"	f
 __rename_dir_direntry	dafs_dir.c	/^int __rename_dir_direntry(struct dentry *old_dentry, struct dentry *new_dentry)$/;"	f
 __rename_file_dentry	dafs_dir.c	/^int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)$/;"	f
+__this_module	nova.mod.c	/^__visible struct module __this_module$/;"	v	typeref:struct:module
+__used	nova.mod.c	/^__used$/;"	v	file:
+__used	nova.mod.c	/^__used$/;"	v	typeref:struct:____versions	file:
 _mm_clflush	nova_def.h	209;"	d
 _mm_clflushopt	nova_def.h	211;"	d
 _mm_clwb	nova_def.h	213;"	d
 _mm_pcommit	nova_def.h	215;"	d
 add_dentry_t	stats.h	/^	add_dentry_t,$/;"	e	enum:timing_category
 add_dir_info	dafs_dir.c	/^struct dir_info *add_dir_info(struct dzt_entry_info *ei, u64 hash_name)$/;"	f
-add_dzt_entry	zone.c	/^struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei,\\ $/;"	f
+add_dzt_entry	zone.c	/^struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei, u32 sp_id)$/;"	f
 add_rename_dir	dafs_dir.c	/^int add_rename_dir(struct dentry *o_dentry, struct dentry *n_dentry, struct dafs_dentry *old_de)$/;"	f
 add_rename_zone_dir	dafs_dir.c	/^int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *new_hn, u64 *root_len)$/;"	f
 addr	bbuild.c	/^	u64 addr[512];$/;"	m	struct:task_ring	file:
@@ -262,7 +265,7 @@ copy_to_nvmm_t	stats.h	/^	copy_to_nvmm_t,$/;"	e	enum:timing_category
 cow_write_bytes	stats.h	/^	cow_write_bytes,$/;"	e	enum:stats_category
 cow_write_t	stats.h	/^	cow_write_t,$/;"	e	enum:timing_category
 cpus	nova.h	/^	int cpus;$/;"	m	struct:nova_sb_info
-cpy_new_zentry	zone.c	/^static  void cpy_new_zentry(struct super_bolck *sb, struct dzt_entry_info *new_ei,\\$/;"	f	file:
+cpy_new_zentry	zone.c	/^static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_ei,\\$/;"	f	file:
 create_t	stats.h	/^	create_t,$/;"	e	enum:timing_category
 create_trans_t	stats.h	/^	create_trans_t,$/;"	e	enum:timing_category
 ctime	nova.h	/^	__le32	ctime;$/;"	m	struct:nova_link_change_entry
@@ -272,7 +275,7 @@ curr_page_invalid	inode.c	/^static bool curr_page_invalid(struct super_block *sb
 d_entry_info	zone.h	/^    struct dzt_entry_info *d_entry_info;$/;"	m	struct:dzt_entry	typeref:struct:dzt_entry::dzt_entry_info
 dafs_add_dentry	dafs_dir.c	/^int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)$/;"	f
 dafs_alloc_dir_zone	zone.c	/^int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)$/;"	f
-dafs_append_dir_init_entries	dafs_dir.c	/^int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt_entry_info *dzt_ei,\\ $/;"	f
+dafs_append_dir_init_entries	dafs_dir.c	/^int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt_entry_info *dzt_ei,$/;"	f
 dafs_append_link_change_entry	dafs_namei.c	/^int dafs_append_link_change_entry(struct super_block *sb,$/;"	f
 dafs_apply_link_change_entry	dafs_namei.c	/^void dafs_apply_link_change_entry(struct nova_inode *pi,$/;"	f
 dafs_build_dzt	zone.c	/^static struct dzt_entry_info *dafs_build_dzt(struct super_block *sb, struct dafs_dzt_entry \\$/;"	f	file:
@@ -287,15 +290,16 @@ dafs_dir_operations	dafs_dir.c	/^const struct file_operations dafs_dir_operation
 dafs_dir_size	zone.h	/^enum dafs_dir_size {$/;"	g
 dafs_dzt_block	zone.h	/^struct dafs_dzt_block{$/;"	s
 dafs_dzt_entry	zone.h	/^ struct dafs_dzt_entry {$/;"	s
-dafs_empty_dir	dafs_dir.c	/^static int dafs_empty_dir(struct inode *inode, struct dentry *dentry)$/;"	f	file:
-dafs_find_direntry	dafs_dir.c	/^struct dafs_dentry *dafs_find_direntry(struct super_block *sb, struct dentry *dentry, int update_flag)$/;"	f
+dafs_empty_dir	dafs_dir.c	/^int dafs_empty_dir(struct inode *inode, struct dentry *dentry)$/;"	f
+dafs_find_direntry	dafs_dir.c	/^struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dentry *dentry, int update_flag)$/;"	f
 dafs_free_htable_blocks	balloc.c	/^int dafs_free_htable_blocks(struct super_block *sb, unsigned short btype,\\$/;"	f
 dafs_free_zone_blocks	balloc.c	/^int dafs_free_zone_blocks(struct super_block *sb, struct dzt_entry_info *dzt_ei,\\$/;"	f
-dafs_get_dzt_block	zone.c	/^struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)$/;"	f	file:
+dafs_get_dzt_block	zone.c	/^struct dafs_dzt_block *dafs_get_dzt_block(struct super_block *sb)$/;"	f
 dafs_get_parent	dafs_namei.c	/^struct dentry *dafs_get_parent(struct dentry *child)$/;"	f
 dafs_inh_zone	zone.c	/^int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, u32 nr_pos)$/;"	f
 dafs_init_dir_zone	zone.c	/^int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)$/;"	f
 dafs_init_dzt	zone.c	/^int dafs_init_dzt(struct super_block *sb)$/;"	f
+dafs_init_dzt_block	zone.c	/^int dafs_init_dzt_block(struct super_block *sb)$/;"	f
 dafs_init_zone	zone.c	/^int dafs_init_zone(struct super_block *sb)$/;"	f
 dafs_inode_by_name	dafs_namei.c	/^static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\\$/;"	f	file:
 dafs_link	dafs_namei.c	/^static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentry *dentry)$/;"	f	file:
@@ -304,12 +308,13 @@ dafs_lite_transaction_for_time_and_link	dafs_namei.c	/^static void dafs_lite_tra
 dafs_lookup	dafs_namei.c	/^static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\\$/;"	f	file:
 dafs_merge_zone	zone.c	/^int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei)$/;"	f
 dafs_mkdir	dafs_namei.c	/^static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)$/;"	f	file:
-dafs_mknod	dafs_namei.c	/^static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,\\ $/;"	f	file:
+dafs_mknod	dafs_namei.c	/^static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t rdev)$/;"	f	file:
+dafs_new_dzt_blocks	balloc.c	/^inline int dafs_new_dzt_blocks(struct super_block, unsigned short btype, unsigned long *blocknr, \\$/;"	f
 dafs_new_zone_blocks	balloc.c	/^inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero)$/;"	f
 dafs_readdir	dafs_dir.c	/^static int dafs_readdir(struct file *file, struct dir_context *ctx)$/;"	f	file:
-dafs_rec_mf	zone.c	/^int dafs_rec_mf(struct dzt_entry_info *ei)$/;"	f
+dafs_rec_mf	zone.c	/^u32 dafs_rec_mf(struct dzt_entry_info *ei)$/;"	f
 dafs_remove_dentry	dafs_dir.c	/^int dafs_remove_dentry(struct dentry *dentry)$/;"	f
-dafs_rename	dafs_namei.c	/^static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,\\ $/;"	f	file:
+dafs_rename	dafs_namei.c	/^static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry, $/;"	f	file:
 dafs_rm_dir	dafs_dir.c	/^int dafs_rm_dir(struct dentry *dentry)$/;"	f
 dafs_rmdir	dafs_namei.c	/^static int dafs_rmdir(struct inode *dir, struct dentry *dentry)$/;"	f	file:
 dafs_special_inode_operations	dafs_namei.c	/^const struct inode_operations dafs_special_inode_operations = {$/;"	v	typeref:struct:inode_operations
@@ -328,7 +333,6 @@ delete_dir_tree_t	stats.h	/^	delete_dir_tree_t,$/;"	e	enum:timing_category
 delete_dzt_entry	zone.c	/^struct dzt_entry_info *delete_dzt_entry(struct super_block *sb, struct dzt_entry_info *old_rdei)$/;"	f
 delete_ext	dafs_dir.c	/^int delete_ext(struct zone_ptr *p, struct dafs_dentry *de)$/;"	f
 delete_file_tree_t	stats.h	/^	delete_file_tree_t,$/;"	e	enum:timing_category
-delete_rf_entry	dafs_dir.c	/^int delete_rf_entry(struct dzt_entry_info *ei, u64 hash_name)$/;"	f
 dentry	zone.h	/^    struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];	$/;"	m	struct:dafs_zone_entry	typeref:struct:dafs_zone_entry::dafs_dentry
 des_dz_no	zone.h	/^    __le32 des_dz_no;$/;"	m	struct:direntry_log
 des_hashname	zone.h	/^    __le64 des_hashname;$/;"	m	struct:direntry_log
@@ -356,6 +360,7 @@ dzt_entry	zone.h	/^    struct dafs_dzt_entry dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK
 dzt_entry	zone.h	/^struct dzt_entry {$/;"	s
 dzt_entry_info	zone.h	/^struct dzt_entry_info{$/;"	s
 dzt_flush_dirty	zone.c	/^int dzt_flush_dirty(struct super_block *sb)$/;"	f
+dzt_head	zone.h	/^    __le64 dzt_head;$/;"	m	struct:dafs_dzt_block
 dzt_hn	zone.h	/^        __le64 dzt_hn;      \/*if root dir record dzt hn*\/$/;"	m	union:dafs_dentry::__anon4
 dzt_m_info	nova.h	/^    struct dzt_manager *dzt_m_info;$/;"	m	struct:nova_sb_info	typeref:struct:nova_sb_info::dzt_manager
 dzt_manager	nova.h	/^struct dzt_manager {$/;"	s
@@ -393,7 +398,7 @@ free_bm	bbuild.c	/^static void free_bm(struct super_block *sb)$/;"	f	file:
 free_curr_page	inode.c	/^static void free_curr_page(struct super_block *sb, struct nova_inode *pi,$/;"	f	file:
 free_data_count	nova.h	/^	unsigned long	free_data_count;$/;"	m	struct:free_list
 free_data_t	stats.h	/^	free_data_t,$/;"	e	enum:timing_category
-free_htable	hash.c	/^int free_htable(strut super_block *sb, u64 ht_addr, u8 hlevel)$/;"	f
+free_htable	hash.c	/^int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)$/;"	f
 free_htable_count	nova.h	/^    unsigned long   free_htable_count;$/;"	m	struct:free_list
 free_inode_log_t	stats.h	/^	free_inode_log_t,$/;"	e	enum:timing_category
 free_inode_t	stats.h	/^	free_inode_t,$/;"	e	enum:timing_category
@@ -416,7 +421,7 @@ fulname	zone.h	/^struct fulname{$/;"	s
 generation	nova.h	/^	__le32	generation;$/;"	m	struct:nova_link_change_entry
 get_cpuid	bbuild.c	/^static int get_cpuid(struct nova_sb_info *sbi, unsigned long blocknr)$/;"	f	file:
 get_de_name	dafs_dir.c	/^void get_de_name(struct dafs_dentry *de, struct dafs_zone_entry *ze, char *name, int name_type)$/;"	f
-get_dentry_path	dafs_dir.c	/^static inline char* get_dentry_path(struct dentry *dentry)$/;"	f	file:
+get_dentry_path	dafs_dir.c	/^static inline char* get_dentry_path(const struct dentry *dentry)$/;"	f	file:
 get_ext_name	dafs_dir.c	/^void get_ext_name(struct name_ext *de_ext, char *name)$/;"	f
 get_hash_table	hash.c	/^int  get_hash_table(struct super_block *sb, u8 hlevel,  u64 *h_addr)$/;"	f
 get_nvmm	nova.h	/^static inline unsigned long get_nvmm(struct super_block *sb,$/;"	f
@@ -428,10 +433,10 @@ global_bm	bbuild.c	/^struct scan_bitmap *global_bm[64];$/;"	v	typeref:struct:sca
 goto_next_page	nova.h	/^static inline bool goto_next_page(struct super_block *sb, u64 curr_p)$/;"	f
 hash_entry	zone.h	/^    struct hash_entry hash_entry[NR_HASH_ENTRIES_L1];$/;"	m	struct:hash_table	typeref:struct:hash_table::hash_entry
 hash_entry	zone.h	/^    struct hash_entry hash_entry[NR_HASH_ENTRIES_L2];$/;"	m	struct:hash_table_ls	typeref:struct:hash_table_ls::hash_entry
+hash_entry	zone.h	/^    struct hash_entry hash_entry[NR_HASH_ENTRIES_L3];$/;"	m	struct:hash_table_lt	typeref:struct:hash_table_lt::hash_entry
 hash_entry	zone.h	/^    struct hash_entry hash_entry[NR_HASH_ENTRIES_L4];$/;"	m	struct:hash_table_lf	typeref:struct:hash_table_lf::hash_entry
 hash_entry	zone.h	/^    struct hash_entry hash_entry[NR_HASH_ENTRIES_L5];$/;"	m	struct:hash_table_le	typeref:struct:hash_table_le::hash_entry
 hash_entry	zone.h	/^struct hash_entry {$/;"	s
-hash_entryp	zone.h	/^    struct hash_entry hash_entryp[NR_HASH_ENTRIES_L3];$/;"	m	struct:hash_table_lt	typeref:struct:hash_table_lt::hash_entry
 hash_map	zone.h	/^    const void *hash_map;$/;"	m	struct:ht_ptr
 hash_max	zone.h	/^    unsigned long  hash_max;$/;"	m	struct:ht_ptr
 hash_name	zone.h	/^    __le64 hash_name;$/;"	m	struct:dafs_dzt_entry
@@ -511,21 +516,19 @@ log_head	nova.h	/^	__le64 log_head;   \/* *\/$/;"	m	struct:inode_table
 log_head	nova_def.h	/^	__le64	log_head;	\/* Log head pointer *\/$/;"	m	struct:nova_inode
 log_pages	nova.h	/^	unsigned long log_pages;	\/* Num of log pages *\/$/;"	m	struct:nova_inode_info_header
 log_tail	nova_def.h	/^	__le64	log_tail;	\/* Log tail pointer *\/$/;"	m	struct:nova_inode
-lookup_ht_le	hash.c	/^int lookup_ht_le(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)$/;"	f
-lookup_ht_lf	hash.c	/^int lookup_ht_lf(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)$/;"	f
-lookup_ht_ls	hash.c	/^int lookup_ht_ls(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)$/;"	f
-lookup_ht_lt	hash.c	/^int lookup_ht_lt(u64 block, u64 hashname, u8 hlevel, unsigned long *pos)$/;"	f
-lookup_in_hashtable	hash.c	/^int lookup_in_hashtable(u64 block, u64 hashname, u8 hlevel, u32 *pos)$/;"	f
+lookup_ht_le	hash.c	/^int lookup_ht_le(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)$/;"	f
+lookup_ht_lf	hash.c	/^int lookup_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)$/;"	f
+lookup_ht_ls	hash.c	/^int lookup_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)$/;"	f
+lookup_ht_lt	hash.c	/^int lookup_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)$/;"	f
+lookup_in_hashtable	hash.c	/^int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)$/;"	f
 lookup_t	stats.h	/^	lookup_t,$/;"	e	enum:timing_category
 low_dirty	nova.h	/^	unsigned long low_dirty;	\/* Mmap dirty low range *\/$/;"	m	struct:nova_inode_info_header
 make_dzt_ptr	zone.c	/^void make_dzt_ptr(struct super_block *sb, struct dzt_ptr **dzt_p)$/;"	f
-make_dzt_tree	zone.c	/^static void make_dzt_tree(struct nova_sb_info *sbi, struct dzt_entry_info *dzt_ei)$/;"	f	file:
-make_ht_ptr	hash.c	/^void make_ht_ptr(struct ht_ptr **ht_p, struct hash_table *ht)$/;"	f
-make_invalid_ht_le	hash.c	/^int make_invalid_ht_le(u64 block, u64 hashname, u8 hlevel)$/;"	f
-make_invalid_ht_lf	hash.c	/^int make_invalid_ht_lf(u64 block, u64 hashname, u8 hlevel)$/;"	f
-make_invalid_ht_ls	hash.c	/^int make_invalid_ht_ls(u64 block, u64 hashname, u8 hlevel)$/;"	f
-make_invalid_ht_lt	hash.c	/^int make_invalid_ht_lt(u64 block, u64 hashname, u8 hlevel)$/;"	f
-make_invalid_htable	hash.c	/^int make_invalid_htable(u64 block, u64 hashname, u8 hlevel)$/;"	f
+make_invalid_ht_le	hash.c	/^int make_invalid_ht_le(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)$/;"	f
+make_invalid_ht_lf	hash.c	/^int make_invalid_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)$/;"	f
+make_invalid_ht_ls	hash.c	/^int make_invalid_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)$/;"	f
+make_invalid_ht_lt	hash.c	/^int make_invalid_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)$/;"	f
+make_invalid_htable	hash.c	/^int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)$/;"	f
 make_zone_ptr	zone.c	/^void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e)$/;"	f
 map_id	nova.h	/^	unsigned long map_id;$/;"	m	struct:nova_sb_info
 max	zone.h	/^    unsigned long max;$/;"	m	struct:dzt_ptr
@@ -536,7 +539,7 @@ memcpy_w_nvmm_t	stats.h	/^	memcpy_w_nvmm_t,$/;"	e	enum:timing_category
 memcpy_w_wb_t	stats.h	/^	memcpy_w_wb_t,$/;"	e	enum:timing_category
 memset_nt	nova.h	/^static inline void memset_nt(void *dest, uint32_t dword, size_t length)$/;"	f
 merge_dentry	zone.c	/^int merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)$/;"	f
-migrate_zone_entry	zone.c	/^int migrate_zone_entry(struct super_bolck *sb, u32 ch_pos, struct dzt_entry_info *dzt_nei)$/;"	f
+migrate_zone_entry	zone.c	/^int migrate_zone_entry(struct super_block *sb, u32 ch_pos, struct dzt_entry_info *dzt_nei)$/;"	f
 mkdir_t	stats.h	/^	mkdir_t,$/;"	e	enum:timing_category
 mknod_t	stats.h	/^	mknod_t,$/;"	e	enum:timing_category
 mmap_fault_t	stats.h	/^	mmap_fault_t,$/;"	e	enum:timing_category
@@ -568,7 +571,7 @@ next_lite_journal	journal.c	/^static u64 next_lite_journal(u64 curr_p)$/;"	f	fil
 next_log_page	nova.h	/^static inline u64 next_log_page(struct super_block *sb, u64 curr_p)$/;"	f
 next_page	nova.h	/^	__le64	next_page;$/;"	m	struct:nova_inode_page_tail
 node	nova.h	/^	struct rb_node node;$/;"	m	struct:nova_range_node	typeref:struct:nova_range_node::rb_node
-nova-y	Makefile	/^nova-y := balloc.o bbuild.o dax.o dir.o file.o inode.o ioctl.o journal.o namei.o stats.o super.o symlink.o sysfs.o wprotect.o zone.o dafs_dir.o dafs_namei.o$/;"	m
+nova-y	Makefile	/^nova-y := balloc.o bbuild.o dax.o file.o inode.o ioctl.o journal.o stats.o super.o symlink.o sysfs.o wprotect.o zone.o dafs_dir.o dafs_namei.o hash.o$/;"	m
 nova_add_dentry	dir.c	/^int nova_add_dentry(struct dentry *dentry, u64 ino, int inc_link,$/;"	f
 nova_alloc_block_free_lists	balloc.c	/^int nova_alloc_block_free_lists(struct super_block *sb)$/;"	f
 nova_alloc_blocknode	super.c	/^inline struct nova_range_node *nova_alloc_blocknode(struct super_block *sb)$/;"	f
@@ -775,7 +778,7 @@ nova_memunlock_super	wprotect.h	/^static inline void nova_memunlock_super(struct
 nova_mkdir	namei.c	/^static int nova_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)$/;"	f	file:
 nova_mknod	namei.c	/^static int nova_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,$/;"	f	file:
 nova_mount	super.c	/^static struct dentry *nova_mount(struct file_system_type *fs_type,$/;"	f	file:
-nova_new_blocks	balloc.c	/^static int nova_new_blocks(struct super_block *sb, unsigned long *blocknr,$/;"	f	file:
+nova_new_blocks	balloc.c	/^int nova_new_blocks(struct super_block *sb, unsigned long *blocknr,$/;"	f
 nova_new_data_blocks	balloc.c	/^inline int nova_new_data_blocks(struct super_block *sb, struct nova_inode *pi,$/;"	f
 nova_new_inode_type	nova.h	/^enum nova_new_inode_type {$/;"	g
 nova_new_log_blocks	balloc.c	/^inline int nova_new_log_blocks(struct super_block *sb, struct nova_inode *pi,$/;"	f
@@ -919,6 +922,7 @@ rebuild_file_t	stats.h	/^	rebuild_file_t,$/;"	e	enum:timing_category
 record_dir_log	dafs_dir.c	/^void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *des, int type)$/;"	f
 record_pos_htable	hash.c	/^int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\\$/;"	f
 record_pos_htable_le	hash.c	/^int record_pos_htable_le(struct super_block *sb, u64 block, u64 hashname,\\$/;"	f
+record_pos_htable_lf	hash.c	/^int record_pos_htable_lf(struct super_block *sb, u64 block, u64 hashname,\\$/;"	f
 record_pos_htable_ls	hash.c	/^int record_pos_htable_ls(struct super_block *sb, u64 block, u64 hashname,\\$/;"	f
 record_pos_htable_lt	hash.c	/^int record_pos_htable_lt(struct super_block *sb, u64 block, u64 hashname,\\$/;"	f
 recovery_t	stats.h	/^	recovery_t,$/;"	e	enum:timing_category
@@ -1003,7 +1007,6 @@ uid	nova.h	/^	__le32	uid;$/;"	m	struct:nova_setattr_logentry
 uid	nova.h	/^	kuid_t		uid;    \/* Mount uid for root directory *\/$/;"	m	struct:nova_sb_info
 unlink_t	stats.h	/^	unlink_t,$/;"	e	enum:timing_category
 update_read_hot	dafs_dir.c	/^int update_read_hot(struct dzt_entry_info *dzt_ei, u64 hn)$/;"	f
-update_rename_hot	dafs_dir.c	/^int update_rename_hot(struct dzt_entry_info *dzt_ei, u64 sub_hash)$/;"	f
 update_tail_t	stats.h	/^	update_tail_t,$/;"	e	enum:timing_category
 valid	nova_def.h	/^	u8	valid;		\/* Is this inode valid? *\/$/;"	m	struct:nova_inode
 valid_bytes	nova.h	/^	unsigned long valid_bytes;	\/* For thorough GC *\/$/;"	m	struct:nova_inode_info_header
