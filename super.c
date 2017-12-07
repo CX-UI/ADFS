@@ -961,8 +961,11 @@ static struct super_operations nova_sops = {
 static struct dentry *nova_mount(struct file_system_type *fs_type,
 				  int flags, const char *dev_name, void *data)
 {
-    nova_dbg("nova start to mount");
-	return mount_bdev(fs_type, flags, dev_name, data, nova_fill_super);
+    struct dentry *dentry;
+    nova_dbg("dafs start to mount");
+	dentry = mount_bdev(fs_type, flags, dev_name, data, nova_fill_super);
+    nova_dbg("dafs finish mount");
+    return dentry;
 }
 
 static struct file_system_type nova_fs_type = {
@@ -1023,6 +1026,7 @@ static int __init init_nova_fs(void)
 	int rc = 0;
 	timing_t init_time;
 
+    nova_dbg("dafs init nova_fs");
 	NOVA_START_TIMING(init_t, init_time);
 	nova_dbg("%s: %d cpus online\n", __func__, num_online_cpus());
 	if (arch_has_pcommit())
@@ -1055,6 +1059,7 @@ static int __init init_nova_fs(void)
 	if (rc)
 		goto out1;
 
+    nova_dbg("dafs register file sytem nova");
 	rc = register_filesystem(&nova_fs_type);
 	if (rc)
 		goto out2;

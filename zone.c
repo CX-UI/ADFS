@@ -203,16 +203,14 @@ struct dzt_entry_info *DAFS_GET_EI(struct super_block *sb, u64 eno)
     
     if(!test_bit_le(eno, dzt_p->bitmap)){
         nova_err(sb, "not found dzt_entry");
-        return NULL;
-        //return -EINVAL;
+        return ERR_PTR(-EINVAL);
     }
     dzt_e = &dzt_blk->dzt_entry[eno];
     hashname = le64_to_cpu(dzt_e->hash_name);
     ei = radix_tree_lookup(&dzt_m->dzt_root, hashname);
     if(!ei){
         nova_err(sb, "not found ei");
-        return NULL;
-        //return -EINVAL;
+        return ERR_PTR(-EINVAL);
     }
 
     kfree(dzt_p);
@@ -313,8 +311,7 @@ static struct dzt_entry_info *dafs_build_dzt(struct super_block *sb, struct dafs
     entry_info = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);  //move dzt entry into DRAM B-tree
     
     if(!entry_info)
-        return NULL;
-        //return -ENOMEM;
+        return ERR_PTR(-ENOMEM);
 
     entry_info->zone_blk_type = DAFS_BLOCK_TYPE_512K; 
     entry_info->root_len = le32_to_cpu(dafs_dzt_entry->root_len);
@@ -329,8 +326,7 @@ static struct dzt_entry_info *dafs_build_dzt(struct super_block *sb, struct dafs
     //dzt_m = kzalloc(sizeof(struct dzt_manager), GFP_KERNEL);
 
     if(!dzt_m)
-        return NULL;
-        //return -ENOMEM;
+        return ERR_PTR(-ENOMEM);
     
     //INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);
 
@@ -412,7 +408,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     dafs_rde->mtime = CURRENT_TIME_SEC.tv_sec;
     dafs_rde->isr_sf = 0;
     //dafs_rde->path_len = 1;
-    dafs_rde->ino = 1;      /*not decided*/
+    dafs_rde->ino = NOVA_ROOT_INO;      /*not decided*/
     //dafs_rde->par_ino = 0;   /*not decided*/
     dafs_rde->par_pos = 0;
     dafs_rde->size = sb->s_blocksize; /*not decided*/
@@ -434,7 +430,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     test_and_set_bit_le(1, (void *)z_p->statemap);
     zone_entry->dz_no = cpu_to_le32(ei->dzt_eno);
 
-    dafs_append_dir_init_entries(sb, 0, ei, 1, 1, "/");
+    dafs_append_dir_init_entries(sb, 0, ei, NOVA_ROOT_INO, NOVA_ROOT_INO, "/");
 
     nova_dbg("dafs finish init dir zones");
     return 0;
@@ -722,9 +718,11 @@ int dafs_init_dzt(struct super_block *sb)
 
     dzt_blk = dafs_get_dzt_block(sb);
 
+    make_dzt_ptr(sb, &dzt_p);
+    /*
     dzt_p->bitmap = dzt_blk->dzt_bitmap;
     dzt_p->max = DAFS_DZT_ENTRIES_IN_BLOCK;
-    dzt_p->dzt_entry = dzt_blk->dzt_entry;
+    dzt_p->dzt_entry = dzt_blk->dzt_entry;*/
 
     while(bit_pos < dzt_p->max){
         if(!test_bit_le(bit_pos, (void *)dzt_p->bitmap)){
@@ -847,7 +845,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
 {
     //struct nova_sb_info *sbi = NOVA_SB(sb);
     //struct dafs_dzt_entry *new_dzt_e;
-    struct dzt_entry_info *new_dzt_ei = NULL;
+    struct dzt_entry_info *new_dzt_ei = (struct dzt_entry_info *)kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
     //struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dafs_dentry *dafs_rde;
     struct dafs_zone_entry *par_ze;
@@ -869,7 +867,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     dafs_rde = &par_ze->dentry[sp_id];
     de_nlen = le64_to_cpu(dafs_rde->fname_len);
 
-    new_dzt_ei = (struct dzt_entry_info *)kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
+    //new_dzt_ei = (struct dzt_entry_info *)kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
     new_dzt_ei->zone_blk_type = DAFS_BLOCK_TYPE_512K;
     new_dzt_ei->dzt_eno = eno_pos;
     new_dzt_ei->pdz_addr = par_dei->dz_addr;
@@ -911,15 +909,13 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     /*build hashtable*/
     ret = get_hash_table(sb, 1, &new_dzt_ei->ht_head);
     if(!ret)
-        return NULL;
-        //return -ENOMEM;
+        return ERR_PTR(-ENOMEM);
 
     /*build dir_info_radix tree*/
     INIT_RADIX_TREE(&new_dzt_ei->dir_tree, GFP_ATOMIC);
     //ret = add_rf_entry(new_dzt_ei, phash);
     if(ret)
-        return NULL;
-        //return -EINVAL;
+        return ERR_PTR(-EINVAL);
 
 end:
     //kfree(cur_name);
@@ -1512,8 +1508,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     allocated = dafs_new_zone_blocks(sb, n_dzt_e, &blocknr, 1, 1);
     
     if(allocated != 1 || blocknr == 0)
-        return NULL;
-        //return -ENOMEM;
+        return ERR_PTR(-ENOMEM);
     
     block = nova_get_block_off(sb, blocknr, DAFS_BLOCK_TYPE_512K);
     

@@ -763,7 +763,7 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dent
     ht_addr = dzt_ei->ht_head;
     ret = lookup_in_hashtable(sb, ht_addr, ph_hash, 1, &de_pos);
     if(!ret)
-        return NULL;
+        return ERR_PTR(-EINVAL);
     direntry = &dafs_ze->dentry[de_pos];
     
     if(update_flag){
@@ -1984,6 +1984,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     char *phname, *ph, *phn;
     timing_t readdir_time;
 
+    nova_dbg("dafs readdir");
     NOVA_START_TIMING(readdir_t, readdir_time);
     pidir = nova_get_inode(sb ,inode);
     
