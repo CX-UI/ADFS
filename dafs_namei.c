@@ -110,13 +110,18 @@ static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\
 {
     struct super_block *sb = dir->i_sb;
     struct dafs_dentry *direntry;
-    
+    u64 ino;
+   
+    nova_dbg("dafs start to inode by name");
     direntry = dafs_find_direntry(sb, dentry,1);
-    if(direntry == NULL)
+    if(direntry == NULL) { 
         return 0;
+    }
     
     *res_entry = direntry;
-    return direntry->ino;
+    ino = le64_to_cpu(direntry->ino);
+    nova_dbg("dafs finish inode by name, ino is %llu", ino);
+    return ino;
 }
 
 static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
@@ -127,6 +132,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     ino_t ino;
     timing_t lookup_time;
     
+    nova_dbg("dafs start looup");
 	NOVA_START_TIMING(lookup_t, lookup_time);
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
 		nova_dbg("%s: namelen %u exceeds limit\n",
@@ -150,6 +156,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
 	}
 
 	NOVA_END_TIMING(lookup_t, lookup_time);
+    nova_dbg("dafs finish lookup");
 	return d_splice_alias(inode, dentry);
 }
 
@@ -453,7 +460,8 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     u64 ino;
     int err = -EMLINK;
     timing_t mkdir_time;
-    
+   
+    nova_dbg("dafs start to mmkdir");
     NOVA_START_TIMING(mkdir_t, mkdir_time);
     if(dir->i_nlink >= NOVA_LINK_MAX)
         goto out;
@@ -462,8 +470,8 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	if (ino == 0)
 		goto out_err;
 
-	nova_dbgv("%s: name %s\n", __func__, dentry->d_name.name);
-	nova_dbgv("%s: inode %llu, dir %lu, link %d\n", __func__,
+	nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
+	nova_dbg("%s: inode %llu, dir %lu, link %d\n", __func__,
 				ino, dir->i_ino, dir->i_nlink);
 
     /*.文件指向目录项*/
@@ -526,6 +534,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	if (!pidir)
 		return -EINVAL;
 
+    nova_dbg("dafs start to rmdir");
     /*not sure to add read hot degree*/
     if(dafs_inode_by_name(dir, dentry, &de) == 0)
         return -ENOENT;
@@ -746,7 +755,8 @@ struct dentry *dafs_get_parent(struct dentry *child)
     struct super_block *sb = child->d_inode->i_sb;
     struct dafs_dentry *de;
     ino_t ino;
-    
+   
+    nova_dbg("dafs start get [parent]");
     de = dafs_find_direntry(sb, child,1);
     if(!de)
         return ERR_PTR(-ENOENT);

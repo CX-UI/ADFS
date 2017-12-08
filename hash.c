@@ -279,7 +279,7 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
     int offset, buckets;
     u8 valid_flag;
 
-    nova_dbg("dafs record pos in hash table");
+    nova_dbg("dafs record pos in hash table address is %llu", block);
     buckets = 4095; 
     offset = 4;
     ht = (struct hash_table *)nova_get_block(sb, block);  
@@ -518,6 +518,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     u8 valid_flag;
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    nova_dbg("dafs start to lookup in hashtable");
     ht = (struct hash_table *)nova_get_block(sb, block);  
 
     buckets = 4095;
@@ -553,6 +554,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
 
     }
 out: 
+    nova_dbg("dafs finish lookup in hash table");
     return ret;
 }
 
