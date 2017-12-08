@@ -721,6 +721,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
     
     nova_dbg("set pos in hash table for each zone");
     hashname = BKDRHash(phname, flen);
+    nova_dbg("dentry hashname is %llu", hashname);
     ht_addr = dzt_ei->ht_head;
     ret = record_pos_htable(sb, ht_addr, hashname, cur_pos, 1);
 
@@ -738,6 +739,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
         list_add_tail(&tem_sf->list, &par_dir->sub_file);
     }
 
+    dafs_de->hname = hashname;
     /*add dir info if dentry is dir*/
     if(file_type==1){
         dafs_de->file_type = NORMAL_DIRECTORY;
@@ -747,7 +749,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
         dafs_de->file_type = NORMAL_FILE;
     }
 
-    dafs_de->hname = hashname;
+    //dafs_de->hname = hashname;
     nova_flush_buffer(dafs_de, DAFS_DEF_DENTRY_SIZE, 0);
     /*new rf_entry*/
     //add_rf_entry(dzt_ei, hashname);
@@ -1264,7 +1266,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
 
     par_de = &dafs_ze->dentry[par_pos];
     nova_dbg("par pos is %d", par_pos);
-    par_hn = le64_to_cpu(par_de->dzt_hn);
+    par_hn = le64_to_cpu(par_de->hname);
     /*bugbugbugbugbug*/
     nova_dbg("parent hashname is %llu", par_hn);
     /*update dir info entry */

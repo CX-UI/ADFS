@@ -485,6 +485,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 					S_IFDIR | mode, sb->s_blocksize,
 					0, &dentry->d_name);
 	if (IS_ERR(inode)) {
+        nova_dbg("dafs fail to make inode");
 		err = PTR_ERR(inode);
 		goto out_err;
 	}
