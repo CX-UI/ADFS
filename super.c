@@ -647,6 +647,7 @@ setup_sb:
 		goto out;
 	}
 
+    nova_dbg("root_dentry name is %s", sb->s_root->d_name.name);
     /*build root zone*/
     //dafs_build_zone(sb);
 

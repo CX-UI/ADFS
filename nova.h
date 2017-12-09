@@ -799,6 +799,7 @@ static inline struct nova_inode *nova_get_inode(struct super_block *sb,
 	struct nova_inode_info *si = NOVA_I(inode);
 	struct nova_inode_info_header *sih = &si->header;
 
+    nova_dbg("si addr is %llu", sih->pi_addr);
 	return (struct nova_inode *)nova_get_block(sb, sih->pi_addr);
 }
 
@@ -1044,6 +1045,8 @@ int dafs_rm_dir(struct dentry *dentry);
 int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt_entry_info *ei,
         u64 self_ino, u64 parent_ino, const char *ful_name);
 extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type);
+int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u64 pi_addr,
+	struct nova_inode_info_header *sih);
 extern int dafs_remove_dentry(struct dentry *dentry);
 struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dentry *dentry, int update_flag);
 int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname, const char *dename);

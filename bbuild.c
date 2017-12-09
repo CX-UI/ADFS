@@ -808,6 +808,7 @@ int nova_rebuild_inode(struct super_block *sb, struct nova_inode_info *si,
 	struct nova_inode *pi;
 	unsigned long nova_ino;
 
+    nova_dbg("%s:dafs start to rebuild inode",__func__);
 	pi = (struct nova_inode *)nova_get_block(sb, pi_addr);
 	if (!pi)
 		NOVA_ASSERT(0);
@@ -834,6 +835,7 @@ int nova_rebuild_inode(struct super_block *sb, struct nova_inode_info *si,
 		break;
 	case S_IFDIR:
 		//nova_rebuild_dir_inode_tree(sb, pi, pi_addr, sih);
+		dafs_rebuild_dir_inode_tree(sb, pi, pi_addr, sih);
 		break;
 	default:
 		/* In case of special inode, walk the log */

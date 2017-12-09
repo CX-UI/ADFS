@@ -851,6 +851,7 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
 
 	if (ino == NOVA_ROOT_INO) {
 		pi_addr = NOVA_ROOT_INO_START;
+        nova_dbg("%s: pi_addr is 0x%llu", __func__, pi_addr);
 	} else {
 		err = nova_get_inode_address(sb, ino, &pi_addr, 0);
 		if (err) {
@@ -992,6 +993,7 @@ u64 nova_new_nova_inode(struct super_block *sb, u64 *pi_addr)
 	int ret;
 	timing_t new_inode_time;
 
+    nova_dbg("dafs start make ino");
 	NOVA_START_TIMING(new_nova_inode_t, new_inode_time);
     /*决定Inode在哪个cpu上*/
 	map_id = sbi->map_id;
@@ -1018,6 +1020,7 @@ u64 nova_new_nova_inode(struct super_block *sb, u64 *pi_addr)
 
 	ino = free_ino;
 
+    nova_dbg("ino is %llu",ino);
 	NOVA_END_TIMING(new_nova_inode_t, new_inode_time);
 	return ino;
 }
@@ -1036,11 +1039,13 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 	int errval;
 	timing_t new_inode_time;
 
+    nova_dbg("dafs start make new vfs inode");
 	NOVA_START_TIMING(new_vfs_inode_t, new_inode_time);
 	sb = dir->i_sb;
 	sbi = (struct nova_sb_info *)sb->s_fs_info;
 	inode = new_inode(sb);
 	if (!inode) {
+        nova_dbg("dafs new inode fails");
 		errval = -ENOMEM;
 		goto fail2;
 	}
@@ -1054,12 +1059,13 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 
 	diri = nova_get_inode(sb, dir);
 	if (!diri) {
+        nova_dbg("dafs not get diri");
 		errval = -EACCES;
 		goto fail1;
 	}
 
 	pi = (struct nova_inode *)nova_get_block(sb, pi_addr);
-	nova_dbg_verbose("%s: allocating inode %llu @ 0x%llx\n",
+	nova_dbg("%s: allocating inode %llu @ 0x%llx\n",
 					__func__, ino, pi_addr);
 
 	/* chosen inode is in ino */
@@ -1067,20 +1073,24 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 
 	switch (type) {
 		case TYPE_CREATE:
+            nova_dbg("dafs make TYPE_CREATE");
 			inode->i_op = &nova_file_inode_operations;
 			inode->i_mapping->a_ops = &nova_aops_dax;
 			inode->i_fop = &nova_dax_file_operations;
 			break;
 		case TYPE_MKNOD:
+            nova_dbg("dafs make TYPE_MKNOD");
 			init_special_inode(inode, mode, rdev);
 			//inode->i_op = &nova_special_inode_operations;
 			inode->i_op = &dafs_special_inode_operations;
 			break;
 		case TYPE_SYMLINK:
+            nova_dbg("dafs make TYPE_SYMLINK");
 			inode->i_op = &nova_symlink_inode_operations;
 			inode->i_mapping->a_ops = &nova_aops_dax;
 			break;
 		case TYPE_MKDIR:
+            nova_dbg("dafs make TYPE_MKDIR");
 			//inode->i_op = &nova_dir_inode_operations;
 			//inode->i_fop = &nova_dir_operations;
 			inode->i_op = &dafs_dir_inode_operations;
@@ -1116,6 +1126,7 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 	nova_set_inode_flags(inode, pi, le32_to_cpu(pi->i_flags));
 
 	if (insert_inode_locked(inode) < 0) {
+        nova_dbg("dafs make new inode fail ino");
 		nova_err(sb, "nova_new_inode failed ino %lx\n", inode->i_ino);
 		errval = -EINVAL;
 		goto fail1;
@@ -1123,6 +1134,7 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 
 	nova_flush_buffer(&pi, NOVA_INODE_SIZE, 0);
 	NOVA_END_TIMING(new_vfs_inode_t, new_inode_time);
+    nova_dbg("dafs end making inode");
 	return inode;
 fail1:
 	make_bad_inode(inode);

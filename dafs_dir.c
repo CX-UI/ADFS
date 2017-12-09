@@ -835,6 +835,130 @@ OUT:
     return direntry;
 }
 
+int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u64 pi_addr,
+	struct nova_inode_info_header *sih)
+{
+	//struct nova_dentry *entry = NULL;
+	struct nova_setattr_logentry *attr_entry = NULL;
+	struct nova_link_change_entry *link_change_entry = NULL;
+	struct nova_inode_log_page *curr_page;
+	u64 ino = pi->nova_ino;
+	//unsigned short de_len;
+	timing_t rebuild_time;
+	void *addr;
+	u64 curr_p;
+	u64 next;
+	u8 type;
+	int ret;
+
+	NOVA_START_TIMING(rebuild_dir_t, rebuild_time);
+	nova_dbg("Rebuild dir %llu tree\n", ino);
+
+	sih->pi_addr = pi_addr;
+
+	curr_p = pi->log_head;
+    /*
+	if (curr_p == 0) {
+		nova_err(sb, "Dir %llu log is NULL!\n", ino);
+		BUG();
+	}*/
+
+	nova_dbg("Log head 0x%llx, tail 0x%llx\n",
+				curr_p, pi->log_tail);
+
+	sih->log_pages = 1;
+	//while (curr_p != pi->log_tail) {
+		/*if (goto_next_page(sb, curr_p)) {
+			sih->log_pages++;
+			curr_p = next_log_page(sb, curr_p);
+		}*/
+
+        /*
+		if (curr_p == 0) {
+			nova_err(sb, "Dir %llu log is NULL!\n", ino);
+			BUG();
+		}*/
+
+		//addr = (void *)nova_get_block(sb, curr_p);
+    //find bug
+        type = nova_get_entry_type(addr);
+		switch (type) {
+			case SET_ATTR:
+				attr_entry =
+					(struct nova_setattr_logentry *)addr;
+				nova_apply_setattr_entry(sb, pi, sih,
+								attr_entry);
+				sih->last_setattr = curr_p;
+				curr_p += sizeof(struct nova_setattr_logentry);
+				//continue;
+                break;
+			case LINK_CHANGE:
+				link_change_entry =
+					(struct nova_link_change_entry *)addr;
+				dafs_apply_link_change_entry(pi,
+							link_change_entry);
+				sih->last_link_change = curr_p;
+				curr_p += sizeof(struct nova_link_change_entry);
+                break;
+				//continue;
+			case DIR_LOG:
+				break;
+			default:
+				nova_dbg("%s: unknown type %d, 0x%llx\n",
+							__func__, type, curr_p);
+				NOVA_ASSERT(0);
+		}
+
+		//entry = (struct nova_dentry *)nova_get_block(sb, curr_p);
+		/*nova_dbgv("curr_p: 0x%llx, type %d, ino %llu, "
+			"name %s, namelen %u, rec len %u\n", curr_p,
+			entry->entry_type, le64_to_cpu(entry->ino),
+			entry->name, entry->name_len,
+			le16_to_cpu(entry->de_len));
+
+		if (entry->ino > 0) {
+			if (entry->invalid == 0) {
+				//A valid entry to add 
+				ret = nova_replay_add_dentry(sb, sih, entry);
+			}
+		} else {
+			// Delete the entry
+			ret = nova_replay_remove_dentry(sb, sih, entry);
+		}
+
+		if (ret) {
+			nova_err(sb, "%s ERROR %d\n", __func__, ret);
+			break;
+		}*/
+
+		//nova_rebuild_dir_time_and_size(sb, pi, entry);
+
+		//de_len = le16_to_cpu(entry->de_len);
+		//curr_p += de_len;
+	//}
+
+	sih->i_size = le64_to_cpu(pi->i_size);
+	sih->i_mode = le64_to_cpu(pi->i_mode);
+    nova_flush_buffer(pi, sizeof(struct nova_inode), 0);
+
+    /* Keep traversing until log ends */
+    /*
+    curr_p &= PAGE_MASK;
+    curr_page = (struct nova_inode_log_page *)nova_get_block(sb, curr_p);
+    while ((next = curr_page->page_tail.next_page) != 0) {
+        sih->log_pages++;
+        curr_p = next;
+        curr_page = (struct nova_inode_log_page *)
+        nova_get_block(sb, curr_p);
+    }
+
+    pi->i_blocks = sih->log_pages;*/
+
+//	nova_print_dir_tree(sb, sih, ino);
+	nova_dbg("%s:dafs finish rebuild dir inode");
+    NOVA_END_TIMING(rebuild_dir_t, rebuild_time);
+    return 0;
+}
 
 /**递归删除dentry*/
 static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de,\
