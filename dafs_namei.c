@@ -112,7 +112,7 @@ static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\
     struct dafs_dentry *direntry;
     u64 ino;
    
-    nova_dbg("dafs start to inode by name");
+    nova_dbg("%s:dafs start to inode by name",__func__);
     direntry = dafs_find_direntry(sb, dentry,1);
     if(direntry == NULL) { 
         return 0;
@@ -120,7 +120,7 @@ static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\
     
     *res_entry = direntry;
     ino = le64_to_cpu(direntry->ino);
-    nova_dbg("dafs finish inode by name, ino is %llu", ino);
+    nova_dbg("%s:dafs finish inode by name, ino is %llu",__func__, ino);
     return ino;
 }
 
@@ -132,7 +132,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     ino_t ino;
     timing_t lookup_time;
     
-    nova_dbg("dafs start looup");
+    nova_dbg("%s,dafs start looup",__func__);
 	NOVA_START_TIMING(lookup_t, lookup_time);
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
 		nova_dbg("%s: namelen %u exceeds limit\n",
@@ -156,7 +156,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
 	}
 
 	NOVA_END_TIMING(lookup_t, lookup_time);
-    nova_dbg("dafs finish lookup");
+    nova_dbg("%s:dafs finish lookup",__func__);
 	return d_splice_alias(inode, dentry);
 }
 
@@ -461,7 +461,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     int err = -EMLINK;
     timing_t mkdir_time;
    
-    nova_dbg("dafs start to mmkdir");
+    nova_dbg("%s:dafs start to mmkdir",__func__);
     NOVA_START_TIMING(mkdir_t, mkdir_time);
     if(dir->i_nlink >= NOVA_LINK_MAX)
         goto out;
@@ -535,7 +535,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	if (!pidir)
 		return -EINVAL;
 
-    nova_dbg("dafs start to rmdir");
+    nova_dbg("%s:dafs start to rmdir",__func__);
     /*not sure to add read hot degree*/
     if(dafs_inode_by_name(dir, dentry, &de) == 0)
         return -ENOENT;
@@ -757,7 +757,7 @@ struct dentry *dafs_get_parent(struct dentry *child)
     struct dafs_dentry *de;
     ino_t ino;
    
-    nova_dbg("dafs start get [parent]");
+    nova_dbg("%s: dafs start get [parent]",__func__);
     de = dafs_find_direntry(sb, child,1);
     if(!de)
         return ERR_PTR(-ENOENT);

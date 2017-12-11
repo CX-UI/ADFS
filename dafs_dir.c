@@ -180,7 +180,7 @@ static inline char* get_dentry_path(const struct dentry *dentry)
     struct path path;
     struct dentry *rd;
 
-    nova_dbg("dafs get dentry path");
+    nova_dbg("%s:dafs get dentry path",__func__);
     ph = kzalloc(sizeof(char)*LARGE_NAME_LEN, GFP_ATOMIC);
     buf = kzalloc(sizeof(char)*LARGE_NAME_LEN,GFP_ATOMIC);
     if(!buf)
@@ -208,9 +208,12 @@ static inline char* get_dentry_path(const struct dentry *dentry)
     path.dentry = dget(fs->pwd.dentry);
     nova_dbg("dentry name is %s", dentry->d_name.name);
     strcat(ph,d_path(&path, buf, LARGE_NAME_LEN));
-    if(strlen(ph)>1)
-        strcat(ph, "/");
-    strcat(ph, dentry->d_name.name);
+    if(strlen(ph)>1){
+        nova_dbg("par dir not root");
+        strcat(ph,"/");
+    }
+    if(strcmp(dentry->d_name.name,"/"))
+        strcat(ph, dentry->d_name.name);
     mntput(vfsmnt);
     
     nova_dbg("buf is %s", buf);
@@ -597,7 +600,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type)
 	NOVA_START_TIMING(add_dentry_t, add_dentry_time);
 	if (namelen == 0)
 		return -EINVAL;
-    nova_dbg("dafs add dentry");
+    nova_dbg("%s:dafs add dentry",__func__);
     ph = get_dentry_path(dentry);
     phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
@@ -781,7 +784,8 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dent
     char *phname, *ph, *phn;
     int ret;
 
-    nova_dbg("dafs start to find direntry");
+    nova_dbg("%s:dafs start to find direntry",__func__);
+    nova_dbg("dentry name is %s", dentry->d_name.name);
     ph = get_dentry_path(dentry);
     nova_dbg("strictly full name is %s", ph);
     nova_dbg("strictly full name length is %llu", strlen(ph));
@@ -831,7 +835,7 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dent
     kfree(ph);
     kfree(phn);
 OUT:
-    nova_dbg("dafs finish find direntry");
+    nova_dbg("%s:dafs finish find direntry",__func__);
     return direntry;
 }
 
@@ -866,6 +870,10 @@ int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u
 	nova_dbg("Log head 0x%llx, tail 0x%llx\n",
 				curr_p, pi->log_tail);
 
+    if(!curr_p){
+        goto DIR_TYPE;
+    }
+
 	sih->log_pages = 1;
 	//while (curr_p != pi->log_tail) {
 		/*if (goto_next_page(sb, curr_p)) {
@@ -879,35 +887,31 @@ int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u
 			BUG();
 		}*/
 
-		//addr = (void *)nova_get_block(sb, curr_p);
+	addr = (void *)nova_get_block(sb, curr_p);
     //find bug
-        type = nova_get_entry_type(addr);
-		switch (type) {
-			case SET_ATTR:
-				attr_entry =
-					(struct nova_setattr_logentry *)addr;
-				nova_apply_setattr_entry(sb, pi, sih,
-								attr_entry);
-				sih->last_setattr = curr_p;
-				curr_p += sizeof(struct nova_setattr_logentry);
+    type = nova_get_entry_type(addr);
+	switch (type) {
+		case SET_ATTR:
+			attr_entry =(struct nova_setattr_logentry *)addr;
+			nova_apply_setattr_entry(sb, pi, sih,attr_entry);
+			sih->last_setattr = curr_p;
+			curr_p += sizeof(struct nova_setattr_logentry);
 				//continue;
                 break;
-			case LINK_CHANGE:
-				link_change_entry =
-					(struct nova_link_change_entry *)addr;
-				dafs_apply_link_change_entry(pi,
-							link_change_entry);
-				sih->last_link_change = curr_p;
-				curr_p += sizeof(struct nova_link_change_entry);
-                break;
+		case LINK_CHANGE:
+			link_change_entry = (struct nova_link_change_entry *)addr;
+			dafs_apply_link_change_entry(pi, link_change_entry);
+			sih->last_link_change = curr_p;
+			curr_p += sizeof(struct nova_link_change_entry);
+            break;
 				//continue;
-			case DIR_LOG:
-				break;
-			default:
-				nova_dbg("%s: unknown type %d, 0x%llx\n",
+			//case DIR_LOG:
+				//break;
+		default:
+			nova_dbg("%s: unknown type %d, 0x%llx\n",
 							__func__, type, curr_p);
-				NOVA_ASSERT(0);
-		}
+				//NOVA_ASSERT(0);
+	}
 
 		//entry = (struct nova_dentry *)nova_get_block(sb, curr_p);
 		/*nova_dbgv("curr_p: 0x%llx, type %d, ino %llu, "
@@ -936,7 +940,8 @@ int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u
 		//de_len = le16_to_cpu(entry->de_len);
 		//curr_p += de_len;
 	//}
-
+DIR_TYPE:
+    nova_dbg("%s: it is dir type",__func__);
 	sih->i_size = le64_to_cpu(pi->i_size);
 	sih->i_mode = le64_to_cpu(pi->i_mode);
     nova_flush_buffer(pi, sizeof(struct nova_inode), 0);
@@ -955,7 +960,7 @@ int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u
     pi->i_blocks = sih->log_pages;*/
 
 //	nova_print_dir_tree(sb, sih, ino);
-	nova_dbg("%s:dafs finish rebuild dir inode");
+	nova_dbg("%s:dafs finish rebuild dir inode",__func__);
     NOVA_END_TIMING(rebuild_dir_t, rebuild_time);
     return 0;
 }
@@ -2157,6 +2162,8 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     struct dentry *dentry = file->f_path.dentry; 
     struct dafs_dentry *de = NULL;
     struct dafs_dentry *f_de = NULL;
+    struct dafs_dentry *prev_de = NULL;
+    struct nova_inode  *prev_child_pi = NULL;
     struct dzt_entry_info *ei;
     struct dafs_zone_entry *ze;
     struct dir_info *dir;
@@ -2171,21 +2178,27 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     char *phname, *ph, *phn;
     timing_t readdir_time;
 
-    nova_dbg("dafs readdir");
+    nova_dbg("%s:dafs readdir",__func__);
     NOVA_START_TIMING(readdir_t, readdir_time);
     pidir = nova_get_inode(sb ,inode);
     
-	nova_dbgv("%s: ino %llu, size %llu, pos 0x%llx\n",
+	nova_dbg("%s: ino %llu, size %llu, pos 0x%llx\n",
 			__func__, (u64)inode->i_ino,
 			pidir->i_size, ctx->pos);
+    pos = ctx->pos;
+
+    if(pos == READDIR_END){
+        nova_dbg("dafs readdir end");
+        goto out;
+    } 
 
     ph = get_dentry_path(dentry);
-    phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
+    //phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
-    memcpy(phname, ph, strlen(ph));
-    ei = find_dzt(sb, phname, phn);
+    //memcpy(phname, ph, strlen(ph));
+    ei = find_dzt(sb, ph, phn);
 
-    kfree(phname);
+    kfree(phn);
     kfree(ph);
     if(!ei){
         nova_err("ei with dentry %llu not exist!\n", (u64)dentry->d_inode->i_ino);
@@ -2197,17 +2210,21 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
 	f_de = dafs_find_direntry(sb, dentry,1);
    
     hashname = BKDRHash(f_de->ful_name.f_name, le64_to_cpu(f_de->fname_len));
+    nova_dbg("%s:find dir name is %s",__func__,f_de->ful_name.f_name);
     dir = radix_tree_lookup(&ei->dir_tree, hashname);
+    if(!dir)
+        nova_dbg("%s:not find dir",__func__);
 
     //sub_num = le64_to_cpu(f_de->sub_num);
 
-    pos = ctx->pos;
+    /*pos = ctx->pos;
 
     if(pos == READDIR_END){
         goto out;
-    } 
+    }*/ 
 
     head = &dir->sub_file;
+    nova_dbg("%s:dir_subfile num is%d",__func__,dir->sub_num);
     list_for_each(this, head){
         tem_sf = list_entry(this, struct file_p, list);
         pos = tem_sf->pos;
@@ -2217,6 +2234,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
         }
 
         de = &ze->dentry[pos];
+        nova_dbg("%s:list subfile",__func__);
         type = nova_get_entry_type((void *)de);
         if(type != DAFS_DIR_ENTRY){
             nova_dbg ("unknown type\n");
@@ -2224,7 +2242,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
             return -EINVAL;
         }
 
-		nova_dbgv("pos %lu, type %d, ino %llu, "
+		nova_dbg("pos %lu, type %d, ino %llu, "
 			"name %s, namelen %u, rec len %u\n", pos,
 			de->entry_type, le64_to_cpu(de->ino),
 			de->name, de->name_len,
@@ -2241,26 +2259,34 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
             }
 
             child_pi = nova_get_block(sb, pi_addr);
-			nova_dbgv("ctx: ino %llu, name %s, "
+			nova_dbg("ctx: ino %llu, name %s, "
 				"name_len %u, de_len %u\n",
 				(u64)ino, de->name, de->name_len,
 				DAFS_DEF_DENTRY_SIZE);
-			if (!dir_emit(ctx, de->name,
-				de->name_len, ino,
-				IF2DT(le16_to_cpu(child_pi->i_mode)))) {
-				nova_dbgv("Here: pos %llu\n", ctx->pos);
+			if (prev_de &&!dir_emit(ctx, prev_de->name,
+				prev_de->name_len, ino,
+				IF2DT(le16_to_cpu(prev_child_pi->i_mode)))) {
+				nova_dbg("Here: pos %llu\n", ctx->pos);
 				return 0;
 			}
+            prev_child_pi = child_pi;
 
         }
         ctx->pos = pos;
         //n++;
 
     }
-    
+
+	if (prev_de &&!dir_emit(ctx, prev_de->name, prev_de->name_len, 
+                ino, IF2DT(le16_to_cpu(prev_child_pi->i_mode)))) {
+			nova_dbg("Here: pos %llu\n", ctx->pos);
+			return 0;
+	}
+    ctx->pos = READDIR_END;
+    nova_dbg("dafs ctx pos is %llx", ctx->pos);
 out:
 	NOVA_END_TIMING(readdir_t, readdir_time);
-	nova_dbgv("%s return\n", __func__);
+	nova_dbg("%s readir return\n", __func__);
 	return 0;
 
 }

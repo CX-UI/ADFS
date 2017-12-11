@@ -612,6 +612,7 @@ static int nova_readdir(struct file *file, struct dir_context *ctx)
 	u64 curr_p;
 	u8 type;
 	int ret;
+    int i=0;
 	timing_t readdir_time;
 
 	NOVA_START_TIMING(readdir_t, readdir_time);
@@ -690,14 +691,14 @@ static int nova_readdir(struct file *file, struct dir_context *ctx)
 			}
 
 			child_pi = nova_get_block(sb, pi_addr);
-			nova_dbgv("ctx: ino %llu, name %s, "
+			nova_dbg("ctx: ino %llu, name %s, "
 				"name_len %u, de_len %u\n",
 				(u64)ino, entry->name, entry->name_len,
 				entry->de_len);
 			if (prev_entry && !dir_emit(ctx, prev_entry->name,
 				prev_entry->name_len, ino,
 				IF2DT(le16_to_cpu(prev_child_pi->i_mode)))) {
-				nova_dbgv("Here: pos %llu\n", ctx->pos);
+				nova_dbg("Here: pos %llu\n", ctx->pos);
 				return 0;
 			}
 			//prev_entry = entry;
@@ -705,6 +706,8 @@ static int nova_readdir(struct file *file, struct dir_context *ctx)
 		}
 		ctx->pos = pos;
 		curr_p += de_len;
+        i++;
+        nova_dbg("dbg times is %d",i);
 	}
 
 	if (prev_entry && !dir_emit(ctx, prev_entry->name,

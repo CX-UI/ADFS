@@ -101,6 +101,7 @@ int nova_init_inode_table(struct super_block *sb)
 		block = nova_get_block_off(sb, blocknr, NOVA_BLOCK_TYPE_2M);
         /* 填充结构体*/
 		inode_table->log_head = block;
+        nova_dbg("%s:inode table log head is %llu",__func__,block);
 		nova_flush_buffer(inode_table, CACHELINE_SIZE, 0);
 	}
 
@@ -126,27 +127,35 @@ int nova_get_inode_address(struct super_block *sb, u64 ino,
 	unsigned long curr_addr;
 	int allocated;
 
+    nova_dbg("%s:dafs get inode addr",__func__);
 	pi = nova_get_inode_by_ino(sb, NOVA_INODETABLE_INO);
 	data_bits = blk_type_to_shift[pi->i_blk_type];
+    nova_dbg("%s:dbg blk_type is %d, dafs_bits is %d", __func__, pi->i_blk_type,data_bits);
 	num_inodes_bits = data_bits - NOVA_INODE_BITS;
 
     /* 这也算是做了一个hash*/
 	cpuid = ino % sbi->cpus;
 	internal_ino = ino / sbi->cpus;
+    nova_dbg("%s:dbg ino is%llu,internal_ino is %llu, num cpus is %d",__func__,ino, internal_ino, sbi->cpus);
 
 	inode_table = nova_get_inode_table(sb, cpuid);
+    nova_dbg("%s:inode_table log head is %llu",__func__,inode_table->log_head);
 	superpage_count = internal_ino >> num_inodes_bits;
     /*感觉是取低五位*/
 	index = internal_ino & ((1 << num_inodes_bits) - 1);
+    nova_dbg("%s:index is %d, supercount is %d",__func__,index,superpage_count);
 
 	curr = inode_table->log_head;
-	if (curr == 0)
+	if (curr == 0){
+        nova_dbg("%s:dafs do not get inodetable addr",__func__);
 		return -EINVAL;
-
+    }
+    nova_dbg("%s:inode table addr is %llu", __func__, curr);
 	for (i = 0; i < superpage_count; i++) {
 		if (curr == 0)
 			return -EINVAL;
 
+        nova_dbg("dafs finding inode index");
 		curr_addr = (unsigned long)nova_get_block(sb, curr);
 		/* Next page pointer in the last 8 bytes of the superpage */
 		curr_addr += 2097152 - 8;
@@ -172,6 +181,7 @@ int nova_get_inode_address(struct super_block *sb, u64 ino,
 
 	*pi_addr = curr + index * NOVA_INODE_SIZE;
 
+    nova_dbg("%s:dafs finish find inode at %llu",__func__,*pi_addr);
 	return 0;
 }
 
