@@ -453,15 +453,15 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     struct super_block *sb = dir->i_sb;
     struct inode *inode;
     struct nova_inode *pidir, *pi;
-    //struct nova_inode_info *si;
-    //struct nova_inode_info_header *sih = NULL;
+    struct nova_inode_info *si;
+    struct nova_inode_info_header *sih = NULL;
     u64 pi_addr = 0;
     u64 tail = 0;
     u64 ino;
     int err = -EMLINK;
     timing_t mkdir_time;
    
-    nova_dbg("%s:dafs start to mmkdir",__func__);
+    nova_dbg("%s:dafs start to mkdir",__func__);
     NOVA_START_TIMING(mkdir_t, mkdir_time);
     if(dir->i_nlink >= NOVA_LINK_MAX)
         goto out;
@@ -494,6 +494,9 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     //dafs_append_dir_init_entries(sb, pi, inode->i_ino, dir->i_ino);
    
     //dafs不需要rebuild dir tree
+    si = NOVA_I(inode);
+    sih = &si->header;
+    dafs_rebuild_dir_inode_tree(sb, pi, pi_addr, sih);
 
 	pidir = nova_get_inode(sb, dir);
 	dir->i_blocks = pidir->i_blocks;
@@ -501,9 +504,10 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	d_instantiate(dentry, inode);
 	unlock_new_inode(inode);
 
-	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	//dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
+    nova_dbg("%s: dafs end mkdir",__func__);
 	return err;
 
 out_err:

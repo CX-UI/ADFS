@@ -799,7 +799,7 @@ static inline struct nova_inode *nova_get_inode(struct super_block *sb,
 	struct nova_inode_info *si = NOVA_I(inode);
 	struct nova_inode_info_header *sih = &si->header;
 
-    nova_dbg("si addr is %llu", sih->pi_addr);
+    nova_dbg("inode addr is %llu", sih->pi_addr);
 	return (struct nova_inode *)nova_get_block(sb, sih->pi_addr);
 }
 

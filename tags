@@ -12,7 +12,7 @@ BM_4K	nova.h	/^	BM_4K = 0,$/;"	e	enum:bm_type
 CACHELINE_ALIGN	nova_def.h	190;"	d
 CACHELINE_MASK	nova_def.h	189;"	d
 CACHELINE_SIZE	nova_def.h	188;"	d
-CACHE_ALIGN	nova.h	875;"	d
+CACHE_ALIGN	nova.h	876;"	d
 CHECK_ZONES_SLLEP_TIME	nova.h	139;"	d
 CPUID_MASK	bbuild.c	257;"	d	file:
 Countstats	stats.c	/^u64 Countstats[TIMING_NUM];$/;"	v
@@ -202,9 +202,6 @@ __remove_direntry	dafs_dir.c	/^static int __remove_direntry(struct super_block *
 __rename_dir	dafs_dir.c	/^int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \\$/;"	f
 __rename_dir_direntry	dafs_dir.c	/^int __rename_dir_direntry(struct dentry *old_dentry, struct dentry *new_dentry)$/;"	f
 __rename_file_dentry	dafs_dir.c	/^int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)$/;"	f
-__this_module	nova.mod.c	/^__visible struct module __this_module$/;"	v	typeref:struct:module
-__used	nova.mod.c	/^__used$/;"	v	file:
-__used	nova.mod.c	/^__used$/;"	v	typeref:struct:____versions	file:
 _mm_clflush	nova_def.h	209;"	d
 _mm_clflushopt	nova_def.h	211;"	d
 _mm_clwb	nova_def.h	213;"	d
@@ -309,9 +306,10 @@ dafs_lookup	dafs_namei.c	/^static struct dentry *dafs_lookup(struct inode *dir, 
 dafs_merge_zone	zone.c	/^int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei)$/;"	f
 dafs_mkdir	dafs_namei.c	/^static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)$/;"	f	file:
 dafs_mknod	dafs_namei.c	/^static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t rdev)$/;"	f	file:
-dafs_new_dzt_blocks	balloc.c	/^inline int dafs_new_dzt_blocks(struct super_block, unsigned short btype, unsigned long *blocknr, \\$/;"	f
+dafs_new_dzt_blocks	balloc.c	/^inline int dafs_new_dzt_blocks(struct super_block *sb, unsigned short btype, unsigned long *blocknr, \\$/;"	f
 dafs_new_zone_blocks	balloc.c	/^inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero)$/;"	f
 dafs_readdir	dafs_dir.c	/^static int dafs_readdir(struct file *file, struct dir_context *ctx)$/;"	f	file:
+dafs_rebuild_dir_inode_tree	dafs_dir.c	/^int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u64 pi_addr,$/;"	f
 dafs_rec_mf	zone.c	/^u32 dafs_rec_mf(struct dzt_entry_info *ei)$/;"	f
 dafs_remove_dentry	dafs_dir.c	/^int dafs_remove_dentry(struct dentry *dentry)$/;"	f
 dafs_rename	dafs_namei.c	/^static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry, $/;"	f	file:
@@ -582,7 +580,7 @@ nova_alloc_range_node	super.c	/^struct nova_range_node *nova_alloc_range_node(st
 nova_alloc_unused_inode	inode.c	/^static int nova_alloc_unused_inode(struct super_block *sb, int cpuid,$/;"	f	file:
 nova_allocate_inode_log_pages	inode.c	/^int nova_allocate_inode_log_pages(struct super_block *sb,$/;"	f
 nova_aops_dax	inode.c	/^const struct address_space_operations nova_aops_dax = {$/;"	v	typeref:struct:address_space_operations
-nova_append_dir_init_entries	dir.c	/^int nova_append_dir_init_entries(struct super_block *sb,$/;"	f
+nova_append_dir_init_entries	dir.c	/^\/* Append . and .. entries *\/nova_dbgint nova_append_dir_init_entries(struct super_block *sb,$/;"	f
 nova_append_dir_inode_entry	dir.c	/^static u64 nova_append_dir_inode_entry(struct super_block *sb,$/;"	f	file:
 nova_append_file_write_entry	inode.c	/^u64 nova_append_file_write_entry(struct super_block *sb, struct nova_inode *pi,$/;"	f
 nova_append_link_change_entry	namei.c	/^int nova_append_link_change_entry(struct super_block *sb,$/;"	f

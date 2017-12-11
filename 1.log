@@ -155,883 +155,776 @@
 [    0.000000] Console: colour VGA+ 80x25
 [    0.000000] console [tty0] enabled
 [    0.000000] tsc: Detected 3591.704 MHz processor
-[ 6849.994451] Calibrating delay loop (skipped) preset value.. 7183.40 BogoMIPS (lpj=14366816)
-[ 6849.994453] pid_max: default: 32768 minimum: 301
-[ 6849.994456] ACPI: Core revision 20150818
-[ 6849.995159] ACPI: 2 ACPI AML tables successfully acquired and loaded
-[ 6849.995170] Security Framework initialized
-[ 6849.995172] Yama: becoming mindful.
-[ 6849.995177] AppArmor: AppArmor initialized
-[ 6849.995494] Dentry cache hash table entries: 1048576 (order: 11, 8388608 bytes)
-[ 6849.996957] Inode-cache hash table entries: 524288 (order: 10, 4194304 bytes)
-[ 6849.997698] Mount-cache hash table entries: 16384 (order: 5, 131072 bytes)
-[ 6849.997704] Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes)
-[ 6849.997862] Initializing cgroup subsys io
-[ 6849.997866] Initializing cgroup subsys memory
-[ 6849.997870] Initializing cgroup subsys devices
-[ 6849.997872] Initializing cgroup subsys freezer
-[ 6849.997873] Initializing cgroup subsys net_cls
-[ 6849.997875] Initializing cgroup subsys perf_event
-[ 6849.997876] Initializing cgroup subsys net_prio
-[ 6849.997878] Initializing cgroup subsys hugetlb
-[ 6849.997880] Initializing cgroup subsys pids
-[ 6849.997938] CPU: Physical Processor ID: 0
-[ 6849.998722] mce: CPU supports 0 MCE banks
-[ 6849.998739] process: using mwait in idle threads
-[ 6849.998743] Last level iTLB entries: 4KB 1024, 2MB 1024, 4MB 1024
-[ 6849.998743] Last level dTLB entries: 4KB 1024, 2MB 1024, 4MB 1024, 1GB 4
-[ 6850.008801] Freeing SMP alternatives memory: 28K (ffffffff81ea6000 - ffffffff81ead000)
-[ 6850.015198] ftrace: allocating 31208 entries in 122 pages
-[ 6850.045512] x2apic enabled
-[ 6850.045674] Switched APIC routing to physical x2apic.
-[ 6850.046479] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
-[ 6850.149719] smpboot: CPU0: Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (family: 0x6, model: 0x3c, stepping: 0x3)
-[ 6850.149757] Performance Events: unsupported p6 CPU model 60 no PMU driver, software events only.
-[ 6850.149765] KVM setup paravirtual spinlock
-[ 6850.150203] x86: Booted up 1 node, 1 CPUs
-[ 6850.150205] smpboot: Total of 1 processors activated (7183.40 BogoMIPS)
-[ 6850.150375] devtmpfs: initialized
-[ 6850.151627] evm: security.selinux
-[ 6850.151627] evm: security.SMACK64
-[ 6850.151628] evm: security.SMACK64EXEC
-[ 6850.151628] evm: security.SMACK64TRANSMUTE
-[ 6850.151629] evm: security.SMACK64MMAP
-[ 6850.151630] evm: security.ima
-[ 6850.151630] evm: security.capability
-[ 6850.151719] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
-[ 6850.151760] pinctrl core: initialized pinctrl subsystem
-[ 6850.151832] RTC time:  9:27:26, date: 12/11/17
-[ 6850.151909] NET: Registered protocol family 16
-[ 6850.152007] cpuidle: using governor ladder
-[ 6850.152009] cpuidle: using governor menu
-[ 6850.152011] PCCT header not found.
-[ 6850.152049] ACPI: bus type PCI registered
-[ 6850.152050] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
-[ 6850.152118] PCI: Using configuration type 1 for base access
-[ 6850.152915] ACPI: Added _OSI(Module Device)
-[ 6850.152916] ACPI: Added _OSI(Processor Device)
-[ 6850.152917] ACPI: Added _OSI(3.0 _SCP Extensions)
-[ 6850.152917] ACPI: Added _OSI(Processor Aggregator Device)
-[ 6850.153363] ACPI: Executed 1 blocks of module-level executable AML code
-[ 6850.154610] ACPI: Interpreter enabled
-[ 6850.154614] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S1_] (20150818/hwxface-580)
-[ 6850.154616] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S2_] (20150818/hwxface-580)
-[ 6850.154618] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S3_] (20150818/hwxface-580)
-[ 6850.154620] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S4_] (20150818/hwxface-580)
-[ 6850.154623] ACPI: (supports S0 S5)
-[ 6850.154624] ACPI: Using IOAPIC for interrupt routing
-[ 6850.154744] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
-[ 6850.157089] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
-[ 6850.157092] acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI]
-[ 6850.157095] acpi PNP0A03:00: _OSC failed (AE_NOT_FOUND); disabling ASPM
-[ 6850.157125] acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended PCI configuration space under this bridge.
-[ 6850.157299] PCI host bridge to bus 0000:00
-[ 6850.157301] pci_bus 0000:00: root bus resource [bus 00-ff]
-[ 6850.157302] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
-[ 6850.157303] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
-[ 6850.157304] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
-[ 6850.157305] pci_bus 0000:00: root bus resource [mem 0xe0000000-0xffdfffff window]
-[ 6850.157331] pci 0000:00:00.0: [8086:1237] type 00 class 0x060000
-[ 6850.157762] pci 0000:00:01.0: [8086:7000] type 00 class 0x060100
-[ 6850.158210] pci 0000:00:01.1: [8086:7111] type 00 class 0x01018a
-[ 6850.158463] pci 0000:00:01.1: reg 0x20: [io  0xd000-0xd00f]
-[ 6850.158567] pci 0000:00:01.1: legacy IDE quirk: reg 0x10: [io  0x01f0-0x01f7]
-[ 6850.158568] pci 0000:00:01.1: legacy IDE quirk: reg 0x14: [io  0x03f6]
-[ 6850.158569] pci 0000:00:01.1: legacy IDE quirk: reg 0x18: [io  0x0170-0x0177]
-[ 6850.158570] pci 0000:00:01.1: legacy IDE quirk: reg 0x1c: [io  0x0376]
-[ 6850.158746] pci 0000:00:02.0: [80ee:beef] type 00 class 0x030000
-[ 6850.163170] pci 0000:00:02.0: reg 0x10: [mem 0xe0000000-0xe0ffffff pref]
-[ 6850.190464] pci 0000:00:03.0: [8086:100e] type 00 class 0x020000
-[ 6850.194925] pci 0000:00:03.0: reg 0x10: [mem 0xf0000000-0xf001ffff]
-[ 6850.204050] pci 0000:00:03.0: reg 0x18: [io  0xd010-0xd017]
-[ 6850.222095] pci 0000:00:04.0: [80ee:cafe] type 00 class 0x088000
-[ 6850.226368] pci 0000:00:04.0: reg 0x10: [io  0xd020-0xd03f]
-[ 6850.230546] pci 0000:00:04.0: reg 0x14: [mem 0xf0400000-0xf07fffff]
-[ 6850.235082] pci 0000:00:04.0: reg 0x18: [mem 0xf0800000-0xf0803fff pref]
-[ 6850.252196] pci 0000:00:05.0: [8086:2415] type 00 class 0x040100
-[ 6850.252276] pci 0000:00:05.0: reg 0x10: [io  0xd100-0xd1ff]
-[ 6850.252322] pci 0000:00:05.0: reg 0x14: [io  0xd200-0xd23f]
-[ 6850.252673] pci 0000:00:06.0: [106b:003f] type 00 class 0x0c0310
-[ 6850.256907] pci 0000:00:06.0: reg 0x10: [mem 0xf0804000-0xf0804fff]
-[ 6850.286636] pci 0000:00:07.0: [8086:7113] type 00 class 0x068000
-[ 6850.287130] pci 0000:00:07.0: quirk: [io  0x4000-0x403f] claimed by PIIX4 ACPI
-[ 6850.287140] pci 0000:00:07.0: quirk: [io  0x4100-0x410f] claimed by PIIX4 SMB
-[ 6850.287417] pci 0000:00:0b.0: [8086:265c] type 00 class 0x0c0320
-[ 6850.291888] pci 0000:00:0b.0: reg 0x10: [mem 0xf0805000-0xf0805fff]
-[ 6850.320621] pci 0000:00:0d.0: [8086:2829] type 00 class 0x010601
-[ 6850.325133] pci 0000:00:0d.0: reg 0x10: [io  0xd240-0xd247]
-[ 6850.333826] pci 0000:00:0d.0: reg 0x18: [io  0xd250-0xd257]
-[ 6850.343320] pci 0000:00:0d.0: reg 0x20: [io  0xd260-0xd26f]
-[ 6850.347398] pci 0000:00:0d.0: reg 0x24: [mem 0xf0806000-0xf0807fff]
-[ 6850.352668] ACPI: PCI Interrupt Link [LNKA] (IRQs 5 9 10 *11)
-[ 6850.352802] ACPI: PCI Interrupt Link [LNKB] (IRQs 5 9 10 *11)
-[ 6850.352858] ACPI: PCI Interrupt Link [LNKC] (IRQs 5 9 *10 11)
-[ 6850.352914] ACPI: PCI Interrupt Link [LNKD] (IRQs 5 *9 10 11)
-[ 6850.353000] ACPI: Enabled 2 GPEs in block 00 to 07
-[ 6850.353092] vgaarb: setting as boot device: PCI:0000:00:02.0
-[ 6850.353094] vgaarb: device added: PCI:0000:00:02.0,decodes=io+mem,owns=io+mem,locks=none
-[ 6850.353096] vgaarb: loaded
-[ 6850.353097] vgaarb: bridge control possible 0000:00:02.0
-[ 6850.353251] SCSI subsystem initialized
-[ 6850.353280] libata version 3.00 loaded.
-[ 6850.353296] ACPI: bus type USB registered
-[ 6850.353305] usbcore: registered new interface driver usbfs
-[ 6850.353310] usbcore: registered new interface driver hub
-[ 6850.353316] usbcore: registered new device driver usb
-[ 6850.353386] PCI: Using ACPI for IRQ routing
-[ 6850.353387] PCI: pci_cache_line_size set to 64 bytes
-[ 6850.353515] Expanded resource Persistent Memory (legacy) due to conflict with PCI Bus 0000:00
-[ 6850.353517] e820: reserve RAM buffer [mem 0x0009fc00-0x0009ffff]
-[ 6850.353592] NetLabel: Initializing
-[ 6850.353593] NetLabel:  domain hash size = 128
-[ 6850.353594] NetLabel:  protocols = UNLABELED CIPSOv4
-[ 6850.353601] NetLabel:  unlabeled traffic allowed by default
-[ 6850.353655] clocksource: Switched to clocksource kvm-clock
-[ 6850.357427] AppArmor: AppArmor Filesystem Enabled
-[ 6850.357460] pnp: PnP ACPI init
-[ 6850.357494] pnp 00:00: Plug and Play ACPI device, IDs PNP0303 (active)
-[ 6850.357540] pnp 00:01: Plug and Play ACPI device, IDs PNP0f03 (active)
-[ 6850.357933] pnp: PnP ACPI: found 2 devices
-[ 6850.363061] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
-[ 6850.363070] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
-[ 6850.363072] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
-[ 6850.363073] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
-[ 6850.363074] pci_bus 0000:00: resource 7 [mem 0xe0000000-0xffdfffff window]
-[ 6850.363094] NET: Registered protocol family 2
-[ 6850.363194] TCP established hash table entries: 65536 (order: 7, 524288 bytes)
-[ 6850.363297] TCP bind hash table entries: 65536 (order: 8, 1048576 bytes)
-[ 6850.363462] TCP: Hash tables configured (established 65536 bind 65536)
-[ 6850.363481] UDP hash table entries: 4096 (order: 5, 131072 bytes)
-[ 6850.363506] UDP-Lite hash table entries: 4096 (order: 5, 131072 bytes)
-[ 6850.363549] NET: Registered protocol family 1
-[ 6850.363557] pci 0000:00:00.0: Limiting direct PCI/PCI transfers
-[ 6850.363576] pci 0000:00:01.0: Activating ISA DMA hang workarounds
-[ 6850.363597] pci 0000:00:02.0: Video device with shadowed ROM
-[ 6850.363831] PCI: CLS 64 bytes, default 64
-[ 6850.363862] Trying to unpack rootfs image as initramfs...
-[ 6850.706853] Freeing initrd memory: 34072K (ffff880033d64000 - ffff880035eaa000)
-[ 6850.706880] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
-[ 6850.706881] software IO TLB [mem 0x7c000000-0x80000000] (64MB) mapped at [ffff88007c000000-ffff88007fffffff]
-[ 6850.706948] platform rtc_cmos: registered platform RTC device (no PNP device found)
-[ 6850.706959] RAPL PMU detected, API unit is 2^-32 Joules, 4 fixed counters 10737418240 ms ovfl timer
-[ 6850.706960] hw unit of domain pp0-core 2^-0 Joules
-[ 6850.706961] hw unit of domain package 2^-0 Joules
-[ 6850.706962] hw unit of domain dram 2^-0 Joules
-[ 6850.706962] hw unit of domain pp1-gpu 2^-0 Joules
-[ 6850.706989] microcode: CPU0 sig=0x306c3, pf=0x40, revision=0x0
-[ 6850.707019] microcode: Microcode Update Driver: v2.00 <tigran@aivazian.fsnet.co.uk>, Peter Oruba
-[ 6850.707044] Scanning for low memory corruption every 60 seconds
-[ 6850.707247] futex hash table entries: 256 (order: 2, 16384 bytes)
-[ 6850.707261] audit: initializing netlink subsys (disabled)
-[ 6850.707270] audit: type=2000 audit(1512991298.505:1): initialized
-[ 6850.707414] Initialise system trusted keyring
-[ 6850.707464] HugeTLB registered 2 MB page size, pre-allocated 0 pages
-[ 6850.708449] zbud: loaded
-[ 6850.708567] VFS: Disk quotas dquot_6.6.0
-[ 6850.708585] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
-[ 6850.708793] squashfs: version 4.0 (2009/01/31) Phillip Lougher
-[ 6850.708902] fuse init (API version 7.23)
-[ 6850.708971] Key type big_key registered
-[ 6850.709359] Key type asymmetric registered
-[ 6850.709361] Asymmetric key parser 'x509' registered
-[ 6850.709371] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 249)
-[ 6850.709382] io scheduler noop registered
-[ 6850.709383] io scheduler deadline registered (default)
-[ 6850.709401] io scheduler cfq registered
-[ 6850.709459] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
-[ 6850.709462] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
-[ 6850.709550] ACPI: AC Adapter [AC] (on-line)
-[ 6850.709584] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
-[ 6850.709586] ACPI: Power Button [PWRF]
-[ 6850.709634] input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
-[ 6850.709635] ACPI: Sleep Button [SLPF]
-[ 6850.709721] GHES: HEST is not enabled!
-[ 6850.709775] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
-[ 6850.710480] Linux agpgart interface v0.103
-[ 6850.711528] brd: module loaded
-[ 6850.711990] loop: module loaded
-[ 6850.712123] ata_piix 0000:00:01.1: version 2.13
-[ 6850.712423] nd_pmem namespace0.0: unable to guarantee persistence of writes
-[ 6850.712525] pmem0: detected capacity change from 0 to 1610547200
-[ 6850.712565] nd_pmem namespace2.0: unable to guarantee persistence of writes
-[ 6850.712567] nd_pmem namespace2.0: could not reserve region [0x0x00000000e0000000:0x1ffc0000]
-[ 6850.712568] nd_pmem: probe of namespace2.0 failed with error -16
-[ 6850.712631] nd_pmem namespace4.0: unable to guarantee persistence of writes
-[ 6850.712744] pmem4: detected capacity change from 0 to 2147483648
-[ 6850.712750] scsi host0: ata_piix
-[ 6850.712798] scsi host1: ata_piix
-[ 6850.712818] ata1: PATA max UDMA/33 cmd 0x1f0 ctl 0x3f6 bmdma 0xd000 irq 14
-[ 6850.712819] ata2: PATA max UDMA/33 cmd 0x170 ctl 0x376 bmdma 0xd008 irq 15
-[ 6850.712889] libphy: Fixed MDIO Bus: probed
-[ 6850.712892] tun: Universal TUN/TAP device driver, 1.6
-[ 6850.712893] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
-[ 6850.713113] PPP generic driver version 2.4.2
-[ 6850.713159] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
-[ 6850.713162] ehci-pci: EHCI PCI platform driver
-[ 6850.713483] ehci-pci 0000:00:0b.0: EHCI Host Controller
-[ 6850.713488] ehci-pci 0000:00:0b.0: new USB bus registered, assigned bus number 1
-[ 6850.713618] ehci-pci 0000:00:0b.0: irq 19, io mem 0xf0805000
-[ 6850.721669] ehci-pci 0000:00:0b.0: USB 2.0 started, EHCI 1.00
-[ 6850.721699] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
-[ 6850.721700] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
-[ 6850.721701] usb usb1: Product: EHCI Host Controller
-[ 6850.721702] usb usb1: Manufacturer: Linux 4.3.0 ehci_hcd
-[ 6850.721703] usb usb1: SerialNumber: 0000:00:0b.0
-[ 6850.721765] hub 1-0:1.0: USB hub found
-[ 6850.721768] hub 1-0:1.0: 12 ports detected
-[ 6850.721901] ehci-platform: EHCI generic platform driver
-[ 6850.721908] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
-[ 6850.721912] ohci-pci: OHCI PCI platform driver
-[ 6850.722215] ohci-pci 0000:00:06.0: OHCI PCI host controller
-[ 6850.722219] ohci-pci 0000:00:06.0: new USB bus registered, assigned bus number 2
-[ 6850.722260] ohci-pci 0000:00:06.0: irq 22, io mem 0xf0804000
-[ 6850.778117] usb usb2: New USB device found, idVendor=1d6b, idProduct=0001
-[ 6850.778119] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
-[ 6850.778121] usb usb2: Product: OHCI PCI host controller
-[ 6850.778122] usb usb2: Manufacturer: Linux 4.3.0 ohci_hcd
-[ 6850.778123] usb usb2: SerialNumber: 0000:00:06.0
-[ 6850.778213] hub 2-0:1.0: USB hub found
-[ 6850.778222] hub 2-0:1.0: 12 ports detected
-[ 6850.778461] ohci-platform: OHCI generic platform driver
-[ 6850.778471] uhci_hcd: USB Universal Host Controller Interface driver
-[ 6850.778505] i8042: PNP: PS/2 Controller [PNP0303:PS2K,PNP0f03:PS2M] at 0x60,0x64 irq 1,12
-[ 6850.778863] serio: i8042 KBD port at 0x60,0x64 irq 1
-[ 6850.778866] serio: i8042 AUX port at 0x60,0x64 irq 12
-[ 6850.778934] mousedev: PS/2 mouse device common for all mice
-[ 6850.779109] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input2
-[ 6850.779350] rtc_cmos rtc_cmos: rtc core: registered rtc_cmos as rtc0
-[ 6850.779386] rtc_cmos rtc_cmos: alarms up to one day, 114 bytes nvram
-[ 6850.779391] i2c /dev entries driver
-[ 6850.779425] device-mapper: uevent: version 1.0.3
-[ 6850.779461] device-mapper: ioctl: 4.33.0-ioctl (2015-8-18) initialised: dm-devel@redhat.com
-[ 6850.779473] ledtrig-cpu: registered to indicate activity on CPUs
-[ 6850.779635] NET: Registered protocol family 10
-[ 6850.779726] NET: Registered protocol family 17
-[ 6850.779734] Key type dns_resolver registered
-[ 6850.779889] registered taskstats version 1
-[ 6850.779904] Loading compiled-in X.509 certificates
-[ 6850.780412] Loaded X.509 cert 'Build time autogenerated kernel key: 0759ca4de3f7631372cabbbeea3b24c381c013ce'
-[ 6850.780426] zswap: loaded using pool lzo/zbud
-[ 6850.781427] Key type trusted registered
-[ 6850.783036] Key type encrypted registered
-[ 6850.783041] AppArmor: AppArmor sha1 policy hashing enabled
-[ 6850.783044] ima: No TPM chip found, activating TPM-bypass!
-[ 6850.783057] evm: HMAC attrs: 0x1
-[ 6850.783266]   Magic number: 13:741:474
-[ 6850.783322] rtc_cmos rtc_cmos: setting system clock to 2017-12-11 09:27:26 UTC (1512984446)
-[ 6850.783359] BIOS EDD facility v0.16 2004-Jun-25, 0 devices found
-[ 6850.783360] EDD information not available.
-[ 6850.783389] PM: Hibernation image not present or could not be loaded.
-[ 6850.869913] ata2.00: ATAPI: VBOX CD-ROM, 1.0, max UDMA/133
-[ 6850.870199] ata2.00: configured for UDMA/33
-[ 6850.870679] scsi 1:0:0:0: CD-ROM            VBOX     CD-ROM           1.0  PQ: 0 ANSI: 5
-[ 6850.878441] sr 1:0:0:0: [sr0] scsi3-mmc drive: 32x/32x xa/form2 tray
-[ 6850.878443] cdrom: Uniform CD-ROM driver Revision: 3.20
-[ 6850.878519] sr 1:0:0:0: Attached scsi CD-ROM sr0
-[ 6850.878622] sr 1:0:0:0: Attached scsi generic sg0 type 5
-[ 6850.878830] Freeing unused kernel memory: 1456K (ffffffff81d3a000 - ffffffff81ea6000)
-[ 6850.878831] Write protecting the kernel read-only data: 12288k
-[ 6850.878902] Freeing unused kernel memory: 20K (ffff8800017fb000 - ffff880001800000)
-[ 6850.878944] Freeing unused kernel memory: 216K (ffff880001bca000 - ffff880001c00000)
-[ 6850.884215] random: udevadm urandom read with 1 bits of entropy available
-[ 6850.914963] e1000: Intel(R) PRO/1000 Network Driver - version 7.3.21-k8-NAPI
-[ 6850.914965] e1000: Copyright (c) 1999-2006 Intel Corporation.
-[ 6850.918130] ACPI: Video Device [GFX0] (multi-head: yes  rom: no  post: no)
-[ 6850.918185] input: Video Bus as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/LNXVIDEO:00/input/input4
-[ 6850.919845] FUJITSU Extended Socket Network Device Driver - version 1.0 - Copyright (c) 2015 FUJITSU LIMITED
-[ 6851.210549] input: ImExPS/2 Generic Explorer Mouse as /devices/platform/i8042/serio1/input/input5
-[ 6851.245491] e1000 0000:00:03.0 eth0: (PCI:33MHz:32-bit) 08:00:27:7d:c1:92
-[ 6851.245494] e1000 0000:00:03.0 eth0: Intel(R) PRO/1000 Network Connection
-[ 6851.245841] ahci 0000:00:0d.0: version 3.0
-[ 6851.245918] ahci 0000:00:0d.0: SSS flag set, parallel bus scan disabled
-[ 6851.246035] ahci 0000:00:0d.0: AHCI 0001.0100 32 slots 1 ports 3 Gbps 0x1 impl SATA mode
-[ 6851.246038] ahci 0000:00:0d.0: flags: 64bit ncq stag only ccc 
-[ 6851.246801] e1000 0000:00:03.0 enp0s3: renamed from eth0
-[ 6851.247366] scsi host2: ahci
-[ 6851.247409] ata3: SATA max UDMA/133 abar m8192@0xf0806000 port 0xf0806100 irq 21
-[ 6851.418348] usb 2-1: new full-speed USB device number 2 using ohci-pci
-[ 6851.565709] ata3: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
-[ 6851.565793] ata3.00: ATA-6: VBOX HARDDISK, 1.0, max UDMA/133
-[ 6851.565794] ata3.00: 268435456 sectors, multi 128: LBA48 NCQ (depth 31/32)
-[ 6851.565910] ata3.00: configured for UDMA/133
-[ 6851.565980] scsi 2:0:0:0: Direct-Access     ATA      VBOX HARDDISK    1.0  PQ: 0 ANSI: 5
-[ 6851.566264] sd 2:0:0:0: [sda] 268435456 512-byte logical blocks: (137 GB/128 GiB)
-[ 6851.566277] sd 2:0:0:0: [sda] Write Protect is off
-[ 6851.566278] sd 2:0:0:0: [sda] Mode Sense: 00 3a 00 00
-[ 6851.566284] sd 2:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
-[ 6851.566384] sd 2:0:0:0: Attached scsi generic sg1 type 0
-[ 6851.567975]  sda: sda1 sda2 < sda5 >
-[ 6851.568085] sd 2:0:0:0: [sda] Attached SCSI disk
-[ 6851.677550] usb 2-1: New USB device found, idVendor=80ee, idProduct=0021
-[ 6851.677552] usb 2-1: New USB device strings: Mfr=1, Product=3, SerialNumber=0
-[ 6851.677553] usb 2-1: Product: USB Tablet
-[ 6851.677554] usb 2-1: Manufacturer: VirtualBox
-[ 6851.685870] hidraw: raw HID events driver (C) Jiri Kosina
-[ 6851.701311] usbcore: registered new interface driver usbhid
-[ 6851.701313] usbhid: USB HID core driver
-[ 6851.705891] tsc: Refined TSC clocksource calibration: 3589.711 MHz
-[ 6851.705893] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x33be5c0417d, max_idle_ns: 440795288048 ns
-[ 6851.708980] input: VirtualBox USB Tablet as /devices/pci0000:00/0000:00:06.0/usb2/2-1/2-1:1.0/0003:80EE:0021.0001/input/input6
-[ 6851.709122] hid-generic 0003:80EE:0021.0001: input,hidraw0: USB HID v1.10 Mouse [VirtualBox USB Tablet] on usb-0000:00:06.0-1/input0
-[ 6854.229693] floppy0: no floppy controllers found
-[ 6854.229728] work still pending
-[ 6854.311038] EXT4-fs (sda1): mounted filesystem with ordered data mode. Opts: (null)
-[ 6854.929987] systemd[1]: systemd 229 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ -LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN)
-[ 6854.930013] systemd[1]: Detected virtualization oracle.
-[ 6854.930015] systemd[1]: Detected architecture x86-64.
-[ 6854.937006] systemd[1]: Set hostname to <cxdir-VirtualBox>.
-[ 6855.504574] random: nonblocking pool is initialized
-[ 6855.611596] systemd[1]: Listening on fsck to fsckd communication Socket.
-[ 6855.611645] systemd[1]: Listening on udev Control Socket.
-[ 6855.611689] systemd[1]: Listening on Journal Audit Socket.
-[ 6855.611745] systemd[1]: Created slice System Slice.
-[ 6855.611770] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
-[ 6855.611777] systemd[1]: Reached target Remote File Systems (Pre).
-[ 6855.611781] systemd[1]: Reached target Remote File Systems.
-[ 6855.611823] systemd[1]: Listening on udev Kernel Socket.
-[ 6855.611852] systemd[1]: Listening on Journal Socket (/dev/log).
-[ 6855.611870] systemd[1]: Listening on /dev/initctl Compatibility Named Pipe.
-[ 6855.611903] systemd[1]: Created slice User and Session Slice.
-[ 6855.611908] systemd[1]: Reached target Slices.
-[ 6855.611919] systemd[1]: Listening on Syslog Socket.
-[ 6855.611990] systemd[1]: Set up automount Arbitrary Executable File Formats File System Automount Point.
-[ 6855.612010] systemd[1]: Listening on Journal Socket.
-[ 6855.629560] systemd[1]: Starting Load Kernel Modules...
-[ 6855.629835] systemd[1]: Mounting POSIX Message Queue File System...
-[ 6855.630142] systemd[1]: Started Braille Device Support.
-[ 6855.631631] systemd[1]: Starting Journal Service...
-[ 6855.631901] systemd[1]: Starting Create list of required static device nodes for the current kernel...
-[ 6855.632146] systemd[1]: Starting Uncomplicated firewall...
-[ 6855.632445] systemd[1]: Starting Set console keymap...
-[ 6855.632462] systemd[1]: Reached target Encrypted Volumes.
-[ 6855.632700] systemd[1]: Mounting Huge Pages File System...
-[ 6855.632945] systemd[1]: Mounting Debug File System...
-[ 6855.632963] systemd[1]: Reached target User and Group Name Lookups.
-[ 6855.730179] systemd[1]: Started Uncomplicated firewall.
-[ 6855.800156] systemd[1]: Started Create list of required static device nodes for the current kernel.
-[ 6855.800524] systemd[1]: Starting Create Static Device Nodes in /dev...
-[ 6856.127697] lp: driver loaded but no devices found
-[ 6856.162106] systemd[1]: Mounted POSIX Message Queue File System.
-[ 6856.162127] systemd[1]: Mounted Huge Pages File System.
-[ 6856.162134] systemd[1]: Mounted Debug File System.
-[ 6856.167592] ppdev: user-space parallel port driver
-[ 6856.189111] systemd[1]: Started Load Kernel Modules.
-[ 6856.189427] systemd[1]: Mounting FUSE Control File System...
-[ 6856.189647] systemd[1]: Starting Apply Kernel Variables...
-[ 6856.191086] systemd[1]: Mounted FUSE Control File System.
-[ 6856.202898] systemd[1]: Started Journal Service.
-[ 6856.739600] EXT4-fs (sda1): re-mounted. Opts: errors=remount-ro
-[ 6856.839063] systemd-journald[228]: Received request to flush runtime journal from PID 1
-[ 6857.130915] vboxguest: module verification failed: signature and/or required key missing - tainting kernel
-[ 6857.135095] vgdrvHeartbeatInit: Setting up heartbeat to trigger every 2000 milliseconds
-[ 6857.135158] input: Unspecified device as /devices/pci0000:00/0000:00:04.0/input/input7
-[ 6857.135279] vboxguest: misc device minor 56, IRQ 20, I/O port d020, MMIO at 00000000f0400000 (size 0x400000)
-[ 6857.135281] vboxguest: Successfully loaded version 5.1.14 (interface 0x00010004)
-[ 6857.146469] piix4_smbus 0000:00:07.0: SMBus Host Controller at 0x4100, revision 0
-[ 6857.422604] [drm] Initialized drm 1.1.0 20060810
-[ 6857.767642] AVX version of gcm_enc/dec engaged.
-[ 6857.767643] AES CTR mode by8 optimization enabled
-[ 6857.771690] [drm] VRAM 01000000
-[ 6857.772580] [TTM] Zone  kernel: Available graphics memory: 2281612 kiB
-[ 6857.772580] [TTM] Zone   dma32: Available graphics memory: 2097152 kiB
-[ 6857.772581] [TTM] Initializing pool allocator
-[ 6857.772583] [TTM] Initializing DMA pool allocator
-[ 6857.787916] fbcon: vboxdrmfb (fb0) is primary device
-[ 6857.794413] Console: switching to colour frame buffer device 100x37
-[ 6857.795332] vboxvideo 0000:00:02.0: fb0: vboxdrmfb frame buffer device
-[ 6857.799041] [drm] Initialized vboxvideo 1.0.0 20130823 for 0000:00:02.0 on minor 0
-[ 6858.026976] intel_rapl: no valid rapl domains found in package 0
-[ 6858.222064] snd_intel8x0 0000:00:05.0: disable (unknown or VT-d) VM optimization
-[ 6858.496178] snd_intel8x0 0000:00:05.0: white list rate for 1028:0177 is 48000
-[ 6858.844378] audit: type=1400 audit(1512984454.556:2): apparmor="STATUS" operation="profile_load" name="/usr/lib/lightdm/lightdm-guest-session" pid=505 comm="apparmor_parser"
-[ 6858.844382] audit: type=1400 audit(1512984454.556:3): apparmor="STATUS" operation="profile_load" name="chromium" pid=505 comm="apparmor_parser"
-[ 6858.885805] audit: type=1400 audit(1512984454.596:4): apparmor="STATUS" operation="profile_load" name="/sbin/dhclient" pid=573 comm="apparmor_parser"
-[ 6858.885809] audit: type=1400 audit(1512984454.596:5): apparmor="STATUS" operation="profile_load" name="/usr/lib/NetworkManager/nm-dhcp-client.action" pid=573 comm="apparmor_parser"
-[ 6858.885811] audit: type=1400 audit(1512984454.596:6): apparmor="STATUS" operation="profile_load" name="/usr/lib/NetworkManager/nm-dhcp-helper" pid=573 comm="apparmor_parser"
-[ 6858.885813] audit: type=1400 audit(1512984454.596:7): apparmor="STATUS" operation="profile_load" name="/usr/lib/connman/scripts/dhclient-script" pid=573 comm="apparmor_parser"
-[ 6858.973711] audit: type=1400 audit(1512984454.684:8): apparmor="STATUS" operation="profile_load" name="/usr/bin/evince" pid=606 comm="apparmor_parser"
-[ 6858.973759] audit: type=1400 audit(1512984454.688:9): apparmor="STATUS" operation="profile_load" name="sanitized_helper" pid=606 comm="apparmor_parser"
-[ 6858.973762] audit: type=1400 audit(1512984454.688:10): apparmor="STATUS" operation="profile_load" name="/usr/bin/evince-previewer" pid=606 comm="apparmor_parser"
-[ 6858.973764] audit: type=1400 audit(1512984454.688:11): apparmor="STATUS" operation="profile_load" name="sanitized_helper" pid=606 comm="apparmor_parser"
-[ 6859.032666] Adding 8386556k swap on /dev/sda5.  Priority:-1 extents:1 across:8386556k FS
-[ 6860.385895] floppy0: no floppy controllers found
-[ 6862.305964] vboxsf: Successfully loaded version 5.1.14 (interface 0x00010004)
-[ 6864.483879] IPv6: ADDRCONF(NETDEV_UP): enp0s3: link is not ready
-[ 6864.485327] IPv6: ADDRCONF(NETDEV_UP): enp0s3: link is not ready
-[ 6864.486483] e1000: enp0s3 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
-[ 6864.486732] IPv6: ADDRCONF(NETDEV_CHANGE): enp0s3: link becomes ready
-[ 6864.977206] VBoxService 5.1.14 r112924 (verbosity: 0) linux.amd64 (Jan 16 2017 17:38:46) release log
-               00:00:00.000056 main     Log opened 2017-12-11T09:27:40.693816000Z
-[ 6864.977238] 00:00:00.000136 main     OS Product: Linux
-[ 6864.977252] 00:00:00.000155 main     OS Release: 4.3.0
-[ 6864.977266] 00:00:00.000169 main     OS Version: #2 SMP Fri Sep 8 20:52:18 CST 2017
-[ 6864.977285] 00:00:00.000183 main     Executable: /opt/VBoxGuestAdditions-5.1.14/sbin/VBoxService
-               00:00:00.000183 main     Process ID: 945
-               00:00:00.000184 main     Package type: LINUX_64BITS_GENERIC
-[ 6864.978123] 00:00:00.001017 main     5.1.14 r112924 started. Verbose level = 0
-[ 6930.327540] nova: dafs init nova_fs
-[ 6930.327542] nova: init_nova_fs: 1 cpus online
-[ 6930.327544] nova: Arch new instructions support: PCOMMIT NO, CLWB NO
-[ 6930.328573] nova: dafs register file sytem nova
-[ 6930.328577] nova: dafs end init_fs
-[ 6930.377884] nova: dafs start to mount
-[ 6930.377897] nova: nova_get_block_info: dev pmem0, phys_addr 0x80000000, virt_addr ffffc90040000000, size 1610547200
-[ 6930.377904] nova: start init radix tree
-[ 6930.377905] nova: finish init radix tree
-[ 6930.377905] nova: start nova init
-[ 6930.377906] nova: creating an empty nova of size 1610547200
-[ 6930.377906] nova: nova: Default block size set to 4K
-[ 6930.377909] nova: dafs init dzt block
-[ 6930.377909] nova: dafs_get dzt blk
-[ 6930.377911] nova: dzt alloc 1 dzt blocks from 4 to 4
-[ 6930.377912] nova: dafs_init_dzt_block: allocate log @ 0x4
-[ 6930.377912] nova: dafs start get journal blk
-[ 6930.377913] nova: dafs_get journal blk
-[ 6930.377913] nova: dafs get hard journal
-[ 6930.377914] nova: nova_lite_journal_hard_init: allocate log @ 0x5
-[ 6930.377915] nova: dafs get soft journal
-[ 6930.377915] nova: dafs start get journal blk
-[ 6930.377916] nova: dafs_get journal blk
-[ 6930.377917] nova: dafs get inode table
-[ 6930.378254] nova: nova_init_inode_table: allocate log @ 0x6
-[ 6930.378255] nova: nova_init_inode_table:inode table log head is 24576
-[ 6930.378256] nova: Allocate root inode
-[ 6930.378257] nova: dafs_get dzt blk
-[ 6930.378258] nova: dafs allocate hash table
-[ 6930.542354] nova: dafs allocate zone blocks
-[ 6930.542388] nova: Zone 0, alloc 1 zone blocks from 262662 to 262662
-[ 6930.542390] nova: dafs_alloc_dir_zone: allocate zone @ 0x40206
-[ 6930.551112] nova: dafs make dzt pointer
-[ 6930.551114] nova: dafs_get dzt blk
-[ 6930.551116] nova: dafs finish make dzt bitmap pointer
-[ 6930.551116] nova: dafs start build dzt
-[ 6930.551118] nova: dafs finish build dzt_e
-[ 6930.551119] nova: dafs start init dir zones
-[ 6930.551119] nova: root ze addr is 1075863552
-[ 6930.551120] nova: the root dir hashname is 47
-[ 6930.551120] nova: test root hash name is 47
-[ 6930.551121] nova: dafs finish creat root directory
-[ 6930.551121] nova: dafs record pos in hash table address is 2121728
-[ 6930.551122] nova: dafs finish recording pos in hash table
-[ 6930.551123] nova: dafs add dir info in radix tree
-[ 6930.551123] nova: dir hash name is 47
-[ 6930.551124] nova: dafs start adding init part in dir
-[ 6930.551125] nova: par ze addr is 1075863552
-[ 6930.551125] nova: dafs record pos in hash table address is 2121728
-[ 6930.551126] nova: dafs finish recording pos in hash table
-[ 6930.551127] nova: par pos is 0
-[ 6930.551127] nova: parent hashname is 47
-[ 6930.551128] nova: dafs start to ext de name
-[ 6930.551129] nova: dafs finish ext name
-[ 6930.551129] nova: dafs record pos in hash table address is 2121728
-[ 6930.551130] nova: dafs finish recording pos in hash table
-[ 6930.551131] nova: dafs finish add initial part in dir
-[ 6930.551131] nova: dafs finish init dir zones
-[ 6930.551131] nova: dafs init dir info tree
-[ 6930.551151] nova: dafs finish initial dir info tree
-[ 6930.551152] nova: dafs finish nova_init
-[ 6930.551153] nova: dafs start setting sb
-[ 6930.551153] nova: dafs end setting sb
-[ 6930.551173] nova: nova_iget: inode 1
-[ 6930.551174] nova: nova_iget: pi_addr is 0x1024
-[ 6930.551175] nova: nova_rebuild_inode:dafs start to rebuild inode
-[ 6930.551176] nova: Rebuild dir 1 tree
-[ 6930.551177] nova: Log head 0x0, tail 0x0
-[ 6930.551178] nova: dafs_rebuild_dir_inode_tree: it is dir type
-[ 6930.551178] nova: dafs_rebuild_dir_inode_tree:dafs finish rebuild dir inode
-[ 6930.551180] nova: sucessfully get inode
-[ 6930.551181] nova: root_dentry name is /
-[ 6930.551182] nova: dafs end fill super
-[ 6930.551183] nova: dafs finish mount
-[ 6930.551687] nova: dafs_lookup,dafs start looup
-[ 6930.551688] nova: dafs_inode_by_name:dafs start to inode by name
-[ 6930.551689] nova: dafs_find_direntry:dafs start to find direntry
-[ 6930.551690] nova: dentry name is .Trash
-[ 6930.551690] nova: get_dentry_path:dafs get dentry path
-[ 6930.551691] nova: fs path is: /
-[ 6930.551692] nova: fs path is: /
-[ 6930.551692] nova: mount point is:/
-[ 6930.551692] nova: dentry name is .Trash
-[ 6930.551693] nova: buf is 
-[ 6930.551694] nova: ph is /.Trash
-[ 6930.551694] nova: dafs finish get dentry path
-[ 6930.551695] nova: strictly full name is /.Trash
-[ 6930.551695] nova: strictly full name length is 7
-[ 6930.551696] nova: dafs start to find dzt
-[ 6930.551696] nova: test path len is 0
-[ 6930.551697] nova: dafs finish finding dzt
-[ 6930.551697] nova: path name is /
-[ 6930.551698] nova: the ze addr is 1075863552
-[ 6930.551699] nova: full name is /.Trash
-[ 6930.551699] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
-[ 6930.551700] nova: dafs start to lookup in hashtable
-[ 6930.551701] nova: dafs finish lookup in hash table
-[ 6930.551701] nova: not found dentry in nvm
-[ 6930.551701] nova: dafs_find_direntry:dafs finish find direntry
-[ 6930.551702] nova: dafs_lookup:dafs finish lookup
-[ 6930.551714] nova: dafs_lookup,dafs start looup
-[ 6930.551714] nova: dafs_inode_by_name:dafs start to inode by name
-[ 6930.551715] nova: dafs_find_direntry:dafs start to find direntry
-[ 6930.551715] nova: dentry name is .Trash-1000
-[ 6930.551716] nova: get_dentry_path:dafs get dentry path
-[ 6930.551716] nova: fs path is: /
-[ 6930.551717] nova: fs path is: /
-[ 6930.551717] nova: mount point is:/
-[ 6930.551718] nova: dentry name is .Trash-1000
-[ 6930.551718] nova: buf is 
-[ 6930.551719] nova: ph is /.Trash-1000
-[ 6930.551719] nova: dafs finish get dentry path
-[ 6930.551719] nova: strictly full name is /.Trash-1000
-[ 6930.551720] nova: strictly full name length is 12
-[ 6930.551720] nova: dafs start to find dzt
-[ 6930.551721] nova: test path len is 0
-[ 6930.551721] nova: dafs finish finding dzt
-[ 6930.551722] nova: path name is /
-[ 6930.551722] nova: the ze addr is 1075863552
-[ 6930.551722] nova: full name is /.Trash-1000
-[ 6930.551723] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
-[ 6930.551723] nova: dafs start to lookup in hashtable
-[ 6930.551724] nova: dafs finish lookup in hash table
-[ 6930.551724] nova: not found dentry in nvm
-[ 6930.551725] nova: dafs_find_direntry:dafs finish find direntry
-[ 6930.551725] nova: dafs_lookup:dafs finish lookup
-[ 6943.385577] nova: dafs_readdir:dafs readdir
-[ 6943.385578] nova: si addr is 1024
-[ 6943.385580] nova: dafs_readdir: ino 1, size 4096, pos 0x0
-[ 6943.385581] nova: get_dentry_path:dafs get dentry path
-[ 6943.385582] nova: fs path is: /
-[ 6943.385582] nova: fs path is: /
-[ 6943.385583] nova: mount point is:/
-[ 6943.385583] nova: dentry name is /
-[ 6943.385584] nova: buf is 
-[ 6943.385584] nova: ph is /
-[ 6943.385585] nova: dafs finish get dentry path
-[ 6943.385586] nova: dafs start to find dzt
-[ 6943.385586] nova: test path len is 0
-[ 6943.385587] nova: dafs finish finding dzt
-[ 6943.385588] nova: dafs_find_direntry:dafs start to find direntry
-[ 6943.385588] nova: dentry name is /
-[ 6943.385589] nova: get_dentry_path:dafs get dentry path
-[ 6943.385589] nova: fs path is: /
-[ 6943.385589] nova: fs path is: /
-[ 6943.385590] nova: mount point is:/
-[ 6943.385590] nova: dentry name is /
-[ 6943.385591] nova: buf is 
-[ 6943.385591] nova: ph is /
-[ 6943.385591] nova: dafs finish get dentry path
-[ 6943.385592] nova: strictly full name is /
-[ 6943.385592] nova: strictly full name length is 1
-[ 6943.385593] nova: dafs start to find dzt
-[ 6943.385593] nova: test path len is 0
-[ 6943.385593] nova: dafs finish finding dzt
-[ 6943.385594] nova: path name is /
-[ 6943.385594] nova: the ze addr is 1075863552
-[ 6943.385595] nova: full name is /
-[ 6943.385596] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
-[ 6943.385596] nova: dafs start to lookup in hashtable
-[ 6943.385597] nova: dafs finish lookup in hash table
-[ 6943.385597] nova: dir entry pos is 0
-[ 6943.385598] nova: dafs_find_direntry:dafs finish find direntry
-[ 6943.385599] nova: dafs_readdir:find dir name is /
-[ 6943.385599] nova: dafs_readdir:dir_subfile num is2
-[ 6943.385600] nova: dafs_readdir:list subfile
-[ 6943.385601] nova: pos 1, type 6, ino 1, name ., namelen 1, rec len 128
-[ 6943.385602] nova: nova_get_inode_address:dafs get inode addr
-[ 6943.385603] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
-[ 6943.385603] nova: nova_get_inode_address:dbg ino is1,internal_ino is 1, num cpus is 1
-[ 6943.385604] nova: dafs get inode table
-[ 6943.385604] nova: nova_get_inode_address:inode_table log head is 24576
-[ 6943.385605] nova: nova_get_inode_address:index is 1, supercount is 0
-[ 6943.385606] nova: nova_get_inode_address:inode table addr is 24576
-[ 6943.385606] nova: nova_get_inode_address:dafs finish find inode at 24704
-[ 6943.385607] nova: ctx: ino 1, name ., name_len 1, de_len 128
-[ 6943.385615] BUG: unable to handle kernel NULL pointer dereference at 0000000000000001
-[ 6943.385636] IP: [<ffffffffc0319e42>] dafs_readdir+0x432/0x730 [nova]
-[ 6943.385655] PGD 215c71067 PUD 218ea8067 PMD 0 
-[ 6943.385665] Oops: 0000 [#1] SMP 
-[ 6943.385674] Modules linked in: nova(OE) vboxsf(OE) snd_intel8x0 snd_ac97_codec ac97_bus snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq snd_seq_device snd_timer crct10dif_pclmul crc32_pclmul joydev vboxvideo(OE) aesni_intel aes_x86_64 snd lrw ttm glue_helper ablk_helper cryptd soundcore drm_kms_helper drm input_leds serio_raw fb_sys_fops syscopyarea sysfillrect sysimgblt mac_hid i2c_piix4 vboxguest(OE) parport_pc ppdev lp parport autofs4 hid_generic usbhid hid psmouse ahci libahci fjes video e1000 pata_acpi
-[ 6943.385794] CPU: 0 PID: 3214 Comm: ls Tainted: G           OE   4.3.0 #2
-[ 6943.385807] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[ 6943.385822] task: ffff880079403900 ti: ffff88007a324000 task.ti: ffff88007a324000
-[ 6943.385836] RIP: 0010:[<ffffffffc0319e42>]  [<ffffffffc0319e42>] dafs_readdir+0x432/0x730 [nova]
-[ 6943.385855] RSP: 0018:ffff88007a327e10  EFLAGS: 00010282
-[ 6943.385865] RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000006
-[ 6943.385879] RDX: 0000000000000000 RSI: 0000000000000246 RDI: ffff88021fc0dd50
-[ 6943.385892] RBP: ffff88007a327ea0 R08: 000000000000000a R09: 00000000000002e7
-[ 6943.385905] R10: 0000000000000000 R11: 00000000000002e7 R12: ffff880217242aa0
-[ 6943.385918] R13: ffffc90080206000 R14: ffffc90080206080 R15: 0000000000000001
-[ 6943.385932] FS:  00007f2529cb0800(0000) GS:ffff88021fc00000(0000) knlGS:0000000000000000
-[ 6943.385947] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 6943.385958] CR2: 0000000000000001 CR3: 000000021787f000 CR4: 00000000000406f0
-[ 6943.385973] Stack:
-[ 6943.385978]  0000000000000080 ffffc90040006080 0000000000000000 ffff880217eed800
-[ 6943.385994]  ffff8802172421b0 ffffc900802064b5 ffff88007a327ef0 0000000000006080
-[ 6943.386010]  ffff88007baa5700 ffff88007baa5710 ffff8802159b61a0 ffff8801ebe35d80
-[ 6943.386026] Call Trace:
-[ 6943.386034]  [<ffffffff81213222>] iterate_dir+0x92/0x120
-[ 6943.386045]  [<ffffffff812136c6>] SyS_getdents+0x96/0x110
-[ 6943.386056]  [<ffffffff81213380>] ? fillonedir+0xd0/0xd0
-[ 6943.386068]  [<ffffffff817f2a32>] entry_SYSCALL_64_fastpath+0x16/0x71
-[ 6943.386080] Code: 48 03 7a 18 48 8b 55 98 48 85 c0 b8 00 00 00 00 48 0f 45 c7 48 c7 c7 58 62 32 c0 48 89 85 78 ff ff ff e8 02 9e e6 c0 48 8b 45 80 <0f> b6 14 25 01 00 00 00 4d 89 f8 be 30 00 00 00 44 0f b7 48 1c 
-[ 6943.386152] RIP  [<ffffffffc0319e42>] dafs_readdir+0x432/0x730 [nova]
-[ 6943.386166]  RSP <ffff88007a327e10>
-[ 6943.386610] CR2: 0000000000000001
-[ 6943.386989] fbcon_switch: detected unhandled fb_set_par error, error code -16
-[ 6943.388007] fbcon_switch: detected unhandled fb_set_par error, error code -16
-[ 6943.388972] ---[ end trace c5bc2e6e5bc329bd ]---
-[ 7063.697751] BUG: Dentry ffff8801ebe35d80{i=1,n=/}  still in use (3) [unmount of NOVA pmem0]
-[ 7063.697754] ------------[ cut here ]------------
-[ 7063.697759] WARNING: CPU: 0 PID: 3357 at fs/dcache.c:1436 umount_check+0x73/0x80()
-[ 7063.697760] Modules linked in: nova(OE) vboxsf(OE) snd_intel8x0 snd_ac97_codec ac97_bus snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq snd_seq_device snd_timer crct10dif_pclmul crc32_pclmul joydev vboxvideo(OE) aesni_intel aes_x86_64 snd lrw ttm glue_helper ablk_helper cryptd soundcore drm_kms_helper drm input_leds serio_raw fb_sys_fops syscopyarea sysfillrect sysimgblt mac_hid i2c_piix4 vboxguest(OE) parport_pc ppdev lp parport autofs4 hid_generic usbhid hid psmouse ahci libahci fjes video e1000 pata_acpi
-[ 7063.697782] CPU: 0 PID: 3357 Comm: umount Tainted: G      D    OE   4.3.0 #2
-[ 7063.697783] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[ 7063.697784]  0000000000000000 00000000f30c359b ffff88021653bcf8 ffffffff813cddc4
-[ 7063.697785]  0000000000000000 ffff88021653bd30 ffffffff8107d442 ffff8801ebe35d80
-[ 7063.697787]  ffff880217eed800 ffff88007ac45580 0000000000000000 ffff88007ac45580
-[ 7063.697788] Call Trace:
-[ 7063.697792]  [<ffffffff813cddc4>] dump_stack+0x44/0x60
-[ 7063.697794]  [<ffffffff8107d442>] warn_slowpath_common+0x82/0xc0
-[ 7063.697795]  [<ffffffff8107d58a>] warn_slowpath_null+0x1a/0x20
-[ 7063.697796]  [<ffffffff81216243>] umount_check+0x73/0x80
-[ 7063.697797]  [<ffffffff81215d42>] d_walk+0x62/0x280
-[ 7063.697798]  [<ffffffff812161d0>] ? dentry_free+0x90/0x90
-[ 7063.697799]  [<ffffffff81216eb6>] do_one_tree+0x26/0x40
-[ 7063.697801]  [<ffffffff8121850f>] shrink_dcache_for_umount+0x2f/0x90
-[ 7063.697804]  [<ffffffff81201c2f>] generic_shutdown_super+0x1f/0xf0
-[ 7063.697806]  [<ffffffff81201ff7>] kill_block_super+0x27/0x70
-[ 7063.697807]  [<ffffffff81202123>] deactivate_locked_super+0x43/0x70
-[ 7063.697809]  [<ffffffff812025fc>] deactivate_super+0x5c/0x60
-[ 7063.697810]  [<ffffffff8121f6cf>] cleanup_mnt+0x3f/0x90
-[ 7063.697811]  [<ffffffff8121f762>] __cleanup_mnt+0x12/0x20
-[ 7063.697813]  [<ffffffff8109b073>] task_work_run+0x73/0x90
-[ 7063.697816]  [<ffffffff81003b46>] prepare_exit_to_usermode+0xd6/0x100
-[ 7063.697817]  [<ffffffff81003bbc>] syscall_return_slowpath+0x4c/0x120
-[ 7063.697820]  [<ffffffff817f2b90>] int_ret_from_sys_call+0x25/0x8f
-[ 7063.697821] ---[ end trace c5bc2e6e5bc329be ]---
-[ 7063.697829] nova: nova_save_inode_list_to_log: 1 inode nodes, pi head 0x40286000, tail 0x40286010
-[ 7063.697831] nova: nova_save_blocknode_mappings_to_log: 1 blocknodes, 1 log pages, pi head 0x40287000, tail 0x40287010
-[ 7063.697844] VFS: Busy inodes after unmount of pmem0. Self-destruct in 5 seconds.  Have a nice day...
-[ 7063.719390] =============================================================================
-[ 7063.719394] BUG nova_inode_cache (Tainted: G      D W  OE  ): Objects remaining in nova_inode_cache on kmem_cache_close()
-[ 7063.719395] -----------------------------------------------------------------------------
-
-[ 7063.719397] INFO: Slab 0xffffea0001e43300 objects=23 used=1 fp=0xffff8800790cfb20 flags=0x1ffff8000004080
-[ 7063.719399] CPU: 0 PID: 3359 Comm: rmmod Tainted: G    B D W  OE   4.3.0 #2
-[ 7063.719400] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[ 7063.719402]  0000000000000000 00000000ae11c8fe ffff88021653bd60 ffffffff813cddc4
-[ 7063.719404]  ffffea0001e43300 ffff88021653be38 ffffffff811dca00 ffff880200000020
-[ 7063.719405]  ffff88021653be48 ffff88021653bdf8 656a624f78dda800 616d657220737463
-[ 7063.719407] Call Trace:
-[ 7063.719411]  [<ffffffff813cddc4>] dump_stack+0x44/0x60
-[ 7063.719414]  [<ffffffff811dca00>] slab_err+0xb0/0xe0
-[ 7063.719416]  [<ffffffff811e05c9>] ? __kmalloc+0x159/0x190
-[ 7063.719418]  [<ffffffff811e269e>] ? __kmem_cache_shutdown+0x10e/0x2b0
-[ 7063.719419]  [<ffffffff811e26bc>] __kmem_cache_shutdown+0x12c/0x2b0
-[ 7063.719421]  [<ffffffff811a9e4a>] kmem_cache_destroy+0xba/0x140
-[ 7063.719427]  [<ffffffffc0321757>] exit_nova_fs+0x2f/0x8d8 [nova]
-[ 7063.719430]  [<ffffffff81102245>] SyS_delete_module+0x1b5/0x210
-[ 7063.719432]  [<ffffffff81003bbc>] ? syscall_return_slowpath+0x4c/0x120
-[ 7063.719436]  [<ffffffff817f2a32>] entry_SYSCALL_64_fastpath+0x16/0x71
-[ 7063.719437] INFO: Object 0xffff8800790cc000 @offset=0
-[ 7063.719438] kmem_cache_destroy nova_inode_cache: Slab cache still has objects
-[ 7063.719440] CPU: 0 PID: 3359 Comm: rmmod Tainted: G    B D W  OE   4.3.0 #2
-[ 7063.719440] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[ 7063.719441]  0000000000000000 00000000ae11c8fe ffff88021653be98 ffffffff813cddc4
-[ 7063.719442]  ffff880078dda800 ffff88021653bed8 ffffffff811a9ebe ffff88021653bea8
-[ 7063.719444]  ffff88021653bea8 00000000ae11c8fe ffffffffc0329340 00007ffe18efff50
-[ 7063.719445] Call Trace:
-[ 7063.719446]  [<ffffffff813cddc4>] dump_stack+0x44/0x60
-[ 7063.719447]  [<ffffffff811a9ebe>] kmem_cache_destroy+0x12e/0x140
-[ 7063.719450]  [<ffffffffc0321757>] exit_nova_fs+0x2f/0x8d8 [nova]
-[ 7063.719451]  [<ffffffff81102245>] SyS_delete_module+0x1b5/0x210
-[ 7063.719453]  [<ffffffff81003bbc>] ? syscall_return_slowpath+0x4c/0x120
-[ 7063.719454]  [<ffffffff817f2a32>] entry_SYSCALL_64_fastpath+0x16/0x71
-[ 7071.836328] nova: dafs init nova_fs
-[ 7071.836332] nova: init_nova_fs: 1 cpus online
-[ 7071.836334] nova: Arch new instructions support: PCOMMIT NO, CLWB NO
-[ 7071.837994] nova: dafs register file sytem nova
-[ 7071.837999] nova: dafs end init_fs
-[ 7071.849155] nova: dafs start to mount
-[ 7071.849178] nova: nova_get_block_info: dev pmem0, phys_addr 0x80000000, virt_addr ffffc90040000000, size 1610547200
-[ 7071.849198] nova: start init radix tree
-[ 7071.849199] nova: finish init radix tree
-[ 7071.849200] nova: start nova init
-[ 7071.849201] nova: creating an empty nova of size 1610547200
-[ 7071.849202] nova: nova: Default block size set to 4K
-[ 7071.849205] nova: dafs init dzt block
-[ 7071.849206] nova: dafs_get dzt blk
-[ 7071.849208] nova: dzt alloc 1 dzt blocks from 4 to 4
-[ 7071.849209] nova: dafs_init_dzt_block: allocate log @ 0x4
-[ 7071.849210] nova: dafs start get journal blk
-[ 7071.849211] nova: dafs_get journal blk
-[ 7071.849220] nova: dafs get hard journal
-[ 7071.849222] nova: nova_lite_journal_hard_init: allocate log @ 0x5
-[ 7071.849223] nova: dafs get soft journal
-[ 7071.849224] nova: dafs start get journal blk
-[ 7071.849224] nova: dafs_get journal blk
-[ 7071.849225] nova: dafs get inode table
-[ 7071.849420] nova: nova_init_inode_table: allocate log @ 0x6
-[ 7071.849421] nova: nova_init_inode_table:inode table log head is 24576
-[ 7071.849423] nova: Allocate root inode
-[ 7071.849424] nova: dafs_get dzt blk
-[ 7071.849425] nova: dafs allocate hash table
-[ 7071.913658] nova: dafs allocate zone blocks
-[ 7071.913715] nova: Zone 0, alloc 1 zone blocks from 262662 to 262662
-[ 7071.913718] nova: dafs_alloc_dir_zone: allocate zone @ 0x40206
-[ 7071.955508] nova: dafs make dzt pointer
-[ 7071.955510] nova: dafs_get dzt blk
-[ 7071.955512] nova: dafs finish make dzt bitmap pointer
-[ 7071.955513] nova: dafs start build dzt
-[ 7071.955515] nova: dafs finish build dzt_e
-[ 7071.955515] nova: dafs start init dir zones
-[ 7071.955516] nova: root ze addr is 1075863552
-[ 7071.955516] nova: the root dir hashname is 47
-[ 7071.955517] nova: test root hash name is 47
-[ 7071.955517] nova: dafs finish creat root directory
-[ 7071.955518] nova: dafs record pos in hash table address is 2121728
-[ 7071.955518] nova: dafs finish recording pos in hash table
-[ 7071.955519] nova: dafs add dir info in radix tree
-[ 7071.955520] nova: dir hash name is 47
-[ 7071.955520] nova: dafs start adding init part in dir
-[ 7071.955521] nova: par ze addr is 1075863552
-[ 7071.955522] nova: dafs record pos in hash table address is 2121728
-[ 7071.955522] nova: dafs finish recording pos in hash table
-[ 7071.955523] nova: par pos is 0
-[ 7071.955523] nova: parent hashname is 47
-[ 7071.955524] nova: dafs start to ext de name
-[ 7071.955525] nova: dafs finish ext name
-[ 7071.955525] nova: dafs record pos in hash table address is 2121728
-[ 7071.955526] nova: dafs finish recording pos in hash table
-[ 7071.955526] nova: dafs finish add initial part in dir
-[ 7071.955527] nova: dafs finish init dir zones
-[ 7071.955527] nova: dafs init dir info tree
-[ 7071.955547] nova: dafs finish initial dir info tree
-[ 7071.955548] nova: dafs finish nova_init
-[ 7071.955548] nova: dafs start setting sb
-[ 7071.955548] nova: dafs end setting sb
-[ 7071.955554] nova: nova_iget: inode 1
-[ 7071.955555] nova: nova_iget: pi_addr is 0x1024
-[ 7071.955556] nova: nova_rebuild_inode:dafs start to rebuild inode
-[ 7071.955557] nova: Rebuild dir 1 tree
-[ 7071.955558] nova: Log head 0x0, tail 0x0
-[ 7071.955558] nova: dafs_rebuild_dir_inode_tree: it is dir type
-[ 7071.955559] nova: dafs_rebuild_dir_inode_tree:dafs finish rebuild dir inode
-[ 7071.955560] nova: sucessfully get inode
-[ 7071.955561] nova: root_dentry name is /
-[ 7071.955562] nova: dafs end fill super
-[ 7071.955563] nova: dafs finish mount
-[ 7071.956261] nova: dafs_lookup,dafs start looup
-[ 7071.956262] nova: dafs_inode_by_name:dafs start to inode by name
-[ 7071.956263] nova: dafs_find_direntry:dafs start to find direntry
-[ 7071.956263] nova: dentry name is .Trash
-[ 7071.956264] nova: get_dentry_path:dafs get dentry path
-[ 7071.956265] nova: fs path is: /
-[ 7071.956265] nova: fs path is: /
-[ 7071.956266] nova: mount point is:/
-[ 7071.956266] nova: dentry name is .Trash
-[ 7071.956267] nova: buf is 
-[ 7071.956267] nova: ph is /.Trash
-[ 7071.956268] nova: dafs finish get dentry path
-[ 7071.956268] nova: strictly full name is /.Trash
-[ 7071.956268] nova: strictly full name length is 7
-[ 7071.956269] nova: dafs start to find dzt
-[ 7071.956270] nova: test path len is 0
-[ 7071.956270] nova: dafs finish finding dzt
-[ 7071.956271] nova: path name is /
-[ 7071.956271] nova: the ze addr is 1075863552
-[ 7071.956272] nova: full name is /.Trash
-[ 7071.956272] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
-[ 7071.956273] nova: dafs start to lookup in hashtable
-[ 7071.956274] nova: dafs finish lookup in hash table
-[ 7071.956274] nova: not found dentry in nvm
-[ 7071.956275] nova: dafs_find_direntry:dafs finish find direntry
-[ 7071.956275] nova: dafs_lookup:dafs finish lookup
-[ 7071.956284] nova: dafs_lookup,dafs start looup
-[ 7071.956284] nova: dafs_inode_by_name:dafs start to inode by name
-[ 7071.956285] nova: dafs_find_direntry:dafs start to find direntry
-[ 7071.956285] nova: dentry name is .Trash-1000
-[ 7071.956286] nova: get_dentry_path:dafs get dentry path
-[ 7071.956286] nova: fs path is: /
-[ 7071.956286] nova: fs path is: /
-[ 7071.956287] nova: mount point is:/
-[ 7071.956287] nova: dentry name is .Trash-1000
-[ 7071.956288] nova: buf is 
-[ 7071.956288] nova: ph is /.Trash-1000
-[ 7071.956289] nova: dafs finish get dentry path
-[ 7071.956289] nova: strictly full name is /.Trash-1000
-[ 7071.956290] nova: strictly full name length is 12
-[ 7071.956290] nova: dafs start to find dzt
-[ 7071.956291] nova: test path len is 0
-[ 7071.956291] nova: dafs finish finding dzt
-[ 7071.956291] nova: path name is /
-[ 7071.956292] nova: the ze addr is 1075863552
-[ 7071.956292] nova: full name is /.Trash-1000
-[ 7071.956293] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
-[ 7071.956293] nova: dafs start to lookup in hashtable
-[ 7071.956294] nova: dafs finish lookup in hash table
-[ 7071.956294] nova: not found dentry in nvm
-[ 7071.956295] nova: dafs_find_direntry:dafs finish find direntry
-[ 7071.956295] nova: dafs_lookup:dafs finish lookup
-[ 7077.015414] nova: dafs_readdir:dafs readdir
-[ 7077.015416] nova: si addr is 1024
-[ 7077.015418] nova: dafs_readdir: ino 1, size 4096, pos 0x0
-[ 7077.015419] nova: get_dentry_path:dafs get dentry path
-[ 7077.015420] nova: fs path is: /
-[ 7077.015421] nova: fs path is: /
-[ 7077.015421] nova: mount point is:/
-[ 7077.015421] nova: dentry name is /
-[ 7077.015422] nova: buf is 
-[ 7077.015423] nova: ph is /
-[ 7077.015423] nova: dafs finish get dentry path
-[ 7077.015424] nova: dafs start to find dzt
-[ 7077.015424] nova: test path len is 0
-[ 7077.015425] nova: dafs finish finding dzt
-[ 7077.015426] nova: dafs_find_direntry:dafs start to find direntry
-[ 7077.015426] nova: dentry name is /
-[ 7077.015427] nova: get_dentry_path:dafs get dentry path
-[ 7077.015427] nova: fs path is: /
-[ 7077.015428] nova: fs path is: /
-[ 7077.015428] nova: mount point is:/
-[ 7077.015428] nova: dentry name is /
-[ 7077.015429] nova: buf is 
-[ 7077.015429] nova: ph is /
-[ 7077.015430] nova: dafs finish get dentry path
-[ 7077.015430] nova: strictly full name is /
-[ 7077.015431] nova: strictly full name length is 1
-[ 7077.015431] nova: dafs start to find dzt
-[ 7077.015431] nova: test path len is 0
-[ 7077.015432] nova: dafs finish finding dzt
-[ 7077.015432] nova: path name is /
-[ 7077.015433] nova: the ze addr is 1075863552
-[ 7077.015433] nova: full name is /
-[ 7077.015434] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
-[ 7077.015435] nova: dafs start to lookup in hashtable
-[ 7077.015435] nova: dafs finish lookup in hash table
-[ 7077.015436] nova: dir entry pos is 0
-[ 7077.015436] nova: dafs_find_direntry:dafs finish find direntry
-[ 7077.015437] nova: dafs_readdir:find dir name is /
-[ 7077.015437] nova: dafs_readdir:dir_subfile num is2
-[ 7077.015438] nova: dafs_readdir:list subfile
-[ 7077.015439] nova: pos 1, type 6, ino 1, name ., namelen 1, rec len 128
-[ 7077.015440] nova: nova_get_inode_address:dafs get inode addr
-[ 7077.015441] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
-[ 7077.015442] nova: nova_get_inode_address:dbg ino is1,internal_ino is 1, num cpus is 1
-[ 7077.015442] nova: dafs get inode table
-[ 7077.015443] nova: nova_get_inode_address:inode_table log head is 24576
-[ 7077.015443] nova: nova_get_inode_address:index is 1, supercount is 0
-[ 7077.015444] nova: nova_get_inode_address:inode table addr is 24576
-[ 7077.015444] nova: nova_get_inode_address:dafs finish find inode at 24704
-[ 7077.015445] nova: ctx: ino 1, name ., name_len 1, de_len 128
-[ 7077.015446] nova: dafs_readdir:list subfile
-[ 7077.015446] nova: pos 2, type 6, ino 1, name .., namelen 2, rec len 128
-[ 7077.015447] nova: nova_get_inode_address:dafs get inode addr
-[ 7077.015448] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
-[ 7077.015448] nova: nova_get_inode_address:dbg ino is1,internal_ino is 1, num cpus is 1
-[ 7077.015449] nova: dafs get inode table
-[ 7077.015449] nova: nova_get_inode_address:inode_table log head is 24576
-[ 7077.015450] nova: nova_get_inode_address:index is 1, supercount is 0
-[ 7077.015450] nova: nova_get_inode_address:inode table addr is 24576
-[ 7077.015451] nova: nova_get_inode_address:dafs finish find inode at 24704
-[ 7077.015451] nova: ctx: ino 1, name .., name_len 2, de_len 128
-[ 7077.015452] nova: dafs ctx pos is ffffffffffffffff
-[ 7077.015452] nova: dafs_readdir readir return
+[   13.721574] Calibrating delay loop (skipped) preset value.. 7183.40 BogoMIPS (lpj=14366816)
+[   13.721576] pid_max: default: 32768 minimum: 301
+[   13.721580] ACPI: Core revision 20150818
+[   13.722261] ACPI: 2 ACPI AML tables successfully acquired and loaded
+[   13.722273] Security Framework initialized
+[   13.722274] Yama: becoming mindful.
+[   13.722279] AppArmor: AppArmor initialized
+[   13.725279] Dentry cache hash table entries: 1048576 (order: 11, 8388608 bytes)
+[   13.736772] Inode-cache hash table entries: 524288 (order: 10, 4194304 bytes)
+[   13.739920] Mount-cache hash table entries: 16384 (order: 5, 131072 bytes)
+[   13.739927] Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes)
+[   13.740081] Initializing cgroup subsys io
+[   13.740084] Initializing cgroup subsys memory
+[   13.740089] Initializing cgroup subsys devices
+[   13.740110] Initializing cgroup subsys freezer
+[   13.740111] Initializing cgroup subsys net_cls
+[   13.740113] Initializing cgroup subsys perf_event
+[   13.740114] Initializing cgroup subsys net_prio
+[   13.740116] Initializing cgroup subsys hugetlb
+[   13.740118] Initializing cgroup subsys pids
+[   13.740184] CPU: Physical Processor ID: 0
+[   13.740906] mce: CPU supports 0 MCE banks
+[   13.740923] process: using mwait in idle threads
+[   13.740926] Last level iTLB entries: 4KB 1024, 2MB 1024, 4MB 1024
+[   13.740927] Last level dTLB entries: 4KB 1024, 2MB 1024, 4MB 1024, 1GB 4
+[   13.751173] Freeing SMP alternatives memory: 28K (ffffffff81ea6000 - ffffffff81ead000)
+[   13.757226] ftrace: allocating 31208 entries in 122 pages
+[   13.790376] x2apic enabled
+[   13.790537] Switched APIC routing to physical x2apic.
+[   13.791394] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[   13.897803] smpboot: CPU0: Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (family: 0x6, model: 0x3c, stepping: 0x3)
+[   13.897831] Performance Events: unsupported p6 CPU model 60 no PMU driver, software events only.
+[   13.897839] KVM setup paravirtual spinlock
+[   13.898269] x86: Booted up 1 node, 1 CPUs
+[   13.898270] smpboot: Total of 1 processors activated (7183.40 BogoMIPS)
+[   13.900090] devtmpfs: initialized
+[   13.901415] evm: security.selinux
+[   13.901416] evm: security.SMACK64
+[   13.901417] evm: security.SMACK64EXEC
+[   13.901418] evm: security.SMACK64TRANSMUTE
+[   13.901418] evm: security.SMACK64MMAP
+[   13.901419] evm: security.ima
+[   13.901419] evm: security.capability
+[   13.901559] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[   13.901644] pinctrl core: initialized pinctrl subsystem
+[   13.901759] RTC time: 14:06:49, date: 12/11/17
+[   13.901869] NET: Registered protocol family 16
+[   13.901979] cpuidle: using governor ladder
+[   13.901981] cpuidle: using governor menu
+[   13.901983] PCCT header not found.
+[   13.902032] ACPI: bus type PCI registered
+[   13.902033] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+[   13.902124] PCI: Using configuration type 1 for base access
+[   13.902931] ACPI: Added _OSI(Module Device)
+[   13.902932] ACPI: Added _OSI(Processor Device)
+[   13.902933] ACPI: Added _OSI(3.0 _SCP Extensions)
+[   13.902934] ACPI: Added _OSI(Processor Aggregator Device)
+[   13.903347] ACPI: Executed 1 blocks of module-level executable AML code
+[   13.904520] ACPI: Interpreter enabled
+[   13.904523] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S1_] (20150818/hwxface-580)
+[   13.904525] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S2_] (20150818/hwxface-580)
+[   13.904527] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S3_] (20150818/hwxface-580)
+[   13.904529] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S4_] (20150818/hwxface-580)
+[   13.904532] ACPI: (supports S0 S5)
+[   13.904533] ACPI: Using IOAPIC for interrupt routing
+[   13.904624] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+[   13.906902] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
+[   13.906905] acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI]
+[   13.906908] acpi PNP0A03:00: _OSC failed (AE_NOT_FOUND); disabling ASPM
+[   13.906937] acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended PCI configuration space under this bridge.
+[   13.907080] PCI host bridge to bus 0000:00
+[   13.907082] pci_bus 0000:00: root bus resource [bus 00-ff]
+[   13.907083] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+[   13.907084] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+[   13.907085] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+[   13.907086] pci_bus 0000:00: root bus resource [mem 0xe0000000-0xffdfffff window]
+[   13.907112] pci 0000:00:00.0: [8086:1237] type 00 class 0x060000
+[   13.907474] pci 0000:00:01.0: [8086:7000] type 00 class 0x060100
+[   13.907872] pci 0000:00:01.1: [8086:7111] type 00 class 0x01018a
+[   13.908116] pci 0000:00:01.1: reg 0x20: [io  0xd000-0xd00f]
+[   13.908218] pci 0000:00:01.1: legacy IDE quirk: reg 0x10: [io  0x01f0-0x01f7]
+[   13.908219] pci 0000:00:01.1: legacy IDE quirk: reg 0x14: [io  0x03f6]
+[   13.908220] pci 0000:00:01.1: legacy IDE quirk: reg 0x18: [io  0x0170-0x0177]
+[   13.908221] pci 0000:00:01.1: legacy IDE quirk: reg 0x1c: [io  0x0376]
+[   13.908398] pci 0000:00:02.0: [80ee:beef] type 00 class 0x030000
+[   13.912714] pci 0000:00:02.0: reg 0x10: [mem 0xe0000000-0xe0ffffff pref]
+[   13.940913] pci 0000:00:03.0: [8086:100e] type 00 class 0x020000
+[   13.945189] pci 0000:00:03.0: reg 0x10: [mem 0xf0000000-0xf001ffff]
+[   13.954508] pci 0000:00:03.0: reg 0x18: [io  0xd010-0xd017]
+[   13.976616] pci 0000:00:04.0: [80ee:cafe] type 00 class 0x088000
+[   13.982275] pci 0000:00:04.0: reg 0x10: [io  0xd020-0xd03f]
+[   13.987444] pci 0000:00:04.0: reg 0x14: [mem 0xf0400000-0xf07fffff]
+[   13.992886] pci 0000:00:04.0: reg 0x18: [mem 0xf0800000-0xf0803fff pref]
+[   14.011870] pci 0000:00:05.0: [8086:2415] type 00 class 0x040100
+[   14.011956] pci 0000:00:05.0: reg 0x10: [io  0xd100-0xd1ff]
+[   14.012001] pci 0000:00:05.0: reg 0x14: [io  0xd200-0xd23f]
+[   14.012360] pci 0000:00:06.0: [106b:003f] type 00 class 0x0c0310
+[   14.017070] pci 0000:00:06.0: reg 0x10: [mem 0xf0804000-0xf0804fff]
+[   14.044219] pci 0000:00:07.0: [8086:7113] type 00 class 0x068000
+[   14.044563] pci 0000:00:07.0: quirk: [io  0x4000-0x403f] claimed by PIIX4 ACPI
+[   14.044570] pci 0000:00:07.0: quirk: [io  0x4100-0x410f] claimed by PIIX4 SMB
+[   14.044736] pci 0000:00:0b.0: [8086:265c] type 00 class 0x0c0320
+[   14.048834] pci 0000:00:0b.0: reg 0x10: [mem 0xf0805000-0xf0805fff]
+[   14.075501] pci 0000:00:0d.0: [8086:2829] type 00 class 0x010601
+[   14.080142] pci 0000:00:0d.0: reg 0x10: [io  0xd240-0xd247]
+[   14.088596] pci 0000:00:0d.0: reg 0x18: [io  0xd250-0xd257]
+[   14.097356] pci 0000:00:0d.0: reg 0x20: [io  0xd260-0xd26f]
+[   14.101911] pci 0000:00:0d.0: reg 0x24: [mem 0xf0806000-0xf0807fff]
+[   14.107516] ACPI: PCI Interrupt Link [LNKA] (IRQs 5 9 10 *11)
+[   14.107705] ACPI: PCI Interrupt Link [LNKB] (IRQs 5 9 10 *11)
+[   14.107763] ACPI: PCI Interrupt Link [LNKC] (IRQs 5 9 *10 11)
+[   14.107819] ACPI: PCI Interrupt Link [LNKD] (IRQs 5 *9 10 11)
+[   14.107907] ACPI: Enabled 2 GPEs in block 00 to 07
+[   14.108000] vgaarb: setting as boot device: PCI:0000:00:02.0
+[   14.108002] vgaarb: device added: PCI:0000:00:02.0,decodes=io+mem,owns=io+mem,locks=none
+[   14.108004] vgaarb: loaded
+[   14.108005] vgaarb: bridge control possible 0000:00:02.0
+[   14.108158] SCSI subsystem initialized
+[   14.108187] libata version 3.00 loaded.
+[   14.108202] ACPI: bus type USB registered
+[   14.108212] usbcore: registered new interface driver usbfs
+[   14.108217] usbcore: registered new interface driver hub
+[   14.108223] usbcore: registered new device driver usb
+[   14.108293] PCI: Using ACPI for IRQ routing
+[   14.108294] PCI: pci_cache_line_size set to 64 bytes
+[   14.108441] Expanded resource Persistent Memory (legacy) due to conflict with PCI Bus 0000:00
+[   14.108442] e820: reserve RAM buffer [mem 0x0009fc00-0x0009ffff]
+[   14.108562] NetLabel: Initializing
+[   14.108563] NetLabel:  domain hash size = 128
+[   14.108563] NetLabel:  protocols = UNLABELED CIPSOv4
+[   14.108572] NetLabel:  unlabeled traffic allowed by default
+[   14.108669] clocksource: Switched to clocksource kvm-clock
+[   14.117271] AppArmor: AppArmor Filesystem Enabled
+[   14.117326] pnp: PnP ACPI init
+[   14.117386] pnp 00:00: Plug and Play ACPI device, IDs PNP0303 (active)
+[   14.117471] pnp 00:01: Plug and Play ACPI device, IDs PNP0f03 (active)
+[   14.117915] pnp: PnP ACPI: found 2 devices
+[   14.123101] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+[   14.123112] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
+[   14.123113] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
+[   14.123114] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
+[   14.123115] pci_bus 0000:00: resource 7 [mem 0xe0000000-0xffdfffff window]
+[   14.123136] NET: Registered protocol family 2
+[   14.123241] TCP established hash table entries: 65536 (order: 7, 524288 bytes)
+[   14.127077] TCP bind hash table entries: 65536 (order: 8, 1048576 bytes)
+[   14.127222] TCP: Hash tables configured (established 65536 bind 65536)
+[   14.127239] UDP hash table entries: 4096 (order: 5, 131072 bytes)
+[   14.127263] UDP-Lite hash table entries: 4096 (order: 5, 131072 bytes)
+[   14.127307] NET: Registered protocol family 1
+[   14.127316] pci 0000:00:00.0: Limiting direct PCI/PCI transfers
+[   14.127353] pci 0000:00:01.0: Activating ISA DMA hang workarounds
+[   14.127374] pci 0000:00:02.0: Video device with shadowed ROM
+[   14.127618] PCI: CLS 0 bytes, default 64
+[   14.127649] Trying to unpack rootfs image as initramfs...
+[   14.595379] Freeing initrd memory: 34072K (ffff880033d64000 - ffff880035eaa000)
+[   14.595411] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+[   14.595412] software IO TLB [mem 0x7c000000-0x80000000] (64MB) mapped at [ffff88007c000000-ffff88007fffffff]
+[   14.595472] platform rtc_cmos: registered platform RTC device (no PNP device found)
+[   14.595484] RAPL PMU detected, API unit is 2^-32 Joules, 4 fixed counters 10737418240 ms ovfl timer
+[   14.595485] hw unit of domain pp0-core 2^-0 Joules
+[   14.595486] hw unit of domain package 2^-0 Joules
+[   14.595486] hw unit of domain dram 2^-0 Joules
+[   14.595487] hw unit of domain pp1-gpu 2^-0 Joules
+[   14.595510] microcode: CPU0 sig=0x306c3, pf=0x40, revision=0x0
+[   14.595549] microcode: Microcode Update Driver: v2.00 <tigran@aivazian.fsnet.co.uk>, Peter Oruba
+[   14.595571] Scanning for low memory corruption every 60 seconds
+[   14.595732] futex hash table entries: 256 (order: 2, 16384 bytes)
+[   14.595765] audit: initializing netlink subsys (disabled)
+[   14.595774] audit: type=2000 audit(1513001225.974:1): initialized
+[   14.595920] Initialise system trusted keyring
+[   14.595968] HugeTLB registered 2 MB page size, pre-allocated 0 pages
+[   14.596890] zbud: loaded
+[   14.597004] VFS: Disk quotas dquot_6.6.0
+[   14.597022] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[   14.597165] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[   14.597311] fuse init (API version 7.23)
+[   14.597381] Key type big_key registered
+[   14.597741] Key type asymmetric registered
+[   14.597743] Asymmetric key parser 'x509' registered
+[   14.597776] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 249)
+[   14.599889] io scheduler noop registered
+[   14.599891] io scheduler deadline registered (default)
+[   14.599912] io scheduler cfq registered
+[   14.599962] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
+[   14.599966] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
+[   14.600054] ACPI: AC Adapter [AC] (on-line)
+[   14.600088] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+[   14.600090] ACPI: Power Button [PWRF]
+[   14.600133] input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
+[   14.600135] ACPI: Sleep Button [SLPF]
+[   14.600218] GHES: HEST is not enabled!
+[   14.600306] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[   14.600995] Linux agpgart interface v0.103
+[   14.603988] brd: module loaded
+[   14.604430] loop: module loaded
+[   14.604544] ata_piix 0000:00:01.1: version 2.13
+[   14.604927] nd_pmem namespace0.0: unable to guarantee persistence of writes
+[   14.607015] pmem0: detected capacity change from 0 to 1610547200
+[   14.607063] nd_pmem namespace2.0: unable to guarantee persistence of writes
+[   14.607065] nd_pmem namespace2.0: could not reserve region [0x0x00000000e0000000:0x1ffc0000]
+[   14.607066] nd_pmem: probe of namespace2.0 failed with error -16
+[   14.607104] nd_pmem namespace4.0: unable to guarantee persistence of writes
+[   14.609342] scsi host0: ata_piix
+[   14.609450] pmem4: detected capacity change from 0 to 2147483648
+[   14.609463] scsi host1: ata_piix
+[   14.609484] ata1: PATA max UDMA/33 cmd 0x1f0 ctl 0x3f6 bmdma 0xd000 irq 14
+[   14.609485] ata2: PATA max UDMA/33 cmd 0x170 ctl 0x376 bmdma 0xd008 irq 15
+[   14.609541] libphy: Fixed MDIO Bus: probed
+[   14.609543] tun: Universal TUN/TAP device driver, 1.6
+[   14.609544] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[   14.609842] PPP generic driver version 2.4.2
+[   14.609894] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[   14.609898] ehci-pci: EHCI PCI platform driver
+[   14.610225] ehci-pci 0000:00:0b.0: EHCI Host Controller
+[   14.610230] ehci-pci 0000:00:0b.0: new USB bus registered, assigned bus number 1
+[   14.610389] ehci-pci 0000:00:0b.0: irq 19, io mem 0xf0805000
+[   14.620829] ehci-pci 0000:00:0b.0: USB 2.0 started, EHCI 1.00
+[   14.620868] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+[   14.620870] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[   14.620872] usb usb1: Product: EHCI Host Controller
+[   14.620874] usb usb1: Manufacturer: Linux 4.3.0 ehci_hcd
+[   14.620875] usb usb1: SerialNumber: 0000:00:0b.0
+[   14.620972] hub 1-0:1.0: USB hub found
+[   14.620978] hub 1-0:1.0: 12 ports detected
+[   14.621190] ehci-platform: EHCI generic platform driver
+[   14.621201] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[   14.621206] ohci-pci: OHCI PCI platform driver
+[   14.621701] ohci-pci 0000:00:06.0: OHCI PCI host controller
+[   14.621707] ohci-pci 0000:00:06.0: new USB bus registered, assigned bus number 2
+[   14.621771] ohci-pci 0000:00:06.0: irq 22, io mem 0xf0804000
+[   14.677498] usb usb2: New USB device found, idVendor=1d6b, idProduct=0001
+[   14.677501] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[   14.677502] usb usb2: Product: OHCI PCI host controller
+[   14.677503] usb usb2: Manufacturer: Linux 4.3.0 ohci_hcd
+[   14.677504] usb usb2: SerialNumber: 0000:00:06.0
+[   14.677613] hub 2-0:1.0: USB hub found
+[   14.677622] hub 2-0:1.0: 12 ports detected
+[   14.677923] ohci-platform: OHCI generic platform driver
+[   14.677942] uhci_hcd: USB Universal Host Controller Interface driver
+[   14.677975] i8042: PNP: PS/2 Controller [PNP0303:PS2K,PNP0f03:PS2M] at 0x60,0x64 irq 1,12
+[   14.678330] serio: i8042 KBD port at 0x60,0x64 irq 1
+[   14.678333] serio: i8042 AUX port at 0x60,0x64 irq 12
+[   14.678402] mousedev: PS/2 mouse device common for all mice
+[   14.678622] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input2
+[   14.678938] rtc_cmos rtc_cmos: rtc core: registered rtc_cmos as rtc0
+[   14.678974] rtc_cmos rtc_cmos: alarms up to one day, 114 bytes nvram
+[   14.678978] i2c /dev entries driver
+[   14.679013] device-mapper: uevent: version 1.0.3
+[   14.679050] device-mapper: ioctl: 4.33.0-ioctl (2015-8-18) initialised: dm-devel@redhat.com
+[   14.679062] ledtrig-cpu: registered to indicate activity on CPUs
+[   14.679228] NET: Registered protocol family 10
+[   14.679359] NET: Registered protocol family 17
+[   14.679368] Key type dns_resolver registered
+[   14.679633] registered taskstats version 1
+[   14.679670] Loading compiled-in X.509 certificates
+[   14.680219] Loaded X.509 cert 'Build time autogenerated kernel key: 0759ca4de3f7631372cabbbeea3b24c381c013ce'
+[   14.680234] zswap: loaded using pool lzo/zbud
+[   14.681272] Key type trusted registered
+[   14.682933] Key type encrypted registered
+[   14.682938] AppArmor: AppArmor sha1 policy hashing enabled
+[   14.682941] ima: No TPM chip found, activating TPM-bypass!
+[   14.682953] evm: HMAC attrs: 0x1
+[   14.683163]   Magic number: 13:412:131
+[   14.683219] rtc_cmos rtc_cmos: setting system clock to 2017-12-11 14:06:50 UTC (1513001210)
+[   14.683255] BIOS EDD facility v0.16 2004-Jun-25, 0 devices found
+[   14.683255] EDD information not available.
+[   14.683285] PM: Hibernation image not present or could not be loaded.
+[   14.765628] ata2.00: ATAPI: VBOX CD-ROM, 1.0, max UDMA/133
+[   14.765895] ata2.00: configured for UDMA/33
+[   14.766275] scsi 1:0:0:0: CD-ROM            VBOX     CD-ROM           1.0  PQ: 0 ANSI: 5
+[   14.773609] sr 1:0:0:0: [sr0] scsi3-mmc drive: 32x/32x xa/form2 tray
+[   14.773611] cdrom: Uniform CD-ROM driver Revision: 3.20
+[   14.773680] sr 1:0:0:0: Attached scsi CD-ROM sr0
+[   14.773816] sr 1:0:0:0: Attached scsi generic sg0 type 5
+[   14.774032] Freeing unused kernel memory: 1456K (ffffffff81d3a000 - ffffffff81ea6000)
+[   14.774034] Write protecting the kernel read-only data: 12288k
+[   14.774150] Freeing unused kernel memory: 20K (ffff8800017fb000 - ffff880001800000)
+[   14.774191] Freeing unused kernel memory: 216K (ffff880001bca000 - ffff880001c00000)
+[   14.779550] random: udevadm urandom read with 1 bits of entropy available
+[   14.803735] e1000: Intel(R) PRO/1000 Network Driver - version 7.3.21-k8-NAPI
+[   14.803737] e1000: Copyright (c) 1999-2006 Intel Corporation.
+[   14.816182] ACPI: Video Device [GFX0] (multi-head: yes  rom: no  post: no)
+[   14.816225] input: Video Bus as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/LNXVIDEO:00/input/input4
+[   14.818396] FUJITSU Extended Socket Network Device Driver - version 1.0 - Copyright (c) 2015 FUJITSU LIMITED
+[   15.101684] input: ImExPS/2 Generic Explorer Mouse as /devices/platform/i8042/serio1/input/input5
+[   15.140444] e1000 0000:00:03.0 eth0: (PCI:33MHz:32-bit) 08:00:27:7d:c1:92
+[   15.140448] e1000 0000:00:03.0 eth0: Intel(R) PRO/1000 Network Connection
+[   15.140790] ahci 0000:00:0d.0: version 3.0
+[   15.140856] ahci 0000:00:0d.0: SSS flag set, parallel bus scan disabled
+[   15.140938] ahci 0000:00:0d.0: AHCI 0001.0100 32 slots 1 ports 3 Gbps 0x1 impl SATA mode
+[   15.140940] ahci 0000:00:0d.0: flags: 64bit ncq stag only ccc 
+[   15.141725] e1000 0000:00:03.0 enp0s3: renamed from eth0
+[   15.142358] scsi host2: ahci
+[   15.142403] ata3: SATA max UDMA/133 abar m8192@0xf0806000 port 0xf0806100 irq 21
+[   15.312800] usb 2-1: new full-speed USB device number 2 using ohci-pci
+[   15.460833] ata3: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[   15.461039] ata3.00: ATA-6: VBOX HARDDISK, 1.0, max UDMA/133
+[   15.461041] ata3.00: 268435456 sectors, multi 128: LBA48 NCQ (depth 31/32)
+[   15.461116] ata3.00: configured for UDMA/133
+[   15.461272] scsi 2:0:0:0: Direct-Access     ATA      VBOX HARDDISK    1.0  PQ: 0 ANSI: 5
+[   15.461838] sd 2:0:0:0: [sda] 268435456 512-byte logical blocks: (137 GB/128 GiB)
+[   15.461851] sd 2:0:0:0: [sda] Write Protect is off
+[   15.461852] sd 2:0:0:0: [sda] Mode Sense: 00 3a 00 00
+[   15.461858] sd 2:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[   15.461950] sd 2:0:0:0: Attached scsi generic sg1 type 0
+[   15.463410]  sda: sda1 sda2 < sda5 >
+[   15.463526] sd 2:0:0:0: [sda] Attached SCSI disk
+[   15.589254] usb 2-1: New USB device found, idVendor=80ee, idProduct=0021
+[   15.589257] usb 2-1: New USB device strings: Mfr=1, Product=3, SerialNumber=0
+[   15.589258] usb 2-1: Product: USB Tablet
+[   15.589259] usb 2-1: Manufacturer: VirtualBox
+[   15.593108] tsc: Refined TSC clocksource calibration: 3592.441 MHz
+[   15.593110] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x33c86eb5f4a, max_idle_ns: 440795362636 ns
+[   15.596535] hidraw: raw HID events driver (C) Jiri Kosina
+[   15.606359] usbcore: registered new interface driver usbhid
+[   15.606361] usbhid: USB HID core driver
+[   15.612204] input: VirtualBox USB Tablet as /devices/pci0000:00/0000:00:06.0/usb2/2-1/2-1:1.0/0003:80EE:0021.0001/input/input6
+[   15.612344] hid-generic 0003:80EE:0021.0001: input,hidraw0: USB HID v1.10 Mouse [VirtualBox USB Tablet] on usb-0000:00:06.0-1/input0
+[   18.137035] floppy0: no floppy controllers found
+[   18.137071] work still pending
+[   19.675986] EXT4-fs (sda1): mounted filesystem with ordered data mode. Opts: (null)
+[   19.730499] random: nonblocking pool is initialized
+[   20.746102] systemd[1]: systemd 229 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ -LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN)
+[   20.746125] systemd[1]: Detected virtualization oracle.
+[   20.746128] systemd[1]: Detected architecture x86-64.
+[   20.753143] systemd[1]: Set hostname to <cxdir-VirtualBox>.
+[   21.368522] systemd[1]: Reached target User and Group Name Lookups.
+[   21.368591] systemd[1]: Listening on udev Kernel Socket.
+[   21.368652] systemd[1]: Created slice User and Session Slice.
+[   21.368683] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[   21.368688] systemd[1]: Reached target Encrypted Volumes.
+[   21.368706] systemd[1]: Listening on Syslog Socket.
+[   21.368715] systemd[1]: Listening on fsck to fsckd communication Socket.
+[   21.368719] systemd[1]: Reached target Remote File Systems (Pre).
+[   21.368723] systemd[1]: Reached target Remote File Systems.
+[   21.368843] systemd[1]: Set up automount Arbitrary Executable File Formats File System Automount Point.
+[   21.368866] systemd[1]: Listening on /dev/initctl Compatibility Named Pipe.
+[   21.368878] systemd[1]: Listening on Journal Socket (/dev/log).
+[   21.368917] systemd[1]: Created slice System Slice.
+[   21.368928] systemd[1]: Reached target Slices.
+[   21.368944] systemd[1]: Listening on Journal Socket.
+[   21.377607] systemd[1]: Mounting Debug File System...
+[   21.377883] systemd[1]: Starting Set console keymap...
+[   21.386734] systemd[1]: Starting Load Kernel Modules...
+[   21.386952] systemd[1]: Starting Uncomplicated firewall...
+[   21.387152] systemd[1]: Mounting POSIX Message Queue File System...
+[   21.387340] systemd[1]: Started Braille Device Support.
+[   21.388777] systemd[1]: Mounting Huge Pages File System...
+[   21.388889] systemd[1]: Listening on Journal Audit Socket.
+[   21.389272] systemd[1]: Starting Journal Service...
+[   21.389499] systemd[1]: Starting Create list of required static device nodes for the current kernel...
+[   21.389529] systemd[1]: Listening on udev Control Socket.
+[   21.496321] systemd[1]: Started Uncomplicated firewall.
+[   21.541147] systemd[1]: Started Create list of required static device nodes for the current kernel.
+[   21.541447] systemd[1]: Starting Create Static Device Nodes in /dev...
+[   21.810582] lp: driver loaded but no devices found
+[   21.834617] systemd[1]: Started Journal Service.
+[   21.842693] ppdev: user-space parallel port driver
+[   22.929334] EXT4-fs (sda1): re-mounted. Opts: errors=remount-ro
+[   23.022513] systemd-journald[233]: Received request to flush runtime journal from PID 1
+[   23.495983] piix4_smbus 0000:00:07.0: SMBus Host Controller at 0x4100, revision 0
+[   23.555670] vboxguest: module verification failed: signature and/or required key missing - tainting kernel
+[   23.560524] vgdrvHeartbeatInit: Setting up heartbeat to trigger every 2000 milliseconds
+[   23.560585] input: Unspecified device as /devices/pci0000:00/0000:00:04.0/input/input7
+[   23.560658] vboxguest: misc device minor 56, IRQ 20, I/O port d020, MMIO at 00000000f0400000 (size 0x400000)
+[   23.560666] vboxguest: Successfully loaded version 5.1.14 (interface 0x00010004)
+[   23.880071] [drm] Initialized drm 1.1.0 20060810
+[   24.013613] [drm] VRAM 01000000
+[   24.013701] [TTM] Zone  kernel: Available graphics memory: 2281612 kiB
+[   24.013702] [TTM] Zone   dma32: Available graphics memory: 2097152 kiB
+[   24.013703] [TTM] Initializing pool allocator
+[   24.013705] [TTM] Initializing DMA pool allocator
+[   24.017349] AVX version of gcm_enc/dec engaged.
+[   24.017351] AES CTR mode by8 optimization enabled
+[   24.017636] fbcon: vboxdrmfb (fb0) is primary device
+[   24.080692] Console: switching to colour frame buffer device 100x37
+[   24.081631] vboxvideo 0000:00:02.0: fb0: vboxdrmfb frame buffer device
+[   24.082454] [drm] Initialized vboxvideo 1.0.0 20130823 for 0000:00:02.0 on minor 0
+[   24.192753] intel_rapl: no valid rapl domains found in package 0
+[   24.354838] snd_intel8x0 0000:00:05.0: disable (unknown or VT-d) VM optimization
+[   24.621457] snd_intel8x0 0000:00:05.0: white list rate for 1028:0177 is 48000
+[   25.103009] Adding 8386556k swap on /dev/sda5.  Priority:-1 extents:1 across:8386556k FS
+[   25.412730] audit: type=1400 audit(1513001221.228:2): apparmor="STATUS" operation="profile_load" name="/usr/lib/lightdm/lightdm-guest-session" pid=643 comm="apparmor_parser"
+[   25.412734] audit: type=1400 audit(1513001221.228:3): apparmor="STATUS" operation="profile_load" name="chromium" pid=643 comm="apparmor_parser"
+[   25.456087] audit: type=1400 audit(1513001221.268:4): apparmor="STATUS" operation="profile_load" name="/sbin/dhclient" pid=649 comm="apparmor_parser"
+[   25.456092] audit: type=1400 audit(1513001221.268:5): apparmor="STATUS" operation="profile_load" name="/usr/lib/NetworkManager/nm-dhcp-client.action" pid=649 comm="apparmor_parser"
+[   25.456094] audit: type=1400 audit(1513001221.268:6): apparmor="STATUS" operation="profile_load" name="/usr/lib/NetworkManager/nm-dhcp-helper" pid=649 comm="apparmor_parser"
+[   25.456096] audit: type=1400 audit(1513001221.268:7): apparmor="STATUS" operation="profile_load" name="/usr/lib/connman/scripts/dhclient-script" pid=649 comm="apparmor_parser"
+[   25.553672] audit: type=1400 audit(1513001221.368:8): apparmor="STATUS" operation="profile_load" name="/usr/bin/evince" pid=650 comm="apparmor_parser"
+[   25.553676] audit: type=1400 audit(1513001221.368:9): apparmor="STATUS" operation="profile_load" name="sanitized_helper" pid=650 comm="apparmor_parser"
+[   25.553679] audit: type=1400 audit(1513001221.368:10): apparmor="STATUS" operation="profile_load" name="/usr/bin/evince-previewer" pid=650 comm="apparmor_parser"
+[   25.553681] audit: type=1400 audit(1513001221.368:11): apparmor="STATUS" operation="profile_load" name="sanitized_helper" pid=650 comm="apparmor_parser"
+[   26.608840] floppy0: no floppy controllers found
+[   26.608868] work still pending
+[   28.741025] vboxsf: Successfully loaded version 5.1.14 (interface 0x00010004)
+[   30.927804] VBoxService 5.1.14 r112924 (verbosity: 0) linux.amd64 (Jan 16 2017 17:38:46) release log
+               00:00:00.000057 main     Log opened 2017-12-11T14:07:06.743918000Z
+[   30.927979] 00:00:00.000864 main     OS Product: Linux
+[   30.928006] 00:00:00.000898 main     OS Release: 4.3.0
+[   30.928023] 00:00:00.000923 main     OS Version: #2 SMP Fri Sep 8 20:52:18 CST 2017
+[   30.928044] 00:00:00.000940 main     Executable: /opt/VBoxGuestAdditions-5.1.14/sbin/VBoxService
+               00:00:00.000941 main     Process ID: 965
+               00:00:00.000941 main     Package type: LINUX_64BITS_GENERIC
+[   30.928962] 00:00:00.001848 main     5.1.14 r112924 started. Verbose level = 0
+[   30.941221] IPv6: ADDRCONF(NETDEV_UP): enp0s3: link is not ready
+[   30.942779] IPv6: ADDRCONF(NETDEV_UP): enp0s3: link is not ready
+[   30.945176] e1000: enp0s3 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+[   30.945422] IPv6: ADDRCONF(NETDEV_CHANGE): enp0s3: link becomes ready
+[  103.639412] nova: dafs init nova_fs
+[  103.639425] nova: init_nova_fs: 1 cpus online
+[  103.639426] nova: Arch new instructions support: PCOMMIT NO, CLWB NO
+[  103.640386] nova: dafs register file sytem nova
+[  103.640390] nova: dafs end init_fs
+[  103.686874] nova: dafs start to mount
+[  103.686889] nova: nova_get_block_info: dev pmem0, phys_addr 0x80000000, virt_addr ffffc90040000000, size 1610547200
+[  103.686897] nova: start init radix tree
+[  103.686898] nova: finish init radix tree
+[  103.686898] nova: start nova init
+[  103.686899] nova: creating an empty nova of size 1610547200
+[  103.686900] nova: nova: Default block size set to 4K
+[  103.686903] nova: dafs init dzt block
+[  103.686903] nova: dafs_get dzt blk
+[  103.686905] nova: dzt alloc 1 dzt blocks from 4 to 4
+[  103.686906] nova: dafs_init_dzt_block: allocate log @ 0x4
+[  103.686907] nova: dafs start get journal blk
+[  103.686907] nova: dafs_get journal blk
+[  103.686908] nova: dafs get hard journal
+[  103.686909] nova: nova_lite_journal_hard_init: allocate log @ 0x5
+[  103.686910] nova: dafs get soft journal
+[  103.686910] nova: dafs start get journal blk
+[  103.686911] nova: dafs_get journal blk
+[  103.686911] nova: dafs get inode table
+[  103.689938] nova: nova_init_inode_table: allocate log @ 0x6
+[  103.689939] nova: nova_init_inode_table:inode table log head is 24576
+[  103.689942] nova: Allocate root inode
+[  103.689943] nova: dafs_get dzt blk
+[  103.689943] nova: dafs allocate hash table
+[  105.226431] nova: dafs allocate zone blocks
+[  105.226486] nova: Zone 0, alloc 1 zone blocks from 262662 to 262662
+[  105.226488] nova: dafs_alloc_dir_zone: allocate zone @ 0x40206
+[  105.238532] nova: dafs make dzt pointer
+[  105.238534] nova: dafs_get dzt blk
+[  105.238536] nova: dafs finish make dzt bitmap pointer
+[  105.238537] nova: dafs start build dzt
+[  105.238538] nova: dafs finish build dzt_e
+[  105.238539] nova: dafs start init dir zones
+[  105.238539] nova: root ze addr is 1075863552
+[  105.238540] nova: the root dir hashname is 47
+[  105.238541] nova: test root hash name is 47
+[  105.238541] nova: dafs finish creat root directory
+[  105.238542] nova: dafs record pos in hash table address is 2121728
+[  105.238542] nova: dafs finish recording pos in hash table
+[  105.238543] nova: dafs add dir info in radix tree
+[  105.238543] nova: dir hash name is 47
+[  105.238544] nova: dafs start adding init part in dir
+[  105.238545] nova: par ze addr is 1075863552
+[  105.238546] nova: dafs_append_dir_init_entries:fname is /., name is .
+[  105.238546] nova: dafs record pos in hash table address is 2121728
+[  105.238547] nova: dafs finish recording pos in hash table
+[  105.238548] nova: par pos is 0, cur pos is 1
+[  105.238548] nova: parent hashname is 47
+[  105.238549] nova: dafs record pos in hash table address is 2121728
+[  105.238550] nova: dafs finish recording pos in hash table
+[  105.238550] nova: dafs finish add initial part in dir
+[  105.238551] nova: dafs finish init dir zones
+[  105.238551] nova: dafs init dir info tree
+[  105.238570] nova: dafs finish initial dir info tree
+[  105.238571] nova: dafs finish nova_init
+[  105.238572] nova: dafs start setting sb
+[  105.238572] nova: dafs end setting sb
+[  105.238578] nova: nova_iget: inode 1
+[  105.238579] nova: nova_iget: pi_addr is 0x1024
+[  105.238580] nova: nova_rebuild_inode:dafs start to rebuild inode
+[  105.238581] nova: Rebuild dir 1 tree
+[  105.238581] nova: Log head 0x0, tail 0x0
+[  105.238582] nova: dafs_rebuild_dir_inode_tree: it is dir type
+[  105.238583] nova: dafs_rebuild_dir_inode_tree:dafs finish rebuild dir inode
+[  105.238584] nova: sucessfully get inode
+[  105.238585] nova: root_dentry name is /
+[  105.238586] nova: dafs end fill super
+[  105.238586] nova: dafs finish mount
+[  105.239030] nova: dafs_lookup,dafs start looup
+[  105.239031] nova: dafs_inode_by_name:dafs start to inode by name
+[  105.239032] nova: dafs_find_direntry:dafs start to find direntry
+[  105.239033] nova: dentry name is .Trash
+[  105.239033] nova: get_dentry_path:dafs get dentry path
+[  105.239034] nova: fs path is: /
+[  105.239035] nova: fs path is: /
+[  105.239035] nova: mount point is:/
+[  105.239035] nova: dentry name is .Trash
+[  105.239036] nova: buf is 
+[  105.239037] nova: ph is /.Trash
+[  105.239037] nova: dafs finish get dentry path
+[  105.239037] nova: strictly full name is /.Trash
+[  105.239038] nova: strictly full name length is 7
+[  105.239038] nova: dafs start to find dzt
+[  105.239039] nova: test path len is 0
+[  105.239039] nova: dafs finish finding dzt
+[  105.239040] nova: path name is /
+[  105.239040] nova: the ze addr is 1075863552
+[  105.239041] nova: full name is /.Trash
+[  105.239042] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
+[  105.239042] nova: dafs start to lookup in hashtable
+[  105.239043] nova: dafs finish lookup in hash table
+[  105.239043] nova: not found dentry in nvm
+[  105.239044] nova: dafs_find_direntry:dafs finish find direntry
+[  105.239044] nova: dafs_lookup:dafs finish lookup
+[  105.239053] nova: dafs_lookup,dafs start looup
+[  105.239053] nova: dafs_inode_by_name:dafs start to inode by name
+[  105.239054] nova: dafs_find_direntry:dafs start to find direntry
+[  105.239054] nova: dentry name is .Trash-1000
+[  105.239055] nova: get_dentry_path:dafs get dentry path
+[  105.239055] nova: fs path is: /
+[  105.239056] nova: fs path is: /
+[  105.239056] nova: mount point is:/
+[  105.239056] nova: dentry name is .Trash-1000
+[  105.239057] nova: buf is 
+[  105.239057] nova: ph is /.Trash-1000
+[  105.239058] nova: dafs finish get dentry path
+[  105.239058] nova: strictly full name is /.Trash-1000
+[  105.239058] nova: strictly full name length is 12
+[  105.239059] nova: dafs start to find dzt
+[  105.239060] nova: test path len is 0
+[  105.239060] nova: dafs finish finding dzt
+[  105.239060] nova: path name is /
+[  105.239061] nova: the ze addr is 1075863552
+[  105.239061] nova: full name is /.Trash-1000
+[  105.239062] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
+[  105.239062] nova: dafs start to lookup in hashtable
+[  105.239063] nova: dafs finish lookup in hash table
+[  105.239063] nova: not found dentry in nvm
+[  105.239064] nova: dafs_find_direntry:dafs finish find direntry
+[  105.239064] nova: dafs_lookup:dafs finish lookup
+[  121.163213] nova: dafs_lookup,dafs start looup
+[  121.163215] nova: dafs_inode_by_name:dafs start to inode by name
+[  121.163218] nova: dafs_find_direntry:dafs start to find direntry
+[  121.163218] nova: dentry name is p
+[  121.163220] nova: get_dentry_path:dafs get dentry path
+[  121.163220] nova: fs path is: /
+[  121.163221] nova: fs path is: /
+[  121.163222] nova: mount point is:/
+[  121.163223] nova: dentry name is p
+[  121.163223] nova: buf is 
+[  121.163224] nova: ph is /p
+[  121.163225] nova: dafs finish get dentry path
+[  121.163226] nova: strictly full name is /p
+[  121.163226] nova: strictly full name length is 2
+[  121.163228] nova: dafs start to find dzt
+[  121.163228] nova: test path len is 0
+[  121.163230] nova: dafs finish finding dzt
+[  121.163230] nova: path name is /
+[  121.163231] nova: the ze addr is 1075863552
+[  121.163232] nova: full name is /p
+[  121.163233] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
+[  121.163234] nova: dafs start to lookup in hashtable
+[  121.163235] nova: dafs finish lookup in hash table
+[  121.163236] nova: not found dentry in nvm
+[  121.163237] nova: dafs_find_direntry:dafs finish find direntry
+[  121.163237] nova: dafs_lookup:dafs finish lookup
+[  121.163240] nova: dafs_mkdir:dafs start to mkdir
+[  121.163240] nova: dafs start make ino
+[  121.163242] nova: nova_get_inode_address:dafs get inode addr
+[  121.163243] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
+[  121.163244] nova: nova_get_inode_address:dbg ino is16,internal_ino is 16, num cpus is 1
+[  121.163245] nova: dafs get inode table
+[  121.163246] nova: nova_get_inode_address:inode_table log head is 24576
+[  121.163247] nova: nova_get_inode_address:index is 16, supercount is 0
+[  121.163248] nova: nova_get_inode_address:inode table addr is 24576
+[  121.163248] nova: nova_get_inode_address:dafs finish find inode at 26624
+[  121.163249] nova: ino is 16
+[  121.163250] nova: dafs_mkdir: name p
+[  121.163251] nova: dafs_mkdir: inode 16, dir 1, link 2
+[  121.163252] nova: dafs_add_dentry:dafs add dentry
+[  121.163253] nova: get_dentry_path:dafs get dentry path
+[  121.163254] nova: fs path is: /
+[  121.163255] nova: fs path is: /
+[  121.163256] nova: mount point is:/
+[  121.163256] nova: dentry name is p
+[  121.163257] nova: buf is 
+[  121.163258] nova: ph is /p
+[  121.163259] nova: dafs finish get dentry path
+[  121.163259] nova: dafs start to find dzt
+[  121.163260] nova: test path len is 0
+[  121.163261] nova: dafs finish finding dzt
+[  121.163274] nova: full name is /p, name len is 2
+[  121.163275] nova: inode addr is 1024
+[  121.163276] nova: dentry pos is 3, zone num is 0
+[  121.163276] nova: dentry not need extension
+[  121.163277] nova: dentry name is p
+[  121.163278] nova: dentry is root subfile
+[  121.163278] nova: set pos in hash table for each zone
+[  121.163279] nova: dentry hashname is 6269
+[  121.163280] nova: dafs record pos in hash table address is 2121728
+[  121.163281] nova: dafs finish recording pos in hash table
+[  121.163281] nova: set pos in par_dir info
+[  121.163282] nova: dafs_add_dentry:temlen is 1, zone num is 0
+[  121.163283] nova: dafs_add_dentry:par is root hash 47
+[  121.163284] nova: dafs_add_dentry:dafs add pos in par
+[  121.163285] nova: dafs_add_dentry:sub num is 3
+[  121.163286] nova: dafs add dir info in radix tree
+[  121.163286] nova: dir hash name is 6269
+[  121.163288] nova: dafs start adding init part in dir
+[  121.163289] nova: par ze addr is 1075863552
+[  121.163290] nova: dafs_append_dir_init_entries:fname is /., name is .
+[  121.163291] nova: dafs record pos in hash table address is 2121728
+[  121.163292] nova: dafs finish recording pos in hash table
+[  121.163293] nova: par pos is 3, cur pos is 4
+[  121.163293] nova: parent hashname is 6269
+[  121.163294] nova: dafs record pos in hash table address is 2121728
+[  121.163295] nova: dafs finish recording pos in hash table
+[  121.163296] nova: dafs finish add initial part in dir
+[  121.163297] nova: dafs finish add dentry
+[  121.163297] nova: dafs start make new vfs inode
+[  121.163299] nova: inode addr is 1024
+[  121.163300] nova: nova_new_vfs_inode: allocating inode 16 @ 0x6800
+[  121.163301] nova: dafs make TYPE_MKDIR
+[  121.163303] nova: dafs end making inode
+[  121.163304] nova: inode addr is 26624
+[  121.163305] nova: Rebuild dir 16 tree
+[  121.163306] nova: Log head 0x0, tail 0x0
+[  121.163307] nova: dafs_rebuild_dir_inode_tree: it is dir type
+[  121.163307] nova: dafs_rebuild_dir_inode_tree:dafs finish rebuild dir inode
+[  121.163308] nova: inode addr is 1024
+[  121.163310] nova: dafs_mkdir: dafs end mkdir
+[  122.656939] nova: dafs_readdir:dafs readdir
+[  122.656941] nova: inode addr is 1024
+[  122.656943] nova: dafs_readdir: ino 1, size 4096, pos 0x0
+[  122.656944] nova: get_dentry_path:dafs get dentry path
+[  122.656945] nova: fs path is: /
+[  122.656946] nova: fs path is: /
+[  122.656946] nova: mount point is:/
+[  122.656946] nova: dentry name is /
+[  122.656947] nova: buf is 
+[  122.656947] nova: ph is /
+[  122.656948] nova: dafs finish get dentry path
+[  122.656949] nova: dafs start to find dzt
+[  122.656949] nova: test path len is 0
+[  122.656950] nova: dafs finish finding dzt
+[  122.656950] nova: dafs_find_direntry:dafs start to find direntry
+[  122.656951] nova: dentry name is /
+[  122.656951] nova: get_dentry_path:dafs get dentry path
+[  122.656952] nova: fs path is: /
+[  122.656952] nova: fs path is: /
+[  122.656953] nova: mount point is:/
+[  122.656953] nova: dentry name is /
+[  122.656953] nova: buf is 
+[  122.656954] nova: ph is /
+[  122.656954] nova: dafs finish get dentry path
+[  122.656955] nova: strictly full name is /
+[  122.656955] nova: strictly full name length is 1
+[  122.656955] nova: dafs start to find dzt
+[  122.656956] nova: test path len is 0
+[  122.656956] nova: dafs finish finding dzt
+[  122.656957] nova: path name is /
+[  122.656957] nova: the ze addr is 1075863552
+[  122.656958] nova: full name is /
+[  122.656958] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
+[  122.656959] nova: dafs start to lookup in hashtable
+[  122.656959] nova: dafs finish lookup in hash table
+[  122.656960] nova: dir entry pos is 0
+[  122.656961] nova: dafs_find_direntry:dafs finish find direntry
+[  122.656961] nova: dafs_readdir:find dir name is /
+[  122.656962] nova: dafs_readdir:dir_subfile num is3, zone addr is 1075863552
+[  122.656963] nova: dafs_readdir:list subfile name:., pos id 1
+[  122.656964] nova: pos 1, type 6, ino 1, name ., namelen 1, rec len 128
+[  122.656965] nova: nova_get_inode_address:dafs get inode addr
+[  122.656966] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
+[  122.656966] nova: nova_get_inode_address:dbg ino is1,internal_ino is 1, num cpus is 1
+[  122.656967] nova: dafs get inode table
+[  122.656967] nova: nova_get_inode_address:inode_table log head is 24576
+[  122.656968] nova: nova_get_inode_address:index is 1, supercount is 0
+[  122.656968] nova: nova_get_inode_address:inode table addr is 24576
+[  122.656969] nova: nova_get_inode_address:dafs finish find inode at 24704
+[  122.656970] nova: ctx: ino 1, name ., name_len 1, de_len 128
+[  122.656970] nova: dafs_readdir:list subfile name:.., pos id 2
+[  122.656971] nova: pos 2, type 6, ino 1, name .., namelen 2, rec len 128
+[  122.656972] nova: nova_get_inode_address:dafs get inode addr
+[  122.656972] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
+[  122.656973] nova: nova_get_inode_address:dbg ino is1,internal_ino is 1, num cpus is 1
+[  122.656973] nova: dafs get inode table
+[  122.656974] nova: nova_get_inode_address:inode_table log head is 24576
+[  122.656974] nova: nova_get_inode_address:index is 1, supercount is 0
+[  122.656975] nova: nova_get_inode_address:inode table addr is 24576
+[  122.656975] nova: nova_get_inode_address:dafs finish find inode at 24704
+[  122.656976] nova: ctx: ino 1, name .., name_len 2, de_len 128
+[  122.656976] nova: dafs_readdir:list subfile name:p, pos id 3
+[  122.656977] nova: pos 3, type 6, ino 16, name p, namelen 1, rec len 128
+[  122.656978] nova: nova_get_inode_address:dafs get inode addr
+[  122.656978] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
+[  122.656979] nova: nova_get_inode_address:dbg ino is16,internal_ino is 16, num cpus is 1
+[  122.656979] nova: dafs get inode table
+[  122.656980] nova: nova_get_inode_address:inode_table log head is 24576
+[  122.656980] nova: nova_get_inode_address:index is 16, supercount is 0
+[  122.656981] nova: nova_get_inode_address:inode table addr is 24576
+[  122.656981] nova: nova_get_inode_address:dafs finish find inode at 26624
+[  122.656982] nova: ctx: ino 16, name p, name_len 1, de_len 128
+[  122.656982] nova: dafs ctx pos is ffffffffffffffff
+[  122.656983] nova: dafs_readdir readdir return
+[  122.656984] nova: inode addr is 1024
+[  129.712826] nova: dafs_readdir:dafs readdir
+[  129.712829] nova: inode addr is 1024
+[  129.712830] nova: dafs_readdir: ino 1, size 4096, pos 0x0
+[  129.712831] nova: get_dentry_path:dafs get dentry path
+[  129.712832] nova: fs path is: /
+[  129.712832] nova: fs path is: /
+[  129.712833] nova: mount point is:/
+[  129.712833] nova: dentry name is /
+[  129.712834] nova: buf is 
+[  129.712834] nova: ph is /
+[  129.712835] nova: dafs finish get dentry path
+[  129.712835] nova: dafs start to find dzt
+[  129.712836] nova: test path len is 0
+[  129.712837] nova: dafs finish finding dzt
+[  129.712837] nova: dafs_find_direntry:dafs start to find direntry
+[  129.712838] nova: dentry name is /
+[  129.712838] nova: get_dentry_path:dafs get dentry path
+[  129.712839] nova: fs path is: /
+[  129.712839] nova: fs path is: /
+[  129.712839] nova: mount point is:/
+[  129.712840] nova: dentry name is /
+[  129.712840] nova: buf is 
+[  129.712841] nova: ph is /
+[  129.712841] nova: dafs finish get dentry path
+[  129.712841] nova: strictly full name is /
+[  129.712842] nova: strictly full name length is 1
+[  129.712842] nova: dafs start to find dzt
+[  129.712843] nova: test path len is 0
+[  129.712843] nova: dafs finish finding dzt
+[  129.712844] nova: path name is /
+[  129.712844] nova: the ze addr is 1075863552
+[  129.712845] nova: full name is /
+[  129.712845] nova: the ze addr is 1075863552, the ze number is 0,  the hash table head is 2121728
+[  129.712846] nova: dafs start to lookup in hashtable
+[  129.712846] nova: dafs finish lookup in hash table
+[  129.712847] nova: dir entry pos is 0
+[  129.712847] nova: dafs_find_direntry:dafs finish find direntry
+[  129.712848] nova: dafs_readdir:find dir name is /
+[  129.712849] nova: dafs_readdir:dir_subfile num is3, zone addr is 1075863552
+[  129.712849] nova: dafs_readdir:list subfile name:., pos id 1
+[  129.712850] nova: pos 1, type 6, ino 1, name ., namelen 1, rec len 128
+[  129.712851] nova: nova_get_inode_address:dafs get inode addr
+[  129.712852] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
+[  129.712853] nova: nova_get_inode_address:dbg ino is1,internal_ino is 1, num cpus is 1
+[  129.712853] nova: dafs get inode table
+[  129.712854] nova: nova_get_inode_address:inode_table log head is 24576
+[  129.712854] nova: nova_get_inode_address:index is 1, supercount is 0
+[  129.712855] nova: nova_get_inode_address:inode table addr is 24576
+[  129.712855] nova: nova_get_inode_address:dafs finish find inode at 24704
+[  129.712856] nova: ctx: ino 1, name ., name_len 1, de_len 128
+[  129.712857] nova: dafs_readdir:list subfile name:.., pos id 2
+[  129.712858] nova: pos 2, type 6, ino 1, name .., namelen 2, rec len 128
+[  129.712858] nova: nova_get_inode_address:dafs get inode addr
+[  129.712859] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
+[  129.712859] nova: nova_get_inode_address:dbg ino is1,internal_ino is 1, num cpus is 1
+[  129.712860] nova: dafs get inode table
+[  129.712860] nova: nova_get_inode_address:inode_table log head is 24576
+[  129.712861] nova: nova_get_inode_address:index is 1, supercount is 0
+[  129.712861] nova: nova_get_inode_address:inode table addr is 24576
+[  129.712862] nova: nova_get_inode_address:dafs finish find inode at 24704
+[  129.712862] nova: ctx: ino 1, name .., name_len 2, de_len 128
+[  129.712863] nova: dafs_readdir:list subfile name:p, pos id 3
+[  129.712864] nova: pos 3, type 6, ino 16, name p, namelen 1, rec len 128
+[  129.712864] nova: nova_get_inode_address:dafs get inode addr
+[  129.712865] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
+[  129.712865] nova: nova_get_inode_address:dbg ino is16,internal_ino is 16, num cpus is 1
+[  129.712866] nova: dafs get inode table
+[  129.712866] nova: nova_get_inode_address:inode_table log head is 24576
+[  129.712867] nova: nova_get_inode_address:index is 16, supercount is 0
+[  129.712867] nova: nova_get_inode_address:inode table addr is 24576
+[  129.712867] nova: nova_get_inode_address:dafs finish find inode at 26624
+[  129.712868] nova: ctx: ino 16, name p, name_len 1, de_len 128
+[  129.712869] nova: dafs ctx pos is ffffffffffffffff
+[  129.712869] nova: dafs_readdir readdir return
