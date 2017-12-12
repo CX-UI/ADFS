@@ -22,7 +22,7 @@
 /*dzt_block*/
 #define SIZE_DZT_BITMAP ((DAFS_DZT_ENTRIES_IN_BLOCK + 1 + BITS_PER_BYTE -1)/BITS_PER_BYTE)
 #define DAFS_DZT_ENTRIES_IN_BLOCK 72
-#define DZT_BLK_RESERVED 45
+#define DZT_BLK_RESERVED 37
 
 /*zone_entry */
 #define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE*2 + BITS_PER_BYTE-1)/BITS_PER_BYTE)
@@ -159,12 +159,12 @@ struct dafs_zone_entry{
 }__attribute((__packed__));
 
 /*dir behavior log
-* 32Byte*/
+* 40Byte*/
 struct direntry_log {
     __u8 type_d;     /*record dir behavior type*/
     __u8 reserved[7];
-    __le32 src_dz_no;  /* record src dz hashname*/
-    __le32 des_dz_no;
+    __le64 src_dz_hn;  /* record src dz hashname*/
+    __le64 des_dz_hn;
     __le64 des_hashname;
     __le64 src_hashname;  /* record src dentry hashname*/
 }__attribute((__packed__));

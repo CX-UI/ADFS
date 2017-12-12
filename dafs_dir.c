@@ -262,7 +262,8 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char
 
     /*root dir*/
     //memset(ph, 0, strlen(ph));
-    memcpy(ph, "/", 2);
+    memcpy(ph, "/", 1);
+    //memcpy(ph+1,end,1);
     hashname = BKDRHash(ph ,1);
     dzt_ei = radix_tree_lookup(&dzt_m->dzt_root,hashname);
     if(!dzt_ei){
@@ -283,31 +284,51 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
     struct dzt_ptr *dzt_p;
     struct direntry_log *dlog;
     struct dzt_entry_info *dzt_ei, *src_ei;
-    u32 src_dz, des_dz=0;
-    u64 src_hn, des_hn=0;
+    u64 sdz_hn, des_dz_hn=0;
+    u64 src_hn, des_hn=0, phlen, flen;
     u32 bitpos = 0;
-    char *phname, *src_pn, *ph, *phn;
+    char *phname, *src_pn, *ph, *phn, *end="";
 
     nova_dbg("record dir log");
     src_pn = get_dentry_path(src);
     phname = kzalloc(sizeof(char)*strlen(src_pn), GFP_KERNEL);
     phn = kzalloc(sizeof(char)*strlen(src_pn), GFP_KERNEL);
-    memcpy(phname, src_pn, strlen(src_pn));
-    src_ei = find_dzt(sb, phname, phn);
-    src_hn = BKDRHash(phn, strlen(phn));
-    src_dz = src_ei->dzt_eno;
+    //memcpy(phname, src_pn, strlen(src_pn));
+    src_ei = find_dzt(sb, src_pn, phn);
+    phlen = strlen(phn);
+    if(phlen==1){
+        flen = strlen(ph);
+        memcpy(phname, ph, flen);
+        memcpy(phname+flen, end, 1);
+    } else {
+        flen = strlen(ph)-phlen;
+        memcpy(phname, ph+phlen, flen);
+        memcpy(phname+flen,end,1);
+    }
+    src_hn = BKDRHash(phname, flen);
+    sdz_hn = src_ei->hash_name;
 
     if(!des) {
-        src_hn = 0;
-        src_dz = 0;
+        des_hn = 0;
+        des_dz_hn = 0;
     }
     else {
         ph = get_dentry_path(des);
-        memcpy(phname, ph, strlen(ph)+1);
-        dzt_ei = find_dzt(sb, phname, phn);
-        des_dz = dzt_ei->dzt_eno;
-        des_hn = BKDRHash(phn, strlen(phn)+1);
-
+        //memcpy(phname, ph, strlen(ph)+1);
+        dzt_ei = find_dzt(sb, ph, phn);
+        des_dz_hn = dzt_ei->hash_name;
+        phlen = strlen(phn);
+        if(phlen==1){
+            flen = strlen(ph);
+            memcpy(phname, ph, flen);
+            memcpy(phname+flen, end, 1);
+        } else {
+            flen = strlen(ph)-phlen;
+            memcpy(phname, ph+phlen, flen);
+            memcpy(phname+flen,end,1);
+        }
+        des_hn = BKDRHash(phname, flen);
+        kfree(ph);
     }
 
     dzt_blk = dafs_get_dzt_block(sb);
@@ -317,11 +338,12 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
 
     /*not decided*/
     dlog->type_d = type;
-    dlog->src_dz_no = cpu_to_le32(src_dz);
+    dlog->src_dz_hn = cpu_to_le64(sdz_hn);
     dlog->src_hashname = cpu_to_le64(src_hn);
-    dlog->des_dz_no = cpu_to_le32(des_dz);
+    dlog->des_dz_hn = cpu_to_le64(des_dz_hn);
     dlog->des_hashname = cpu_to_le64(des_hn);
 
+    kfree(src_pn);
     kfree(phname);
     kfree(phn);
     kfree(dzt_p);
@@ -2294,9 +2316,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
 
         }
         ctx->pos = pos;
-        //n++;
-
-    }
+        //n++
 
 	if (prev_de &&!dir_emit(ctx, prev_de->name, prev_de->name_len, 
                 ino, IF2DT(le16_to_cpu(prev_child_pi->i_mode)))) {
@@ -2307,7 +2327,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     nova_dbg("dafs ctx pos is %llx", ctx->pos);
 out:
 	NOVA_END_TIMING(readdir_t, readdir_time);
-	nova_dbg("%s readdir return\n", __func__);
+	nova_dbg("%s readdir return", __func__);
 	return 0;
 
 }
