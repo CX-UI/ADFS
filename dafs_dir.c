@@ -2317,7 +2317,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
         }
         ctx->pos = pos;
         //n++
-
+    }
 	if (prev_de &&!dir_emit(ctx, prev_de->name, prev_de->name_len, 
                 ino, IF2DT(le16_to_cpu(prev_child_pi->i_mode)))) {
 			nova_dbg("Here: pos %llu\n", ctx->pos);
