@@ -2289,6 +2289,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
 				nova_dbg("Here: pos %llu\n", ctx->pos);
 				return 0;
 			}
+            prev_de = de;
             prev_child_pi = child_pi;
 
         }
