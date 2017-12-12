@@ -58,6 +58,7 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
     u64 ino;
     timing_t create_time;
 
+    nova_dbg("%s:dafs start to create",__func__);
     NOVA_START_TIMING(create_t, create_time);
 
     /*文件所在的目录的inode*/
@@ -93,13 +94,14 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
     pi = nova_get_block(sb ,pi_addr);
     
     /* record tail in journal entry*/
-	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	//dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 	NOVA_END_TIMING(create_t, create_time);
 	return err;
 
 out_err:
     nova_err(sb, "%s return %d\n", __func__, err);
 	NOVA_END_TIMING(create_t, create_time);
+    nova_dbg("%s:dafs finish create",__func__);
 	return err;
 
 }
@@ -132,7 +134,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     ino_t ino;
     timing_t lookup_time;
     
-    nova_dbg("%s,dafs start looup",__func__);
+    nova_dbg("%s:dafs start lookup",__func__);
 	NOVA_START_TIMING(lookup_t, lookup_time);
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
 		nova_dbg("%s: namelen %u exceeds limit\n",

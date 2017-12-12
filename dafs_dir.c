@@ -260,7 +260,7 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char
     //ph = kzalloc(DAFS_PATH_LEN*(char *), GFP_KERNEL);
     memcpy(ph, phstr, strlen(phstr)+1);
     while(1){
-        tem = strrchr(phstr, '/');
+        tem = strrchr(ph, '/');
         phlen = strlen(ph)-strlen(tem);
         nova_dbg("test path len is %llu", phlen);
         if(phlen==0)
@@ -269,6 +269,7 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char
         memcpy(ph,phstr,phlen);
         memcpy(ph+phlen, end, 1);
         hashname = BKDRHash(ph,phlen);
+        nova_dbg("%s:par path is %s",__func__, ph);
         dzt_ei = radix_tree_lookup(&dzt_m->dzt_root, hashname);
         if(dzt_ei){
             nova_dbg("dafs find dzt ei");
