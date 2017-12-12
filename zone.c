@@ -620,28 +620,28 @@ int dafs_build_dzt_block(struct super_block *sb)
     dzt_block->dzt_head = cpu_to_le64(block);
     */
 
-    dzt_block-> dzt_entry[1].zone_blk_type = DAFS_BLOCK_TYPE_512K;
-    dzt_block-> dzt_entry[1].root_len = 1;
-    dzt_block-> dzt_entry[1].dzt_eno = 0;
-    dzt_block-> dzt_entry[1].pdz_addr = 0;
-    dzt_block-> dzt_entry[1].rden_pos = 0;
-    dzt_block-> dzt_entry[1].hash_name = cpu_to_le64(BKDRHash(name, 1));        
+    dzt_block-> dzt_entry[0].zone_blk_type = DAFS_BLOCK_TYPE_512K;
+    dzt_block-> dzt_entry[0].root_len = 1;
+    dzt_block-> dzt_entry[0].dzt_eno = 0;
+    dzt_block-> dzt_entry[0].pdz_addr = 0;
+    dzt_block-> dzt_entry[0].rden_pos = 0;
+    dzt_block-> dzt_entry[0].hash_name = cpu_to_le64(BKDRHash(name, 1));        
 
     /*alloc htable zone */
     get_hash_table(sb, 1, &ht_addr);
-    dzt_block->dzt_entry[1].ht_head = cpu_to_le64(ht_addr);
+    dzt_block->dzt_entry[0].ht_head = cpu_to_le64(ht_addr);
 
     /*alloc zone area
     * get zone addr*/
-    dafs_alloc_dir_zone(sb, &dzt_block->dzt_entry[1]);
+    dafs_alloc_dir_zone(sb, &dzt_block->dzt_entry[0]);
     
     /*make valid*/
     make_dzt_ptr(sb, &dzt_p);
-    test_and_set_bit_le(1, (void *)dzt_p->bitmap);
+    test_and_set_bit_le(0, (void *)dzt_p->bitmap);
 
     /*build radix search tree
     * initialize entry info*/ 
-    ei = dafs_build_dzt(sb, &dzt_block->dzt_entry[1]);
+    ei = dafs_build_dzt(sb, &dzt_block->dzt_entry[0]);
 
     /*init dir_zone*/
     /*append . and .. into new zone*/
@@ -712,7 +712,7 @@ int dafs_init_dzt(struct super_block *sb)
     struct dafs_dzt_block *dzt_blk;
     struct dzt_ptr *dzt_p;
     struct dzt_entry_info *dzt_ei;
-    u32 bit_pos = 1;
+    u32 bit_pos = 0;
     int ret = 0;
     //unsigned long max = DAFS_DZT_ENTRIES_IN_BLOCK;
 
@@ -818,7 +818,7 @@ u32 alloc_dzt_entry(struct super_block *sb)
     struct dafs_dzt_block *dzt_blk;
     struct dzt_ptr *dzt_p;
     //unsigned long tail_pos;
-    u32 bitpos = 1;
+    u32 bitpos = 0;
     
     dzt_blk = dafs_get_dzt_block(sb);
     //tail_pos = le64_to_cpu(dzt_blk->dzt_tail_pos);

@@ -113,7 +113,7 @@ static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\
     u64 ino;
    
     nova_dbg("%s:dafs start to inode by name",__func__);
-    direntry = dafs_find_direntry(sb, dentry,1);
+    direntry = dafs_find_direntry(sb, dentry,1,0);
     if(direntry == NULL) { 
         return 0;
     }
@@ -762,7 +762,7 @@ struct dentry *dafs_get_parent(struct dentry *child)
     ino_t ino;
    
     nova_dbg("%s: dafs start get [parent]",__func__);
-    de = dafs_find_direntry(sb, child,1);
+    de = dafs_find_direntry(sb, child,1,0);
     if(!de)
         return ERR_PTR(-ENOENT);
     ino = le64_to_cpu(de->ino);

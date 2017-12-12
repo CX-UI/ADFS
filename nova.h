@@ -1048,7 +1048,8 @@ extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int fil
 int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u64 pi_addr,
 	struct nova_inode_info_header *sih);
 extern int dafs_remove_dentry(struct dentry *dentry);
-struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dentry *dentry, int update_flag);
+struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dentry *dentry, int update_flag,
+        u32 ISREAD);
 int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname, const char *dename);
 int __rename_dir_direntry(struct dentry *old_dentry, struct dentry *new_dentry);
 int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry);
