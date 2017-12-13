@@ -73,7 +73,8 @@ static int nova_readlink(struct dentry *dentry, char __user *buffer, int buflen)
 	struct super_block *sb = inode->i_sb;
 	struct nova_inode *pi = nova_get_inode(sb, inode);
 	char *blockp;
-
+    
+    nova_dbg("%s:dafs start to readlink",__func__);
 	entry = (struct nova_file_write_entry *)nova_get_block(sb,
 							pi->log_head);
 	blockp = (char *)nova_get_block(sb, BLOCK_OFF(entry->block));

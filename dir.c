@@ -210,7 +210,8 @@ static u64 nova_append_dir_inode_entry(struct super_block *sb,
 	return curr_p;
 }
 
-/* Append . and .. entries */nova_dbgint nova_append_dir_init_entries(struct super_block *sb,
+/* Append . and .. entries */
+int nova_append_dir_init_entries(struct super_block *sb,
 	struct nova_inode *pi, u64 self_ino, u64 parent_ino)
 {
 	int allocated;

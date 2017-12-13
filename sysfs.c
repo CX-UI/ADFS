@@ -51,12 +51,14 @@ static int nova_seq_timing_show(struct seq_file *seq, void *v)
 
 static int nova_seq_timing_open(struct inode *inode, struct file *file)
 {
+    nova_dbg("dafs start to timing open");
 	return single_open(file, nova_seq_timing_show, PDE_DATA(inode));
 }
 
 ssize_t nova_seq_clear_stats(struct file *filp, const char __user *buf,
 	size_t len, loff_t *ppos)
 {
+    nova_dbg("%s:dafs start to clear stats",__func__);
 	nova_clear_stats();
 	return len;
 }

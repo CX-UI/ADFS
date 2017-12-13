@@ -545,9 +545,10 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         }
     }
 
-    /*not found pos*/
+    nova_dbg("%s:not find pos",__func__);
     tail = le64_to_cpu(ht->hash_tail);
     if(tail) {
+        nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
         hlevel++;
         ret = lookup_ht_ls(sb, tail, hashname, hlevel, &s_pos);
         *pos = s_pos;
@@ -744,6 +745,7 @@ int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     u64 h_name;
     u8 valid_flag;
 
+    nova_dbg("%s start",__func__);
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table *)nova_get_block(sb, block);  
 

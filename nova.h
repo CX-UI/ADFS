@@ -1041,7 +1041,7 @@ void get_ext_name(struct name_ext *de_ext, char *name);
 void get_de_name(struct dafs_dentry *de, struct dafs_zone_entry *ze, char *name, int name_type);
 int delete_ext(struct zone_ptr *p, struct dafs_dentry *de);
 void clear_ext(struct zone_ptr *p, struct name_ext *de_ext);
-int dafs_rm_dir(struct dentry *dentry);
+int dafs_rm_dir(struct dentry *dentry, int link_change);
 int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt_entry_info *ei,
         u64 self_ino, u64 parent_ino, const char *ful_name);
 extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type);

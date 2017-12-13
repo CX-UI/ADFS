@@ -849,11 +849,14 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
 	u64 pi_addr;
 	int err;
 
+    nova_dbg("%s:dafs start iget",__func__);
 	inode = iget_locked(sb, ino);
 	if (unlikely(!inode))
 		return ERR_PTR(-ENOMEM);
-	if (!(inode->i_state & I_NEW))
-		return inode;
+	if (!(inode->i_state & I_NEW)) {
+        nova_dbg("%s:return inode",__func__);
+        return inode;
+    }
 
 	si = NOVA_I(inode);
 
@@ -871,10 +874,10 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
 		}
 	}
 
-	if (pi_addr == 0) {
+	/*if (pi_addr == 0) {
 		err = -EACCES;
 		goto fail;
-	}
+	}*/
 
 	err = nova_rebuild_inode(sb, si, pi_addr);
 	if (err)
@@ -889,6 +892,7 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
     nova_dbg("sucessfully get inode");
 	return inode;
 fail:
+    nova_dbg("%s:dafs failed get inode",__func__);
 	iget_failed(inode);
 	return ERR_PTR(err);
 }
@@ -1381,6 +1385,7 @@ int nova_notify_change(struct dentry *dentry, struct iattr *attr)
 	u64 new_tail;
 	timing_t setattr_time;
 
+    nova_dbg("%s:dafs start to notify change",__func__);
 	NOVA_START_TIMING(setattr_t, setattr_time);
 	if (!pi)
 		return -EACCES;

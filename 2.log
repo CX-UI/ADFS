@@ -1,97 +1,81 @@
-execve("/bin/ls", ["ls"], [/* 78 vars */]) = 0
-brk(NULL)                               = 0xa2e000
+execve("/bin/rm", ["rm", "-r", "sp"], [/* 31 vars */]) = 0
+brk(NULL)                               = 0x1674000
 access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fdb82648000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7faf4d01e000
 access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
 open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
 fstat(3, {st_mode=S_IFREG|0644, st_size=92760, ...}) = 0
-mmap(NULL, 92760, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fdb82631000
-close(3)                                = 0
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-open("/lib/x86_64-linux-gnu/libselinux.so.1", O_RDONLY|O_CLOEXEC) = 3
-read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\260Z\0\0\0\0\0\0"..., 832) = 832
-fstat(3, {st_mode=S_IFREG|0644, st_size=130224, ...}) = 0
-mmap(NULL, 2234080, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fdb82203000
-mprotect(0x7fdb82222000, 2093056, PROT_NONE) = 0
-mmap(0x7fdb82421000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1e000) = 0x7fdb82421000
-mmap(0x7fdb82423000, 5856, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7fdb82423000
+mmap(NULL, 92760, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7faf4d007000
 close(3)                                = 0
 access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
 open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\t\2\0\0\0\0\0"..., 832) = 832
 fstat(3, {st_mode=S_IFREG|0755, st_size=1868984, ...}) = 0
-mmap(NULL, 3971488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fdb81e39000
-mprotect(0x7fdb81ff9000, 2097152, PROT_NONE) = 0
-mmap(0x7fdb821f9000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1c0000) = 0x7fdb821f9000
-mmap(0x7fdb821ff000, 14752, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7fdb821ff000
+mmap(NULL, 3971488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7faf4ca31000
+mprotect(0x7faf4cbf1000, 2097152, PROT_NONE) = 0
+mmap(0x7faf4cdf1000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1c0000) = 0x7faf4cdf1000
+mmap(0x7faf4cdf7000, 14752, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7faf4cdf7000
 close(3)                                = 0
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-open("/lib/x86_64-linux-gnu/libpcre.so.3", O_RDONLY|O_CLOEXEC) = 3
-read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0000\25\0\0\0\0\0\0"..., 832) = 832
-fstat(3, {st_mode=S_IFREG|0644, st_size=456632, ...}) = 0
-mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fdb82630000
-mmap(NULL, 2552072, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fdb81bc9000
-mprotect(0x7fdb81c37000, 2097152, PROT_NONE) = 0
-mmap(0x7fdb81e37000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x6e000) = 0x7fdb81e37000
-close(3)                                = 0
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-open("/lib/x86_64-linux-gnu/libdl.so.2", O_RDONLY|O_CLOEXEC) = 3
-read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\240\r\0\0\0\0\0\0"..., 832) = 832
-fstat(3, {st_mode=S_IFREG|0644, st_size=14608, ...}) = 0
-mmap(NULL, 2109680, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fdb819c5000
-mprotect(0x7fdb819c8000, 2093056, PROT_NONE) = 0
-mmap(0x7fdb81bc7000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2000) = 0x7fdb81bc7000
-close(3)                                = 0
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-open("/lib/x86_64-linux-gnu/libpthread.so.0", O_RDONLY|O_CLOEXEC) = 3
-read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\260`\0\0\0\0\0\0"..., 832) = 832
-fstat(3, {st_mode=S_IFREG|0755, st_size=138696, ...}) = 0
-mmap(NULL, 2212904, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fdb817a8000
-mprotect(0x7fdb817c0000, 2093056, PROT_NONE) = 0
-mmap(0x7fdb819bf000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x17000) = 0x7fdb819bf000
-mmap(0x7fdb819c1000, 13352, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7fdb819c1000
-close(3)                                = 0
-mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fdb8262f000
-mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fdb8262d000
-arch_prctl(ARCH_SET_FS, 0x7fdb8262d800) = 0
-mprotect(0x7fdb821f9000, 16384, PROT_READ) = 0
-mprotect(0x7fdb819bf000, 4096, PROT_READ) = 0
-mprotect(0x7fdb81bc7000, 4096, PROT_READ) = 0
-mprotect(0x7fdb81e37000, 4096, PROT_READ) = 0
-mprotect(0x7fdb82421000, 4096, PROT_READ) = 0
-mprotect(0x61d000, 4096, PROT_READ)     = 0
-mprotect(0x7fdb8264a000, 4096, PROT_READ) = 0
-munmap(0x7fdb82631000, 92760)           = 0
-set_tid_address(0x7fdb8262dad0)         = 3162
-set_robust_list(0x7fdb8262dae0, 24)     = 0
-rt_sigaction(SIGRTMIN, {0x7fdb817adb50, [], SA_RESTORER|SA_SIGINFO, 0x7fdb817b9390}, NULL, 8) = 0
-rt_sigaction(SIGRT_1, {0x7fdb817adbe0, [], SA_RESTORER|SA_RESTART|SA_SIGINFO, 0x7fdb817b9390}, NULL, 8) = 0
-rt_sigprocmask(SIG_UNBLOCK, [RTMIN RT_1], NULL, 8) = 0
-getrlimit(RLIMIT_STACK, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
-statfs("/sys/fs/selinux", 0x7ffe56674380) = -1 ENOENT (No such file or directory)
-statfs("/selinux", 0x7ffe56674380)      = -1 ENOENT (No such file or directory)
-brk(NULL)                               = 0xa2e000
-brk(0xa4f000)                           = 0xa4f000
-open("/proc/filesystems", O_RDONLY)     = 3
-fstat(3, {st_mode=S_IFREG|0444, st_size=0, ...}) = 0
-read(3, "nodev\tsysfs\nnodev\trootfs\nnodev\tr"..., 1024) = 358
-read(3, "", 1024)                       = 0
-close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7faf4d006000
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7faf4d005000
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7faf4d004000
+arch_prctl(ARCH_SET_FS, 0x7faf4d005700) = 0
+mprotect(0x7faf4cdf1000, 16384, PROT_READ) = 0
+mprotect(0x60d000, 4096, PROT_READ)     = 0
+mprotect(0x7faf4d020000, 4096, PROT_READ) = 0
+munmap(0x7faf4d007000, 92760)           = 0
+brk(NULL)                               = 0x1674000
+brk(0x1695000)                          = 0x1695000
 open("/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
 fstat(3, {st_mode=S_IFREG|0644, st_size=4763056, ...}) = 0
-mmap(NULL, 4763056, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fdb8131d000
+mmap(NULL, 4763056, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7faf4c5a6000
 close(3)                                = 0
-ioctl(1, TCGETS, 0x7ffe56673fe0)        = -1 ENOTTY (Inappropriate ioctl for device)
-ioctl(1, TIOCGWINSZ, 0x7ffe566740a0)    = -1 ENOTTY (Inappropriate ioctl for device)
-open(".", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 3
+ioctl(0, TCGETS, {B38400 opost isig icanon echo ...}) = 0
+lstat("/", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+newfstatat(AT_FDCWD, "sp", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+openat(AT_FDCWD, "sp", O_RDONLY|O_NOCTTY|O_NONBLOCK|O_DIRECTORY|O_NOFOLLOW) = 3
 fstat(3, {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+fcntl(3, F_GETFL)                       = 0x38800 (flags O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_DIRECTORY|O_NOFOLLOW)
+fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
+getdents(3, /* 3 entries */, 32768)     = 72
+close(3)                                = 0
+geteuid()                               = 0
+openat(AT_FDCWD, "sp", O_RDONLY|O_NOCTTY|O_NONBLOCK|O_DIRECTORY|O_NOFOLLOW) = 3
+fcntl(3, F_GETFD)                       = 0
+fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
+fstat(3, {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+fcntl(3, F_GETFL)                       = 0x38800 (flags O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_DIRECTORY|O_NOFOLLOW)
+fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
+fcntl(3, F_DUPFD, 3)                    = 4
+fcntl(4, F_GETFD)                       = 0
+fcntl(4, F_SETFD, FD_CLOEXEC)           = 0
 getdents(3, /* 3 entries */, 32768)     = 72
 getdents(3, /* 0 entries */, 32768)     = 0
 close(3)                                = 0
-fstat(1, {st_mode=S_IFREG|0664, st_size=6140, ...}) = 0
-write(1, "p\n", 2p
-)                      = 2
+fstatfs(4, {f_type=0x4e4f5641, f_bsize=4096, f_blocks=393200, f_bfree=130410, f_bavail=130410, f_files=9223372036854775807, f_ffree=9223372036854775790, f_fsid={0, 0}, f_namelen=255, f_frsize=4096, f_flags=4128}) = 0
+newfstatat(4, "sp", 0x16773d8, AT_SYMLINK_NOFOLLOW) = -1 ELOOP (Too many levels of symbolic links)
+unlinkat(4, "sp", 0)                    = -1 ELOOP (Too many levels of symbolic links)
+open("/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=2995, ...}) = 0
+read(3, "# Locale name alias data base.\n#"..., 4096) = 2995
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+open("/usr/share/locale/en/LC_MESSAGES/coreutils.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/usr/share/locale-langpack/en/LC_MESSAGES/coreutils.mo", O_RDONLY) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=619, ...}) = 0
+mmap(NULL, 619, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7faf4d01d000
+close(3)                                = 0
+write(2, "rm: ", 4rm: )                     = 4
+write(2, "cannot remove 'sp/sp'", 21cannot remove 'sp/sp')   = 21
+open("/usr/share/locale/en/LC_MESSAGES/libc.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/usr/share/locale-langpack/en/LC_MESSAGES/libc.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+write(2, ": Too many levels of symbolic li"..., 35: Too many levels of symbolic links) = 35
+write(2, "\n", 1
+)                       = 1
+close(4)                                = 0
+lseek(0, 0, SEEK_CUR)                   = -1 ESPIPE (Illegal seek)
+close(0)                                = 0
 close(1)                                = 0
 close(2)                                = 0
-exit_group(0)                           = ?
-+++ exited with 0 +++
+exit_group(1)                           = ?
++++ exited with 1 +++
