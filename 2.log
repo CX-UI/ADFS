@@ -1,81 +1,98 @@
-execve("/bin/rm", ["rm", "-r", "sp"], [/* 31 vars */]) = 0
-brk(NULL)                               = 0x1674000
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7faf4d01e000
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=92760, ...}) = 0
-mmap(NULL, 92760, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7faf4d007000
-close(3)                                = 0
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\t\2\0\0\0\0\0"..., 832) = 832
-fstat(3, {st_mode=S_IFREG|0755, st_size=1868984, ...}) = 0
-mmap(NULL, 3971488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7faf4ca31000
-mprotect(0x7faf4cbf1000, 2097152, PROT_NONE) = 0
-mmap(0x7faf4cdf1000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1c0000) = 0x7faf4cdf1000
-mmap(0x7faf4cdf7000, 14752, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7faf4cdf7000
-close(3)                                = 0
-mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7faf4d006000
-mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7faf4d005000
-mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7faf4d004000
-arch_prctl(ARCH_SET_FS, 0x7faf4d005700) = 0
-mprotect(0x7faf4cdf1000, 16384, PROT_READ) = 0
-mprotect(0x60d000, 4096, PROT_READ)     = 0
-mprotect(0x7faf4d020000, 4096, PROT_READ) = 0
-munmap(0x7faf4d007000, 92760)           = 0
-brk(NULL)                               = 0x1674000
-brk(0x1695000)                          = 0x1695000
-open("/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=4763056, ...}) = 0
-mmap(NULL, 4763056, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7faf4c5a6000
-close(3)                                = 0
-ioctl(0, TCGETS, {B38400 opost isig icanon echo ...}) = 0
-lstat("/", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
-newfstatat(AT_FDCWD, "sp", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
-openat(AT_FDCWD, "sp", O_RDONLY|O_NOCTTY|O_NONBLOCK|O_DIRECTORY|O_NOFOLLOW) = 3
-fstat(3, {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
-fcntl(3, F_GETFL)                       = 0x38800 (flags O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_DIRECTORY|O_NOFOLLOW)
-fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
-getdents(3, /* 3 entries */, 32768)     = 72
-close(3)                                = 0
-geteuid()                               = 0
-openat(AT_FDCWD, "sp", O_RDONLY|O_NOCTTY|O_NONBLOCK|O_DIRECTORY|O_NOFOLLOW) = 3
-fcntl(3, F_GETFD)                       = 0
-fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
-fstat(3, {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
-fcntl(3, F_GETFL)                       = 0x38800 (flags O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_DIRECTORY|O_NOFOLLOW)
-fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
-fcntl(3, F_DUPFD, 3)                    = 4
-fcntl(4, F_GETFD)                       = 0
-fcntl(4, F_SETFD, FD_CLOEXEC)           = 0
-getdents(3, /* 3 entries */, 32768)     = 72
-getdents(3, /* 0 entries */, 32768)     = 0
-close(3)                                = 0
-fstatfs(4, {f_type=0x4e4f5641, f_bsize=4096, f_blocks=393200, f_bfree=130410, f_bavail=130410, f_files=9223372036854775807, f_ffree=9223372036854775790, f_fsid={0, 0}, f_namelen=255, f_frsize=4096, f_flags=4128}) = 0
-newfstatat(4, "sp", 0x16773d8, AT_SYMLINK_NOFOLLOW) = -1 ELOOP (Too many levels of symbolic links)
-unlinkat(4, "sp", 0)                    = -1 ELOOP (Too many levels of symbolic links)
-open("/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=2995, ...}) = 0
-read(3, "# Locale name alias data base.\n#"..., 4096) = 2995
-read(3, "", 4096)                       = 0
-close(3)                                = 0
-open("/usr/share/locale/en/LC_MESSAGES/coreutils.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
-open("/usr/share/locale-langpack/en/LC_MESSAGES/coreutils.mo", O_RDONLY) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=619, ...}) = 0
-mmap(NULL, 619, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7faf4d01d000
-close(3)                                = 0
-write(2, "rm: ", 4rm: )                     = 4
-write(2, "cannot remove 'sp/sp'", 21cannot remove 'sp/sp')   = 21
-open("/usr/share/locale/en/LC_MESSAGES/libc.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
-open("/usr/share/locale-langpack/en/LC_MESSAGES/libc.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
-write(2, ": Too many levels of symbolic li"..., 35: Too many levels of symbolic links) = 35
-write(2, "\n", 1
-)                       = 1
-close(4)                                = 0
-lseek(0, 0, SEEK_CUR)                   = -1 ESPIPE (Illegal seek)
-close(0)                                = 0
-close(1)                                = 0
-close(2)                                = 0
-exit_group(1)                           = ?
-+++ exited with 1 +++
+1.log:737:[15932.610024] nova: nova_get_inode_address:dafs get inode addr
+1.log:738:[15932.610025] nova: nova_get_inode_address:dbg blk_type is 6, dafs_bits is 0
+1.log:739:[15932.610025] nova: nova_get_inode_address:dbg ino is16,internal_ino is 16, num cpus is 1
+1.log:741:[15932.610026] nova: nova_get_inode_address:inode_table log head is 24576
+1.log:742:[15932.610027] nova: nova_get_inode_address:index is 16, supercount is 0
+1.log:743:[15932.610027] nova: nova_get_inode_address:inode table addr is 24576
+1.log:744:[15932.610028] nova: nova_get_inode_address:dafs finish find inode at 26624
+bbuild.c:185:	struct nova_inode *pi = nova_get_inode_by_ino(sb, NOVA_BLOCKNODE_INO);
+bbuild.c:262:	struct nova_inode *pi = nova_get_inode_by_ino(sb, NOVA_INODELIST1_INO);
+bbuild.c:335:	struct nova_inode *pi =  nova_get_inode_by_ino(sb, NOVA_BLOCKNODE_INO);
+bbuild.c:432:	struct nova_inode *pi = nova_get_inode_by_ino(sb, NOVA_INODELIST1_INO);
+bbuild.c:476:	struct nova_inode *pi =  nova_get_inode_by_ino(sb, NOVA_BLOCKNODE_INO);
+bbuild.c:1221:	pi = nova_get_inode_by_ino(sb, NOVA_INODETABLE_INO);
+bbuild.c:1284:		inode_table = nova_get_inode_table(sb, cpuid);
+bbuild.c:1336:	pi = nova_get_inode_by_ino(sb, NOVA_BLOCKNODE_INO);
+dafs_dir.c:690:    pidir = nova_get_inode(sb, dir);
+dafs_dir.c:1697:    pidir = nova_get_inode(sb, dir);
+dafs_dir.c:2191:    //pidir = nova_get_inode(sb, dir);
+dafs_dir.c:2301:    pidir = nova_get_inode(sb ,inode);
+dafs_dir.c:2372:            ret = nova_get_inode_address(sb, ino, &pi_addr, 0);
+Binary file dafs_dir.o matches
+dafs_namei.c:67:    pidir = nova_get_inode(sb ,dir);
+dafs_namei.c:276:    struct nova_inode *pi = nova_get_inode(sb, inode);
+dafs_namei.c:291:	pidir = nova_get_inode(sb, dir);
+dafs_namei.c:342:    struct nova_inode *pi = nova_get_inode(sb, inode);
+dafs_namei.c:351:	pidir = nova_get_inode(sb, dir);
+dafs_namei.c:411:	pidir = nova_get_inode(sb, dir);
+dafs_namei.c:435:	pi = nova_get_inode(sb, inode);
+dafs_namei.c:513:	pi = nova_get_inode(sb, inode);
+dafs_namei.c:522:	pidir = nova_get_inode(sb, dir);
+dafs_namei.c:547:    struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
+dafs_namei.c:561:	pidir = nova_get_inode(sb, dir);
+dafs_namei.c:631:	pidir = nova_get_inode(sb, dir);
+dafs_namei.c:759:		new_pi = nova_get_inode(sb, new_inode);
+dax.c:380:	pi = nova_get_inode(sb, inode);
+dax.c:576:	pi = nova_get_inode(sb, inode);
+dax.c:934:	pi = nova_get_inode(sb, inode);
+dir.c:296:	pidir = nova_get_inode(sb, dir);
+dir.c:338:	pidir = nova_get_inode(sb, dir);
+dir.c:524:	pidir = nova_get_inode(sb, inode);
+dir.c:550:			ret = nova_get_inode_address(sb, ino, &pi_addr, 0);
+dir.c:621:	pidir = nova_get_inode(sb, inode);
+dir.c:687:			ret = nova_get_inode_address(sb, ino, &pi_addr, 0);
+file.c:208:	pi = nova_get_inode(sb, inode);
+inode.c:72:	struct nova_inode *pi = nova_get_inode_by_ino(sb, NOVA_INODETABLE_INO);
+inode.c:89:		inode_table = nova_get_inode_table(sb, i);
+inode.c:112:int nova_get_inode_address(struct super_block *sb, u64 ino,
+inode.c:131:	pi = nova_get_inode_by_ino(sb, NOVA_INODETABLE_INO);
+inode.c:141:	inode_table = nova_get_inode_table(sb, cpuid);
+inode.c:419:	struct nova_inode *pi = nova_get_inode(sb, inode);
+inode.c:624:static void nova_get_inode_flags(struct inode *inode, struct nova_inode *pi)
+inode.c:658:	nova_get_inode_flags(inode, pi);
+inode.c:810:	pi = nova_get_inode(sb, inode);
+inode.c:869:		err = nova_get_inode_address(sb, ino, &pi_addr, 0);
+inode.c:923:	struct nova_inode *pi = nova_get_inode(sb, inode);
+inode.c:1026:	ret = nova_get_inode_address(sb, free_ino, pi_addr, 1);
+inode.c:1074:	diri = nova_get_inode(sb, dir);
+inode.c:1178:	struct nova_inode *pi = nova_get_inode(sb, inode);
+inode.c:1379:	struct nova_inode *pi = nova_get_inode(sb, inode);
+inode.c:2345:	struct nova_inode *pi = nova_get_inode(sb, inode);
+Binary file inode.o matches
+ioctl.c:33:	pi = nova_get_inode(sb, inode);
+namei.c:129:	pidir = nova_get_inode(sb, dir);
+namei.c:176:	pidir = nova_get_inode(sb, dir);
+namei.c:228:	pidir = nova_get_inode(sb, dir);
+namei.c:251:	pi = nova_get_inode(sb, inode);
+namei.c:384:	struct nova_inode *pi = nova_get_inode(sb, inode);
+namei.c:396:	pidir = nova_get_inode(sb, dir);
+namei.c:437:	struct nova_inode *pi = nova_get_inode(sb, inode);
+namei.c:445:	pidir = nova_get_inode(sb, dir);
+namei.c:518:	pi = nova_get_inode(sb, inode);
+namei.c:526:	pidir = nova_get_inode(sb, dir);
+namei.c:577:	struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
+namei.c:589:	pidir = nova_get_inode(sb, dir);
+namei.c:690:	new_pidir = nova_get_inode(sb, new_dir);
+namei.c:691:	old_pidir = nova_get_inode(sb, old_dir);
+namei.c:693:	old_pi = nova_get_inode(sb, old_inode);
+namei.c:742:		new_pi = nova_get_inode(sb, new_inode);
+nova_def.h:167:struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)*/
+nova.h:584:struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)
+nova.h:787:static inline struct nova_inode *nova_get_inode_by_ino(struct super_block *sb,
+nova.h:796:static inline struct nova_inode *nova_get_inode(struct super_block *sb,
+nova.h:1070:int nova_get_inode_address(struct super_block *sb, u64 ino,
+Binary file nova.ko matches
+Binary file nova.o matches
+stats.c:381:	pi = nova_get_inode(sb, inode);
+stats.c:449:	pi = nova_get_inode(sb, inode);
+super.c:355:	pi = nova_get_inode_by_ino(sb, NOVA_BLOCKNODE_INO);
+super.c:359:	pi = nova_get_inode_by_ino(sb, NOVA_INODELIST_INO);
+super.c:371:	root_i = nova_get_inode_by_ino(sb, NOVA_ROOT_INO);
+super.c:610:	root_pi = nova_get_inode_by_ino(sb, NOVA_ROOT_INO);
+symlink.c:74:	struct nova_inode *pi = nova_get_inode(sb, inode);
+symlink.c:89:	struct nova_inode *pi = nova_get_inode(sb, inode);
+tags:706:nova_get_inode	nova.h	/^static inline struct nova_inode *nova_get_inode(struct super_block *sb,$/;"	f
+tags:707:nova_get_inode_address	inode.c	/^int nova_get_inode_address(struct super_block *sb, u64 ino,$/;"	f
+tags:708:nova_get_inode_by_ino	nova.h	/^static inline struct nova_inode *nova_get_inode_by_ino(struct super_block *sb,$/;"	f
+tags:709:nova_get_inode_flags	inode.c	/^static void nova_get_inode_flags(struct inode *inode, struct nova_inode *pi)$/;"	f	file:
+tags:710:nova_get_inode_table	nova.h	/^struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)$/;"	f

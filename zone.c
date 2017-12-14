@@ -990,7 +990,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
     struct dafs_dentry *new_de, *old_de, *par_de;
     struct zone_ptr *new_p, *old_p;
     struct dafs_zone_entry *new_ze, *old_ze;
-    struct list_head *head, *this;
+    struct list_head *head, *this, *next;
     struct dir_info *o_dir, *new_dir;
     struct file_p *new_sf, *old_sf;
     //unsigned long old_len = r_ze->name_len;
@@ -1400,7 +1400,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
 
         o_dir = radix_tree_delete(&old_ei->dir_tree, hashname);
         head = &o_dir->sub_file;
-        list_for_each(this, head){
+        list_for_each_safe(this, next, head){
             old_sf = list_entry(this, struct file_p, list);
             sub_no = old_sf->pos;
             cpy_new_zentry(sb, new_ei, old_ei, old_len, new_id, new_dir, sub_no, &new_id, 0);
@@ -1431,7 +1431,7 @@ int migrate_zone_entry(struct super_block *sb, u32 ch_pos, struct dzt_entry_info
     struct dafs_dentry *dafs_rde;
     struct dzt_entry_info *old_ei;
     struct dir_info *dir_i;
-    struct list_head *this, *head; 
+    struct list_head *this, *head, *next; 
     struct file_p *o_sf;
     u64 old_namelen;
     u32 ch_no, start_pos, eno;
@@ -1471,7 +1471,7 @@ int migrate_zone_entry(struct super_block *sb, u32 ch_pos, struct dzt_entry_info
     /*move sub files*/
     dir_i = radix_tree_delete(&old_ei->dir_tree, hashname);
     head = &dir_i->sub_file;
-    list_for_each(this, head) {
+    list_for_each_safe(this, next, head) {
         o_sf = list_entry(this, struct file_p, list);
         ch_no = o_sf->pos;
         cpy_new_zentry(sb, dzt_nei, old_ei, old_namelen, ch_pos, dir_i, ch_no, &start_pos, 1);

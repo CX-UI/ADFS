@@ -24,7 +24,7 @@ int delete_dir_info(struct dzt_entry_info *ei, u64 hashname)
 {
     struct dir_info *dir_i;
     struct file_p *o_sf;
-    struct list_head *this=NULL, *head=NULL;
+    struct list_head *this=NULL, *head=NULL, *next=NULL;
 
     nova_dbg("%s start",__func__);
     dir_i = radix_tree_delete(&ei->dir_tree, hashname);
@@ -34,15 +34,15 @@ int delete_dir_info(struct dzt_entry_info *ei, u64 hashname)
     }
     nova_dbg("dir sub num is %d",dir_i->sub_num);
     head = &dir_i->sub_file;
-    list_for_each(this, head) {
+    list_for_each_safe(this, next, head) {
         o_sf = list_entry(this, struct file_p, list);
         nova_dbg("list pos %d",o_sf->pos);
         //find bug
         list_del(&o_sf->list);
-        //kfree(o_sf);
+        kfree(o_sf);
     }
 
-    //kfree(dir_i);
+    kfree(dir_i);
 OUT:
     nova_dbg("%s end",__func__);
     return 0;
@@ -54,7 +54,7 @@ int delete_dir_tree(struct dzt_entry_info *ei)
     struct dir_info *dir_i;
     struct dir_info *entries[FREE_BATCH];
     struct file_p *o_sf;
-    struct list_head *head, *this;
+    struct list_head *head, *this, *next;
     u64 key;
     int nr, i;
     void *ret;
@@ -66,7 +66,7 @@ int delete_dir_tree(struct dzt_entry_info *ei)
             key = dir_i->dir_hash;
             ret = radix_tree_delete(&ei->dir_tree, key);
             head = &dir_i->sub_file;
-            list_for_each(this, head) {
+            list_for_each_safe(this, next, head) {
                 o_sf = list_entry(this, struct file_p, list);
                 list_del(&o_sf->list);
                 kfree(o_sf);
@@ -318,8 +318,14 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
     u64 src_hn, des_hn=0, phlen, flen;
     u32 bitpos = DAFS_DZT_ENTRIES_IN_BLOCK;
     char *phname, *src_pn, *ph, *phn, *end="";
+    int cpu;
+    struct ptr_pair *pair;
 
     nova_dbg("record dir log");
+//debug
+	cpu = smp_processor_id();
+	pair = nova_get_journal_pointers(sb, cpu);
+    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
     src_pn = get_dentry_path(src,0);
     phname = kzalloc(sizeof(char)*(strlen(src_pn)+1), GFP_KERNEL);
     phn = kzalloc(sizeof(char)*(strlen(src_pn)+1), GFP_KERNEL);
@@ -338,6 +344,8 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
     src_hn = BKDRHash(phname, flen);
     sdz_hn = src_ei->hash_name;
 
+	pair = nova_get_journal_pointers(sb, cpu);
+    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
     if(!des) {
         des_hn = 0;
         des_dz_hn = 0;
@@ -361,11 +369,15 @@ void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *d
         kfree(ph);
     }
 
+	pair = nova_get_journal_pointers(sb, cpu);
+    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
     dzt_blk = dafs_get_dzt_block(sb);
     make_dzt_ptr(sb, &dzt_p);
     dlog = (struct direntry_log*)&dzt_blk->dzt_entry[DAFS_DZT_ENTRIES_IN_BLOCK];
     test_and_set_bit_le(bitpos, (void *)dzt_p->bitmap);
 
+	pair = nova_get_journal_pointers(sb, cpu);
+    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
     /*not decided*/
     dlog->type_d = type;
     dlog->src_dz_hn = cpu_to_le64(sdz_hn);
@@ -387,6 +399,7 @@ void delete_dir_log(struct super_block *sb)
     struct dzt_ptr *dzt_p;
     u32 bitpos = DAFS_DZT_ENTRIES_IN_BLOCK;
 
+    nova_dbg("%s start",__func__);
     make_dzt_ptr(sb, &dzt_p);
     test_and_clear_bit_le(bitpos, (void *)dzt_p->bitmap);
     kfree(dzt_p);
@@ -951,6 +964,7 @@ int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u
 				curr_p, pi->log_tail);
 
     if(!curr_p){
+        sih->log_pages = 0;
         goto DIR_TYPE;
     }
 
@@ -1036,8 +1050,8 @@ DIR_TYPE:
         curr_page = (struct nova_inode_log_page *)
         nova_get_block(sb, curr_p);
     }
-
-    pi->i_blocks = sih->log_pages;*/
+    */
+    pi->i_blocks = sih->log_pages;
 
 //	nova_print_dir_tree(sb, sih, ino);
 	nova_dbg("%s:dafs finish rebuild dir inode",__func__);
@@ -1056,7 +1070,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
     struct zone_ptr *z_p;
     struct dzt_ptr *dzt_p;
     struct dir_info *old_dir, *par_dir;
-    struct list_head *this, *head;
+    struct list_head *this, *head, *next;
     struct file_p *tem_sf;
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
     //struct hash_table *ht;
@@ -1083,7 +1097,7 @@ static int __remove_direntry(struct super_block *sb, struct dafs_dentry *dafs_de
         /*delete pos in its pardir*/
         par_dir = radix_tree_lookup(&dzt_ei->dir_tree, par_hn);
         head = &par_dir->sub_file;
-        list_for_each(this, head) {
+        list_for_each_safe(this, next, head) {
             tem_sf = list_entry(this, struct file_p, list);
             if(tem_sf->pos == de_pos){
                 list_del(&tem_sf->list);
@@ -1148,7 +1162,7 @@ NEXT:
         d_hn = le64_to_cpu(dafs_de->hname);
         old_dir = radix_tree_delete(&dzt_ei->dir_tree, d_hn);
         head = &old_dir->sub_file;
-        list_for_each(this, head) {
+        list_for_each_safe(this, next, head) {
             tem_sf = list_entry(this, struct file_p, list);
             sub_id = tem_sf->pos;
             sde= &dafs_ze->dentry[sub_id];
@@ -1210,17 +1224,20 @@ int dafs_rm_dir(struct dentry *dentry, int link_change)
     struct inode *dir = dentry->d_parent->d_inode;
     struct super_block *sb = dir->i_sb;
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dafs_dentry *dafs_de;
+    struct dafs_dentry *dafs_de, *par_de;
     struct dzt_entry_info *dzt_ei, *sub_ei;
     struct dafs_zone_entry *dafs_ze;
     struct zone_ptr *z_p;
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
-    unsigned long phlen, flen;
+    struct dir_info *rm_dir, *par_dir;
+    struct file_p *rm_sf;
+    struct list_head *head, *next, *this;
+    unsigned long phlen, flen, tlen;
     u32 dzt_eno;
-    u32 de_pos;
+    u32 de_pos, sub_pos, par_pos;
     u32 bitpos;
     unsigned short links_count;
-    u64 ph_hash, ei_hash;
+    u64 ph_hash, ei_hash, par_hash;
     char *phname, *ph, *phn;
     int ret;
 	timing_t remove_dentry_time;
@@ -1279,6 +1296,25 @@ int dafs_rm_dir(struct dentry *dentry, int link_change)
 
     bitpos = de_pos * 2;
    
+    /*remove from par*/
+    par_pos = le32_to_cpu(dafs_de->par_pos);
+    if(dir->i_ino == NOVA_ROOT_INO || par_pos!=0){
+        par_de = &dafs_ze->dentry[par_pos];
+        par_hash = le64_to_cpu(par_de->hname);
+        par_dir = radix_tree_lookup(&dzt_ei->dir_tree, par_hash);
+        head = &par_dir->sub_file;
+        list_for_each_safe(this, next, head) {
+            rm_sf = list_entry(this, struct file_p, list);
+            if(rm_sf->pos == de_pos){
+                par_dir->sub_num--;
+                list_del(&rm_sf->list);
+                kfree(rm_sf);
+                goto CONT;
+            }
+        }
+    } 
+
+CONT:
     make_zone_ptr(&z_p, dafs_ze);
     test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
 	bitpos++;
@@ -1286,14 +1322,34 @@ int dafs_rm_dir(struct dentry *dentry, int link_change)
     make_invalid_htable(sb, dzt_ei->ht_head, ph_hash, 1);
     delete_ext(z_p, dafs_de);
 
+    /*make invalid sub file only for empty dir
+     * free dir_tree*/
+    this = NULL;
+    next = NULL;
+    rm_dir = radix_tree_lookup(&dzt_ei->dir_tree, ph_hash);
+    head = &rm_dir->sub_file;
+    list_for_each_safe(this, next, head){
+        rm_sf = list_entry(this, struct file_p, list);
+        sub_pos = rm_sf->pos;
+        bitpos = sub_pos*2;
+        test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
+	    bitpos++;
+        test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
+        make_invalid_htable(sb, dzt_ei->ht_head, ph_hash, 1);
+        delete_ext(z_p, dafs_de);
+        list_del(&rm_sf->list);
+        kfree(rm_sf);
+    }
+
+    kfree(rm_dir);
     /*free dir_entry*/
-    delete_dir_info(dzt_ei, ph_hash);
+    //delete_dir_info(dzt_ei, ph_hash);
     
     /*
     de_addr = le64_to_cpu(&dafs_de);
     record_dir_log(sb, de_addr, 0, DIR_RMDIR);*/
+ 
 
-    
     //ret = __remove_direntry(sb, dafs_de, dafs_ze, dzt_ei, de_pos);
 
     //if(ret)
@@ -1328,6 +1384,7 @@ int dafs_remove_dentry(struct dentry *dentry)
     int ret;
 	timing_t remove_dentry_time;
 
+    nova_dbg("dafs start removing dentry");
 	NOVA_START_TIMING(remove_dentry_t, remove_dentry_time);
 
 	if (!dentry->d_name.len)
@@ -1338,7 +1395,6 @@ int dafs_remove_dentry(struct dentry *dentry)
 
     /*直接rm direntry就可以
     * 先找到相应的dir*/    
-    nova_dbg("dafs start removing dentry");
     ph = get_dentry_path(dentry,0);
     phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
@@ -1821,7 +1877,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     struct dzt_entry_info *ch_ei;
     struct dzt_manager *dzt_m = sbi->dzt_m_info;
     struct dir_info *new_dir, *old_dir, *pdir;
-    struct list_head *this, *head;
+    struct list_head *this, *head, *next;
     struct file_p *tem_sf, *new_sf;
     u32 bitpos = 0, dir_pos = 0, s_pos, par_pos, par_id;
     int ret=0;
@@ -1931,7 +1987,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     head = &old_dir->sub_file;
     
     /*rename 子文件*/
-    list_for_each(this, head) {
+    list_for_each_safe(this, next, head) {
         tem_sf = list_entry(this, struct file_p, list);
         s_pos = tem_sf->pos;
         sub_de = &ze->dentry[s_pos];

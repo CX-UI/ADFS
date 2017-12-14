@@ -89,12 +89,23 @@ u64 nova_create_lite_transaction(struct super_block *sb,
 	struct ptr_pair *pair;
 	struct nova_lite_journal_entry *entry;
 	size_t size = sizeof(struct nova_lite_journal_entry);
-	u64 new_tail, temp;;
+	u64 new_tail, temp;
 
+    nova_dbg("%s start",__func__);
 	pair = nova_get_journal_pointers(sb, cpu);
+    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
 	if (!pair || pair->journal_head == 0 ||
-			pair->journal_head != pair->journal_tail)
-		BUG();
+			pair->journal_head != pair->journal_tail){
+        nova_dbg("nova bug");
+        if(!pair)
+            nova_dbg("pair is null");
+        if(pair->journal_head == 0)
+            nova_dbg("journal head is 0");
+        if(pair->journal_head!=pair->journal_tail){
+            nova_dbg("journal tail %llu, unequal with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
+        }
+        BUG();
+    }
 
 	temp = pair->journal_head;
 	entry = (struct nova_lite_journal_entry *)nova_get_block(sb,
@@ -115,6 +126,8 @@ u64 nova_create_lite_transaction(struct super_block *sb,
 	pair->journal_tail = new_tail;
 	nova_flush_buffer(&pair->journal_head, CACHELINE_SIZE, 1);
 
+    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
+    nova_dbg("%s end",__func__);
 	return new_tail;
 }
 
@@ -122,11 +135,13 @@ void nova_commit_lite_transaction(struct super_block *sb, u64 tail, int cpu)
 {
 	struct ptr_pair *pair;
 
+    nova_dbg("%s start",__func__);
 	pair = nova_get_journal_pointers(sb, cpu);
 	if (!pair || pair->journal_tail != tail)
 		BUG();
 
 	pair->journal_head = tail;
+    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
 	nova_flush_buffer(&pair->journal_head, CACHELINE_SIZE, 1);
 }
 
@@ -187,8 +202,10 @@ int nova_lite_journal_soft_init(struct super_block *sb)
 	for (i = 0; i < sbi->cpus; i++) {
         nova_dbg("dafs get soft journal");
 		pair = nova_get_journal_pointers(sb, i);
-		if (pair->journal_head == pair->journal_tail)
-			continue;
+		if (pair->journal_head == pair->journal_tail){
+            nova_dbg("nice journal initialize head %llu, tail %llu", pair->journal_head, pair->journal_tail);
+            continue;
+        }
 
 		/* We only allow up to two uncommited entries */
 		temp = next_lite_journal(pair->journal_head);

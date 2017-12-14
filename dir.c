@@ -166,6 +166,7 @@ static u64 nova_append_dir_inode_entry(struct super_block *sb,
 	unsigned short links_count;
 	timing_t append_time;
 
+    nova_dbg("%s start",__func__);
 	NOVA_START_TIMING(append_dir_entry_t, append_time);
 
     /*得到log页*/

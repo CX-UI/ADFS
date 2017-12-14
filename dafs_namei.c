@@ -45,6 +45,7 @@ static void dafs_lite_transaction_for_new_inode(struct super_block *sb,
 	nova_commit_lite_transaction(sb, journal_tail, cpu);
 	spin_unlock(&sbi->journal_locks[cpu]);
 	NOVA_END_TIMING(create_trans_t, trans_time);
+    nova_dbg("%s end", __func__);
 }
 
 static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, bool excl)
@@ -174,18 +175,21 @@ int dafs_append_link_change_entry(struct super_block *sb,
 	struct nova_inode_info *si = NOVA_I(inode);
 	struct nova_inode_info_header *sih = &si->header;
 	struct nova_link_change_entry *entry;
+    struct ptr_pair *pair;
 	u64 curr_p;
 	int extended = 0;
 	size_t size = sizeof(struct nova_link_change_entry);
 	timing_t append_time;
 
+    nova_dbg("%s start",__func__);
 	NOVA_START_TIMING(append_link_change_t, append_time);
-	nova_dbg_verbose("%s: inode %lu attr change\n",
+	nova_dbg("%s: inode %lu attr change\n",
 				__func__, inode->i_ino);
 
 	curr_p = nova_get_append_head(sb, pi, sih, tail, size, &extended);
-	if (curr_p == 0)
-		return -ENOMEM;
+	//if (curr_p == 0)
+        //return 0;
+		//return -ENOMEM;
 
 	entry = (struct nova_link_change_entry *)nova_get_block(sb, curr_p);
 	entry->entry_type = LINK_CHANGE;
@@ -198,6 +202,7 @@ int dafs_append_link_change_entry(struct super_block *sb,
 	sih->last_link_change = curr_p;
 
 	NOVA_END_TIMING(append_link_change_t, append_time);
+    nova_dbg("%s end",__func__);
 	return 0;
 }
 
@@ -210,10 +215,16 @@ static void dafs_lite_transaction_for_time_and_link(struct super_block *sb,
 	struct nova_lite_journal_entry entry;
 	u64 journal_tail;
 	int cpu;
+    struct ptr_pair *pair; 
 	timing_t trans_time;
 
+    nova_dbg("%s start",__func__);
 	NOVA_START_TIMING(link_trans_t, trans_time);
 
+	cpu = smp_processor_id();
+    // for debug
+	pair = nova_get_journal_pointers(sb, cpu);
+    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
 	/* Commit a lite transaction */
 	memset(&entry, 0, sizeof(struct nova_lite_journal_entry));
 	entry.addrs[0] = (u64)nova_get_addr_off(sbi, &pi->log_tail);
@@ -229,6 +240,8 @@ static void dafs_lite_transaction_for_time_and_link(struct super_block *sb,
 		entry.addrs[2] |= (u64)1 << 56;
 		entry.values[2] = pi->valid;
 	}
+
+    nova_dbg("%s finish commit transaction",__func__);
 
 	cpu = smp_processor_id();
 	spin_lock(&sbi->journal_locks[cpu]);
@@ -247,6 +260,7 @@ static void dafs_lite_transaction_for_time_and_link(struct super_block *sb,
 	nova_commit_lite_transaction(sb, journal_tail, cpu);
 	spin_unlock(&sbi->journal_locks[cpu]);
 	NOVA_END_TIMING(link_trans_t, trans_time);
+    nova_dbg("%s end",__func__);
 }
 
 void dafs_apply_link_change_entry(struct nova_inode *pi,
@@ -472,6 +486,8 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     u64 ino;
     int err = -EMLINK;
     timing_t mkdir_time;
+    int cpu;
+    struct ptr_pair *pair;
    
     nova_dbg("%s:dafs start to mkdir",__func__);
     NOVA_START_TIMING(mkdir_t, mkdir_time);
@@ -506,6 +522,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 
 	pi = nova_get_inode(sb, inode);
     //dafs_append_dir_init_entries(sb, pi, inode->i_ino, dir->i_ino);
+    pi->log_tail = pi->log_head = 0;
    
     //dafs不需要rebuild dir tree
     si = NOVA_I(inode);
@@ -519,6 +536,9 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	unlock_new_inode(inode);
 
 	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	cpu = smp_processor_id();
+	pair = nova_get_journal_pointers(sb, cpu);
+    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
     nova_dbg("%s: dafs end mkdir",__func__);
@@ -540,6 +560,8 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
     u64 pidir_tail = 0, pi_tail = 0;
     struct nova_inode_info *si = NOVA_I(inode);
+    //struct ptr_pair *pair; // for debug
+    //int cpu;  //for debug
     //struct nova_inode_info_header *sih = &si->header;
     //struct dafs_dzt_block *dzt_blk;
     int err = -ENOTEMPTY;
@@ -563,6 +585,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     if(!dafs_empty_dir(inode, dentry))
         return err;
     
+    
 	nova_dbgv("%s: inode %lu, dir %lu, link %d\n", __func__,
 				inode->i_ino, dir->i_ino, dir->i_nlink);
 
@@ -571,7 +594,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 				inode->i_ino, inode->i_nlink, dir->i_ino);
 
     /*add log to dzt for suddenly shut down*/
-    record_dir_log(sb, dentry, NULL, DIR_RMDIR);
+    //record_dir_log(sb, dentry, NULL, DIR_RMDIR);
     err = dafs_rm_dir(dentry, -1);
 
 	if (err)
@@ -585,12 +608,15 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 		drop_nlink(dir);
 
     /*finish log make it invalid*/
-    delete_dir_log(sb);
+    //delete_dir_log(sb);
 
     /* not decided*/
     err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
 	if (err)
 		goto end_rmdir;
+
+
+    //pidir_tail = pidir->log_tail;
 
 	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
 						pi_tail, pidir_tail, 1);
