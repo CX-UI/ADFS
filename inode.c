@@ -728,7 +728,8 @@ static int nova_free_inuse_inode(struct super_block *sb, unsigned long ino)
 	unsigned long internal_ino = ino / sbi->cpus;
 	int ret = 0;
 
-	nova_dbg_verbose("Free inuse ino: %lu\n", ino);
+    nova_dbg("%s start",__func__);
+	nova_dbg("Free inuse ino: %lu\n", ino);
 	inode_map = &sbi->inode_maps[cpuid];
 
 	mutex_lock(&inode_map->inode_table_mutex);
@@ -787,6 +788,7 @@ block_found:
 	sbi->s_inodes_used_count--;
 	inode_map->freed++;
 	mutex_unlock(&inode_map->inode_table_mutex);
+    nova_dbg("%s end",__func__);
 	return ret;
 }
 
@@ -841,6 +843,7 @@ static int nova_free_inode(struct inode *inode,
 	err = nova_free_inuse_inode(sb, pi->nova_ino);
 
 	NOVA_END_TIMING(free_inode_t, free_time);
+    nova_dbg("%s end",__func__);
 	return err;
 }
 
@@ -2287,6 +2290,7 @@ int nova_rebuild_file_inode_tree(struct super_block *sb,
 				curr_p += sizeof(struct nova_setattr_logentry);
 				continue;
 			case LINK_CHANGE:
+                nova_dbg("%s link_change",__func__);
 				link_change_entry =
 					(struct nova_link_change_entry *)addr;
 				dafs_apply_link_change_entry(pi,

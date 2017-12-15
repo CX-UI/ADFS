@@ -835,6 +835,7 @@ int nova_rebuild_inode(struct super_block *sb, struct nova_inode_info *si,
 		break;
 	case S_IFDIR:
 		//nova_rebuild_dir_inode_tree(sb, pi, pi_addr, sih);
+        nova_dbg("%s s_ifdir",__func__);
 		dafs_rebuild_dir_inode_tree(sb, pi, pi_addr, sih);
 		break;
 	default:

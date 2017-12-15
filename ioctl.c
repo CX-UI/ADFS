@@ -30,6 +30,7 @@ long nova_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	u64 new_tail = 0;
 	int ret;
 
+    nova_dbg("%s start",__func__);
 	pi = nova_get_inode(sb, inode);
 	if (!pi)
 		return -EACCES;

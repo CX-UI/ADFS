@@ -875,11 +875,15 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dent
     u64 ph_hash, ht_addr, flen;
     //u64 tes_len;
     u32 de_pos, par_pos;
-    char *phname, *ph, *phn;
+    char *phname, *ph, *phn, *dot=".", *pdot = "..";
     int ret;
 
     nova_dbg("%s:dafs start to find direntry",__func__);
     nova_dbg("dentry name is %s", dentry->d_name.name);
+    if(!strcmp(dentry->d_name.name, dot)|| !strcmp(dentry->d_name.name,pdot)){
+        nova_dbg("%s init dentry . and ..",__func__);
+        return direntry;
+    }
     ph = get_dentry_path(dentry,ISREAD);
     nova_dbg("strictly full name is %s", ph);
     nova_dbg("strictly full name length is %llu", strlen(ph));
@@ -1258,7 +1262,7 @@ int dafs_rm_dir(struct dentry *dentry, int link_change)
     struct inode *dir = dentry->d_parent->d_inode;
     struct super_block *sb = dir->i_sb;
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dafs_dentry *dafs_de, *par_de;
+    struct dafs_dentry *dafs_de, *par_de,*sub_de;
     struct dzt_entry_info *dzt_ei, *sub_ei;
     struct dafs_zone_entry *dafs_ze;
     struct zone_ptr *z_p;
@@ -1271,7 +1275,7 @@ int dafs_rm_dir(struct dentry *dentry, int link_change)
     u32 de_pos, sub_pos, par_pos;
     u32 bitpos;
     unsigned short links_count;
-    u64 ph_hash, ei_hash, par_hash;
+    u64 ph_hash, ei_hash, par_hash, sub_hash;
     char *phname, *ph, *phn;
     int ret;
 	timing_t remove_dentry_time;
@@ -1360,16 +1364,18 @@ CONT:
      * free dir_tree*/
     this = NULL;
     next = NULL;
-    rm_dir = radix_tree_lookup(&dzt_ei->dir_tree, ph_hash);
+    rm_dir = radix_tree_delete(&dzt_ei->dir_tree, ph_hash);
     head = &rm_dir->sub_file;
     list_for_each_safe(this, next, head){
         rm_sf = list_entry(this, struct file_p, list);
         sub_pos = rm_sf->pos;
         bitpos = sub_pos*2;
+        sub_de = &dafs_ze->dentry[sub_pos];
+        sub_hash = le64_to_cpu(sub_de->hname);
         test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
 	    bitpos++;
         test_and_clear_bit_le(bitpos, (void *)z_p->statemap);
-        make_invalid_htable(sb, dzt_ei->ht_head, ph_hash, 1);
+        make_invalid_htable(sb, dzt_ei->ht_head, sub_hash, 1);
         delete_ext(z_p, dafs_de);
         list_del(&rm_sf->list);
         kfree(rm_sf);
@@ -1558,6 +1564,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
 
     p_len = strlen(ful_name);
     phn = kzalloc(sizeof(char)*(p_len+4), GFP_KERNEL);
+    memcpy(phn, ful_name, p_len);
 
     dafs_de = &dafs_ze->dentry[cur_pos];
     dafs_de->entry_type = DAFS_DIR_ENTRY;
@@ -1578,8 +1585,15 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
     /*set ful_name*/
     p_len += 2;
     dafs_de->fname_len = cpu_to_le64(p_len);
-    strcat(phn, "/.");
+    if(p_len == 3)
+        strcat(phn, ".");
+    else
+        strcat(phn, "/.");
+    /*normal file*/
+    dafs_de->ful_name.f_name[0]='\0';
+    dafs_de->ext_flag=0;
     //nova_dbg("")
+    /*
     if(p_len < SMALL_NAME_LEN){
         dafs_de->ext_flag = 0;
         memcpy(dafs_de->ful_name.f_name, phn, p_len);
@@ -1588,7 +1602,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
     } else {
         dafs_de->ext_flag = 2;
         ext_de_name(sb, dzt_ei, dafs_ze, zone_p, cur_pos, p_len, phn, 1);
-    }
+    }*/
      
     /*make valid*/
     bitpos++;
@@ -1596,6 +1610,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
     bitpos++;
     //h_len = phlen + 2;
     hashname = BKDRHash(phn, p_len);
+    nova_dbg("%s init entry name %s",__func__,phn);
     dafs_de->hname = cpu_to_le64(hashname);
     record_pos_htable(sb, dzt_ei->ht_head, hashname, cur_pos, 1);
 
@@ -1641,7 +1656,11 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
     dafs_de->name[2]='\0';
     p_len ++; 
     dafs_de->fname_len = cpu_to_le64(p_len);
+    /*normal file*/
+    dafs_de->ful_name.f_name[0]='\0';
+    dafs_de->ext_flag=0;
     strcat(phn, ".");
+    /*
     if(p_len < SMALL_NAME_LEN){
         dafs_de->ext_flag = 0;
         memcpy(dafs_de->ful_name.f_name, phn, p_len);
@@ -1649,7 +1668,7 @@ int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt
     } else {
         dafs_de->ext_flag = 2;
         ext_de_name(sb, dzt_ei, dafs_ze, zone_p, cur_pos, p_len, phn, 1);
-    }
+    }*/
     
     /*make valid*/
     bitpos++;

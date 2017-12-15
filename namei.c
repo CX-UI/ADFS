@@ -48,7 +48,7 @@ static struct dentry *nova_lookup(struct inode *dir, struct dentry *dentry,
 		return ERR_PTR(-ENAMETOOLONG);
 	}
 
-	nova_dbg_verbose("%s: %s\n", __func__, dentry->d_name.name);
+	nova_dbg("%s: %s\n", __func__, dentry->d_name.name);
 	ino = nova_inode_by_name(dir, &dentry->d_name, &de);
 	nova_dbg_verbose("%s: ino %lu\n", __func__, ino);
 	if (ino) {
