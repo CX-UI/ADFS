@@ -701,7 +701,7 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,
     //u64 journal_tail;
     timing_t rename_time;
 
-    
+    nova_dbg("%s start", __func__); 
 	nova_dbgv("%s: rename %s to %s,\n", __func__,
 			old_dentry->d_name.name, new_dentry->d_name.name);
 	nova_dbgv("%s: %s inode %lu, old dir %lu, new dir %lu, new inode %lu\n",
@@ -733,7 +733,7 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	}
 
     /*record rename log*/
-    record_dir_log(sb, old_dentry, new_dentry, DIR_RENAME);
+    //record_dir_log(sb, old_dentry, new_dentry, DIR_RENAME);
     if(S_ISDIR(old_inode->i_mode)){
 
         if(new_inode){
@@ -764,7 +764,7 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,
    
     
     /*make log invalid*/
-    delete_dir_log(sb);
+    //delete_dir_log(sb);
 	
 	if (inc_link)
 		inc_nlink(new_dir);
@@ -790,6 +790,7 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	}
 
 	NOVA_END_TIMING(rename_t, rename_time);
+    nova_dbg("%s end",__func__);
 	return 0;
 out:
 	nova_err(sb, "%s return %d\n", __func__, err);

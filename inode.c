@@ -1643,14 +1643,14 @@ static bool curr_log_entry_invalid(struct super_block *sb,
 				ret = false;
 			*length = sizeof(struct nova_file_write_entry);
 			break;
-        /*
+        
 		case DIR_LOG:
-			dentry = (struct nova_dentry *)addr;
+		/*	dentry = (struct nova_dentry *)addr;
 			if (dentry->ino && dentry->invalid == 0)
 				ret = false;
-			*length = le16_to_cpu(dentry->de_len);
+			*length = le16_to_cpu(dentry->de_len);*/
 			break;
-        */
+        
 		case NEXT_PAGE:
 			/* No more entries in this page */
 			*length = PAGE_SIZE - ENTRY_LOC(curr_p);;
