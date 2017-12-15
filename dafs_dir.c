@@ -306,6 +306,26 @@ END:
     return dzt_ei;
 }
 
+void dafs_rebuild_dir_time_and_size(struct super_block *sb,
+	struct nova_inode *pi, int link_change, struct inode *dir)
+{
+    unsigned short links_count;
+
+	if (!pi)
+		return;
+
+	pi->i_ctime = CURRENT_TIME_SEC.tv_sec;
+	pi->i_mtime = CURRENT_TIME_SEC.tv_sec;
+	pi->i_size = DAFS_DEF_DENTRY_SIZE;
+    links_count = cpu_to_le16(dir->i_nlink);
+    nova_dbg("%s dir links is %d", __func__, links_count);
+	if (links_count == 0 && link_change == -1)
+		links_count = 0;
+	else
+		links_count += link_change;
+	pi->i_links_count = links_count;
+}
+
 /*record dir operation in logs*/
 void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *des, int type)
 {
@@ -1041,6 +1061,7 @@ int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u
 	//}
 DIR_TYPE:
     nova_dbg("%s: it is dir type",__func__);
+    //dafs_rebuild_dir_time_and_size(sb, pi, entry);
 	sih->i_size = le64_to_cpu(pi->i_size);
 	sih->i_mode = le64_to_cpu(pi->i_mode);
     nova_flush_buffer(pi, sizeof(struct nova_inode), 0);
@@ -1059,6 +1080,7 @@ DIR_TYPE:
     pi->i_blocks = sih->log_pages;
 
 //	nova_print_dir_tree(sb, sih, ino);
+    //dafs_rebuild_dir_time_and_size(sb, pi, entry);
 	nova_dbg("%s:dafs finish rebuild dir inode",__func__);
     NOVA_END_TIMING(rebuild_dir_t, rebuild_time);
     return 0;

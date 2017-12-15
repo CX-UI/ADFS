@@ -527,6 +527,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     //dafs不需要rebuild dir tree
     si = NOVA_I(inode);
     sih = &si->header;
+    dafs_rebuild_dir_time_and_size(sb, pi, 1, dir);
     dafs_rebuild_dir_inode_tree(sb, pi, pi_addr, sih);
 
 	pidir = nova_get_inode(sb, dir);

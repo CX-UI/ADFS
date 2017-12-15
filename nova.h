@@ -1029,6 +1029,8 @@ void dafs_apply_link_change_entry(struct nova_inode *pi,
 
 /* dafs_dir.c*/
 int dafs_empty_dir(struct inode *inode, struct dentry *dentry);
+static inline void dafs_rebuild_dir_time_and_size(struct super_block *sb,
+	struct nova_inode *pi, int link_change, struct inode *dir);
 void record_dir_log(struct super_block *sb, struct dentry *src, struct dentry *des, int type);
 void delete_dir_log(struct super_block *sb);
 extern const struct file_operations dafs_dir_operations;
