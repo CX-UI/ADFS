@@ -136,7 +136,7 @@ extern unsigned int nova_dbgmask;
 #define FREE_BATCH			(16)
 
 /*DAFS*/
-#define CHECK_ZONES_SLLEP_TIME 1000
+#define CHECK_ZONES_SLEEP_TIME 20000
 
 /*zone.h*/
 /*block size*/

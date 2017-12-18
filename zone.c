@@ -123,7 +123,7 @@ unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_inf
     /*check and set frequency state and subfiles state*/
     if(dafs_de->file_type == NORMAL_DIRECTORY ){            
         sub_num = dir_i->sub_num;
-        if(sub_num < NR_ZONE_FILES)
+        if(sub_num < NR_DIR_FILES)
             sub_s = NUMBER_OF_SUBFILES_FEW;         //not decided,few=1,large=2,none=0
         else 
             sub_s = NUMBER_OF_SUBFILES_LARGE;
@@ -220,10 +220,10 @@ struct dzt_entry_info *DAFS_GET_EI(struct super_block *sb, u64 eno)
 }
 /*
 * set state in statemap for each zone*/
-int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
+int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *ei)
 {
     //struct nova_sb_info *sbi = NOVA_SB(sb);
-    //struct dafs_zone_entry *ze;
+    struct dafs_zone_entry *ze;
     struct zone_ptr *z_p;
     struct dafs_dentry *dafs_de;
     //struct dafs_dzt_entry *dzt_e;
@@ -235,6 +235,8 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
     int ret = 0;
     u32 par_eno;
 
+    nova_dbg("%s start",__func__);
+    ze = (struct dafs_zone_entry *)nova_get_block(sb, ei->dz_addr);
     par_eno = le64_to_cpu(ze->dz_no);
     par_ei = DAFS_GET_EI(sb, par_eno);
 
@@ -280,6 +282,7 @@ int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)
     }
     
     kfree(z_p);
+    nova_dbg("%s end",__func__);
     return ret;
     
 }
@@ -1536,7 +1539,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     /* init new dzt ei dir_info tree*/
     init_dir_info(sb, n_dzt_ei);
     /*reset statemap*/
-    zone_set_statemap(sb, par_ze);
+    //zone_set_statemap(sb, par_ze);
 
     make_dzt_ptr(sb, &dzt_p);
     test_and_set_bit_le(n_dzt_ei->dzt_eno, (void *)dzt_p->bitmap);
@@ -2599,6 +2602,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     u32 inh_id = 0;
     u64 zf_num = 0, sub_s, hashname;  /*record zone valid sub_files num*/
 
+    nova_dbg("%s start",__func__);
     z_e = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     make_zone_ptr(&z_p, z_e);
 
@@ -2635,18 +2639,20 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 
     /*judge zone sub_num state*/
     if(zf_num < NR_ZONE_FILES )
-        sub_s = NUMBER_OF_SUBFILES_FEW;
+        sub_s = NUMBER_OF_ZONE_SUBFILES_FEW;
     else
-        sub_s = NUMBER_OF_SUBFILES_LARGE;
+        sub_s = NUMBER_OF_ZONE_SUBFILES_LARGE;
 
     if(warm_num == 0 && hot_num ==1){
-        if(sub_s!= NUMBER_OF_SUBFILES_LARGE)
+        //if(sub_s!= NUMBER_OF_SUBFILES_LARGE)
             inh_id = hd_no[0];
             dafs_inh_zone(sb, dzt_ei, inh_id);
     
     } else if(hot_num == 0){
-        if(sub_s!=NUMBER_OF_SUBFILES_LARGE)
-            dafs_merge_zone(sb, dzt_ei);           
+        if(sub_s ==NUMBER_OF_ZONE_SUBFILES_FEW)
+            dafs_merge_zone(sb, dzt_ei);
+        else if(sub_s == NUMBER_OF_ZONE_SUBFILES_LARGE)
+            dafs_split_zone(sb, dzt_ei, 0, NEGTIVE_SPLIT);
 
     }else if(hot_num!=0){
         for(i=0;i<hot_num;i++){
@@ -2672,6 +2678,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 
 RET:
     kfree(z_p);
+    nova_dbg("%s end",__func__);
     return ret;
 }
 
@@ -2709,24 +2716,47 @@ void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei)
 /*initialize thread*/
 int check_thread_func(void *data)
 {
-    struct nova_sb_info *sbi = data;
+    struct super_block *sb = data;
+    struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dzt_entry_info *ei;
     struct dzt_manager *dzt_m;
-    struct dzt_entry_info *dzt_eis[DAFS_DZT_ENTRIES_IN_BLOCK];
-    int nr, i;
+    struct dzt_entry_info *dzt_eis[FREE_BATCH];
+    int nr=0, i;
     int time_count = 0;
     int ret = 0;
+
+    nova_dbg("%s start",__func__);
+    BUG_ON(sbi==NULL);
     do{
-        set_current_state(TASK_UNINTERRUPTIBLE);
-        schedule_timeout_interruptible(msecs_to_jiffies(CHECK_ZONES_SLLEP_TIME));
+        set_current_state(TASK_INTERRUPTIBLE);
+        schedule_timeout_interruptible(msecs_to_jiffies(CHECK_ZONES_SLEEP_TIME));
         dzt_m = sbi->dzt_m_info;
-        nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, 0, DAFS_DZT_ENTRIES_IN_BLOCK);
+        BUG_ON(dzt_m==NULL);
+        do{
+            nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, 0, FREE_BATCH);
+            BUG_ON(nr==0);
+            nova_dbg("%s check dzt num is %d", __func__, nr);
+            for(i=0; i<nr; i++) {
+                ei = dzt_eis[i];
+                ret = zone_set_statemap(sb, ei);
+                if(ret)
+                    return -EINVAL;
+                ret = dafs_check_zones(sb, ei);
+                if(ret)
+                    return -EINVAL;
+            }
+        }while(nr==FREE_BATCH);
+        /*nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, 0, DAFS_DZT_ENTRIES_IN_BLOCK);
+        nova_dbg("%s check dzt num is %d", __func__, nr);
         for(i=0; i<nr; i++) {
             ei = dzt_eis[i];
-            ret = dafs_check_zones(sbi->sb, ei);
+            ret = zone_set_statemap(sb, ei);
             if(ret)
                 return -EINVAL;
-        }
+            ret = dafs_check_zones(sb, ei);
+            if(ret)
+                return -EINVAL;
+        }*/
     }while(!kthread_should_stop());
     return time_count;
 }
@@ -2735,23 +2765,36 @@ int check_thread_func(void *data)
 int start_cz_thread(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct zone_kthread *check_thread = NULL;
+    struct zone_kthread *check_thread;
     int err = 0;
 
-    sbi->check_thread = NULL;
+    nova_dbg("%s start",__func__);
+    BUG_ON(sbi==NULL);
+    //sbi->check_thread = NULL;
     /*initialize zone check thread*/
-    check_thread = (struct zone_kthread *)kmalloc(sizeof(struct zone_kthread), GFP_KERNEL);
-    if(!check_thread)
+    check_thread = kzalloc(sizeof(struct zone_kthread), GFP_KERNEL);
+    if(!check_thread){
+        nova_dbg("%s malloc failed",__func__);
         return -ENOMEM;
+    }
 
     init_waitqueue_head(&(check_thread->wait_queue_head));
-    check_thread->zone_task = kthread_run(check_thread_func, sbi, "DAFS_CHECK_ZONE");
+    //check_thread->zone_task = kthread_create(check_thread_func, sb, "DAFS_CHECK_ZONE");
+    //kthread_bind(check_thread->zone_task, 1);
+    check_thread->zone_task = kthread_run(check_thread_func, sb, "DAFS_CHECK_ZONE");
+    nova_dbg("%s fill task",__func__);
     sbi->check_thread = check_thread;
     
     if(IS_ERR(check_thread->zone_task)){
+        nova_dbg("%s thread do not match",__func__);
         err = PTR_ERR(check_thread->zone_task);
         goto free_check;
     }
+
+    //wake_up_process(check_thread->zone_task);
+
+    //nova_dbg("%s fill task end",__func__);
+    //sbi->check_thread = check_thread;
 
     return 0;
 
@@ -2764,6 +2807,8 @@ free_check:
 int stop_cz_thread(struct super_block *sb)
 {
     struct nova_sb_info *sbi = NOVA_SB(sb);
+
+    nova_dbg("%s start",__func__);
     if(sbi->check_thread) {
         kthread_stop(sbi->check_thread->zone_task);
         kfree(sbi->check_thread);

@@ -13,7 +13,7 @@ CACHELINE_ALIGN	nova_def.h	190;"	d
 CACHELINE_MASK	nova_def.h	189;"	d
 CACHELINE_SIZE	nova_def.h	188;"	d
 CACHE_ALIGN	nova.h	876;"	d
-CHECK_ZONES_SLLEP_TIME	nova.h	139;"	d
+CHECK_ZONES_SLEEP_TIME	nova.h	139;"	d
 CPUID_MASK	bbuild.c	257;"	d	file:
 Countstats	stats.c	/^u64 Countstats[TIMING_NUM];$/;"	v
 DAFS_BLOCK_TYPE_512K	nova.h	148;"	d
@@ -138,14 +138,17 @@ NOVA_START_TIMING	stats.h	124;"	d
 NOVA_STATS_ADD	stats.h	138;"	d
 NOVA_SUPER_MAGIC	nova_def.h	26;"	d
 NR_DENTRY_IN_ZONE	zone.h	29;"	d
+NR_DIR_FILES	zone.h	97;"	d
 NR_HASH_ENTRIES_L1	zone.h	41;"	d
 NR_HASH_ENTRIES_L2	zone.h	42;"	d
 NR_HASH_ENTRIES_L3	zone.h	43;"	d
 NR_HASH_ENTRIES_L4	zone.h	44;"	d
 NR_HASH_ENTRIES_L5	zone.h	45;"	d
-NR_ZONE_FILES	zone.h	94;"	d
+NR_ZONE_FILES	zone.h	98;"	d
 NUMBER_OF_SUBFILES_FEW	zone.h	/^    NUMBER_OF_SUBFILES_FEW = 0,$/;"	e	enum:dafs_dir_size
-NUMBER_OF_SUBFILES_LARGE	zone.h	/^    NUMBER_OF_SUBFILES_LARGE$/;"	e	enum:dafs_dir_size
+NUMBER_OF_SUBFILES_LARGE	zone.h	/^    NUMBER_OF_SUBFILES_LARGE,$/;"	e	enum:dafs_dir_size
+NUMBER_OF_ZONE_SUBFILES_FEW	zone.h	/^    NUMBER_OF_ZONE_SUBFILES_FEW,$/;"	e	enum:dafs_dir_size
+NUMBER_OF_ZONE_SUBFILES_LARGE	zone.h	/^    NUMBER_OF_ZONE_SUBFILES_LARGE$/;"	e	enum:dafs_dir_size
 Opt_blocksize	super.c	/^	Opt_gid, Opt_blocksize, Opt_wprotect,$/;"	e	enum:__anon2	file:
 Opt_bpi	super.c	/^	Opt_bpi, Opt_init, Opt_mode, Opt_uid,$/;"	e	enum:__anon2	file:
 Opt_dbgmask	super.c	/^	Opt_dbgmask, Opt_err$/;"	e	enum:__anon2	file:
@@ -202,6 +205,9 @@ __remove_direntry	dafs_dir.c	/^static int __remove_direntry(struct super_block *
 __rename_dir	dafs_dir.c	/^int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \\$/;"	f
 __rename_dir_direntry	dafs_dir.c	/^int __rename_dir_direntry(struct dentry *old_dentry, struct dentry *new_dentry)$/;"	f
 __rename_file_dentry	dafs_dir.c	/^int __rename_file_dentry(struct dentry *old_dentry, struct dentry *new_dentry)$/;"	f
+__this_module	nova.mod.c	/^__visible struct module __this_module$/;"	v	typeref:struct:module
+__used	nova.mod.c	/^__used$/;"	v	file:
+__used	nova.mod.c	/^__used$/;"	v	typeref:struct:____versions	file:
 _mm_clflush	nova_def.h	209;"	d
 _mm_clflushopt	nova_def.h	211;"	d
 _mm_clwb	nova_def.h	213;"	d
@@ -310,7 +316,7 @@ dafs_new_dzt_blocks	balloc.c	/^inline int dafs_new_dzt_blocks(struct super_block
 dafs_new_zone_blocks	balloc.c	/^inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *dzt_e, unsigned long *blocknr, unsigned int num, int zero)$/;"	f
 dafs_readdir	dafs_dir.c	/^static int dafs_readdir(struct file *file, struct dir_context *ctx)$/;"	f	file:
 dafs_rebuild_dir_inode_tree	dafs_dir.c	/^int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u64 pi_addr,$/;"	f
-dafs_rebuild_dir_time_and_size	dafs_dir.c	/^static inline void dafs_rebuild_dir_time_and_size(struct super_block *sb,$/;"	f	file:
+dafs_rebuild_dir_time_and_size	dafs_dir.c	/^void dafs_rebuild_dir_time_and_size(struct super_block *sb,$/;"	f
 dafs_rec_mf	zone.c	/^u32 dafs_rec_mf(struct dzt_entry_info *ei)$/;"	f
 dafs_remove_dentry	dafs_dir.c	/^int dafs_remove_dentry(struct dentry *dentry)$/;"	f
 dafs_rename	dafs_namei.c	/^static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry, $/;"	f	file:
@@ -1023,6 +1029,6 @@ zone_blk_type	zone.h	/^    u8 zone_blk_type;$/;"	m	struct:dzt_entry_info
 zone_kthread	nova.h	/^struct zone_kthread{$/;"	s
 zone_max	zone.h	/^    unsigned long zone_max;$/;"	m	struct:zone_ptr
 zone_ptr	zone.h	/^struct zone_ptr {$/;"	s
-zone_set_statemap	zone.c	/^int zone_set_statemap(struct super_block *sb, struct dafs_zone_entry *ze)$/;"	f
+zone_set_statemap	zone.c	/^int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *ei)$/;"	f
 zone_statemap	zone.h	/^    __u8 zone_statemap[SIZE_OF_ZONE_BITMAP];         \/* state and validity for zone dentries*\/$/;"	m	struct:dafs_zone_entry
 zone_task	nova.h	/^    struct task_struct *zone_task;$/;"	m	struct:zone_kthread	typeref:struct:zone_kthread::task_struct

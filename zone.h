@@ -66,9 +66,12 @@ enum dafs_statement{
     STATEMAP_HOT
 };
 
+
 enum dafs_dir_size {
     NUMBER_OF_SUBFILES_FEW = 0,
-    NUMBER_OF_SUBFILES_LARGE
+    NUMBER_OF_SUBFILES_LARGE,
+    NUMBER_OF_ZONE_SUBFILES_FEW,
+    NUMBER_OF_ZONE_SUBFILES_LARGE
 };
 
 enum dir_frequence {
@@ -91,6 +94,7 @@ enum dir_level {
     LEVEL_3,
     LEVEL_4
 };
+#define NR_DIR_FILES 100
 #define NR_ZONE_FILES 500
 
 
