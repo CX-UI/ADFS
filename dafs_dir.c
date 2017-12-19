@@ -55,15 +55,16 @@ int delete_dir_tree(struct dzt_entry_info *ei)
     struct dir_info *entries[FREE_BATCH];
     struct file_p *o_sf;
     struct list_head *head, *this, *next;
-    u64 key;
+    u64 key, dir_index=0;
     int nr, i;
     void *ret;
 
     do {
-        nr = radix_tree_gang_lookup(&ei->dir_tree, (void **)entries, 0, FREE_BATCH);
+        nr = radix_tree_gang_lookup(&ei->dir_tree, (void **)entries, dir_index, FREE_BATCH);
         for(i=0; i<nr; i++) {
             dir_i = entries[i];
             key = dir_i->dir_hash;
+            dir_index = dir_i->dir_hash;
             ret = radix_tree_delete(&ei->dir_tree, key);
             head = &dir_i->sub_file;
             list_for_each_safe(this, next, head) {
@@ -75,6 +76,7 @@ int delete_dir_tree(struct dzt_entry_info *ei)
                 nova_dbg("ret is NULL\n");
             kfree(dir_i);
         }
+        dir_index ++;
     } while (nr==FREE_BATCH);
 
     return 0;
@@ -92,7 +94,7 @@ int delete_dir_tree(struct dzt_entry_info *ei)
 }*/
 
 /*add dir_info_entry in dir_info_tree*/
-struct dir_info *add_dir_info(struct dzt_entry_info *ei, u64 hash_name)
+struct dir_info *add_dir_info(struct dzt_entry_info *ei, u64 hash_name, u32 pos)
 {
     struct dir_info *new_dir;
 
@@ -102,7 +104,9 @@ struct dir_info *add_dir_info(struct dzt_entry_info *ei, u64 hash_name)
     new_dir->sub_s = 0;
     new_dir->f_s = 0;
     new_dir->prio = LEVEL_0;
+    new_dir->sub_num = 0;
     new_dir->dir_hash = hash_name;
+    new_dir->dir_pos = pos;
     nova_dbg("dir hash name is %llu", hash_name);
     INIT_LIST_HEAD(&new_dir->sub_file);
     radix_tree_insert(&ei->dir_tree, hash_name, new_dir);
@@ -855,7 +859,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
     /*add dir info if dentry is dir*/
     if(file_type==1){
         dafs_de->file_type = NORMAL_DIRECTORY;
-        add_dir_info(dzt_ei, hashname);
+        add_dir_info(dzt_ei, hashname, cur_pos);
         dafs_append_dir_init_entries(sb, cur_pos, dzt_ei, ino, dir->i_ino, phname);
     } else {
         dafs_de->file_type = NORMAL_FILE;
@@ -2075,7 +2079,7 @@ int __rename_dir(struct super_block *sb, struct dafs_dentry *src_de, \
     dir_pos++;
 
     /*new dir_info_entry*/
-    new_dir = add_dir_info(dzt_ei, hashname);
+    new_dir = add_dir_info(dzt_ei, hashname, dir_pos);
     new_dir->f_s = DENTRY_FREQUENCY_WRITE;
     //ret = update_write_hot(dzt_ei, hashname);
     if(ret)

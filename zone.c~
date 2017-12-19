@@ -71,17 +71,14 @@ u32 dafs_rec_mf(struct dzt_entry_info *ei)
     u32 nr,i;
     u32 rcount=0;
     u32 mean = 0;
-    u64 dir_index = 0;
 
     nova_dbg("%s start",__func__);
     do{
-        nr = radix_tree_gang_lookup(&ei->dir_tree, (void **)entries, dir_index, FREE_BATCH);
+        nr = radix_tree_gang_lookup(&ei->dir_tree, (void **)entries, 0, FREE_BATCH);
         for(i=0;i<nr;i++){
             dir_i = entries[i];	
-            dir_index = dir_i->dir_hash;
             rcount += dir_i->r_f;
         }
-        dir_index++:
     }while (nr == FREE_BATCH);
     /*
     nr = radix_tree_gang_lookup(&ei->dir_tree, (void **)entries, 0, NR_DENTRY_IN_ZONE);
@@ -137,7 +134,7 @@ unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_inf
 
     if(dir_i->f_s!=DENTRY_FREQUENCY_WRITE)
     {
-        if(rcount <= mean){
+        if(rcount < =mean){
             f_s = DENTRY_FREQUENCY_COLD;
             //dafs_de->f_s = cpu_to_le64(f_s);
         }else{
@@ -242,7 +239,6 @@ int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *ei)
     u32 id = 0;
     int ret = 0;
     u32 par_eno;
-    u64 dir_hash = 0;
 
     nova_dbg("%s start",__func__);
     ze = (struct dafs_zone_entry *)nova_get_block(sb, ei->dz_addr);
@@ -253,12 +249,11 @@ int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *ei)
     make_zone_ptr(&z_p, ze);
     
     do{
-        nr = radix_tree_gang_lookup(&ei->dir_tree, (void **)entries, dir_hash, FREE_BATCH);
+        nr = radix_tree_gang_lookup(&ei->dir_tree, (void **)entries, 0, FREE_BATCH);
         for(i=0;i<nr;i++){
             dir_i = entries[i];	
             pos = dir_i->dir_pos;
             dafs_de = &ze->dentry[pos];
-            dir_hash = dir_i->dir_hash;
             statement = set_dentry_state(dafs_de, ei);
             nova_dbg("%s dentry %s statement is %d",__func__, dafs_de->name, statement);
             
@@ -280,7 +275,6 @@ int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *ei)
 
             }
         }
-        dir_hash++;
     }while (nr == FREE_BATCH);
 
     /*
@@ -2664,7 +2658,7 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
                 zf_num++;
             }
 
-        } else {
+        }else{
             bitpos++;
             if(!test_bit_le(bitpos, (void *)z_p->statemap)){
                 bitpos++;
@@ -2682,7 +2676,6 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
         }
     }
 
-    nova_dbg("%s zone file num is %llu",__func__, zf_num);
     /*judge zone sub_num state*/
     if(zf_num < NR_ZONE_FILES )
         sub_s = NUMBER_OF_ZONE_SUBFILES_FEW;
@@ -2692,18 +2685,14 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
     if(warm_num == 0 && hot_num ==1 && dzt_ei->dzt_eno!=0){
         //if(sub_s!= NUMBER_OF_SUBFILES_LARGE)
             inh_id = hd_no[0];
-            BUG();
             dafs_inh_zone(sb, dzt_ei, inh_id);
     
     } else if(hot_num == 0){
-        if(sub_s ==NUMBER_OF_ZONE_SUBFILES_FEW && dzt_ei->dzt_eno!=0){
-            BUG();
+        if(sub_s ==NUMBER_OF_ZONE_SUBFILES_FEW && dzt_ei->dzt_eno!=0)
             dafs_merge_zone(sb, dzt_ei);
-        }
-        else if(sub_s == NUMBER_OF_ZONE_SUBFILES_LARGE){
-            BUG();
+        else if(sub_s == NUMBER_OF_ZONE_SUBFILES_LARGE)
             dafs_split_zone(sb, dzt_ei, 0, NEGTIVE_SPLIT);
-        }
+
     }else if(hot_num!=0){
         for(i=0;i<hot_num;i++){
             sp_id = hd_no[i];
@@ -2714,14 +2703,12 @@ int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei)
             dir = radix_tree_lookup(&dzt_ei->dir_tree, hashname);
             prio = dir->prio;
             if(prio == LEVEL_4){
-                BUG();
                 dafs_split_zone(sb, dzt_ei,sp_id, POSITIVE_SPLIT);  
                 /*每次只分裂一次,避免子和父文件夹冲突*/
                 goto RET;
             }
         }
         if(prio == LEVEL_3){
-            BUG();
             dafs_split_zone(sb, dzt_ei, sp_id, POSITIVE_SPLIT); 
             /*每次只分裂一次,避免子和父文件夹冲突 */
             goto RET;
@@ -2776,7 +2763,6 @@ int check_thread_func(void *data)
     int nr=0, i;
     int time_count = 0;
     int ret = 0;
-    u64 ei_index = 0;
 
     nova_dbg("%s start",__func__);
     BUG_ON(sbi==NULL);
@@ -2787,12 +2773,11 @@ int check_thread_func(void *data)
         //dzt_m = sbi->dzt_m_info;
         //BUG_ON(dzt_m==NULL);
         do{
-            nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, ei_index, FREE_BATCH);
+            nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, 0, FREE_BATCH);
             BUG_ON(nr==0);
             nova_dbg("%s check dzt num is %d", __func__, nr);
             for(i=0; i<nr; i++) {
                 ei = dzt_eis[i];
-                ei_index = ei->hash_name;
                 ret = zone_set_statemap(sb, ei);
                 if(ret)
                     return -EINVAL;
@@ -2800,7 +2785,6 @@ int check_thread_func(void *data)
                 if(ret)
                     return -EINVAL;
             }
-            ei_index ++;
         }while(nr==FREE_BATCH);
         /*nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, 0, DAFS_DZT_ENTRIES_IN_BLOCK);
         nova_dbg("%s check dzt num is %d", __func__, nr);
@@ -2891,14 +2875,12 @@ int dzt_flush_dirty(struct super_block *sb)
     struct dzt_entry_info *ei;
     int nr, i;
     u32 eno;
-    u64 ei_index = 0;
 
     dzt_blk = (struct dafs_dzt_block *)dafs_get_dzt_block(sb);
     do {
-        nr = radix_tree_gang_lookup_tag(&dzt_m->dzt_root, (void **)entries, ei_index, FREE_BATCH, 1);
+        nr = radix_tree_gang_lookup_tag(&dzt_m->dzt_root, (void **)entries, 0, FREE_BATCH, 1);
         for(i=0; i<nr; i++) {
             ei = entries[i];
-            ei_index = ei->hash_name;
             eno = ei->dzt_eno;
             dzt_entry = &dzt_blk->dzt_entry[eno];
             dzt_entry->zone_blk_type = ei->zone_blk_type;
@@ -2909,7 +2891,6 @@ int dzt_flush_dirty(struct super_block *sb)
             dzt_entry->pdz_addr = cpu_to_le64(ei->pdz_addr);
             dzt_entry->hash_name = cpu_to_le64(ei->hash_name);
         }
-        ei_index ++;
     } while(nr==FREE_BATCH); 
     return 0;
 }

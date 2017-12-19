@@ -1036,7 +1036,7 @@ void delete_dir_log(struct super_block *sb);
 extern const struct file_operations dafs_dir_operations;
 int delete_dir_info(struct dzt_entry_info *ei, u64 hashname);
 int delete_dir_tree(struct dzt_entry_info *ei);
-struct dir_info *add_dir_info(struct dzt_entry_info *ei, u64 hash_name);
+struct dir_info *add_dir_info(struct dzt_entry_info *ei, u64 hash_name, u32 pos);
 void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_zone_entry *ze,
                  struct zone_ptr *p, int cur_pos, int name_len, const char *name, int name_flag);
 void get_ext_name(struct name_ext *de_ext, char *name);

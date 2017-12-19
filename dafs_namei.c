@@ -488,6 +488,12 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     timing_t mkdir_time;
     int cpu;
     struct ptr_pair *pair;
+    /*debug*/
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dzt_entry_info *ei;
+    struct dzt_entry_info *dzt_eis[FREE_BATCH];
+    int nr=0, i, ret;
    
     nova_dbg("%s:dafs start to mkdir",__func__);
     NOVA_START_TIMING(mkdir_t, mkdir_time);
@@ -540,6 +546,22 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	cpu = smp_processor_id();
 	pair = nova_get_journal_pointers(sb, cpu);
     nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
+    /*
+    nova_dbg("%s:start to debug statemap", __func__);
+        do{
+            nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, 0, FREE_BATCH);
+            BUG_ON(nr==0);
+            nova_dbg("%s check dzt num is %d", __func__, nr);
+            for(i=0; i<nr; i++) {
+                ei = dzt_eis[i];
+                ret = zone_set_statemap(sb, ei);
+                if(ret)
+                    return -EINVAL;
+                ret = dafs_check_zones(sb, ei);
+                if(ret)
+                    return -EINVAL;
+            }
+        }while(nr==FREE_BATCH);*/
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
     nova_dbg("%s: dafs end mkdir",__func__);
@@ -567,6 +589,13 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     //struct dafs_dzt_block *dzt_blk;
     int err = -ENOTEMPTY;
     timing_t rmdir_time;
+    /*debug*/
+    struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    struct dzt_entry_info *ei;
+    struct dzt_entry_info *dzt_eis[FREE_BATCH];
+    int nr=0, i, ret;
+    u64 ei_index = 0;
 
     nova_dbg("%s:dafs start to rmdir",__func__);
 	NOVA_START_TIMING(rmdir_t, rmdir_time);
@@ -623,6 +652,26 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 						pi_tail, pidir_tail, 1);
 
 	NOVA_END_TIMING(rmdir_t, rmdir_time);
+
+    
+    nova_dbg("%s:start to debug statemap", __func__);
+        do{
+            nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, ei_index, FREE_BATCH);
+            BUG_ON(nr==0);
+            nova_dbg("%s check dzt num is %d", __func__, nr);
+            for(i=0; i<nr; i++) {
+                ei = dzt_eis[i];
+                ei_index = ei->hash_name;
+                ret = zone_set_statemap(sb, ei);
+                BUG_ON(ret==0);
+                if(ret)
+                    return -EINVAL;
+                ret = dafs_check_zones(sb, ei);
+                if(ret)
+                    return -EINVAL;
+            }
+            ei_index ++;
+        }while(nr==FREE_BATCH);
     nova_dbg("%s:dafs end rmdir",__func__);
 	return err;
 

@@ -670,9 +670,9 @@ setup_sb:
 	retval = 0;
     
     /*start check zone kthread*/
-    retval = start_cz_thread(sb);
-    if(retval)
-        goto out;
+    //retval = start_cz_thread(sb);
+    //if(retval)
+       // goto out;
     
 	NOVA_END_TIMING(mount_t, mount_time);
     nova_dbg("dafs end fill super");
@@ -831,7 +831,7 @@ static void nova_put_super(struct super_block *sb)
 	nova_sysfs_exit(sb);
 
     /*stop check zone thread*/
-    stop_cz_thread(sb);
+    //stop_cz_thread(sb);
 
 	kfree(sbi);
 	sb->s_fs_info = NULL;

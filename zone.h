@@ -306,7 +306,8 @@ struct dir_info {
     u8 sub_s;
     u8 f_s;
     u8 prio;
-    u32 sub_num;
+    u32 dir_pos;
+    u64 sub_num;
     u64 dir_hash;
     struct list_head sub_file;
 };
@@ -359,6 +360,8 @@ u32 find_invalid_id(struct super_block *sb, struct dzt_entry_info *dzt_ei, struc
 int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
                     unsigned long sp_id, int SPLIT_TYPE);
 void free_zone_area(struct super_block *sb, struct dzt_entry_info *dzt_ei);
+int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *ei);
+int dafs_check_zones(struct super_block *sb, struct dzt_entry_info *dzt_ei);
 int check_thread_func(void *data);
 int start_cz_thread(struct super_block *sb);
 int stop_cz_thread(struct super_block *sb);
