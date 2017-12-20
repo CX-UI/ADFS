@@ -2467,6 +2467,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
 {
     struct inode *inode = file_inode(file);
     struct super_block *sb = inode->i_sb;
+    struct nova_sb_info *sbi = NOVA_SB(sb);
     struct nova_inode *pidir;
     struct nova_inode *child_pi;
     struct dentry *dentry = file->f_path.dentry; 
@@ -2474,13 +2475,14 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     struct dafs_dentry *f_de = NULL;
     struct dafs_dentry *prev_de = NULL;
     struct nova_inode  *prev_child_pi = NULL;
-    struct dzt_entry_info *ei;
+    struct dzt_entry_info *ei, *sei;
     struct dafs_zone_entry *ze;
     struct dir_info *dir;
     struct file_p *tem_sf;
     struct list_head *this, *head;
+    struct dzt_manager *dzt_m;
     //unsigned short de_len;
-    u64 pi_addr, hashname;
+    u64 pi_addr, hashname, ei_hn;
     u32 f_pos;
     u64 pos;
     ino_t ino;
@@ -2523,8 +2525,25 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     hashname = BKDRHash(f_de->ful_name.f_name, le64_to_cpu(f_de->fname_len));
     nova_dbg("%s:find dir name is %s",__func__,f_de->ful_name.f_name);
     dir = radix_tree_lookup(&ei->dir_tree, hashname);
-    if(!dir)
+    if(f_de==ROOT_DIRECTORY){
+        ei_hn = f_de->dzt_hn;
+        dzt_m = sbi->dzt_m_info;
+        sei = radix_tree_lookup(&dzt_m->dzt_root, ei_hn);
+        nova_dbg("%s:new root zone addr is %llu",__func__, sei->dz_addr);
+        /*update ze*/
+        ze = (struct dafs_zone_entry *)nova_get_block(sb, sei->dz_addr);
+    }/*
+    if(!dir){
         nova_dbg("%s:not find dir",__func__);
+        if(f_de==ROOT_DIRECTORY){
+            ei_hn = f_de->dzt_hn;
+            dzt_m = sbi->dzt_m_info;
+            sei = radix_tree_lookup(&dzt_m->dzt_root, ei_hn);
+            nova_dbg("%s:new root zone addr is %llu",__func__, sei->dz_addr);
+            //update ze
+            ze = (struct dafs_zone_entry *)nova_get_block(sb, sei->dz_addr);
+        }
+    }*/
 
     //sub_num = le64_to_cpu(f_de->sub_num);
 
@@ -2538,6 +2557,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     nova_dbg("%s:dir_subfile num is%d, zone addr is %llu",__func__,dir->sub_num, ei->dz_addr);
     list_for_each(this, head){
         tem_sf = list_entry(this, struct file_p, list);
+        BUG_ON(tem_sf==NULL);
         f_pos = tem_sf->pos;
         if(!f_pos){
             ctx->pos = READDIR_END;

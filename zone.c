@@ -1489,7 +1489,7 @@ int migrate_zone_entry(struct super_block *sb, u32 ch_pos, struct dzt_entry_info
     struct dzt_entry_info *old_ei;
     struct dir_info *dir_i;
     struct list_head *this, *head, *next; 
-    struct file_p *o_sf;
+    struct file_p *o_sf, *new_sf;
     u64 old_namelen;
     u32 ch_no, start_pos, eno;
     //u32 bitpos = 0;
@@ -1527,21 +1527,31 @@ int migrate_zone_entry(struct super_block *sb, u32 ch_pos, struct dzt_entry_info
     old_ei = DAFS_GET_EI(sb, eno);
 
     /*move sub files*/
-    dir_i = radix_tree_delete(&old_ei->dir_tree, hashname);
+    dir_i = radix_tree_lookup(&old_ei->dir_tree, hashname);
+    dir_i->r_f = 0;
+    dir_i->sub_s = 0;
+    dir_i->prio = 0;
     head = &dir_i->sub_file;
     list_for_each_safe(this, next, head) {
         o_sf = list_entry(this, struct file_p, list);
         ch_no = o_sf->pos;
+        new_sf = kzalloc(sizeof(struct file_p),GFP_ATOMIC);
+        new_sf->pos = start_pos;
+        list_add_tail(&new_sf->list, &dir_i->sub_file);
         cpy_new_zentry(sb, dzt_nei, old_ei, old_namelen, ch_pos, dir_i, ch_no, &start_pos, 1);
         //ch_pos ++;
         nova_dbg("%s next new id %d",__func__,start_pos);
         list_del(&o_sf->list);
+        //list_add_tail(&new_sf->list, &dir_i->sub_file);
         dir_i->sub_num--;
         kfree(o_sf);
+        if(!dir_i->sub_num)
+            goto END;
     }
    
-    kfree(dir_i);
+    //kfree(dir_i);
     //kfree(ch_no);
+END:
     nova_dbg("%s end",__func__);
     return ret;
 }
