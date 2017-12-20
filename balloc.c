@@ -624,7 +624,7 @@ retry:
     } else if (atype == ZONE){
         free_list->alloc_zone_count++;
         free_list->alloc_zone_pages += ret_blocks;
-    } else if (atype == HASH_TABLE){
+    } else if (atype == HTABLE){
         free_list->alloc_htable_count++;
         free_list->alloc_htable_pages += ret_blocks;
     }

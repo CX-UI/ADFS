@@ -663,7 +663,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
                 ei = dzt_eis[i];
                 ei_index = ei->hash_name;
                 ret = zone_set_statemap(sb, ei);
-                BUG_ON(ret==0);
+                BUG_ON(ret!=0);
                 if(ret)
                     return -EINVAL;
                 ret = dafs_check_zones(sb, ei);

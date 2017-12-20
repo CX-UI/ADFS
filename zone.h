@@ -94,7 +94,7 @@ enum dir_level {
     LEVEL_3,
     LEVEL_4
 };
-#define NR_DIR_FILES 100
+#define NR_DIR_FILES 50
 #define NR_ZONE_FILES 500
 
 

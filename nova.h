@@ -260,7 +260,7 @@ enum alloc_type {
 	LOG = 1,
 	DATA,
     ZONE,
-    HASH_TABLE,
+    HTABLE,
 };
 
 #define	MMAP_WRITE_BIT	0x20UL	// mmaped for write

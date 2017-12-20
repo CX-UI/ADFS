@@ -160,12 +160,13 @@ int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname
     u32 num = ei->dzt_eno;
     u32 de_pos;
     u64 phlen, hashname;
-    char *path, *name;
+    char *path, *name, *end="";
 
+    nova_dbg("%s start",__func__);
     phlen = ei->root_len;
     path = kzalloc((sizeof(char )*phlen), GFP_KERNEL);
     name = kzalloc((sizeof(char)*phlen), GFP_KERNEL);
-    while(num!=1){
+    while(num!=0){
         ze = (struct dafs_zone_entry *)nova_get_block(sb, ei->pdz_addr);
         de_pos = ei->rden_pos;
         de = &ze->dentry[de_pos];
@@ -177,9 +178,11 @@ int get_zone_path(struct super_block *sb, struct dzt_entry_info *ei, char *pname
         ei = radix_tree_lookup(&dzt_m->dzt_root, hashname);
     }
     strcat(path, dename);
-    memcpy(pname, path, strlen(path)+1);
+    memcpy(pname, path, strlen(path));
+    memcpy(pname+strlen(path),end,1);
     kfree(path);
     kfree(name);
+    nova_dbg("%s end get name %s",__func__,pname);
     return 0;
 
 }
@@ -593,7 +596,7 @@ void get_de_name(struct dafs_dentry *de, struct dafs_zone_entry *ze, char *name,
             if(de->file_type==NORMAL_FILE){
                 /*get name*/
                 tem = kzalloc(sizeof(char)*nlen, GFP_ATOMIC);
-                if(de->ext_flag==0){
+                if(de->ext_flag==1){
                     get_ext_name(de->next, tem);
                 } else {
                     memcpy(tem, de->name, nlen);
@@ -603,7 +606,7 @@ void get_de_name(struct dafs_dentry *de, struct dafs_zone_entry *ze, char *name,
                 /*get par fulname*/
                 par_pos = le32_to_cpu(de->par_pos);
                 par_de = &ze->dentry[par_pos];
-                get_de_name(de, ze, name, 1);
+                get_de_name(par_de, ze, name, 1);
 
                 strcat(name, "/");
                 strcat(name, tem);

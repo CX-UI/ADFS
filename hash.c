@@ -35,9 +35,9 @@ int  get_hash_table(struct super_block *sb, u8 hlevel,  u64 *h_addr)
             btype = HTABLE_LE_SIZE;
             break;
     }
-    allocated = nova_new_blocks(sb, &blocknr, 1, btype, 1, HASH_TABLE);
+    allocated = nova_new_blocks(sb, &blocknr, 1, btype, 1, HTABLE);
 
-    nova_dbg_verbose("%s: allocate zone @ 0x%lx\n", __func__,
+    nova_dbg("%s: allocate zone @ 0x%lx\n", __func__,
 							blocknr);
     if(allocated != 1 || blocknr == 0)
         return -ENOMEM;
@@ -342,6 +342,7 @@ int lookup_ht_le(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
         valid_flag = ht->hash_entry[h_pos].invalid;
         if(!valid_flag){
             h_pos++;
+            continue;
         }
         /*found valid pos*/
         h_name = le64_to_cpu(he->hd_name);
@@ -381,6 +382,7 @@ int lookup_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
         if(!valid_flag){
             i++;
             h_pos++;
+            continue;
         }
         /*found valid pos*/
         h_name = le64_to_cpu(he->hd_name);
@@ -428,6 +430,7 @@ int lookup_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
         if(!valid_flag){
             i++;
             h_pos++;
+            continue;
         }
         /*found valid pos*/
         h_name = le64_to_cpu(he->hd_name);
@@ -479,6 +482,7 @@ int lookup_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
         if(!valid_flag){
             i++;
             h_pos++;
+            continue;
         }
         /*found valid pos*/
         h_name = le64_to_cpu(he->hd_name);
@@ -519,6 +523,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     nova_dbg("dafs start to lookup in hashtable");
+    BUG_ON(block==NULL);
     ht = (struct hash_table *)nova_get_block(sb, block);  
 
     buckets = 4095;
@@ -532,16 +537,17 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         if(!valid_flag){
             i++;
             h_pos++;
-        }
-        /*found valid pos*/
-        h_name = le64_to_cpu(he->hd_name);
-        if(h_name==hashname){
-            *pos = le32_to_cpu(he->hd_pos);
-            ret = 1;
-            goto out;
-        } else {
-            i++;
-            h_pos++;
+        }else{
+            /*found valid pos*/
+            h_name = le64_to_cpu(he->hd_name);
+            if(h_name==hashname){
+                *pos = le32_to_cpu(he->hd_pos);
+                ret = 1;
+                goto out;
+            } else {
+                i++;
+                h_pos++;
+            }
         }
     }
 
@@ -779,7 +785,8 @@ int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         hlevel++;
         ret = make_invalid_ht_ls(sb, tail, hashname, hlevel);
     }
-out: 
+out:
+    nova_dbg("%s end",__func__);
     return ret;
 }
 
