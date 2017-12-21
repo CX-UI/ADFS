@@ -135,6 +135,7 @@ int record_pos_htable_lf(struct super_block *sb, u64 block, u64 hashname,\
 
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
+        nova_dbg("%s %d extend",__func__, hlevel);
         level ++;
         get_hash_table(sb, hlevel, &tail);
         ht->hash_tail = cpu_to_le64(tail);
@@ -162,6 +163,7 @@ int record_pos_htable_lt(struct super_block *sb, u64 block, u64 hashname,\
          u32 pos, u8 hlevel)
 {
     struct hash_table_lt *ht;
+    struct hash_table_lf *htf;
     struct hash_entry *he;
     u32 h_pos;
     u64 tail;
@@ -189,8 +191,11 @@ int record_pos_htable_lt(struct super_block *sb, u64 block, u64 hashname,\
 
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
+        nova_dbg("%s %d extend",__func__, hlevel);
         level ++;
         get_hash_table(sb, hlevel, &tail);
+        htf = (struct hash_table_lf *)nova_get_block(sb, tail);
+        htf->hash_tail = 0;
         ht->hash_tail = cpu_to_le64(tail);
         record_pos_htable_lf(sb, tail, hashname, pos, level);
         goto out;
@@ -217,6 +222,7 @@ int record_pos_htable_ls(struct super_block *sb, u64 block, u64 hashname,\
         u32 pos, u8 hlevel)
 {
     struct hash_table_ls *ht;
+    struct hash_table_lt *htt;
     struct hash_entry *he;
     u32 h_pos;
     u64 tail;
@@ -244,8 +250,11 @@ int record_pos_htable_ls(struct super_block *sb, u64 block, u64 hashname,\
 
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
+        nova_dbg("%s %d extend",__func__, hlevel);
         level ++;
         get_hash_table(sb, hlevel, &tail);
+        htt = (struct hash_table_lt *)nova_get_block(sb, tail);
+        htt->hash_tail = 0;
         ht->hash_tail = cpu_to_le64(tail);
         record_pos_htable_lt(sb, tail, hashname, pos, level);
         goto out;
@@ -271,6 +280,7 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
          u32 pos, u8 hlevel)
 {
     struct hash_table *ht;
+    struct hash_table_ls *hts;
     //struct ht_ptr *ht_p;
     struct hash_entry *he;
     u32 h_pos;
@@ -299,8 +309,11 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
 
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
+        nova_dbg("%s %d extend",__func__, hlevel);
         hlevel ++;
         get_hash_table(sb, hlevel, &tail);
+        hts = (struct hash_table_ls *)nova_get_block(sb, tail);
+        hts->hash_tail = 0;
         ht->hash_tail = cpu_to_le64(tail);
         record_pos_htable_ls(sb, tail, hashname,  pos, hlevel);
         goto out;
@@ -800,28 +813,38 @@ int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
     u64 tail, tem;
     unsigned short btype;
 
+    nova_dbg("%s start",__func__);
     tail = ht_addr;
     while(tail){
+        nova_dbg("%s hash table addr %llu",__func__,tail);
         if(hlevel==1){
             ht = (struct hash_table *)nova_get_block(sb, tail);
             tem = le64_to_cpu(ht->hash_tail);
             btype = HTABLE_DEF_SIZE;
+            hlevel = 2;
             dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT,1);
+            BUG_ON(tem == 0);
         } else if(hlevel ==2) {
             hts = (struct hash_table_ls *)nova_get_block(sb, tail);
             tem = le64_to_cpu(hts->hash_tail);
             btype = HTABLE_LS_SIZE;
+            hlevel = 3;
             dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+            BUG_ON(tem == 0);
         } else if(hlevel == 3) {
             htt = (struct hash_table_lt *)nova_get_block(sb, tail);
             tem = le64_to_cpu(htt->hash_tail);
             btype = HTABLE_LT_SIZE;
+            hlevel = 4;
             dafs_free_htable_blocks(sb, btype,tail>>PAGE_SHIFT, 1);
+            BUG_ON(tem == 0);
         } else if(hlevel == 4) {
             htf = (struct hash_table_lf *)nova_get_block(sb, tail);
             tem = le64_to_cpu(htf->hash_tail);
             btype = HTABLE_LF_SIZE;
+            hlevel = 5;
             dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+            BUG_ON(tem == 0);
         } else {
             hte = (struct hash_table_le *)nova_get_block(sb, tail);
             tem = 0;

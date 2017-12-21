@@ -462,7 +462,7 @@ int dafs_free_htable_blocks(struct super_block *sb, unsigned short btype,\
     int ret;
     timing_t free_time;
 
-	nova_dbgv("hash table : free %d log block from %lu to %lu\n",
+	nova_dbg("hash table : free %d log block from %lu to %lu\n",
 			 num, blocknr, blocknr + num - 1);
 
 	if (blocknr == 0) {

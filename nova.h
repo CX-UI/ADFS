@@ -811,6 +811,14 @@ nova_get_numblocks(unsigned short btype)
 
 	if (btype == NOVA_BLOCK_TYPE_4K) {
 		num_blocks = 1;
+    } else if (btype == NOVA_BLOCK_TYPE_32K){
+        num_blocks = 8;
+    } else if (btype == NOVA_BLOCK_TYPE_64K) {
+        num_blocks = 16;
+    } else if (btype == NOVA_BLOCK_TYPE_128K) {
+        num_blocks = 32;
+    } else if (btype == NOVA_BLOCK_TYPE_256K) {
+        num_blocks = 64;
     } else if (btype == DAFS_BLOCK_TYPE_512K) {
         num_blocks = 128;
     } else if (btype == NOVA_BLOCK_TYPE_2M) {
