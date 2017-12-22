@@ -2566,7 +2566,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     struct list_head *this, *head;
     struct dzt_manager *dzt_m;
     //unsigned short de_len;
-    u64 pi_addr, hashname, ei_hn;
+    u64 pi_addr, hashname, ei_hn, dir_hn;
     u32 f_pos;
     u64 pos;
     ino_t ino;
@@ -2617,6 +2617,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
         nova_dbg("%s:new root zone addr is %llu",__func__, sei->dz_addr);
         /*update ze*/
         ze = (struct dafs_zone_entry *)nova_get_block(sb, sei->dz_addr);
+        ei = sei;
     }/*
     if(!dir){
         nova_dbg("%s:not find dir",__func__);
@@ -2658,6 +2659,10 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
             return -EINVAL;
         }
 
+        if(de->file_type == NORMAL_DIRECTORY){
+            dir_hn = le64_to_cpu(de->hname);
+            update_read_hot(ei, dir_hn);
+        }
 		nova_dbg("pos %lu, type %d, ino %llu, "
 			"name %s, namelen %u, rec len %u\n", f_pos,
 			de->entry_type, le64_to_cpu(de->ino),
