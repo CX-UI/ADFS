@@ -436,7 +436,7 @@ int dafs_free_zone_blocks(struct super_block *sb, struct dzt_entry_info *dzt_ei,
     int ret;
     timing_t free_time;
 
-	nova_dbgv("zone %d: free %d log block from %lu to %lu\n",
+	nova_dbg("zone %d: free %d log block from %lu to %lu\n",
 			dzt_ei->dzt_eno, num, blocknr, blocknr + num - 1);
 
 	if (blocknr == 0) {

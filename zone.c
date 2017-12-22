@@ -2663,7 +2663,8 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei)
 
     tail = le64_to_cpu(cur_rdei->ht_head);
     free_htable(sb, tail, 1);
-    dafs_free_zone_blocks(sb, cur_rdei, cur_rdei->dz_addr >> PAGE_SHIFT, 1);
+    dafs_free_zone_blocks(sb, cur_rdei, (cur_rdei->dz_addr) >> PAGE_SHIFT, 1);
+    BUG_ON(cur_rdei==NULL);
     kfree(cur_rdei);
     
     nova_dbg("%s end old root de name is %s",__func__,rname);

@@ -817,42 +817,55 @@ int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
     tail = ht_addr;
     while(tail){
         nova_dbg("%s hash table addr %llu",__func__,tail);
-        if(hlevel==1){
-            ht = (struct hash_table *)nova_get_block(sb, tail);
-            tem = le64_to_cpu(ht->hash_tail);
-            btype = HTABLE_DEF_SIZE;
-            hlevel = 2;
-            dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT,1);
-            BUG_ON(tem == 0);
-        } else if(hlevel ==2) {
-            hts = (struct hash_table_ls *)nova_get_block(sb, tail);
-            tem = le64_to_cpu(hts->hash_tail);
-            btype = HTABLE_LS_SIZE;
-            hlevel = 3;
-            dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
-            BUG_ON(tem == 0);
-        } else if(hlevel == 3) {
-            htt = (struct hash_table_lt *)nova_get_block(sb, tail);
-            tem = le64_to_cpu(htt->hash_tail);
-            btype = HTABLE_LT_SIZE;
-            hlevel = 4;
-            dafs_free_htable_blocks(sb, btype,tail>>PAGE_SHIFT, 1);
-            BUG_ON(tem == 0);
-        } else if(hlevel == 4) {
-            htf = (struct hash_table_lf *)nova_get_block(sb, tail);
-            tem = le64_to_cpu(htf->hash_tail);
-            btype = HTABLE_LF_SIZE;
-            hlevel = 5;
-            dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
-            BUG_ON(tem == 0);
-        } else {
-            hte = (struct hash_table_le *)nova_get_block(sb, tail);
-            tem = 0;
-            btype = HTABLE_LE_SIZE;
-            dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+        switch (hlevel) {
+            case 1:
+                ht = (struct hash_table *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(ht->hash_tail);
+                btype = HTABLE_DEF_SIZE;
+                hlevel = 2;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT,1);
+                BUG_ON(tem == 0);
+                tail = tem;
+                continue;
+            case 2:
+                hts = (struct hash_table_ls *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(hts->hash_tail);
+                btype = HTABLE_LS_SIZE;
+                hlevel = 3;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+                BUG_ON(tem == 0);
+                tail = tem;
+                continue;
+            case 3:
+                htt = (struct hash_table_lt *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(htt->hash_tail);
+                btype = HTABLE_LT_SIZE;
+                hlevel = 4;
+                dafs_free_htable_blocks(sb, btype,tail>>PAGE_SHIFT, 1);
+                BUG_ON(tem == 0);
+                tail = tem;
+                continue;
+            case 4:
+                htf = (struct hash_table_lf *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(htf->hash_tail);
+                btype = HTABLE_LF_SIZE;
+                hlevel = 5;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+                BUG_ON(tem == 0);
+                tail = tem;
+                continue;
+            case 5:
+                hte = (struct hash_table_le *)nova_get_block(sb, tail);
+                tem = 0;
+                btype = HTABLE_LE_SIZE;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+                tail = tem;
+                continue;
+            default:
+                nova_dbg("%s wrong free",__func__);
         }
-        tail = tem;
     }
 
+    nova_dbg("%s end",__func__);
     return 0;
 }
