@@ -89,6 +89,7 @@ static const char *nova_get_link(struct dentry *dentry, struct inode *inode, voi
 	struct nova_inode *pi = nova_get_inode(sb, inode);
 	char *blockp;
 
+    nova_dbg("%s start",__func__);
 	entry = (struct nova_file_write_entry *)nova_get_block(sb,
 							pi->log_head);
 	blockp = (char *)nova_get_block(sb, BLOCK_OFF(entry->block));

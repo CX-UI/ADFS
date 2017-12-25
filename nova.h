@@ -568,10 +568,10 @@ struct ptr_pair *nova_get_journal_pointers(struct super_block *sb, int cpu)
 {
 	struct nova_sb_info *sbi = NOVA_SB(sb);
     
-    nova_dbg("dafs start get journal blk");
+    //nova_dbg("dafs start get journal blk");
 	if (cpu >= sbi->cpus)
 		return NULL;
-    nova_dbg("dafs_get journal blk");
+    //nova_dbg("dafs_get journal blk");
 	return (struct ptr_pair *)((char *)nova_get_block(sb,
 		NOVA_DEF_BLOCK_SIZE_4K*2)	+ cpu * CACHELINE_SIZE);
 }

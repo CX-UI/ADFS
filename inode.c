@@ -935,6 +935,7 @@ void nova_evict_inode(struct inode *inode)
 	int freed = 0;
 	int destroy = 0;
 
+    nova_dbg("%s start",__func__);
 	if (!sih) {
 		nova_err(sb, "%s: ino %lu sih is NULL!\n",
 				__func__, inode->i_ino);
@@ -958,8 +959,8 @@ void nova_evict_inode(struct inode *inode)
 						last_blocknr, true, true);
 			break;
 		case S_IFDIR:
-			nova_dbgv("%s: dir ino %lu\n", __func__, inode->i_ino);
-            dentry = d_find_alias(inode);
+			nova_dbg("%s: dir ino %lu\n", __func__, inode->i_ino);
+            //dentry = d_find_alias(inode);
             //dafs_remove_dentry(dentry);
 			//nova_delete_dir_tree(sb, sih);
 			break;
@@ -1023,14 +1024,14 @@ u64 nova_new_nova_inode(struct super_block *sb, u64 *pi_addr)
 	mutex_lock(&inode_map->inode_table_mutex);
 	ret = nova_alloc_unused_inode(sb, map_id, &free_ino);
 	if (ret) {
-		nova_dbg("%s: alloc inode number failed %d\n", __func__, ret);
+		//nova_dbg("%s: alloc inode number failed %d\n", __func__, ret);
 		mutex_unlock(&inode_map->inode_table_mutex);
 		return 0;
 	}
 
 	ret = nova_get_inode_address(sb, free_ino, pi_addr, 1);
 	if (ret) {
-		nova_dbg("%s: get inode address failed %d\n", __func__, ret);
+		//nova_dbg("%s: get inode address failed %d\n", __func__, ret);
 		mutex_unlock(&inode_map->inode_table_mutex);
 		return 0;
 	}
@@ -1039,7 +1040,7 @@ u64 nova_new_nova_inode(struct super_block *sb, u64 *pi_addr)
 
 	ino = free_ino;
 
-    nova_dbg("ino is %llu",ino);
+    //nova_dbg("ino is %llu",ino);
 	NOVA_END_TIMING(new_nova_inode_t, new_inode_time);
 	return ino;
 }
@@ -1084,7 +1085,7 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 	}
 
 	pi = (struct nova_inode *)nova_get_block(sb, pi_addr);
-	nova_dbg("%s: allocating inode %llu @ 0x%llx\n",
+	nova_dbg_verbose("%s: allocating inode %llu @ 0x%llx\n",
 					__func__, ino, pi_addr);
 
 	/* chosen inode is in ino */
@@ -1092,24 +1093,24 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 
 	switch (type) {
 		case TYPE_CREATE:
-            nova_dbg("dafs make TYPE_CREATE");
+            //nova_dbg("dafs make TYPE_CREATE");
 			inode->i_op = &nova_file_inode_operations;
 			inode->i_mapping->a_ops = &nova_aops_dax;
 			inode->i_fop = &nova_dax_file_operations;
 			break;
 		case TYPE_MKNOD:
-            nova_dbg("dafs make TYPE_MKNOD");
+            //nova_dbg("dafs make TYPE_MKNOD");
 			init_special_inode(inode, mode, rdev);
 			//inode->i_op = &nova_special_inode_operations;
 			inode->i_op = &dafs_special_inode_operations;
 			break;
 		case TYPE_SYMLINK:
-            nova_dbg("dafs make TYPE_SYMLINK");
+            //nova_dbg("dafs make TYPE_SYMLINK");
 			inode->i_op = &nova_symlink_inode_operations;
 			inode->i_mapping->a_ops = &nova_aops_dax;
 			break;
 		case TYPE_MKDIR:
-            nova_dbg("dafs make TYPE_MKDIR");
+            //nova_dbg("dafs make TYPE_MKDIR");
 			//inode->i_op = &nova_dir_inode_operations;
 			//inode->i_fop = &nova_dir_operations;
 			inode->i_op = &dafs_dir_inode_operations;
@@ -1145,7 +1146,7 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 	nova_set_inode_flags(inode, pi, le32_to_cpu(pi->i_flags));
 
 	if (insert_inode_locked(inode) < 0) {
-        nova_dbg("dafs make new inode fail ino");
+        //nova_dbg("dafs make new inode fail ino");
 		nova_err(sb, "nova_new_inode failed ino %lx\n", inode->i_ino);
 		errval = -EINVAL;
 		goto fail1;
@@ -2132,22 +2133,22 @@ u64 nova_get_append_head(struct super_block *sb, struct nova_inode *pi,
 {
 	u64 curr_p;
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
 	if (tail)
 		curr_p = tail;
 	else
 		curr_p = pi->log_tail;
 
-    nova_dbg("%s curr_p is %llu", __func__, curr_p);
+    //nova_dbg("%s curr_p is %llu", __func__, curr_p);
 	if (curr_p == 0 || (is_last_entry(curr_p, size) &&
 				next_log_page(sb, curr_p) == 0)) {
 		if (is_last_entry(curr_p, size))
 			nova_set_next_page_flag(sb, curr_p);
 
 		if (sih) {
-            nova_dbg("%s curr_p is %llu",__func__, curr_p);
+            //nova_dbg("%s curr_p is %llu",__func__, curr_p);
 			curr_p = nova_extend_inode_log(sb, pi, sih, curr_p);
-            nova_dbg("%s curr_p is %llu", __func__, curr_p);
+            //nova_dbg("%s curr_p is %llu", __func__, curr_p);
 		} else {
 			curr_p = nova_append_one_log_page(sb, pi, curr_p);
 			/* For thorough GC */
@@ -2163,7 +2164,7 @@ u64 nova_get_append_head(struct super_block *sb, struct nova_inode *pi,
 		curr_p = next_log_page(sb, curr_p);
 	}
 
-    nova_dbg("%s end",__func__);
+    //nova_dbg("%s end",__func__);
 	return  curr_p;
 }
 

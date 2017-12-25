@@ -19,7 +19,7 @@ static void dafs_lite_transaction_for_new_inode(struct super_block *sb,
 	u64 journal_tail;
 	timing_t trans_time;
 
-    nova_dbg("%s: start",__func__);
+    //nova_dbg("%s: start",__func__);
 	NOVA_START_TIMING(create_trans_t, trans_time);
 
 	/* Commit a lite transaction */
@@ -45,7 +45,7 @@ static void dafs_lite_transaction_for_new_inode(struct super_block *sb,
 	nova_commit_lite_transaction(sb, journal_tail, cpu);
 	spin_unlock(&sbi->journal_locks[cpu]);
 	NOVA_END_TIMING(create_trans_t, trans_time);
-    nova_dbg("%s end", __func__);
+    //nova_dbg("%s end", __func__);
 }
 
 static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, bool excl)
@@ -181,10 +181,10 @@ int dafs_append_link_change_entry(struct super_block *sb,
 	size_t size = sizeof(struct nova_link_change_entry);
 	timing_t append_time;
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
 	NOVA_START_TIMING(append_link_change_t, append_time);
-	nova_dbg("%s: inode %lu attr change\n",
-				__func__, inode->i_ino);
+	//nova_dbg("%s: inode %lu attr change\n",
+	//			__func__, inode->i_ino);
 
 	curr_p = nova_get_append_head(sb, pi, sih, tail, size, &extended);
 	//if (curr_p == 0)
@@ -202,7 +202,7 @@ int dafs_append_link_change_entry(struct super_block *sb,
 	sih->last_link_change = curr_p;
 
 	NOVA_END_TIMING(append_link_change_t, append_time);
-    nova_dbg("%s end",__func__);
+    //nova_dbg("%s end",__func__);
 	return 0;
 }
 
@@ -354,6 +354,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
     timing_t unlink_time;
 
     nova_dbg("%s start", __func__);
+    BUG();
 	NOVA_START_TIMING(unlink_t, unlink_time);
 
 	pidir = nova_get_inode(sb, dir);
@@ -410,7 +411,8 @@ static int dafs_symlink(struct inode *dir, struct dentry *dentry, const char *sy
     u64 tail = 0;
     u64 ino;
     timing_t symlink_time;
-   
+  
+    BUG();
     nova_dbg("%s start",__func__);
 	NOVA_START_TIMING(symlink_t, symlink_time);
 	if (len + 1 > sb->s_blocksize)
@@ -424,9 +426,9 @@ static int dafs_symlink(struct inode *dir, struct dentry *dentry, const char *sy
 	if (ino == 0)
 		goto out_fail1;
 
-	nova_dbgv("%s: name %s, symname %s\n", __func__,
+	nova_dbg("%s: name %s, symname %s\n", __func__,
 				dentry->d_name.name, symname);
-	nova_dbgv("%s: inode %llu, dir %lu\n", __func__, ino, dir->i_ino);
+	nova_dbg("%s: inode %llu, dir %lu\n", __func__, ino, dir->i_ino);
     err = dafs_add_dentry(dentry, ino ,0, 0);
 
 	if (err)
@@ -504,9 +506,9 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	if (ino == 0)
 		goto out_err;
 
-	nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
-	nova_dbg("%s: inode %llu, dir %lu, link %d\n", __func__,
-				ino, dir->i_ino, dir->i_nlink);
+	//nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
+	//nova_dbg("%s: inode %llu, dir %lu, link %d\n", __func__,
+				//ino, dir->i_ino, dir->i_nlink);
 
     /*.文件指向目录项*/
     err = dafs_add_dentry(dentry, ino, 1, 1);
@@ -521,7 +523,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 					S_IFDIR | mode, sb->s_blocksize,
 					0, &dentry->d_name);
 	if (IS_ERR(inode)) {
-        nova_dbg("dafs fail to make inode");
+        //nova_dbg("dafs fail to make inode");
 		err = PTR_ERR(inode);
 		goto out_err;
 	}
@@ -543,9 +545,9 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	unlock_new_inode(inode);
 
 	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
-	cpu = smp_processor_id();
-	pair = nova_get_journal_pointers(sb, cpu);
-    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
+	//cpu = smp_processor_id();
+	//pair = nova_get_journal_pointers(sb, cpu);
+    /*nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));*/
     /*
     nova_dbg("%s:start to debug statemap", __func__);
         do{
@@ -564,7 +566,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
         }while(nr==FREE_BATCH);*/
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
-    nova_dbg("%s: dafs end mkdir",__func__);
+    //nova_dbg("%s: dafs end mkdir",__func__);
 	return err;
 
 out_err:
@@ -607,7 +609,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	if (!pidir)
 		return -EINVAL;
 
-    nova_dbg("%s:dafs start to rmdir",__func__);
+    //nova_dbg("%s:dafs start to rmdir",__func__);
     /*not sure to add read hot degree*/
     if(dafs_inode_by_name(dir, dentry, &de) == 0)
         return -ENOENT;
@@ -654,7 +656,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	NOVA_END_TIMING(rmdir_t, rmdir_time);
 
     
-    nova_dbg("%s:start to debug statemap", __func__);
+    /*nova_dbg("%s:start to debug statemap", __func__);
         do{
             nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, ei_index, FREE_BATCH);
             BUG_ON(nr==0);
@@ -671,8 +673,8 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
                     return -EINVAL;
             }
             ei_index ++;
-        }while(nr==FREE_BATCH);
-    nova_dbg("%s:dafs end rmdir",__func__);
+        }while(nr==FREE_BATCH);*/
+    //nova_dbg("%s:dafs end rmdir",__func__);
 	return err;
 
 end_rmdir:
@@ -695,6 +697,7 @@ static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, de
     
 	NOVA_START_TIMING(mknod_t, mknod_time);
 
+    nova_dbg("%s start",__func__);
 	pidir = nova_get_inode(sb, dir);
 	if (!pidir)
 		goto out_err;

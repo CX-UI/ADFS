@@ -52,7 +52,7 @@ void make_zone_ptr(struct zone_ptr **z_p, struct dafs_zone_entry *z_e)
     //struct zone_ptr *p;
     struct zone_ptr *def_zp = (struct zone_ptr *)kzalloc(sizeof(struct zone_ptr), GFP_KERNEL);
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
     def_zp->statemap = z_e->zone_statemap;
     def_zp->zone_max = NR_DENTRY_IN_ZONE * 2;
     def_zp->z_entry = z_e->dentry;
