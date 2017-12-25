@@ -238,13 +238,13 @@ static inline char* get_dentry_path(const struct dentry *dentry, int ISREAD)
         memcpy(ph+tlen,end,1);
         strcat(ph,"/");
     }
-    if(strcmp(dentry->d_name.name,"/")){
+    if(strcmp(dentry->d_name.name,"/") && !ISREAD){
         //strcat(ph,"/");
         //nova_dbg("%s:dafs append file name:%s",__func__,dentry->d_name.name);
         strcat(ph, dentry->d_name.name);
     }
 
-    if(!strcmp(ph+strlen(ph)-1,"/")){
+    if(strcmp(dentry->d_name.name,"/") && ISREAD){
         nova_dbg("%s: dafs remove / ",__func__);
         tlen = strlen(ph)-1;
         if(tlen)
@@ -2537,7 +2537,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     u8 type;
     int ret, isroot=0i, i=0;
     char *phname, *ph, *phn;
-    char *ppath, *mntchar="/mnt/ramdisk", *tem, *end="";
+    char *ppath, *mntchar="/mnt/ramdisk", *tem, *end="", *buf;
     u64 phlen, flen, mlen, ph_hash, ht_head, tlen;
     u32 de_pos;
     timing_t readdir_time;
@@ -2560,7 +2560,8 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     } 
     /*debug*/
     ppath = kzalloc(sizeof(char)*LARGE_NAME_LEN,GFP_ATOMIC);
-    ppath = d_path(&file->f_path,ppath,LARGE_NAME_LEN);
+    buf = kzalloc(sizeof(char)*SMALL_NAME_LEN,GFP_ATOMIC);
+    ppath = d_path(&file->f_path,buf,LARGE_NAME_LEN);
     nova_dbg("%s file get path innitial is %s",__func__,ppath);
     phlen = strlen(ppath);
     phn = kzalloc(sizeof(char)*strlen(ppath), GFP_ATOMIC);
@@ -2627,10 +2628,11 @@ REPATH:
     ze = (struct dafs_zone_entry *)nova_get_block(sb, ei->dz_addr);
 	f_de = dafs_find_direntry(sb, dentry,1,1);
     */
-    hashname = BKDRHash(f_de->ful_name.f_name, le64_to_cpu(f_de->fname_len));
-    nova_dbg("%s:find dir name is %s, hashname is %llu",__func__,f_de->ful_name.f_name, hashname);
+    //get_de_name(f_de, ze, phname, 1);
+    //hashname = BKDRHash(phname, strlen(phname));
+    hashname = ph_hash;
     dir = radix_tree_lookup(&ei->dir_tree, hashname);
-    if(f_de->file_type==ROOT_DIRECTORY){
+    if(f_de->file_type==ROOT_DIRECTORY && ino!=NOVA_ROOT_INO){
         isroot = 1;
         ei_hn = f_de->dzt_hn;
         dzt_m = sbi->dzt_m_info;
@@ -2668,7 +2670,7 @@ REPATH:
         f_pos = tem_sf->pos;
         if(!f_pos && !isroot){
             ctx->pos = READDIR_END;
-            BUG();
+            //BUG();
             goto out;
         }
 
@@ -2677,7 +2679,7 @@ REPATH:
         type = nova_get_entry_type((void *)de);
         if(type != DAFS_DIR_ENTRY){
             nova_dbg ("unknown type\n");
-            BUG();
+            //BUG();
             return -EINVAL;
         }
 
@@ -2698,7 +2700,7 @@ REPATH:
             ret = nova_get_inode_address(sb, ino, &pi_addr, 0);
             //BUG_ON(ret==0);
             if(ret){
-                BUG();
+                //BUG();
 				nova_dbg("%s: get child inode %lu address "
 					"failed %d\n", __func__, ino, ret);
 				ctx->pos = READDIR_END;
@@ -2714,7 +2716,7 @@ REPATH:
 				prev_de->name_len, ino,
 				IF2DT(le16_to_cpu(prev_child_pi->i_mode)))) {
 				//nova_dbg("Here: pos %llu\n", ctx->pos);
-                BUG();
+                //BUG();
 				return 0;
 			}
             prev_de = de;
