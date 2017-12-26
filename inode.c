@@ -960,7 +960,7 @@ void nova_evict_inode(struct inode *inode)
 			break;
 		case S_IFDIR:
 			nova_dbg("%s: dir ino %lu\n", __func__, inode->i_ino);
-            //dentry = d_find_alias(inode);
+            dentry = d_find_alias(inode);
             //dafs_remove_dentry(dentry);
 			//nova_delete_dir_tree(sb, sih);
 			break;
@@ -1716,7 +1716,7 @@ static void free_curr_page(struct super_block *sb, struct nova_inode *pi,
 	struct nova_inode_log_page *curr_page,
 	struct nova_inode_log_page *last_page, u64 curr_head)
 {
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
 	unsigned short btype = pi->i_blk_type;
 
 	nova_set_next_page_address(sb, last_page,

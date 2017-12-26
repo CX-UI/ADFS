@@ -12,7 +12,7 @@ BM_4K	nova.h	/^	BM_4K = 0,$/;"	e	enum:bm_type
 CACHELINE_ALIGN	nova_def.h	190;"	d
 CACHELINE_MASK	nova_def.h	189;"	d
 CACHELINE_SIZE	nova_def.h	188;"	d
-CACHE_ALIGN	nova.h	876;"	d
+CACHE_ALIGN	nova.h	884;"	d
 CHECK_ZONES_SLEEP_TIME	nova.h	139;"	d
 CPUID_MASK	bbuild.c	257;"	d	file:
 Countstats	stats.c	/^u64 Countstats[TIMING_NUM];$/;"	v
@@ -41,7 +41,7 @@ ENTRY_LOC	nova.h	162;"	d
 EXTEND_THRESHOLD	nova.h	211;"	d
 FILE_WRITE	nova.h	/^	FILE_WRITE = 1,$/;"	e	enum:nova_entry_type
 FREE_BATCH	nova.h	136;"	d
-HASH_TABLE	nova.h	/^    HASH_TABLE,$/;"	e	enum:alloc_type
+HTABLE	nova.h	/^    HTABLE,$/;"	e	enum:alloc_type
 HTABLE_DEF_SIZE	nova.h	143;"	d
 HTABLE_LE_SIZE	nova.h	147;"	d
 HTABLE_LF_SIZE	nova.h	146;"	d
@@ -197,7 +197,7 @@ __NOVA_H	nova.h	18;"	d
 __NOVA_JOURNAL_H__	journal.h	23;"	d
 __WPROTECT_H	wprotect.h	22;"	d
 __inherit_dentry	zone.c	/^int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsigned long cur_pos,\\$/;"	f
-__merge_dentry	zone.c	/^int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsigned long cur_pos,\\$/;"	f
+__merge_dentry	zone.c	/^int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cur_pos,\\$/;"	f
 __nova_build_blocknode_map	bbuild.c	/^static int __nova_build_blocknode_map(struct super_block *sb,$/;"	f	file:
 __nova_memlock_range	wprotect.h	/^__nova_memlock_range(void *p, unsigned long len)$/;"	f
 __nova_memunlock_range	wprotect.h	/^__nova_memunlock_range(void *p, unsigned long len)$/;"	f
@@ -213,10 +213,10 @@ _mm_clflushopt	nova_def.h	211;"	d
 _mm_clwb	nova_def.h	213;"	d
 _mm_pcommit	nova_def.h	215;"	d
 add_dentry_t	stats.h	/^	add_dentry_t,$/;"	e	enum:timing_category
-add_dir_info	dafs_dir.c	/^struct dir_info *add_dir_info(struct dzt_entry_info *ei, u64 hash_name)$/;"	f
+add_dir_info	dafs_dir.c	/^struct dir_info *add_dir_info(struct dzt_entry_info *ei, u64 hash_name, u32 pos)$/;"	f
 add_dzt_entry	zone.c	/^struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_info *par_dei, u32 sp_id)$/;"	f
-add_rename_dir	dafs_dir.c	/^int add_rename_dir(struct dentry *o_dentry, struct dentry *n_dentry, struct dafs_dentry *old_de)$/;"	f
-add_rename_zone_dir	dafs_dir.c	/^int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, u64 *new_hn, u64 *root_len)$/;"	f
+add_rename_dir	dafs_dir.c	/^int add_rename_dir(struct dentry *o_dentry, struct dentry *n_dentry, struct dafs_dentry *old_de,$/;"	f
+add_rename_zone_dir	dafs_dir.c	/^int add_rename_zone_dir(struct dentry *dentry, struct dafs_dentry *old_de, struct dzt_entry_info *old_ei,$/;"	f
 addr	bbuild.c	/^	u64 addr[512];$/;"	m	struct:task_ring	file:
 addrs	journal.h	/^	u64 addrs[4];$/;"	m	struct:nova_lite_journal_entry
 alloc_bm	bbuild.c	/^static int alloc_bm(struct super_block *sb, unsigned long initsize)$/;"	f	file:
@@ -348,6 +348,7 @@ dir_frequence	zone.h	/^enum dir_frequence {$/;"	g
 dir_hash	zone.h	/^    u64 dir_hash;$/;"	m	struct:dir_info
 dir_info	zone.h	/^struct dir_info {$/;"	s
 dir_level	zone.h	/^enum dir_level {$/;"	g
+dir_pos	zone.h	/^    u32 dir_pos;$/;"	m	struct:dir_info
 dir_t	zone.h	/^enum dir_t {$/;"	g
 dir_tree	zone.h	/^    struct radix_tree_root dir_tree;   \/*record frequency and dir info *\/$/;"	m	struct:dzt_entry_info	typeref:struct:dzt_entry_info::radix_tree_root
 direct_IO_t	stats.h	/^	direct_IO_t,$/;"	e	enum:timing_category
@@ -425,7 +426,7 @@ fulname	zone.h	/^struct fulname{$/;"	s
 generation	nova.h	/^	__le32	generation;$/;"	m	struct:nova_link_change_entry
 get_cpuid	bbuild.c	/^static int get_cpuid(struct nova_sb_info *sbi, unsigned long blocknr)$/;"	f	file:
 get_de_name	dafs_dir.c	/^void get_de_name(struct dafs_dentry *de, struct dafs_zone_entry *ze, char *name, int name_type)$/;"	f
-get_dentry_path	dafs_dir.c	/^static inline char* get_dentry_path(const struct dentry *dentry, u32 ISREAD)$/;"	f	file:
+get_dentry_path	dafs_dir.c	/^static inline char* get_dentry_path(const struct dentry *dentry, int ISREAD)$/;"	f	file:
 get_ext_name	dafs_dir.c	/^void get_ext_name(struct name_ext *de_ext, char *name)$/;"	f
 get_hash_table	hash.c	/^int  get_hash_table(struct super_block *sb, u8 hlevel,  u64 *h_addr)$/;"	f
 get_nvmm	nova.h	/^static inline unsigned long get_nvmm(struct super_block *sb,$/;"	f
@@ -971,7 +972,7 @@ scan_bm_2M	nova.h	/^	struct single_scan_bm scan_bm_2M;$/;"	m	struct:scan_bitmap	
 scan_bm_4K	nova.h	/^	struct single_scan_bm scan_bm_4K;$/;"	m	struct:scan_bitmap	typeref:struct:scan_bitmap::single_scan_bm
 set_bm	bbuild.c	/^inline void set_bm(unsigned long bit, struct scan_bitmap *bm,$/;"	f
 set_default_opts	super.c	/^static inline void set_default_opts(struct nova_sb_info *sbi)$/;"	f	file:
-set_dentry_state	zone.c	/^unsigned long set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_info *ei)$/;"	f
+set_dentry_state	zone.c	/^u8 set_dentry_state(struct dafs_dentry *dafs_de, struct dzt_entry_info *ei)$/;"	f
 set_dzt_entry_valid	zone.c	/^void set_dzt_entry_valid(struct super_block *sb, unsigned long bitpos)$/;"	f
 set_opt	nova.h	101;"	d
 set_scan_bm	bbuild.c	/^static inline void set_scan_bm(unsigned long bit,$/;"	f	file:
@@ -990,7 +991,7 @@ statemap	zone.h	/^    const void *statemap; \/*pointer to 2-bit map*\/$/;"	m	str
 stats_category	stats.h	/^enum stats_category {$/;"	g
 stop_cz_thread	zone.c	/^int stop_cz_thread(struct super_block *sb)$/;"	f
 sub_file	zone.h	/^    struct list_head sub_file;$/;"	m	struct:dir_info	typeref:struct:dir_info::list_head
-sub_num	zone.h	/^    u32 sub_num;$/;"	m	struct:dir_info
+sub_num	zone.h	/^    u64 sub_num;$/;"	m	struct:dir_info
 sub_s	zone.h	/^    u8 sub_s;$/;"	m	struct:dir_info
 support_clwb	super.c	/^int support_clwb = 0;$/;"	v
 support_pcommit	super.c	/^int support_pcommit = 0;$/;"	v

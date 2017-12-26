@@ -240,9 +240,9 @@ int zone_set_statemap(struct super_block *sb, struct dzt_entry_info *ei)
     u32 bitpos = 0, nr, i, pos;
     //int mean;
     u8 statement;
-    u32 id = 0;
+    //u32 id = 0;
     int ret = 0;
-    u32 par_eno;
+    //u32 par_eno;
     u64 dir_hash = 0;
 
     nova_dbg("%s start",__func__);
@@ -965,8 +965,8 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     /*build dir_info_radix tree*/
     INIT_RADIX_TREE(&new_dzt_ei->dir_tree, GFP_ATOMIC);
     //ret = add_rf_entry(new_dzt_ei, phash);
-    if(ret)
-        return ERR_PTR(-EINVAL);
+    //if(ret)
+    //    return ERR_PTR(-EINVAL);
 
 end:
     //kfree(cur_name);
@@ -1649,8 +1649,8 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
 int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
                     unsigned long sp_id, int SPLIT_TYPE)
 {
-    struct zone_ptr *z_p;
-    struct dafs_dentry *dafs_de;
+    //struct zone_ptr *z_p;
+    //struct dafs_dentry *dafs_de;
     struct dafs_dzt_entry *new_dzt_e;
     struct dzt_entry_info *new_dzt_ei;
     struct dafs_zone_entry *new_ze;
@@ -1660,11 +1660,11 @@ int dafs_split_zone(struct super_block *sb, struct dzt_entry_info *par_dzt_ei,\
     u8 statement;
     u32 nr,i;
     //struct rf_e;
-    u32 bitpos = 0;
+    //u32 bitpos = 0;
     int ret = 0;
     u32 ne_id = 0;
     //u32 name_len;
-    u64 hashname;
+    //u64 hashname;
     u64 dir_index = 0;
 
     nova_dbg("%s start",__func__);
@@ -1780,14 +1780,14 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
     struct dafs_dentry *cur_de, *des_de, *rde;
     struct dzt_entry_info *par_ei;
     //struct rf_entry *old_rf, *new_rf;
-    struct dir_info *old_idir, *new_idir, *par_idir;
+    struct dir_info *old_idir, *new_idir;
     struct file_p *fp, *o_sub, *old_sf, *new_sf; 
     struct list_head *this, *head, *next;
     u32 bitpos = 0, fpos = 0,eno, pos, tem_pos=0; 
     u64 plen, old_hn, rnamelen, hn, o_plen;
     int ret =0;
     char *name;
-    char *tem;
+    //char *tem;
     char *rname, *tname, *end="";
     unsigned short nlen;
 
@@ -2690,7 +2690,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, u32 n
     struct dzt_ptr *dzt_p;
     struct dir_info *or_dir;
     struct file_p *tem_sf;
-    struct list_head *this, *head, *next;
+    struct list_head *this, *head;
     //struct zone_ptr *cz_p;
     u64 hash_name;
     u32 ch_pos, or_pos, eno, sub_pos, new_sp=0;

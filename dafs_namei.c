@@ -146,7 +146,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
 
 	nova_dbg("%s: %s\n", __func__, dentry->d_name.name);
     ino = dafs_inode_by_name(dir, dentry, &de);
-	nova_dbg("%s: look up get ino %llu\n", __func__, ino);
+	nova_dbg("%s: look up get ino %llu", __func__, ino);
 	if (ino) {
         //根据ino得到整个inode的数据结构
 		inode = nova_iget(dir->i_sb, ino);
@@ -175,7 +175,7 @@ int dafs_append_link_change_entry(struct super_block *sb,
 	struct nova_inode_info *si = NOVA_I(inode);
 	struct nova_inode_info_header *sih = &si->header;
 	struct nova_link_change_entry *entry;
-    struct ptr_pair *pair;
+    //struct ptr_pair *pair;
 	u64 curr_p;
 	int extended = 0;
 	size_t size = sizeof(struct nova_link_change_entry);
@@ -488,14 +488,13 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     u64 ino;
     int err = -EMLINK;
     timing_t mkdir_time;
-    int cpu;
-    struct ptr_pair *pair;
+    //int cpu;
+    //struct ptr_pair *pair;
     /*debug*/
-    struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dzt_manager *dzt_m = sbi->dzt_m_info;
-    struct dzt_entry_info *ei;
-    struct dzt_entry_info *dzt_eis[FREE_BATCH];
-    int nr=0, i, ret;
+    //struct nova_sb_info *sbi = NOVA_SB(sb);
+    //struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    //struct dzt_entry_info *ei;
+    //struct dzt_entry_info *dzt_eis[FREE_BATCH];
    
     nova_dbg("%s:dafs start to mkdir",__func__);
     NOVA_START_TIMING(mkdir_t, mkdir_time);
@@ -543,30 +542,11 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	inc_nlink(dir);
 	d_instantiate(dentry, inode);
 	unlock_new_inode(inode);
-
-	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
-	//cpu = smp_processor_id();
-	//pair = nova_get_journal_pointers(sb, cpu);
-    /*nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));*/
-    /*
-    nova_dbg("%s:start to debug statemap", __func__);
-        do{
-            nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, 0, FREE_BATCH);
-            BUG_ON(nr==0);
-            nova_dbg("%s check dzt num is %d", __func__, nr);
-            for(i=0; i<nr; i++) {
-                ei = dzt_eis[i];
-                ret = zone_set_statemap(sb, ei);
-                if(ret)
-                    return -EINVAL;
-                ret = dafs_check_zones(sb, ei);
-                if(ret)
-                    return -EINVAL;
-            }
-        }while(nr==FREE_BATCH);*/
+    nova_dbg("test bug");
+	//dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
-    //nova_dbg("%s: dafs end mkdir",__func__);
+    nova_dbg("%s: dafs end mkdir",__func__);
 	return err;
 
 out_err:
@@ -584,7 +564,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     struct super_block *sb = dir->i_sb;
     struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
     u64 pidir_tail = 0, pi_tail = 0;
-    struct nova_inode_info *si = NOVA_I(inode);
+    //struct nova_inode_info *si = NOVA_I(inode);
     //struct ptr_pair *pair; // for debug
     //int cpu;  //for debug
     //struct nova_inode_info_header *sih = &si->header;
@@ -593,11 +573,11 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     timing_t rmdir_time;
     /*debug*/
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    struct dzt_manager *dzt_m = sbi->dzt_m_info;
-    struct dzt_entry_info *ei;
-    struct dzt_entry_info *dzt_eis[FREE_BATCH];
-    int nr=0, i, ret;
-    u64 ei_index = 0;
+    //struct dzt_manager *dzt_m = sbi->dzt_m_info;
+    //struct dzt_entry_info *ei;
+    //struct dzt_entry_info *dzt_eis[FREE_BATCH];
+    //int nr=0, i, ret;
+    //u64 ei_index = 0;
 
     nova_dbg("%s:dafs start to rmdir",__func__);
 	NOVA_START_TIMING(rmdir_t, rmdir_time);

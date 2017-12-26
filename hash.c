@@ -535,8 +535,8 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     u8 valid_flag;
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
-    //nova_dbg("dafs start to lookup in hashtable");
-    BUG_ON(block==NULL);
+    nova_dbg("%s start",__func__);
+    BUG_ON(block==0);
     ht = (struct hash_table *)nova_get_block(sb, block);  
 
     buckets = 4095;
@@ -572,9 +572,11 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         ret = lookup_ht_ls(sb, tail, hashname, hlevel, &s_pos);
         *pos = s_pos;
 
-    }
+    } else
+        nova_dbg("%s:not find pos",__func__);
+
 out: 
-    //nova_dbg("dafs finish lookup in hash table");
+    nova_dbg("dafs finish lookup in hash table");
     return ret;
 }
 
