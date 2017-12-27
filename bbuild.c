@@ -100,7 +100,7 @@ static int nova_failure_insert_inodetree(struct super_block *sb,
 	ret = nova_find_free_slot(sbi, tree, internal_low, internal_high,
 					&prev, &next);
 	if (ret) {
-		nova_dbg("%s: ino %lu - %lu already exists!: %d\n",
+		nova_dbg_verbose("%s: ino %lu - %lu already exists!: %d\n",
 					__func__, ino_low, ino_high, ret);
 		mutex_unlock(&inode_map->inode_table_mutex);
 		return ret;
@@ -193,7 +193,7 @@ static int nova_init_blockmap_from_inode(struct super_block *sb)
 
 	curr_p = pi->log_head;
 	if (curr_p == 0) {
-		nova_dbg("%s: pi head is 0!\n", __func__);
+	//	nova_dbg("%s: pi head is 0!\n", __func__);
 		return -EINVAL;
 	}
 
@@ -203,7 +203,7 @@ static int nova_init_blockmap_from_inode(struct super_block *sb)
 		}
 
 		if (curr_p == 0) {
-			nova_dbg("%s: curr_p is NULL!\n", __func__);
+		//	nova_dbg("%s: curr_p is NULL!\n", __func__);
 			NOVA_ASSERT(0);
 			ret = -EINVAL;
 			break;
@@ -272,7 +272,7 @@ static int nova_init_inode_list_from_inode(struct super_block *sb)
 	sbi->s_inodes_used_count = 0;
 	curr_p = pi->log_head;
 	if (curr_p == 0) {
-		nova_dbg("%s: pi head is 0!\n", __func__);
+		//nova_dbg("%s: pi head is 0!\n", __func__);
 		return -EINVAL;
 	}
 
@@ -282,7 +282,7 @@ static int nova_init_inode_list_from_inode(struct super_block *sb)
 		}
 
 		if (curr_p == 0) {
-			nova_dbg("%s: curr_p is NULL!\n", __func__);
+			//nova_dbg("%s: curr_p is NULL!\n", __func__);
 			NOVA_ASSERT(0);
 		}
 
@@ -324,7 +324,7 @@ static int nova_init_inode_list_from_inode(struct super_block *sb)
 		curr_p += sizeof(struct nova_range_node_lowhigh);
 	}
 
-	nova_dbg("%s: %lu inode nodes\n", __func__, num_inode_node);
+	//nova_dbg("%s: %lu inode nodes\n", __func__, num_inode_node);
 out:
 	nova_free_inode_log(sb, pi);
 	return ret;
@@ -373,7 +373,7 @@ static u64 nova_append_range_node_entry(struct super_block *sb,
 
 	if (curr_p == 0 || (is_last_entry(curr_p, size) &&
 				next_log_page(sb, curr_p) == 0)) {
-		nova_dbg("%s: inode log reaches end?\n", __func__);
+		//nova_dbg("%s: inode log reaches end?\n", __func__);
 		goto out;
 	}
 
@@ -451,7 +451,7 @@ void nova_save_inode_list_to_log(struct super_block *sb)
 	allocated = nova_allocate_inode_log_pages(sb, pi, num_blocks,
 						&new_block);
 	if (allocated != num_blocks) {
-		nova_dbg("Error saving inode list: %d\n", allocated);
+		//nova_dbg("Error saving inode list: %d\n", allocated);
 		return;
 	}
 
@@ -467,7 +467,7 @@ void nova_save_inode_list_to_log(struct super_block *sb)
 
 	nova_update_tail(pi, temp_tail);
 
-	nova_dbg("%s: %lu inode nodes, pi head 0x%llx, tail 0x%llx\n",
+	nova_dbg_verbose("%s: %lu inode nodes, pi head 0x%llx, tail 0x%llx\n",
 		__func__, num_nodes, pi->log_head, pi->log_tail);
 }
 
@@ -504,7 +504,7 @@ void nova_save_blocknode_mappings_to_log(struct super_block *sb)
 	allocated = nova_allocate_inode_log_pages(sb, pi, num_pages,
 						&new_block);
 	if (allocated != num_pages) {
-		nova_dbg("Error saving blocknode mappings: %d\n", allocated);
+		//nova_dbg("Error saving blocknode mappings: %d\n", allocated);
 		return;
 	}
 
@@ -535,7 +535,7 @@ void nova_save_blocknode_mappings_to_log(struct super_block *sb)
 	temp_tail = nova_save_free_list_blocknodes(sb, SHARED_CPU, temp_tail);
 	nova_update_tail(pi, temp_tail);
 
-	nova_dbg("%s: %lu blocknodes, %lu log pages, pi head 0x%llx, "
+	nova_dbg_verbose("%s: %lu blocknodes, %lu log pages, pi head 0x%llx, "
 		"tail 0x%llx\n", __func__, num_blocknode, num_pages,
 		pi->log_head, pi->log_tail);
 }
@@ -607,7 +607,7 @@ static int __nova_build_blocknode_map(struct super_block *sb,
 		next = find_next_bit(bitmap, end, next);
 		if (nova_insert_blocknode_map(sb, cpuid,
 				low << scale , (next << scale) - 1)) {
-			nova_dbg("Error: could not insert %lu - %lu\n",
+			nova_dbg_verbose("Error: could not insert %lu - %lu\n",
 				low << scale, ((next << scale) - 1));
 		}
 		start = next;
@@ -808,7 +808,7 @@ int nova_rebuild_inode(struct super_block *sb, struct nova_inode_info *si,
 	struct nova_inode *pi;
 	unsigned long nova_ino;
 
-    nova_dbg("%s:dafs start to rebuild inode",__func__);
+    //nova_dbg("%s:dafs start to rebuild inode",__func__);
 	pi = (struct nova_inode *)nova_get_block(sb, pi_addr);
 	if (!pi)
 		NOVA_ASSERT(0);
@@ -835,7 +835,7 @@ int nova_rebuild_inode(struct super_block *sb, struct nova_inode_info *si,
 		break;
 	case S_IFDIR:
 		//nova_rebuild_dir_inode_tree(sb, pi, pi_addr, sih);
-        nova_dbg("%s s_ifdir",__func__);
+        //nova_dbg("%s s_ifdir",__func__);
 		dafs_rebuild_dir_inode_tree(sb, pi, pi_addr, sih);
 		break;
 	default:
@@ -1022,7 +1022,7 @@ again:
 			case FILE_WRITE:
 				break;
 			default:
-				nova_dbg("%s: unknown type %d, 0x%llx\n",
+				nova_dbg_verbose("%s: unknown type %d, 0x%llx\n",
 							__func__, type, curr_p);
 				NOVA_ASSERT(0);
 		}
@@ -1362,7 +1362,7 @@ int nova_failure_recovery(struct super_block *sb)
 
 	free_resources(sb);
 
-	nova_dbg("Failure recovery total recovered %lu\n",
+	nova_dbg_verbose("Failure recovery total recovered %lu\n",
 				sbi->s_inodes_used_count);
 	return ret;
 }
@@ -1391,7 +1391,7 @@ int nova_recovery(struct super_block *sb)
 	nova_init_blockmap(sb, 1);
 
     /*key point for nova recovery*/
-    nova_dbg("dafs start scan");
+    //nova_dbg("dafs start scan");
 	value = nova_can_skip_full_scan(sb);
 	if (value) {
 		nova_dbg("NOVA: Normal shutdown\n");

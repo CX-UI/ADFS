@@ -17,7 +17,7 @@ int  get_hash_table(struct super_block *sb, u8 hlevel,  u64 *h_addr)
     u64 block;
     unsigned short btype = 0;
 
-    nova_dbg("dafs allocate hash table");
+    //nova_dbg("dafs allocate hash table");
     switch(hlevel) {
         case 1:
             btype = HTABLE_DEF_SIZE;
@@ -37,8 +37,8 @@ int  get_hash_table(struct super_block *sb, u8 hlevel,  u64 *h_addr)
     }
     allocated = nova_new_blocks(sb, &blocknr, 1, btype, 1, HTABLE);
 
-    nova_dbg("%s: allocate zone @ 0x%lx\n", __func__,
-							blocknr);
+    //nova_dbg("%s: allocate zone @ 0x%lx\n", __func__,
+	//						blocknr);
     if(allocated != 1 || blocknr == 0)
         return -ENOMEM;
 
@@ -135,7 +135,7 @@ int record_pos_htable_lf(struct super_block *sb, u64 block, u64 hashname,\
 
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
-        nova_dbg("%s %d extend",__func__, hlevel);
+        //nova_dbg("%s %d extend",__func__, hlevel);
         level ++;
         get_hash_table(sb, hlevel, &tail);
         ht->hash_tail = cpu_to_le64(tail);
@@ -191,7 +191,7 @@ int record_pos_htable_lt(struct super_block *sb, u64 block, u64 hashname,\
 
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
-        nova_dbg("%s %d extend",__func__, hlevel);
+        //nova_dbg("%s %d extend",__func__, hlevel);
         level ++;
         get_hash_table(sb, hlevel, &tail);
         htf = (struct hash_table_lf *)nova_get_block(sb, tail);
@@ -250,7 +250,7 @@ int record_pos_htable_ls(struct super_block *sb, u64 block, u64 hashname,\
 
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
-        nova_dbg("%s %d extend",__func__, hlevel);
+        //nova_dbg("%s %d extend",__func__, hlevel);
         level ++;
         get_hash_table(sb, hlevel, &tail);
         htt = (struct hash_table_lt *)nova_get_block(sb, tail);
@@ -289,7 +289,7 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
     int offset, buckets;
     u8 valid_flag;
 
-    nova_dbg("dafs record pos in hash table address is %llu", block);
+    //nova_dbg("dafs record pos in hash table address is %llu", block);
     buckets = 4095; 
     offset = 4;
     ht = (struct hash_table *)nova_get_block(sb, block);  
@@ -309,7 +309,7 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
 
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
-        nova_dbg("%s %d extend",__func__, hlevel);
+        //nova_dbg("%s %d extend",__func__, hlevel);
         hlevel ++;
         get_hash_table(sb, hlevel, &tail);
         hts = (struct hash_table_ls *)nova_get_block(sb, tail);
@@ -331,7 +331,7 @@ fill_he:
     nova_flush_buffer(he, sizeof(struct hash_entry),0);
     
 out:
-    nova_dbg("dafs finish recording pos in hash table");
+    //nova_dbg("dafs finish recording pos in hash table");
     return 0;
 }
 
@@ -535,7 +535,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     u8 valid_flag;
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
     BUG_ON(block==0);
     ht = (struct hash_table *)nova_get_block(sb, block);  
 
@@ -573,10 +573,10 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         *pos = s_pos;
 
     } else
-        nova_dbg("%s:not find pos",__func__);
+        nova_dbgv("%s:not find pos",__func__);
 
 out: 
-    nova_dbg("dafs finish lookup in hash table");
+    //nova_dbg("dafs finish lookup in hash table");
     return ret;
 }
 
@@ -815,10 +815,10 @@ int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
     u64 tail, tem;
     unsigned short btype;
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
     tail = ht_addr;
     while(tail){
-        nova_dbg("%s hash table addr %llu",__func__,tail);
+        //nova_dbg("%s hash table addr %llu",__func__,tail);
         switch (hlevel) {
             case 1:
                 ht = (struct hash_table *)nova_get_block(sb, tail);
@@ -868,6 +868,6 @@ int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
         }
     }
 
-    nova_dbg("%s end",__func__);
+    //nova_dbg("%s end",__func__);
     return 0;
 }

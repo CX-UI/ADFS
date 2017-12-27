@@ -123,7 +123,7 @@ static int nova_get_block_info(struct super_block *sb,
 #endif
 	sbi->initsize = size;
 
-	nova_dbg("%s: dev %s, phys_addr 0x%llx, virt_addr %p, size %ld\n",
+	nova_dbgv("%s: dev %s, phys_addr 0x%llx, virt_addr %p, size %ld\n",
 		__func__, sbi->s_bdev->bd_disk->disk_name,
 		sbi->phys_addr, sbi->virt_addr, sbi->initsize);
 
@@ -367,7 +367,7 @@ static struct nova_inode *nova_init(struct super_block *sb,
 	nova_flush_buffer(super, NOVA_SB_SIZE, false);
 	nova_flush_buffer((char *)super + NOVA_SB_SIZE, sizeof(*super), false);
 
-	nova_dbg("Allocate root inode\n");
+	//nova_dbg("Allocate root inode\n");
 	root_i = nova_get_inode_by_ino(sb, NOVA_ROOT_INO);
 
 	nova_memunlock_inode(sb, root_i);

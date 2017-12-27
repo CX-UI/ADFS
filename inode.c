@@ -92,7 +92,7 @@ int nova_init_inode_table(struct super_block *sb)
     
         //每个inode table都对应512blk
 		allocated = nova_new_log_blocks(sb, pi, &blocknr, 1, 1);
-		nova_dbg("%s: allocate log @ 0x%lx\n", __func__,
+		nova_dbgv("%s: allocate log @ 0x%lx\n", __func__,
 							blocknr);
 		if (allocated != 1 || blocknr == 0)
 			return -ENOSPC;  
@@ -101,7 +101,7 @@ int nova_init_inode_table(struct super_block *sb)
 		block = nova_get_block_off(sb, blocknr, NOVA_BLOCK_TYPE_2M);
         /* 填充结构体*/
 		inode_table->log_head = block;
-        nova_dbg("%s:inode table log head is %llu",__func__,block);
+        //nova_dbg("%s:inode table log head is %llu",__func__,block);
 		nova_flush_buffer(inode_table, CACHELINE_SIZE, 0);
 	}
 
@@ -127,35 +127,35 @@ int nova_get_inode_address(struct super_block *sb, u64 ino,
 	unsigned long curr_addr;
 	int allocated;
 
-    nova_dbg("%s:dafs get inode addr",__func__);
+    //nova_dbg("%s:dafs get inode addr",__func__);
 	pi = nova_get_inode_by_ino(sb, NOVA_INODETABLE_INO);
 	data_bits = blk_type_to_shift[pi->i_blk_type];
-    nova_dbg("%s:dbg blk_type is %d, dafs_bits is %d", __func__, pi->i_blk_type,data_bits);
+    //nova_dbg("%s:dbg blk_type is %d, dafs_bits is %d", __func__, pi->i_blk_type,data_bits);
 	num_inodes_bits = data_bits - NOVA_INODE_BITS;
 
     /* 这也算是做了一个hash*/
 	cpuid = ino % sbi->cpus;
 	internal_ino = ino / sbi->cpus;
-    nova_dbg("%s:dbg ino is%llu,internal_ino is %llu, num cpus is %d",__func__,ino, internal_ino, sbi->cpus);
+    //nova_dbg("%s:dbg ino is%llu,internal_ino is %llu, num cpus is %d",__func__,ino, internal_ino, sbi->cpus);
 
 	inode_table = nova_get_inode_table(sb, cpuid);
-    nova_dbg("%s:inode_table log head is %llu",__func__,inode_table->log_head);
+    //nova_dbg("%s:inode_table log head is %llu",__func__,inode_table->log_head);
 	superpage_count = internal_ino >> num_inodes_bits;
     /*感觉是取低五位*/
 	index = internal_ino & ((1 << num_inodes_bits) - 1);
-    nova_dbg("%s:index is %d, supercount is %d",__func__,index,superpage_count);
+    //nova_dbg("%s:index is %d, supercount is %d",__func__,index,superpage_count);
 
 	curr = inode_table->log_head;
 	if (curr == 0){
-        nova_dbg("%s:dafs do not get inodetable addr",__func__);
+        //nova_dbg("%s:dafs do not get inodetable addr",__func__);
 		return -EINVAL;
     }
-    nova_dbg("%s:inode table addr is %llu", __func__, curr);
+    //nova_dbg("%s:inode table addr is %llu", __func__, curr);
 	for (i = 0; i < superpage_count; i++) {
 		if (curr == 0)
 			return -EINVAL;
 
-        nova_dbg("dafs finding inode index");
+        //nova_dbg("dafs finding inode index");
 		curr_addr = (unsigned long)nova_get_block(sb, curr);
 		/* Next page pointer in the last 8 bytes of the superpage */
 		curr_addr += 2097152 - 8;
@@ -181,7 +181,7 @@ int nova_get_inode_address(struct super_block *sb, u64 ino,
 
 	*pi_addr = curr + index * NOVA_INODE_SIZE;
 
-    nova_dbg("%s:dafs finish find inode at %llu",__func__,*pi_addr);
+    //nova_dbg("%s:dafs finish find inode at %llu",__func__,*pi_addr);
 	return 0;
 }
 
@@ -237,7 +237,7 @@ static int nova_free_contiguous_log_blocks(struct super_block *sb,
 
 	while (curr_block) {
 		if (curr_block & INVALID_MASK) {
-			nova_dbg("%s: ERROR: invalid block %llu\n",
+			nova_dbgv("%s: ERROR: invalid block %llu\n",
 					__func__, curr_block);
 			break;
 		}
@@ -457,7 +457,7 @@ struct nova_file_write_entry *nova_find_next_entry(struct super_block *sb,
 	struct nova_file_write_entry *entries[1];
 	int nr_entries;
 
-    nova_dbg("%s start ", __func__);
+    //nova_dbg("%s start ", __func__);
 	nr_entries = radix_tree_gang_lookup(&sih->tree,
 					(void **)entries, pgoff, 1);
 	if (nr_entries == 1)
@@ -545,7 +545,7 @@ int nova_assign_write_entry(struct super_block *sb,
 		} else {
 			ret = radix_tree_insert(&sih->tree, curr_pgoff, entry);
 			if (ret) {
-				nova_dbg("%s: ERROR %d\n", __func__, ret);
+				//nova_dbg("%s: ERROR %d\n", __func__, ret);
 				goto out;
 			}
 		}
@@ -704,8 +704,8 @@ static int nova_alloc_unused_inode(struct super_block *sb, int cpuid,
 		/* Aligns to left */
 		i->range_high = new_ino;
 	} else {
-		nova_dbg("%s: ERROR: new ino %lu, next low %lu\n", __func__,
-			new_ino, next_range_low);
+		//nova_dbg("%s: ERROR: new ino %lu, next low %lu\n", __func__,
+		//	new_ino, next_range_low);
 		return -ENOSPC;
 	}
 
@@ -728,14 +728,14 @@ static int nova_free_inuse_inode(struct super_block *sb, unsigned long ino)
 	unsigned long internal_ino = ino / sbi->cpus;
 	int ret = 0;
 
-    nova_dbg("%s start",__func__);
-	nova_dbg("Free inuse ino: %lu\n", ino);
+    //nova_dbg("%s start",__func__);
+	//nova_dbg("Free inuse ino: %lu\n", ino);
 	inode_map = &sbi->inode_maps[cpuid];
 
 	mutex_lock(&inode_map->inode_table_mutex);
 	found = nova_search_inodetree(sbi, ino, &i);
 	if (!found) {
-		nova_dbg("%s ERROR: ino %lu not found\n", __func__, ino);
+		//nova_dbg("%s ERROR: ino %lu not found\n", __func__, ino);
 		mutex_unlock(&inode_map->inode_table_mutex);
 		return -EINVAL;
 	}
@@ -788,7 +788,7 @@ block_found:
 	sbi->s_inodes_used_count--;
 	inode_map->freed++;
 	mutex_unlock(&inode_map->inode_table_mutex);
-    nova_dbg("%s end",__func__);
+    //nova_dbg("%s end",__func__);
 	return ret;
 }
 
@@ -808,25 +808,25 @@ static int nova_free_inode(struct inode *inode,
 	int err = 0;
 	timing_t free_time;
 
-    nova_dbg("%s start", __func__);
+    //nova_dbg("%s start", __func__);
 	NOVA_START_TIMING(free_inode_t, free_time);
 
 	pi = nova_get_inode(sb, inode);
 
 	if (pi->valid) {
-		nova_dbg("%s: inode %lu still valid\n",
-				__func__, inode->i_ino);
+		//nova_dbg("%s: inode %lu still valid\n",
+		//		__func__, inode->i_ino);
 		pi->valid = 0;
 	}
 
 	if (pi->nova_ino != inode->i_ino) {
 		nova_err(sb, "%s: inode %lu ino does not match: %llu\n",
 				__func__, inode->i_ino, pi->nova_ino);
-		nova_dbg("inode size %llu, pi addr 0x%lx, pi head 0x%llx, "
+		nova_dbgv("inode size %llu, pi addr 0x%lx, pi head 0x%llx, "
 				"tail 0x%llx, mode %u\n",
 				inode->i_size, sih->pi_addr, pi->log_head,
 				pi->log_tail, pi->i_mode);
-		nova_dbg("sih: ino %lu, inode size %lu, mode %u, "
+		nova_dbgv("sih: ino %lu, inode size %lu, mode %u, "
 				"inode mode %u\n", sih->ino, sih->i_size,
 				sih->i_mode, inode->i_mode);
 		nova_print_inode_log(sb, inode);
@@ -843,7 +843,7 @@ static int nova_free_inode(struct inode *inode,
 	err = nova_free_inuse_inode(sb, pi->nova_ino);
 
 	NOVA_END_TIMING(free_inode_t, free_time);
-    nova_dbg("%s end",__func__);
+    //nova_dbg("%s end",__func__);
 	return err;
 }
 
@@ -854,26 +854,26 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
 	u64 pi_addr;
 	int err;
 
-    nova_dbg("%s:dafs start iget",__func__);
+    //nova_dbg("%s:dafs start iget",__func__);
 	inode = iget_locked(sb, ino);
 	if (unlikely(!inode))
 		return ERR_PTR(-ENOMEM);
 	if (!(inode->i_state & I_NEW)) {
-        nova_dbg("%s:return inode",__func__);
+        //nova_dbg("%s:return inode",__func__);
         return inode;
     }
 
 	si = NOVA_I(inode);
 
-	nova_dbg("%s: inode %lu\n", __func__, ino);
+	//nova_dbg("%s: inode %lu\n", __func__, ino);
 
 	if (ino == NOVA_ROOT_INO) {
 		pi_addr = NOVA_ROOT_INO_START;
-        nova_dbg("%s: pi_addr is 0x%llu", __func__, pi_addr);
+        nova_dbgv("%s: pi_addr is 0x%llu", __func__, pi_addr);
 	} else {
 		err = nova_get_inode_address(sb, ino, &pi_addr, 0);
 		if (err) {
-			nova_dbg("%s: get inode %lu address failed %d\n",
+			nova_dbgv("%s: get inode %lu address failed %d\n",
 					__func__, ino, err);
 			goto fail;
 		}
@@ -894,10 +894,10 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
 	inode->i_ino = ino;
 
 	unlock_new_inode(inode);
-    nova_dbg("sucessfully get inode");
+    //nova_dbg("sucessfully get inode");
 	return inode;
 fail:
-    nova_dbg("%s:dafs failed get inode",__func__);
+    //nova_dbg("%s:dafs failed get inode",__func__);
 	iget_failed(inode);
 	return ERR_PTR(err);
 }
@@ -1013,7 +1013,7 @@ u64 nova_new_nova_inode(struct super_block *sb, u64 *pi_addr)
 	int ret;
 	timing_t new_inode_time;
 
-    nova_dbg("dafs start make ino");
+    //nova_dbg("dafs start make ino");
 	NOVA_START_TIMING(new_nova_inode_t, new_inode_time);
     /*决定Inode在哪个cpu上*/
 	map_id = sbi->map_id;
@@ -1059,13 +1059,13 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 	int errval;
 	timing_t new_inode_time;
 
-    nova_dbg("dafs start make new vfs inode");
+    //nova_dbg("dafs start make new vfs inode");
 	NOVA_START_TIMING(new_vfs_inode_t, new_inode_time);
 	sb = dir->i_sb;
 	sbi = (struct nova_sb_info *)sb->s_fs_info;
 	inode = new_inode(sb);
 	if (!inode) {
-        nova_dbg("dafs new inode fails");
+        //nova_dbg("dafs new inode fails");
 		errval = -ENOMEM;
 		goto fail2;
 	}
@@ -1079,14 +1079,14 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 
 	diri = nova_get_inode(sb, dir);
 	if (!diri) {
-        nova_dbg("dafs not get diri");
+        //nova_dbg("dafs not get diri");
 		errval = -EACCES;
 		goto fail1;
 	}
 
 	pi = (struct nova_inode *)nova_get_block(sb, pi_addr);
-	nova_dbg_verbose("%s: allocating inode %llu @ 0x%llx\n",
-					__func__, ino, pi_addr);
+	//nova_dbg_verbose("%s: allocating inode %llu @ 0x%llx\n",
+	//				__func__, ino, pi_addr);
 
 	/* chosen inode is in ino */
 	inode->i_ino = ino;
@@ -1119,7 +1119,7 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 			set_nlink(inode, 2);
 			break;
 		default:
-			nova_dbg("Unknown new inode type %d\n", type);
+			nova_dbgv("Unknown new inode type %d\n", type);
 			break;
 	}
 
@@ -1154,7 +1154,7 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 
 	nova_flush_buffer(&pi, NOVA_INODE_SIZE, 0);
 	NOVA_END_TIMING(new_vfs_inode_t, new_inode_time);
-    nova_dbg("dafs end making inode");
+    //nova_dbg("dafs end making inode");
 	return inode;
 fail1:
 	make_bad_inode(inode);
@@ -1567,7 +1567,7 @@ int nova_allocate_inode_log_pages(struct super_block *sb,
 	int allocated;
 	int ret_pages = 0;
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
     //分配log blocks
 	allocated = nova_new_log_blocks(sb, pi, &new_inode_blocknr,
 					num_pages, 0);
@@ -1579,7 +1579,7 @@ int nova_allocate_inode_log_pages(struct super_block *sb,
 	}
 	ret_pages += allocated;
 	num_pages -= allocated;
-	nova_dbg("Pi %llu: Alloc %d log blocks @ 0x%lx\n",
+	nova_dbgv("Pi %llu: Alloc %d log blocks @ 0x%lx\n",
 			pi->nova_ino, allocated, new_inode_blocknr);
 
 	/* Coalesce the pages */
@@ -1595,7 +1595,7 @@ int nova_allocate_inode_log_pages(struct super_block *sb,
 		nova_dbg_verbose("Alloc %d log blocks @ 0x%lx\n",
 					allocated, new_inode_blocknr);
 		if (allocated <= 0) {
-			nova_dbg("%s: no inode log page available: "
+			nova_dbg_verbose("%s: no inode log page available: "
 				"%lu %d\n", __func__, num_pages, allocated);
 			/* Return whatever we have */
 			break;
@@ -1660,7 +1660,7 @@ static bool curr_log_entry_invalid(struct super_block *sb,
 			*length = PAGE_SIZE - ENTRY_LOC(curr_p);;
 			break;
 		default:
-			nova_dbg("%s: unknown type %d, 0x%llx\n",
+			nova_dbg_verbose("%s: unknown type %d, 0x%llx\n",
 						__func__, type, curr_p);
 			NOVA_ASSERT(0);
 			*length = PAGE_SIZE - ENTRY_LOC(curr_p);;
@@ -1813,7 +1813,7 @@ static int nova_gc_assign_new_entry(struct super_block *sb,
 			break;
         */
 		default:
-			nova_dbg("%s: unknown type %d, 0x%llx\n",
+			nova_dbg_verbose("%s: unknown type %d, 0x%llx\n",
 						__func__, type, curr_p);
 			NOVA_ASSERT(0);
 			break;
@@ -2053,7 +2053,7 @@ static u64 nova_extend_inode_log(struct super_block *sb, struct nova_inode *pi,
 	int allocated;
 	unsigned long num_pages;
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
 	if (curr_p == 0) {
 		allocated = nova_allocate_inode_log_pages(sb, pi,
 					1, &new_block);
@@ -2063,7 +2063,7 @@ static u64 nova_extend_inode_log(struct super_block *sb, struct nova_inode *pi,
 			return 0;
 		}
 		pi->log_tail = new_block;
-        nova_dbg("%s pi log tail is %llu",__func__, new_block);
+        //nova_dbg("%s pi log tail is %llu",__func__, new_block);
 		nova_flush_buffer(&pi->log_tail, CACHELINE_SIZE, 0);
 		pi->log_head = new_block;
 		sih->log_pages = 1;
@@ -2082,7 +2082,7 @@ static u64 nova_extend_inode_log(struct super_block *sb, struct nova_inode *pi,
 		if (allocated <= 0) {
 			nova_err(sb, "%s ERROR: no inode log page "
 					"available\n", __func__);
-			nova_dbg("curr_p 0x%llx, %lu pages\n", curr_p,
+			nova_dbg_verbose("curr_p 0x%llx, %lu pages\n", curr_p,
 					sih->log_pages);
 			return 0;
 		}
@@ -2107,7 +2107,7 @@ static u64 nova_append_one_log_page(struct super_block *sb,
 	u64 curr_block;
 	int allocated;
 
-    nova_dbg("%s start", __func__);
+    //nova_dbg("%s start", __func__);
 	allocated = nova_allocate_inode_log_pages(sb, pi, 1, &new_block);
 	if (allocated != 1) {
 		nova_err(sb, "%s: ERROR: no inode log page available\n",
@@ -2211,7 +2211,7 @@ void nova_free_inode_log(struct super_block *sb, struct nova_inode *pi)
 	int freed = 0;
 	timing_t free_time;
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
 	if (pi->log_head == 0 || pi->log_tail == 0)
 		return;
 
@@ -2291,7 +2291,7 @@ int nova_rebuild_file_inode_tree(struct super_block *sb,
 				curr_p += sizeof(struct nova_setattr_logentry);
 				continue;
 			case LINK_CHANGE:
-                nova_dbg("%s link_change",__func__);
+                //nova_dbg("%s link_change",__func__);
 				link_change_entry =
 					(struct nova_link_change_entry *)addr;
 				dafs_apply_link_change_entry(pi,
