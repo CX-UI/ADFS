@@ -91,18 +91,18 @@ u64 nova_create_lite_transaction(struct super_block *sb,
 	size_t size = sizeof(struct nova_lite_journal_entry);
 	u64 new_tail, temp;
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
 	pair = nova_get_journal_pointers(sb, cpu);
-    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
+    nova_dbgv("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
 	if (!pair || pair->journal_head == 0 ||
 			pair->journal_head != pair->journal_tail){
-        nova_dbg("nova bug");
+        //nova_dbg("nova bug");
         if(!pair)
-            nova_dbg("pair is null");
+            //nova_dbg("pair is null");
         if(pair->journal_head == 0)
-            nova_dbg("journal head is 0");
+            //nova_dbg("journal head is 0");
         if(pair->journal_head!=pair->journal_tail){
-            nova_dbg("journal tail %llu, unequal with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
+            //nova_dbg("journal tail %llu, unequal with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
         }
         BUG();
     }
@@ -126,8 +126,8 @@ u64 nova_create_lite_transaction(struct super_block *sb,
 	pair->journal_tail = new_tail;
 	nova_flush_buffer(&pair->journal_head, CACHELINE_SIZE, 1);
 
-    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
-    nova_dbg("%s end",__func__);
+    //nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
+    //nova_dbg("%s end",__func__);
 	return new_tail;
 }
 
@@ -135,13 +135,13 @@ void nova_commit_lite_transaction(struct super_block *sb, u64 tail, int cpu)
 {
 	struct ptr_pair *pair;
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
 	pair = nova_get_journal_pointers(sb, cpu);
 	if (!pair || pair->journal_tail != tail)
 		BUG();
 
 	pair->journal_head = tail;
-    nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
+    //nova_dbg("journal tail %llu, with head %llu", le64_to_cpu(pair->journal_tail), le64_to_cpu(pair->journal_head));
 	nova_flush_buffer(&pair->journal_head, CACHELINE_SIZE, 1);
 }
 
@@ -154,7 +154,7 @@ static void nova_undo_lite_journal_entry(struct super_block *sb,
 	for (i = 0; i < 4; i++) {
 		type = entry->addrs[i] >> 56;
 		if (entry->addrs[i] && type) {
-			nova_dbg("%s: recover entry %d\n", __func__, i);
+			//nova_dbg("%s: recover entry %d\n", __func__, i);
 			nova_recover_lite_journal_entry(sb, entry->addrs[i],
 					entry->values[i], type);
 		}
@@ -200,10 +200,10 @@ int nova_lite_journal_soft_init(struct super_block *sb)
 		spin_lock_init(&sbi->journal_locks[i]);
 
 	for (i = 0; i < sbi->cpus; i++) {
-        nova_dbg("dafs get soft journal");
+        //nova_dbg("dafs get soft journal");
 		pair = nova_get_journal_pointers(sb, i);
 		if (pair->journal_head == pair->journal_tail){
-            nova_dbg("nice journal initialize head %llu, tail %llu", pair->journal_head, pair->journal_tail);
+            //nova_dbg("nice journal initialize head %llu, tail %llu", pair->journal_head, pair->journal_tail);
             continue;
         }
 
@@ -245,13 +245,13 @@ int nova_lite_journal_hard_init(struct super_block *sb)
 
 	for (i = 0; i < sbi->cpus; i++) {
 		pair = nova_get_journal_pointers(sb, i);
-        nova_dbg("dafs get hard journal");
+        //nova_dbg("dafs get hard journal");
 		if (!pair)
 			return -EINVAL;
 
 		allocated = nova_new_log_blocks(sb, &fake_pi, &blocknr, 1, 1);
-		nova_dbg("%s: allocate log @ 0x%lx\n", __func__,
-							blocknr);
+		//nova_dbg("%s: allocate log @ 0x%lx\n", __func__,
+		//					blocknr);
 		if (allocated != 1 || blocknr == 0)
 			return -ENOSPC;
 

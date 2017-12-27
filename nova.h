@@ -587,7 +587,7 @@ struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)
 
 	if (cpu >= sbi->cpus)
 		return NULL;
-    nova_dbg("dafs get inode table");
+    //nova_dbg("dafs get inode table");
 	return (struct inode_table *)((char *)nova_get_block(sb,
 		NOVA_DEF_BLOCK_SIZE_4K * 3) + cpu * CACHELINE_SIZE);
 }
@@ -719,9 +719,9 @@ static inline unsigned long get_nvmm(struct super_block *sb,
 		u64 curr;
 
 		curr = nova_get_addr_off(sbi, data);
-		nova_dbg("Entry ERROR: inode %lu, curr 0x%llx, pgoff %lu, "
-			"entry pgoff %llu, num %u\n", sih->ino,
-			curr, pgoff, data->pgoff, data->num_pages);
+		//nova_dbg("Entry ERROR: inode %lu, curr 0x%llx, pgoff %lu, "
+		//	"entry pgoff %llu, num %u\n", sih->ino,
+			//curr, pgoff, data->pgoff, data->num_pages);
 		pi = nova_get_block(sb, sih->pi_addr);
 		nova_print_nova_log_pages(sb, sih, pi);
 		nova_print_nova_log(sb, sih, pi);
@@ -799,7 +799,7 @@ static inline struct nova_inode *nova_get_inode(struct super_block *sb,
 	struct nova_inode_info *si = NOVA_I(inode);
 	struct nova_inode_info_header *sih = &si->header;
 
-    nova_dbg("inode addr is %llu", sih->pi_addr);
+    //nova_dbg("inode addr is %llu", sih->pi_addr);
 	return (struct nova_inode *)nova_get_block(sb, sih->pi_addr);
 }
 

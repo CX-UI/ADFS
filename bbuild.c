@@ -1378,7 +1378,7 @@ int nova_recovery(struct super_block *sb)
 	int ret = 0;
 	timing_t start, end;
 
-	nova_dbgv("%s\n", __func__);
+	//nova_dbgv("%s\n", __func__);
 
 	/* Always check recovery time */
 	if (measure_timing == 0)

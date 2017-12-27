@@ -497,6 +497,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
   
     //nova_dbg("dafs start to ext de name");
     de = &ze->dentry[cur_pos];
+    cur_pos ++;
     if(name_flag == 0){
         /*judge name len && set dentry name*/
         if(name_len <= LARGE_NAME_LEN){
@@ -810,7 +811,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
         dafs_de->name[dentry->d_name.len] = '\0'; 
 
     } else {
-        //nova_dbg("dentry need extend name entry");
+        //nova_dbg("%s dentry need extend name entry",__func__);
         dafs_de->ext_flag = 1;
         ext_de_name(sb, dzt_ei, dafs_ze, zone_p, cur_pos, dentry->d_name.len, dentry->d_name.name, 0);
     }
@@ -830,6 +831,8 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
                 memcpy(dafs_de->ful_name.f_name, phname, flen);
                 dafs_de->ful_name.f_name[flen]= '\0';
             } else {
+                //nova_dbg("%s ful name %s", __func__, phname);
+                BUG();
                 dafs_de->ext_flag = 2;
                 ext_de_name(sb ,dzt_ei, dafs_ze, zone_p, cur_pos, flen, phname, 1);
             }
@@ -845,6 +848,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
         memcpy(tem+temlen, end, 1);
         par_hn = BKDRHash(tem, temlen);
         
+        //nova_dbg("%s par name %s",__func__,tem);
         dafs_de->isr_sf = 0;
         if(file_type == 1){
            if(dafs_de->ext_flag==0){
@@ -854,6 +858,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
                     memcpy(dafs_de->ful_name.f_name, phname, flen);
                     dafs_de->ful_name.f_name[flen]='\0';
                 } else {
+                    //nova_dbg("%s ful name %s ino %llu", __func__, phname, ino);
                     dafs_de->ext_flag = 2;
                     ext_de_name(sb ,dzt_ei, dafs_ze, zone_p, cur_pos, flen, phname, 1);
                 }
@@ -871,6 +876,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
 
     /*debug*/
     par_de = &dafs_ze->dentry[par_pos];
+    //nova_dbg("%s par name %s",__func__,tem);
     BUG_ON(le64_to_cpu(par_de->ino)!=dir->i_ino);
 
     /*make valid*/
@@ -885,7 +891,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
 
     //nova_dbg("set pos in par_dir info");
     if(tm_len>1 || dzt_ei->dzt_eno==0){
-        nova_dbg("%s:temlen is %llu, zone num is %d",__func__, tm_len, dzt_ei->dzt_eno);
+        //nova_dbg("%s:temlen is %llu, zone num is %d",__func__, tm_len, dzt_ei->dzt_eno);
         //tem = kzalloc(temlen*sizeof(char), GFP_ATOMIC);
         //temlen--;
         //memcpy(tem, phn, temlen);
@@ -2614,7 +2620,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     phlen = strlen(ppath);
     phn = kzalloc(sizeof(char)*phlen, GFP_ATOMIC);
     //tem = kzalloc(sizeof(char)*phlen, GFP_ATOMIC);
-    phname = kzalloc(sizeof(char)*SMALL_NAME_LEN,GFP_ATOMIC);
+    phname = kzalloc(sizeof(char)*LARGE_NAME_LEN,GFP_ATOMIC);
     
     pidir = nova_get_inode(sb ,inode);
     
@@ -2670,6 +2676,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     f_de = &ze->dentry[de_pos];
     ino = le64_to_cpu(f_de->ino);
     if(ino!=inode->i_ino){
+        BUG();
         //strcat(ppath, "/");
         strcat(ppath, dentry->d_name.name);
         de_pos = 0;
@@ -2752,9 +2759,9 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
             ret = nova_get_inode_address(sb, ino, &pi_addr, 0);
             //BUG_ON(ret==0);
             if(ret){
-                BUG();
 				nova_dbgv("%s: get child inode %lu address "
 					"failed %d\n", __func__, ino, ret);
+                BUG();
 				ctx->pos = READDIR_END;
 				return ret;
             }
