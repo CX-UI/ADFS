@@ -116,7 +116,7 @@ static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\
     struct dafs_dentry *direntry;
     u64 ino;
    
-    //nova_dbg("%s: start-- dentry is %s ",__func__, dentry->d_name.name);
+    nova_dbg("%s:dafs start to inode by name",__func__);
     direntry = dafs_find_direntry(sb, dentry,1,0);
     if(direntry == NULL) { 
         return 0;
@@ -354,7 +354,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
     int invalidate = 0;
     timing_t unlink_time;
 
-    //nova_dbg("%s start", __func__);
+    nova_dbg("%s start", __func__);
     //BUG();
 	NOVA_START_TIMING(unlink_t, unlink_time);
 
@@ -394,7 +394,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
 out:
 	nova_err(sb, "%s return %d\n", __func__, retval);
 	NOVA_END_TIMING(unlink_t, unlink_time);
-    //nova_dbg("%s end",__func__);
+    nova_dbg("%s end",__func__);
 	return retval;
 }
 
@@ -595,10 +595,8 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     if(dafs_inode_by_name(dir, dentry, &de) == 0)
         return -ENOENT;
 
-    if(!dafs_empty_dir(inode, dentry)){
-        BUG();
+    if(!dafs_empty_dir(inode, dentry))
         return err;
-    }
     
     
 	nova_dbgv("%s: inode %lu, dir %lu, link %d\n", __func__,
@@ -841,7 +839,7 @@ struct dentry *dafs_get_parent(struct dentry *child)
     struct dafs_dentry *de;
     ino_t ino;
   
-    //nova_dbg("%s start",__func__);
+    nova_dbg("%s start",__func__);
     //nova_dbg("%s: dafs start get [parent]",__func__);
     de = dafs_find_direntry(sb, child,1,0);
     if(!de)

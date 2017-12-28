@@ -808,7 +808,7 @@ static int nova_free_inode(struct inode *inode,
 	int err = 0;
 	timing_t free_time;
 
-    //nova_dbg("%s start", __func__);
+    nova_dbg("%s start", __func__);
 	NOVA_START_TIMING(free_inode_t, free_time);
 
 	pi = nova_get_inode(sb, inode);
@@ -843,7 +843,7 @@ static int nova_free_inode(struct inode *inode,
 	err = nova_free_inuse_inode(sb, pi->nova_ino);
 
 	NOVA_END_TIMING(free_inode_t, free_time);
-    //nova_dbg("%s end",__func__);
+    nova_dbg("%s end",__func__);
 	return err;
 }
 
@@ -954,21 +954,20 @@ void nova_evict_inode(struct inode *inode)
 		switch (inode->i_mode & S_IFMT) {
 		case S_IFREG:
 			last_blocknr = nova_get_last_blocknr(sb, sih);
-			nova_dbgv("%s: file ino %lu\n", __func__, inode->i_ino);
+			nova_dbg("%s: file ino %lu\n", __func__, inode->i_ino);
 			freed = nova_delete_file_tree(sb, sih, 0,
 						last_blocknr, true, true);
 			break;
 		case S_IFDIR:
 			nova_dbg("%s: dir ino %lu\n", __func__, inode->i_ino);
-            //dentry = d_obtain_alias(inode);
-            //if(dentry)
-            //    nova_dbg("%s dentry %s", __func__, dentry->d_name.name);
-            //dafs_remove_dentry(dentry);
+            dentry = d_find_alias(inode);
+			nova_dbg("%s: dir ino %lu\n, dentry %s", __func__, inode->i_ino, dentry->d_name.name);
+            dafs_remove_dentry(dentry);
 			//nova_delete_dir_tree(sb, sih);
 			break;
 		case S_IFLNK:
 			/* Log will be freed later */
-			nova_dbgv("%s: symlink ino %lu\n",
+			nova_dbg("%s: symlink ino %lu\n",
 					__func__, inode->i_ino);
 			freed = nova_delete_file_tree(sb, sih, 0, 0,
 							true, true);
@@ -979,7 +978,7 @@ void nova_evict_inode(struct inode *inode)
 			break;
 		}
 
-		nova_dbg_verbose("%s: Freed %d\n", __func__, freed);
+		nova_dbg("%s: Freed %d\n", __func__, freed);
 		/* Then we can free the inode */
 		err = nova_free_inode(inode, sih);
 		if (err) {
@@ -1002,6 +1001,7 @@ out:
 
 	clear_inode(inode);
 	NOVA_END_TIMING(evict_inode_t, evict_time);
+    nova_dbg("%s end",__func__);
 }
 
 /* Returns 0 on failure */
