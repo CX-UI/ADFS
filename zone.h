@@ -24,25 +24,36 @@
 #define DAFS_DZT_ENTRIES_IN_BLOCK 72
 #define DZT_BLK_RESERVED 55
 
-/*zone_entry */
+/*zone_entry 
+* 8MB size
+* 16KB statemap
+* 64K-1 128B entries
+* 128B for reserve and id*/
+/*#define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE*2 + BITS_PER_BYTE-1)/BITS_PER_BYTE)
+#define NR_DENTRY_IN_ZONE 4088*/
 #define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE*2 + BITS_PER_BYTE-1)/BITS_PER_BYTE)
-#define NR_DENTRY_IN_ZONE 4088
+#define NR_DENTRY_IN_ZONE 65536-1
 
 /*dafs_dentry*/
 #define SMALL_NAME_LEN 39
 #define LARGE_NAME_LEN 112
 #define DAFS_NAME_LEN 255
-#define DAFS_PATH_LEN 255
+#define DAFS_PATH_LEN 1024
 #define DAFS_DEF_DENTRY_SIZE 128
 #define DAFS_DZT_SIZE 56
 
 /*hash table*/
 //#define SIZE_HASH_BITMAP ((NR_HASH_ENTRIES + BITS_PER_BYTE - 1)/BITS_PER_BYTE)
-#define NR_HASH_ENTRIES_L1  (4096-1)*4
+/*#define NR_HASH_ENTRIES_L1  (4096-1)*4
 #define NR_HASH_ENTRIES_L2  (2048-1)*4
 #define NR_HASH_ENTRIES_L3  (1024-1)*4
 #define NR_HASH_ENTRIES_L4  (512-1)*4
-#define NR_HASH_ENTRIES_L5  256
+#define NR_HASH_ENTRIES_L5  256*/
+#define NR_HASH_ENTRIES_L1  (65536-1)*4
+#define NR_HASH_ENTRIES_L2  (32768-1)*4
+#define NR_HASH_ENTRIES_L3  (16384-1)*4
+#define NR_HASH_ENTRIES_L4  (8192-1)*4
+#define NR_HASH_ENTRIES_L5  4096
 
 /*block size*/
 /*
@@ -156,7 +167,7 @@ struct dafs_dentry{
  * learn in f2fs*/
 struct dafs_zone_entry{
     __u8 zone_statemap[SIZE_OF_ZONE_BITMAP];         /* state and validity for zone dentries*/
-    __u8 reserved[3];
+    __u8 reserved[124];
     __le32 dz_no;           /*directory zone NO*/
     struct dafs_dentry dentry[NR_DENTRY_IN_ZONE];	
     // next is same attributes in this zone
@@ -222,7 +233,7 @@ struct hash_entry {
     __le64 hd_name;      /*dentry name*/
 };
 
-/*256K
+/* 4M
  * first level*/
 struct hash_table {
     u8 reserved[56];
@@ -230,28 +241,28 @@ struct hash_table {
     struct hash_entry hash_entry[NR_HASH_ENTRIES_L1];
 };
 
-/*128k*/
+/*2M*/
 struct hash_table_ls {
     u8 reserved[56];
     __le64 hash_tail;
     struct hash_entry hash_entry[NR_HASH_ENTRIES_L2];
 };
 
-/*64K*/
+/*1M*/
 struct hash_table_lt {
     u8 reserved[56];
     __le64 hash_tail;
     struct hash_entry hash_entry[NR_HASH_ENTRIES_L3];
 };
 
-/*32K*/
+/*512K*/
 struct hash_table_lf {
     u8 reserved[56];
     __le64 hash_tail;
     struct hash_entry hash_entry[NR_HASH_ENTRIES_L4];
 };
 
-/*4k 
+/*256k
  * level end*/
 struct hash_table_le {
     struct hash_entry hash_entry[NR_HASH_ENTRIES_L5];

@@ -116,7 +116,7 @@ int record_pos_htable_lf(struct super_block *sb, u64 block, u64 hashname,\
     u8 valid_flag;
     u8 level = hlevel;
 
-    buckets = 511;
+    buckets = 8191;
     offset = 4;
     ht = (struct hash_table_lf *)nova_get_block(sb, block);  
     if(!ht)
@@ -172,7 +172,7 @@ int record_pos_htable_lt(struct super_block *sb, u64 block, u64 hashname,\
     u8 valid_flag;
     u8 level = hlevel;
 
-    buckets = 1023;
+    buckets = 16383;
     offset = 4;
     ht = (struct hash_table_lt *)nova_get_block(sb, block);  
     if(!ht)
@@ -231,7 +231,7 @@ int record_pos_htable_ls(struct super_block *sb, u64 block, u64 hashname,\
     u8 valid_flag;
     u8 level = hlevel;
 
-    buckets = 2047;
+    buckets = 32768;
     offset = 4;
     ht = (struct hash_table_ls *)nova_get_block(sb, block);  
     if(!ht)
@@ -290,7 +290,7 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
     u8 valid_flag;
 
     //nova_dbg("dafs record pos in hash table address is %llu", block);
-    buckets = 4095; 
+    buckets = 65535; 
     offset = 4;
     ht = (struct hash_table *)nova_get_block(sb, block);  
     if(!ht)
@@ -384,7 +384,7 @@ int lookup_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table_lf *)nova_get_block(sb, block);  
-    buckets = 511;
+    buckets = 8191;
     offset = 4;
 
     h_pos = ((hashname % buckets)-1) * offset;
@@ -412,6 +412,7 @@ int lookup_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
     /*not found pos*/
     tail = le64_to_cpu(ht->hash_tail);
     if(tail) {
+        //nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
         hlevel++;
         ret = lookup_ht_le(sb, tail, hashname, hlevel, &s_pos);
         *pos = s_pos;
@@ -432,7 +433,7 @@ int lookup_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table_lt *)nova_get_block(sb, block);  
-    buckets = 1023;
+    buckets = 16383;
     offset = 4;
 
     h_pos = ((hashname % buckets)-1) * offset;
@@ -460,6 +461,7 @@ int lookup_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
     /*not found pos*/
     tail = le64_to_cpu(ht->hash_tail);
     if(tail) {
+        //nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
         hlevel++;
         ret = lookup_ht_lf(sb, tail, hashname, hlevel, &s_pos);
         *pos = s_pos;
@@ -484,7 +486,7 @@ int lookup_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table_ls *)nova_get_block(sb, block);  
-    buckets = 2047;
+    buckets = 32767;
     offset = 4;
 
     h_pos = ((hashname % buckets)-1) * offset;
@@ -512,6 +514,7 @@ int lookup_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
     /*not found pos*/
     tail = le64_to_cpu(ht->hash_tail);
     if(tail) {
+        //nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
         hlevel++;
         ret = lookup_ht_lt(sb, tail, hashname, hlevel, &s_pos);
         *pos = s_pos;
@@ -539,7 +542,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     BUG_ON(block==0);
     ht = (struct hash_table *)nova_get_block(sb, block);  
 
-    buckets = 4095;
+    buckets = 65535;
     offset = 4;
 
     h_pos = ((hashname % buckets)-1) * offset;
@@ -554,6 +557,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
             /*found valid pos*/
             h_name = le64_to_cpu(he->hd_name);
             if(h_name==hashname){
+                //nova_dbg("%s hashname %llu, pos %d",__func__, h_name, he->hd_pos);
                 *pos = le32_to_cpu(he->hd_pos);
                 ret = 1;
                 goto out;
@@ -573,7 +577,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         *pos = s_pos;
 
     } else
-        nova_dbgv("%s:not find pos",__func__);
+        nova_dbgv("%s:not find tail ",__func__);
 
 out: 
     //nova_dbg("dafs finish lookup in hash table");
@@ -626,7 +630,7 @@ int make_invalid_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hleve
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table_lf *)nova_get_block(sb, block);  
-    buckets = 511;
+    buckets = 8191;
     offset = 4;
 
     h_pos = ((hashname % buckets)-1) * offset;
@@ -672,7 +676,7 @@ int make_invalid_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hleve
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table_lt *)nova_get_block(sb, block);  
-    buckets = 1023;
+    buckets = 16383;
     offset = 4;
 
     h_pos = ((hashname % buckets)-1) * offset;
@@ -718,7 +722,7 @@ int make_invalid_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hleve
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table_ls *)nova_get_block(sb, block);  
-    buckets = 2047;
+    buckets = 32767;
     offset = 4;
 
     h_pos = ((hashname % buckets)-1) * offset;
@@ -770,7 +774,7 @@ int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     ht = (struct hash_table *)nova_get_block(sb, block);  
 
-    buckets = 4095;
+    buckets = 65535;
     offset = 4;
 
     h_pos = ((hashname % buckets)-1) * offset;

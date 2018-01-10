@@ -489,13 +489,6 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     u64 ino;
     int err = -EMLINK;
     timing_t mkdir_time;
-    //int cpu;
-    //struct ptr_pair *pair;
-    /*debug*/
-    //struct nova_sb_info *sbi = NOVA_SB(sb);
-    //struct dzt_manager *dzt_m = sbi->dzt_m_info;
-    //struct dzt_entry_info *ei;
-    //struct dzt_entry_info *dzt_eis[FREE_BATCH];
    
     //nova_dbg("%s:dafs start to mkdir",__func__);
     NOVA_START_TIMING(mkdir_t, mkdir_time);

@@ -358,7 +358,7 @@ static struct dzt_entry_info *dafs_build_dzt(struct super_block *sb, struct dafs
     if(!entry_info)
         return ERR_PTR(-ENOMEM);
 
-    entry_info->zone_blk_type = DAFS_BLOCK_TYPE_512K; 
+    entry_info->zone_blk_type = DAFS_BLOCK_TYPE_8M; 
     entry_info->root_len = le32_to_cpu(dafs_dzt_entry->root_len);
     entry_info->dzt_eno = le32_to_cpu(dafs_dzt_entry->dzt_eno);
     //entry_info->dz_no = le64_to_cpu(dafs_dzt_entry->dz_no);
@@ -410,7 +410,7 @@ int dafs_alloc_dir_zone(struct super_block *sb, struct dafs_dzt_entry *dzt_e)
     if(allocated != 1 || blocknr == 0)
         return -ENOMEM;
 
-    block = nova_get_block_off(sb, blocknr, DAFS_BLOCK_TYPE_512K);
+    block = nova_get_block_off(sb, blocknr, DAFS_BLOCK_TYPE_8M);
     
     /*get zone address*/
     dzt_e->dz_addr = cpu_to_le64(block);
@@ -667,7 +667,7 @@ int dafs_build_dzt_block(struct super_block *sb)
     dzt_block->dzt_head = cpu_to_le64(block);
     */
 
-    dzt_block-> dzt_entry[0].zone_blk_type = DAFS_BLOCK_TYPE_512K;
+    dzt_block-> dzt_entry[0].zone_blk_type = DAFS_BLOCK_TYPE_8M;
     dzt_block-> dzt_entry[0].root_len = 1;
     dzt_block-> dzt_entry[0].dzt_eno = 0;
     dzt_block-> dzt_entry[0].pdz_addr = 0;
@@ -918,7 +918,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     de_nlen = le64_to_cpu(dafs_rde->fname_len);
 
     //new_dzt_ei = (struct dzt_entry_info *)kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
-    new_dzt_ei->zone_blk_type = DAFS_BLOCK_TYPE_512K;
+    new_dzt_ei->zone_blk_type = DAFS_BLOCK_TYPE_8M;
     new_dzt_ei->dzt_eno = eno_pos;
     new_dzt_ei->pdz_addr = par_dei->dz_addr;
     new_dzt_ei->rden_pos = sp_id;
@@ -1605,7 +1605,7 @@ struct dafs_zone_entry *alloc_mi_zone(struct super_block *sb, struct dafs_dzt_en
     if(allocated != 1 || blocknr == 0)
         return ERR_PTR(-ENOMEM);
     
-    block = nova_get_block_off(sb, blocknr, DAFS_BLOCK_TYPE_512K);
+    block = nova_get_block_off(sb, blocknr, DAFS_BLOCK_TYPE_8M);
     
     /*get zone address*/
     //bp = (unsigned long)nova_get_block(sb, block);

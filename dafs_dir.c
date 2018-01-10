@@ -201,9 +201,9 @@ static inline char* get_dentry_path(const struct dentry *dentry, int ISREAD)
     u64 phlen, mlen,tlen;
 
     //nova_dbg("%s:dafs get dentry path",__func__);
-    ph = kzalloc(sizeof(char)*LARGE_NAME_LEN, GFP_ATOMIC);
-    buf = kzalloc(sizeof(char)*LARGE_NAME_LEN,GFP_ATOMIC);
-    tem = kzalloc(sizeof(char)*LARGE_NAME_LEN, GFP_ATOMIC);
+    ph = kzalloc(sizeof(char)*DAFS_PATH_LEN, GFP_ATOMIC);
+    buf = kzalloc(sizeof(char)*DAFS_PATH_LEN, GFP_ATOMIC);
+    tem = kzalloc(sizeof(char)*DAFS_PATH_LEN, GFP_ATOMIC);
     if(!buf)
         goto ERR;
 
@@ -219,11 +219,12 @@ static inline char* get_dentry_path(const struct dentry *dentry, int ISREAD)
     //nova_dbg("fs path is: %s", fs->pwd.dentry->d_name.name);
     //nova_dbg("fs path is: %s", fs->root.dentry->d_name.name);
     //nova_dbg("mount point is:%s cur dentry %s par dentry %s", rd->d_name.name,dentry->d_name.name, p_dentry->d_name.name);
-    read_unlock(&fs->lock);
+    //read_unlock(&fs->lock);
     //BUG_ON(!strcmp(p_dentry->d_name.name, mntchar));
     //BUG_ON(!strcmp(dentry->d_name.name, mntchar));
     //BUG_ON(strcmp(p_dentry->d_name.name, "/"));
 
+    read_unlock(&fs->lock);
     tem_dentry = dentry;
     if(strcmp(dentry->d_name.name,"/"))
         strcat(buf,"/");
@@ -495,7 +496,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
     u64 ext_len;
     u32 bitpos, ext_pos, ext_num;
   
-    //nova_dbg("dafs start to ext de name");
+    //nova_dbg("%s start",__func__);
     de = &ze->dentry[cur_pos];
     cur_pos ++;
     if(name_flag == 0){
@@ -588,7 +589,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             test_and_set_bit_le(bitpos, (void *)p->statemap);
         }
     }
-    //nova_dbg("dafs finish ext name");
+    //nova_dbg("%s end",__func__);
 }
 
 /*get ext name
@@ -731,7 +732,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
     char *phname, *ph, *phn, *tem;
     unsigned long phlen, temlen, flen, tm_len;
     unsigned short links_count;
-    u32 bitpos = 0, cur_pos = 0, par_pos;
+    u32 bitpos = 0, cur_pos = 0, par_pos, tem_pos;
     int ret = 0;
     u64 hashname, ht_addr, par_hn;
     timing_t add_dentry_time;
@@ -764,10 +765,11 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
     }
 
     //not decided
+    /*
     if(cur_pos==NR_DENTRY_IN_ZONE){
         BUG();
         dafs_split_zone(sb, NULL, 0, NEGTIVE_SPLIT);
-    }
+    }*/
     phlen = strlen(phn); 
     if(phlen==1){
         flen = strlen(ph);
@@ -786,6 +788,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
 
     /*get dentry on nvm*/
     dafs_de = &dafs_ze->dentry[cur_pos];
+    tem_pos = cur_pos;
     //nova_dbg("dentry pos is %d, zone num is %d",cur_pos, dzt_ei->dzt_eno); 
     dafs_de->entry_type = DAFS_DIR_ENTRY;
     dafs_de->name_len = dentry->d_name.len;
@@ -802,6 +805,9 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
     dafs_de->ino = cpu_to_le64(ino);
     dafs_de->size = cpu_to_le64(dir->i_size);
 
+    /*make valid*/
+    bitpos++;
+    test_and_set_bit_le(bitpos, (void *)zone_p->statemap);
     /*judge name len && set dentry name*/
     if(dentry->d_name.len <= SMALL_NAME_LEN){
         //nova_dbg("dentry not need extension");
@@ -814,6 +820,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
         //nova_dbg("%s dentry need extend name entry",__func__);
         dafs_de->ext_flag = 1;
         ext_de_name(sb, dzt_ei, dafs_ze, zone_p, cur_pos, dentry->d_name.len, dentry->d_name.name, 0);
+        cur_pos++;
     }
 
     dafs_de->fname_len = cpu_to_le64(flen);
@@ -835,9 +842,12 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
                 BUG();
                 dafs_de->ext_flag = 2;
                 ext_de_name(sb ,dzt_ei, dafs_ze, zone_p, cur_pos, flen, phname, 1);
+                cur_pos++;
             }
-        } else
+        } else{
             ext_de_name(sb, dzt_ei, dafs_ze, zone_p, cur_pos,flen, phname, 1);
+            cur_pos++;
+        }
         dafs_de->par_pos = cpu_to_le32(par_pos);
     } else {
         /*get par de pos*/
@@ -849,6 +859,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
         par_hn = BKDRHash(tem, temlen);
         
         //nova_dbg("%s par name %s",__func__,tem);
+        //nova_dbg("%s full name %s",__func__,phname);
         dafs_de->isr_sf = 0;
         if(file_type == 1){
            if(dafs_de->ext_flag==0){
@@ -861,13 +872,16 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
                     //nova_dbg("%s ful name %s ino %llu", __func__, phname, ino);
                     dafs_de->ext_flag = 2;
                     ext_de_name(sb ,dzt_ei, dafs_ze, zone_p, cur_pos, flen, phname, 1);
+                    cur_pos ++;
                 }
-            } else
+            } else {
                 ext_de_name(sb, dzt_ei, dafs_ze, zone_p, cur_pos, flen, phname, 1);
+                cur_pos++;
+            }
         } else {
             dafs_de->ful_name.f_name[0]= '\0';
         }
-
+        
         lookup_in_hashtable(sb, dzt_ei->ht_head, par_hn, 1, &par_pos);
         //nova_dbg("set par_pos %d", par_pos);
         dafs_de->par_pos = cpu_to_le32(par_pos);
@@ -880,14 +894,14 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
     BUG_ON(le64_to_cpu(par_de->ino)!=dir->i_ino);
 
     /*make valid*/
-    bitpos++;
-    test_and_set_bit_le(bitpos, (void *)zone_p->statemap);
+    /*bitpos++;
+    test_and_set_bit_le(bitpos, (void *)zone_p->statemap);*/
     
     //nova_dbg("set pos in hash table for each zone");
     hashname = BKDRHash(phname, flen);
     //nova_dbg("dentry %s hashname is %llu",phname, hashname);
     ht_addr = dzt_ei->ht_head;
-    ret = record_pos_htable(sb, ht_addr, hashname, cur_pos, 1);
+    ret = record_pos_htable(sb, ht_addr, hashname, tem_pos, 1);
 
     //nova_dbg("set pos in par_dir info");
     if(tm_len>1 || dzt_ei->dzt_eno==0){
@@ -915,7 +929,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
         par_dir->sub_num++;
         //nova_dbg("%s:sub num is %d", __func__, par_dir->sub_num);
         tem_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
-        tem_sf->pos = cur_pos;
+        tem_sf->pos = tem_pos;
         list_add_tail(&tem_sf->list, &par_dir->sub_file);
     }
 
@@ -923,8 +937,8 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
     /*add dir info if dentry is dir*/
     if(file_type==1){
         dafs_de->file_type = NORMAL_DIRECTORY;
-        add_dir_info(dzt_ei, hashname, cur_pos);
-        dafs_append_dir_init_entries(sb, cur_pos, dzt_ei, ino, dir->i_ino, phname);
+        add_dir_info(dzt_ei, hashname, tem_pos);
+        dafs_append_dir_init_entries(sb, tem_pos, dzt_ei, ino, dir->i_ino, phname);
     } else {
         dafs_de->file_type = NORMAL_FILE;
     }

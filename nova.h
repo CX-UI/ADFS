@@ -140,12 +140,12 @@ extern unsigned int nova_dbgmask;
 
 /*zone.h*/
 /*block size*/
-#define HTABLE_DEF_SIZE NOVA_BLOCK_TYPE_256K
-#define HTABLE_LS_SIZE  NOVA_BLOCK_TYPE_128K
-#define HTABLE_LT_SIZE  NOVA_BLOCK_TYPE_64K
-#define HTABLE_LF_SIZE  NOVA_BLOCK_TYPE_32K
-#define HTABLE_LE_SIZE  NOVA_BLOCK_TYPE_4K
-#define DAFS_BLOCK_TYPE_512K NOVA_BLOCK_TYPE_512K
+#define HTABLE_DEF_SIZE NOVA_BLOCK_TYPE_4M
+#define HTABLE_LS_SIZE  NOVA_BLOCK_TYPE_2M
+#define HTABLE_LT_SIZE  NOVA_BLOCK_TYPE_1M
+#define HTABLE_LF_SIZE  NOVA_BLOCK_TYPE_512K
+#define HTABLE_LE_SIZE  NOVA_BLOCK_TYPE_256K
+#define DAFS_BLOCK_TYPE_8M NOVA_BLOCK_TYPE_8M
 #define DAFS_DEF_ZONE_ENTRY_SIZE 128
 
 extern int measure_timing;
@@ -811,19 +811,19 @@ nova_get_numblocks(unsigned short btype)
 
 	if (btype == NOVA_BLOCK_TYPE_4K) {
 		num_blocks = 1;
-    } else if (btype == NOVA_BLOCK_TYPE_32K){
-        num_blocks = 8;
-    } else if (btype == NOVA_BLOCK_TYPE_64K) {
-        num_blocks = 16;
-    } else if (btype == NOVA_BLOCK_TYPE_128K) {
-        num_blocks = 32;
-    } else if (btype == NOVA_BLOCK_TYPE_256K) {
+    } else if (btype == NOVA_BLOCK_TYPE_256K){
         num_blocks = 64;
-    } else if (btype == DAFS_BLOCK_TYPE_512K) {
+    } else if (btype == NOVA_BLOCK_TYPE_512K) {
         num_blocks = 128;
+    } else if (btype == NOVA_BLOCK_TYPE_1M){
+        num_blocks = 256;
     } else if (btype == NOVA_BLOCK_TYPE_2M) {
-		num_blocks = 512;
-	} else {
+        num_blocks = 512;
+    } else if (btype == NOVA_BLOCK_TYPE_4M) {
+        num_blocks = 1024;
+    } else if (btype == DAFS_BLOCK_TYPE_8M) {
+        num_blocks = 2048;
+    } else {
 		//btype == NOVA_BLOCK_TYPE_1G
 		num_blocks = 0x40000;
 	}

@@ -72,7 +72,7 @@ static loff_t nova_llseek(struct file *file, loff_t offset, int origin)
 	struct inode *inode = file->f_path.dentry->d_inode;
 	int retval;
 
-    nova_dbg("%s:dafs start llseek",__func__);
+    //nova_dbg("%s:dafs start llseek",__func__);
 	if (origin != SEEK_DATA && origin != SEEK_HOLE)
 		return generic_file_llseek(file, offset, origin);
 
@@ -388,7 +388,7 @@ static int nova_flush(struct file *file, fl_owner_t id)
 
 static int nova_open(struct inode *inode, struct file *filp)
 {
-    nova_dbg("%s: dafs start open",__func__);
+    //nova_dbg("%s: dafs start open",__func__);
 	return generic_file_open(inode, filp);
 }
 
