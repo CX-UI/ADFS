@@ -1744,18 +1744,20 @@ u32 find_invalid_id(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
                     struct zone_ptr *z_p, u32 start_id)
 {
     //struct dafs_dentry *dafs_de;
-    u32 bitpos = start_id*2;
+    u32 pos = start_id*2;
+    u32 bitpos = 0;
+    u32 inv_id = 0;
     //u32 eno;
     while(bitpos<z_p->zone_max){
         if(test_bit_le(bitpos, (void *)z_p->statemap)){
             bitpos+=2;
-            start_id++;
+            inv_id++;
             continue;
         }else{
             bitpos++;
             if(test_bit_le(bitpos, (void *)z_p->statemap)){
                 bitpos++;
-                start_id++;
+                inv_id++;
             }else{
                 break;
             }
@@ -1764,10 +1766,11 @@ u32 find_invalid_id(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
 
     /* if not enough entries, negtive split*/
     if(bitpos == NR_DENTRY_IN_ZONE){
+        BUG();
         dafs_split_zone(sb, dzt_ei, 0 , NEGTIVE_SPLIT);
     }
 
-    return start_id;
+    return inv_id;
 }
 
 /*merge

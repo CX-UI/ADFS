@@ -500,8 +500,6 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 		goto out_err;
 
 	//nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
-	//nova_dbg("%s: inode %llu, dir %lu, link %d\n", __func__,
-				//ino, dir->i_ino, dir->i_nlink);
 
     /*.文件指向目录项*/
     err = dafs_add_dentry(dentry, ino, 1, 1);

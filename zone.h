@@ -29,8 +29,6 @@
 * 16KB statemap
 * 64K-1 128B entries
 * 128B for reserve and id*/
-/*#define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE*2 + BITS_PER_BYTE-1)/BITS_PER_BYTE)
-#define NR_DENTRY_IN_ZONE 4088*/
 #define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE*2 + BITS_PER_BYTE-1)/BITS_PER_BYTE)
 #define NR_DENTRY_IN_ZONE 65536-1
 
@@ -43,12 +41,6 @@
 #define DAFS_DZT_SIZE 56
 
 /*hash table*/
-//#define SIZE_HASH_BITMAP ((NR_HASH_ENTRIES + BITS_PER_BYTE - 1)/BITS_PER_BYTE)
-/*#define NR_HASH_ENTRIES_L1  (4096-1)*4
-#define NR_HASH_ENTRIES_L2  (2048-1)*4
-#define NR_HASH_ENTRIES_L3  (1024-1)*4
-#define NR_HASH_ENTRIES_L4  (512-1)*4
-#define NR_HASH_ENTRIES_L5  256*/
 #define NR_HASH_ENTRIES_L1  (65536-1)*4
 #define NR_HASH_ENTRIES_L2  (32768-1)*4
 #define NR_HASH_ENTRIES_L3  (16384-1)*4
@@ -56,15 +48,6 @@
 #define NR_HASH_ENTRIES_L5  4096
 
 /*block size*/
-/*
-#define HTABLE_DEF_SIZE NOVA_BLOCK_TYPE_256K
-#define HTABLE_LS_SIZE  NOVA_BLOCK_TYPE_128K
-#define HTABLE_LT_SIZE  NOVA_BLOCK_TYPE_64K
-#define HTABLE_LF_SIZE  NOVA_BLOCK_TYPE_32K
-#define HTABLE_LE_SIZE  NOVA_BLOCK_TYPE_4K
-#define DAFS_BLOCK_TYPE_512K NOVA_BLOCK_TYPE_512K
-#define DAFS_DEF_ZONE_ENTRY_SIZE 128
-*/
 #define DAFS_DEF_DENTRY_SIZE 128
 /*zone movement*/
 #define POSITIVE_SPLIT 1
@@ -141,7 +124,7 @@ struct dafs_dentry{
     __u8 entry_type;          
     __u8 name_len;            /*length of the dentry name*/
     __u8 file_type;           /* file type */
-    __u8  isr_sf;           /* root subfile or not*/
+    __u8 isr_sf;           /* root subfile or not*/
     __le16 ext_flag;     /* need extension or not*/
     __le16 links_count;         /* links */
     __le32 mtime;
