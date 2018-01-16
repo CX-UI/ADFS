@@ -19,6 +19,25 @@
 #define DT2IF(dt) (((dt) << 12) & S_IFMT)
 #define IF2DT(sif) (((sif) & S_IFMT) >> 12)
 
+void tes_empty_zone(struct super_block *sb, struct zone_ptr *z_p)
+{
+    u32 pos = 0, epos = 0;
+    u32 bitpos = 0;
+
+    while(pos<NR_DENTRY_IN_ZONE){
+        if(test_bit_le(bitpos, (void *)z_p->statemap)||test_bit_le(bitpos+1, (void *)z_p->statemap)){
+            bitpos+=2;
+            pos++;
+            nova_dbg("%s: valid pos %d", __func__, pos);
+        } else {
+            bitpos+=2;
+            pos++;
+            epos++;
+        }
+    }
+    nova_dbg("%s: empty pos num %d",__func__, epos);
+}
+
 /*delete dir_info entry*/
 int delete_dir_info(struct dzt_entry_info *ei, u64 hashname)
 {
@@ -242,6 +261,8 @@ static inline char* get_dentry_path(const struct dentry *dentry, int ISREAD)
         if(!strcmp(tem,"/"))
             break;
     }while(1);
+
+    BUG_ON(strlen(ph)==1024);
     //nova_dbg("%s ful ph is %s",__func__,ph);
     
     mntput(vfsmnt);
@@ -688,13 +709,15 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
 	NOVA_START_TIMING(add_dentry_t, add_dentry_time);
 	if (namelen == 0)
 		return -EINVAL;
-    //nova_dbg("%s:dafs start to add dentry",__func__);
+    nova_dbg("%s:dafs start to add dentry",__func__);
     ph = get_dentry_path(dentry,0);
     phname = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     phn = kzalloc(sizeof(char)*strlen(ph), GFP_KERNEL);
     dzt_ei = find_dzt(sb, ph, phn);
     dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb,dzt_ei->dz_addr);
     make_zone_ptr(&zone_p, dafs_ze);
+    //nova_dbg("%s zone beginning",__func__);
+    //tes_empty_zone(sb, zone_p);
     while(bitpos<zone_p->zone_max){
         if(test_bit_le(bitpos, (void *)zone_p->statemap)||test_bit_le(bitpos+1, (void *)zone_p->statemap)){
             bitpos+=2;
@@ -745,14 +768,14 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
     test_and_set_bit_le(bitpos, (void *)zone_p->statemap);
     /*judge name len && set dentry name*/
     if(dentry->d_name.len <= SMALL_NAME_LEN){
-        //nova_dbg("dentry not need extension");
+        nova_dbg("dentry not need extension");
         dafs_de->ext_flag = 0;
         memcpy(dafs_de->name,dentry->d_name.name,dentry->d_name.len);
         //nova_dbg("dentry name is %s", dafs_de->name);
         dafs_de->name[dentry->d_name.len] = '\0'; 
 
     } else {
-        //nova_dbg("%s dentry need extend name entry",__func__);
+        nova_dbg("%s dentry need extend name entry",__func__);
         dafs_de->ext_flag = 1;
         ext_de_name(sb, dzt_ei, dafs_ze, zone_p, tem_pos, dentry->d_name.len, dentry->d_name.name, 0);
     }
@@ -764,7 +787,7 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
     tm_len = temlen;
     if(temlen ==1){
         dafs_de->isr_sf = 1;
-        //nova_dbg("dentry is root subfile");
+        nova_dbg("dentry is root subfile");
         par_pos =0;
         if(dafs_de->ext_flag==0){
             //re_len = SMALL_NAME_LEN - dentry->d_name.len;
@@ -856,6 +879,8 @@ int dafs_add_dentry(struct dentry *dentry, u64 ino, int link_change, int file_ty
 
     nova_flush_buffer(dafs_de, DAFS_DEF_DENTRY_SIZE, 0);
 
+    //nova_dbg("%s zone end",__func__);
+    //tes_empty_zone(sb, zone_p);
 OUT:
     NOVA_END_TIMING(add_dentry_t, add_dentry_time);
     kfree(phname);
@@ -1400,6 +1425,7 @@ CONT:
     }
 
     kfree(rm_dir);
+    tes_empty_zone(sb, z_p);
     /*free dir_entry*/
     //delete_dir_info(dzt_ei, ph_hash);
     

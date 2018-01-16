@@ -17,15 +17,15 @@ CHECK_ZONES_SLEEP_TIME	nova.h	139;"	d
 CPUID_MASK	bbuild.c	257;"	d	file:
 Countstats	stats.c	/^u64 Countstats[TIMING_NUM];$/;"	v
 DAFS_BLOCK_TYPE_8M	nova.h	148;"	d
-DAFS_DEF_DENTRY_SIZE	zone.h	42;"	d
-DAFS_DEF_DENTRY_SIZE	zone.h	68;"	d
+DAFS_DEF_DENTRY_SIZE	zone.h	40;"	d
+DAFS_DEF_DENTRY_SIZE	zone.h	51;"	d
 DAFS_DEF_ZONE_ENTRY_SIZE	nova.h	149;"	d
 DAFS_DIR_ENTRY	nova.h	/^    DAFS_DIR_ENTRY,$/;"	e	enum:nova_entry_type
 DAFS_DZT_ENTRIES_IN_BLOCK	zone.h	24;"	d
-DAFS_DZT_SIZE	zone.h	43;"	d
+DAFS_DZT_SIZE	zone.h	41;"	d
 DAFS_GET_EI	zone.c	/^struct dzt_entry_info *DAFS_GET_EI(struct super_block *sb, u64 eno)$/;"	f
-DAFS_NAME_LEN	zone.h	40;"	d
-DAFS_PATH_LEN	zone.h	41;"	d
+DAFS_NAME_LEN	zone.h	38;"	d
+DAFS_PATH_LEN	zone.h	39;"	d
 DATA	nova.h	/^	DATA,$/;"	e	enum:alloc_type
 DENTRY_FREQUENCY_COLD	zone.h	/^    DENTRY_FREQUENCY_COLD = 0,$/;"	e	enum:dir_frequence
 DENTRY_FREQUENCY_WARM	zone.h	/^    DENTRY_FREQUENCY_WARM,$/;"	e	enum:dir_frequence
@@ -54,7 +54,7 @@ INVALID_CPU	nova.h	134;"	d
 INVALID_MASK	nova.h	159;"	d
 IOstats	stats.c	/^u64 IOstats[STATS_NUM];$/;"	v
 IS_MAP_WRITE	nova.h	267;"	d
-LARGE_NAME_LEN	zone.h	39;"	d
+LARGE_NAME_LEN	zone.h	37;"	d
 LAST_ENTRY	nova.h	202;"	d
 LEVEL_0	zone.h	/^    LEVEL_0 = 0,$/;"	e	enum:dir_level
 LEVEL_1	zone.h	/^    LEVEL_1,$/;"	e	enum:dir_level
@@ -67,7 +67,7 @@ MAX_PGOFF	bbuild.c	776;"	d	file:
 META_BLK_SHIFT	nova_def.h	79;"	d
 MMAP_ADDR	nova.h	268;"	d
 MMAP_WRITE_BIT	nova.h	266;"	d
-NEGTIVE_SPLIT	zone.h	71;"	d
+NEGTIVE_SPLIT	zone.h	54;"	d
 NEXT_PAGE	nova.h	/^	NEXT_PAGE,$/;"	e	enum:nova_entry_type
 NORMAL_DIRECTORY	zone.h	/^    NORMAL_DIRECTORY,$/;"	e	enum:dir_t
 NORMAL_FILE	zone.h	/^    NORMAL_FILE = 0,$/;"	e	enum:dir_t
@@ -137,14 +137,14 @@ NOVA_SB_STATIC_SIZE	nova_def.h	171;"	d
 NOVA_START_TIMING	stats.h	124;"	d
 NOVA_STATS_ADD	stats.h	138;"	d
 NOVA_SUPER_MAGIC	nova_def.h	26;"	d
-NR_DENTRY_IN_ZONE	zone.h	35;"	d
-NR_DIR_FILES	zone.h	108;"	d
-NR_HASH_ENTRIES_L1	zone.h	52;"	d
-NR_HASH_ENTRIES_L2	zone.h	53;"	d
-NR_HASH_ENTRIES_L3	zone.h	54;"	d
-NR_HASH_ENTRIES_L4	zone.h	55;"	d
-NR_HASH_ENTRIES_L5	zone.h	56;"	d
-NR_ZONE_FILES	zone.h	109;"	d
+NR_DENTRY_IN_ZONE	zone.h	33;"	d
+NR_DIR_FILES	zone.h	91;"	d
+NR_HASH_ENTRIES_L1	zone.h	44;"	d
+NR_HASH_ENTRIES_L2	zone.h	45;"	d
+NR_HASH_ENTRIES_L3	zone.h	46;"	d
+NR_HASH_ENTRIES_L4	zone.h	47;"	d
+NR_HASH_ENTRIES_L5	zone.h	48;"	d
+NR_ZONE_FILES	zone.h	92;"	d
 NUMBER_OF_SUBFILES_FEW	zone.h	/^    NUMBER_OF_SUBFILES_FEW = 0,$/;"	e	enum:dafs_dir_size
 NUMBER_OF_SUBFILES_LARGE	zone.h	/^    NUMBER_OF_SUBFILES_LARGE,$/;"	e	enum:dafs_dir_size
 NUMBER_OF_ZONE_SUBFILES_FEW	zone.h	/^    NUMBER_OF_ZONE_SUBFILES_FEW,$/;"	e	enum:dafs_dir_size
@@ -166,7 +166,7 @@ PAGE_SHIFT_2M	nova.h	51;"	d
 PAGE_TAIL	nova.h	203;"	d
 PERSISTENT_BARRIER	nova_def.h	/^static inline void PERSISTENT_BARRIER(void)$/;"	f
 PERSISTENT_MARK	nova_def.h	/^static inline void PERSISTENT_MARK(void)$/;"	f
-POSITIVE_SPLIT	zone.h	70;"	d
+POSITIVE_SPLIT	zone.h	53;"	d
 RANGENODE_PER_PAGE	nova.h	318;"	d
 READDIR_END	nova.h	133;"	d
 RESERVED_BLOCKS	nova.h	405;"	d
@@ -174,8 +174,8 @@ ROOT_DIRECTORY	zone.h	/^    ROOT_DIRECTORY,$/;"	e	enum:dir_t
 SET_ATTR	nova.h	/^	SET_ATTR,$/;"	e	enum:nova_entry_type
 SHARED_CPU	nova.h	135;"	d
 SIZE_DZT_BITMAP	zone.h	23;"	d
-SIZE_OF_ZONE_BITMAP	zone.h	34;"	d
-SMALL_NAME_LEN	zone.h	38;"	d
+SIZE_OF_ZONE_BITMAP	zone.h	32;"	d
+SMALL_NAME_LEN	zone.h	36;"	d
 STATEMAP_COLD	zone.h	/^    STATEMAP_COLD = 0,$/;"	e	enum:dafs_statement
 STATEMAP_HOT	zone.h	/^    STATEMAP_HOT$/;"	e	enum:dafs_statement
 STATEMAP_WARM	zone.h	/^    STATEMAP_WARM,$/;"	e	enum:dafs_statement
@@ -505,7 +505,7 @@ ioremap_t	stats.h	/^	ioremap_t,$/;"	e	enum:timing_category
 isROOT_Child	zone.c	/^int isROOT_Child(u64 plen, u64 nlen )$/;"	f
 is_dir_init_entry	nova.h	/^static inline int is_dir_init_entry(struct super_block *sb,$/;"	f
 is_last_entry	nova.h	/^static inline bool is_last_entry(u64 curr_p, size_t size)$/;"	f
-isr_sf	zone.h	/^    __u8  isr_sf;           \/* root subfile or not*\/$/;"	m	struct:dafs_dentry
+isr_sf	zone.h	/^    __u8 isr_sf;           \/* root subfile or not*\/$/;"	m	struct:dafs_dentry
 journal_head	nova.h	/^	__le64 journal_head;$/;"	m	struct:ptr_pair
 journal_locks	nova.h	/^	spinlock_t *journal_locks;$/;"	m	struct:nova_sb_info
 journal_tail	nova.h	/^	__le64 journal_tail;$/;"	m	struct:ptr_pair
@@ -998,6 +998,7 @@ support_pcommit	super.c	/^int support_pcommit = 0;$/;"	v
 symlink_t	stats.h	/^	symlink_t,$/;"	e	enum:timing_category
 task_ring	bbuild.c	/^struct task_ring {$/;"	s	file:
 task_rings	bbuild.c	/^static struct task_ring *task_rings;$/;"	v	typeref:struct:task_ring	file:
+tes_empty_zone	dafs_dir.c	/^void tes_empty_zone(struct super_block *sb, struct zone_ptr *z_p)$/;"	f
 test_opt	nova.h	102;"	d
 thorough_checked_pages	stats.h	/^	thorough_checked_pages,$/;"	e	enum:stats_category
 thorough_gc_pages	stats.h	/^	thorough_gc_pages,$/;"	e	enum:stats_category
