@@ -307,9 +307,10 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
         h_pos ++;
     }
 
+    nova_dbg("%s buckets full",__func__);
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
-        //nova_dbg("%s %d extend",__func__, hlevel);
+        nova_dbg("%s hashtable %d extend",__func__, hlevel);
         hlevel ++;
         get_hash_table(sb, hlevel, &tail);
         hts = (struct hash_table_ls *)nova_get_block(sb, tail);
@@ -325,6 +326,7 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
 
 fill_he:
     //he = &ht->hash_entry[h_pos];
+    nova_dbg("%s mark in pos %d",__func__, h_pos);
     he->hd_name = cpu_to_le64(hashname);
     he->invalid = 1;
     he->hd_pos = cpu_to_le32(pos);

@@ -1,4 +1,4 @@
 #!/bin/bash
 sudo insmod nova.ko
-sudo sh ../../mount/mount.sh 
-watch -n 1 "dmesg|tail -50"
+sudo mount -t NOVA -o init /dev/pmem0 /mnt/ramdisk 
+watch -n 2 "dmesg|tail -70"

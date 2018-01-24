@@ -510,7 +510,7 @@ int set_sf_pos(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
                 ppos = le32_to_cpu(de->par_pos);
                 //memcpy(name, de->ful_name.f_name, pathlen);
                 if(par_pos==ppos) {
-                    fp = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+                    fp = kzalloc(sizeof(struct file_p), GFP_KERNEL);
                     fp->pos = filepos;
                     list_add_tail(&fp->list, &sf_info->sub_file);
                     sf_info->sub_num++;
@@ -528,7 +528,7 @@ int set_sf_pos(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
                     //memcpy(name, de->ful_name.f_name, pathlen);
                     ppos = le32_to_cpu(de->par_pos);
                     if(ppos==par_pos) {
-                        fp = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+                        fp = kzalloc(sizeof(struct file_p), GFP_KERNEL);
                         fp->pos = filepos;
                         list_add_tail(&fp->list, &sf_info->sub_file);
                         sf_info->sub_num++;
@@ -569,7 +569,7 @@ int init_dir_info(struct super_block *sb, struct dzt_entry_info *dzt_ei)
                 //memcpy(path, de->ful_name.f_name, pathlen);
                 //memcpy(path+pathlen, "/0", 1);
                 hashname = le64_to_cpu(de->hname);
-                dir_i = kzalloc(sizeof(struct dir_info), GFP_ATOMIC);
+                dir_i = kzalloc(sizeof(struct dir_info), GFP_KERNEL);
                 dir_i->r_f = 0;
                 dir_i->sub_num = 0;
                 dir_i->sub_s =0;
@@ -594,7 +594,7 @@ int init_dir_info(struct super_block *sb, struct dzt_entry_info *dzt_ei)
                     //memcpy(path, de->ful_name.f_name, pathlen);
                     //memcpy(path+pathlen, "/0", 1);
                     hashname = le64_to_cpu(de->hname);
-                    dir_i = kzalloc(sizeof(struct dir_info), GFP_ATOMIC);
+                    dir_i = kzalloc(sizeof(struct dir_info), GFP_KERNEL);
                     dir_i->r_f = 0;
                     dir_i->sub_num = 0;
                     dir_i->sub_s =0;
@@ -778,7 +778,7 @@ int dafs_init_dzt(struct super_block *sb)
         }
 
         dzt_entry = &dzt_p->dzt_entry[bit_pos];
-        dzt_ei = kzalloc(sizeof(struct dzt_entry_info), GFP_ATOMIC);
+        dzt_ei = kzalloc(sizeof(struct dzt_entry_info), GFP_KERNEL);
 
         dzt_ei->root_len = le64_to_cpu(dzt_entry->root_len);
         dzt_ei->zone_blk_type = dzt_entry->zone_blk_type; 
@@ -925,7 +925,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
 
     if(par_dei->dzt_eno!=0){
         /*not decided*/
-        cur_name = kzalloc(sizeof(char)*(de_nlen+1), GFP_ATOMIC);
+        cur_name = kzalloc(sizeof(char)*(de_nlen+1), GFP_KERNEL);
         /*get ful_name of rde*/
         if(!dafs_rde->ext_flag){
             memcpy(cur_name, dafs_rde->ful_name.f_name, de_nlen);
@@ -1067,7 +1067,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         //old_id = le64_to_cpu(ch_no[i]);
     old_de = &old_ze->dentry[ch_no];
     new_de = &new_ze->dentry[new_id];
-    name = kzalloc(sizeof(char)*LARGE_NAME_LEN, GFP_ATOMIC);
+    name = kzalloc(sizeof(char)*LARGE_NAME_LEN, GFP_KERNEL);
     //BUG_ON(old_de==ROOT_DIRECTORY);
 
     nova_dbg("%s new zone %llu, old zone %llu, old dentry fname %s, name %s",__func__,new_ei->dz_addr,new_ei->pdz_addr, old_de->ful_name.f_name, old_de->name);
@@ -1104,8 +1104,8 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         //memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
         name_len = le64_to_cpu(old_de->fname_len) - old_len;
         new_de->fname_len = cpu_to_le64(name_len);
-        fname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
-        tname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
+        fname = kzalloc(sizeof(char)*name_len, GFP_KERNEL);
+        tname = kzalloc(sizeof(char)*name_len, GFP_KERNEL);
         /*get fulname*/
         /*
         if(new_de->ext_flag ==0){
@@ -1163,7 +1163,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         /*set this file's pos in its par_de
         * update sub_num*/
         if(isr_sf!=1){
-            new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+            new_sf = kzalloc(sizeof(struct file_p), GFP_KERNEL);
             new_sf->pos = new_id;
             list_add_tail(&new_sf->list, &par_f->sub_file);
             par_f->sub_num++;
@@ -1225,8 +1225,8 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         //memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
         name_len = le64_to_cpu(old_de->fname_len) - old_len;
         new_de->fname_len = cpu_to_le64(name_len);
-        fname = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
-        tname = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
+        fname = kzalloc(sizeof(char)*(name_len+1), GFP_KERNEL);
+        tname = kzalloc(sizeof(char)*(name_len+1), GFP_KERNEL);
 
         /*set par_pos 
         * get fname
@@ -1288,7 +1288,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
      
         /*set this file's pos in its par_de*/
         if(!isr_sf){
-            new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+            new_sf = kzalloc(sizeof(struct file_p), GFP_KERNEL);
             new_sf->pos = new_id;
             list_add_tail(&new_sf->list, &par_f->sub_file);
             par_f->sub_num++;
@@ -1329,7 +1329,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         head = &o_dir->sub_file;
         list_for_each_safe(this, next, head){
             old_sf = list_entry(this, struct file_p, list);   
-            new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+            new_sf = kzalloc(sizeof(struct file_p), GFP_KERNEL);
             new_sf->pos = old_sf->pos;
             list_add_tail(&new_sf->list, &new_dir->sub_file);
             new_dir->sub_num++;
@@ -1373,7 +1373,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         //memcpy(new_de->name, old_de->name, le64_to_cpu(old_de->name_len)+1);
         name_len = le64_to_cpu(old_de->fname_len) - old_len;
         new_de->fname_len = cpu_to_le64(name_len);
-        fname = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
+        fname = kzalloc(sizeof(char)*(name_len+1), GFP_KERNEL);
         tname = kzalloc(sizeof(char)*(name_len+1), GFP_ATOMIC);
         
         /*set par_pos 
@@ -1383,7 +1383,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             /*set par_pos*/
             new_de->par_pos = 0;
             /*get fulname*/
-            //fname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
+            //fname = kzalloc(sizeof(char)*name_len, GFP_KERNEL);
             /*get fname*/
             memcpy(fname, "/",1);
             memcpy(fname+1, end,1);
@@ -1438,7 +1438,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
          
         /*set this file's pos in its par_de*/
         if(!isr_sf){
-            new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+            new_sf = kzalloc(sizeof(struct file_p), GFP_KERNEL);
             new_sf->pos = new_id;
             list_add_tail(&new_sf->list, &par_f->sub_file);
             par_f->sub_num++;
@@ -1558,7 +1558,7 @@ int migrate_zone_entry(struct super_block *sb, u32 ch_pos, struct dzt_entry_info
     list_for_each_safe(this, next, head) {
         o_sf = list_entry(this, struct file_p, list);
         ch_no = o_sf->pos;
-        new_sf = kzalloc(sizeof(struct file_p),GFP_ATOMIC);
+        new_sf = kzalloc(sizeof(struct file_p),GFP_KERNEL);
         new_sf->pos = start_pos;
         list_add_tail(&new_sf->list, &dir_i->sub_file);
         cpy_new_zentry(sb, dzt_nei, old_ei, old_namelen, ch_pos, dir_i, ch_no, &start_pos, 1);
@@ -1748,7 +1748,7 @@ u32 find_invalid_id(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
     u32 bitpos = 0;
     u32 inv_id = 0;
     //u32 eno;
-    while(bitpos<z_p->zone_max){
+    while(inv_id<NR_DENTRY_IN_ZONE){
         if(test_bit_le(bitpos, (void *)z_p->statemap)){
             bitpos+=2;
             inv_id++;
@@ -1765,7 +1765,7 @@ u32 find_invalid_id(struct super_block *sb, struct dzt_entry_info *dzt_ei, \
     }
 
     /* if not enough entries, negtive split*/
-    if(bitpos == NR_DENTRY_IN_ZONE){
+    if(inv_id == NR_DENTRY_IN_ZONE){
         BUG();
         dafs_split_zone(sb, dzt_ei, 0 , NEGTIVE_SPLIT);
     }
@@ -1805,7 +1805,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
     cur_de = &cur_ze->dentry[cur_pos];
     //memcpy(name, rde->ful_name->f_name, le64_to_cpu(rde->ful_name->f_namelen));
     rnamelen = le64_to_cpu(rde->fname_len);
-    rname = kzalloc(sizeof(char)*(rnamelen+1), GFP_ATOMIC);
+    rname = kzalloc(sizeof(char)*(rnamelen+1), GFP_KERNEL);
     //tem = kzalloc(sizeof(char)*(rnamelen+1), GFP_ATOMIC);
     get_de_name(rde, des_ze, rname, 1);
     //memcpy(name, rde->ful_name->f_name, rnamelen);
@@ -1827,7 +1827,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
         des_de->size = cur_de->size;
 
         /*set name and ext_flag*/
-        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_ATOMIC);
+        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_KERNEL);
         if(cur_de->ext_flag==1){
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
@@ -1876,7 +1876,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
             des_de->dzt_hn = cur_de->dzt_hn;
             new_idir = add_dir_info(par_ei, hn, fpos);
             o_plen = le64_to_cpu(cur_de->fname_len);
-            tname = kzalloc(sizeof(char*)*(o_plen+1),GFP_ATOMIC);
+            tname = kzalloc(sizeof(char*)*(o_plen+1),GFP_KERNEL);
             if(cur_de->ext_flag==0){
                 memcpy(tname,cur_de->ful_name.f_name,o_plen);
                 memcpy(tname+o_plen, end, 1);
@@ -1888,7 +1888,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
             head = &old_idir->sub_file;
             list_for_each_safe(this, next, head){
                 old_sf = list_entry(this, struct file_p, list);   
-                new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+                new_sf = kzalloc(sizeof(struct file_p), GFP_KERNEL);
                 new_sf->pos = old_sf->pos;
                 list_add_tail(&new_sf->list, &new_idir->sub_file);
                 //new_idir->sub_num++;
@@ -1928,7 +1928,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
         //des_de->dzt_hn = cur_de->dzt_hn;
         
         /*set name and ext_flag*/
-        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_ATOMIC);
+        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_KERNEL);
         if(cur_de->ext_flag==1){
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
@@ -2007,7 +2007,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
             o_sub = list_entry(this, struct file_p, list);
             pos = o_sub->pos;
             ret = __merge_dentry(sb, cur_ei, pos, fpos, &tem_pos);
-            fp = kzalloc(sizeof(struct file_p),GFP_ATOMIC);
+            fp = kzalloc(sizeof(struct file_p),GFP_KERNEL);
             fp->pos = tem_pos;
             list_add_tail(&fp->list, &new_idir->sub_file);
             //new_idir->sub_num++;
@@ -2175,7 +2175,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
     cur_de = &cur_ze->dentry[cur_pos];
     //memcpy(name, rde->ful_name.f_name, le64_to_cpu(rde->ful_name.f_namelen));
     rnamelen = le64_to_cpu(rde->fname_len);
-    rname = kzalloc(sizeof(char)*(rnamelen+1), GFP_ATOMIC);
+    rname = kzalloc(sizeof(char)*(rnamelen+1), GFP_KERNEL);
     //tem = kzalloc(sizeof(char)*(rnamelen+1), GFP_ATOMIC);
     get_de_name(rde, des_ze, rname, 1);
     /*update par dir info entry*/
@@ -2199,7 +2199,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         //des_de->dzt_hn = cur_de->dzt_hn;
 
         /*set name and ext_flag*/
-        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_ATOMIC);
+        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_KERNEL);
         if(cur_de->ext_flag==1){
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
@@ -2254,7 +2254,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             des_de->dzt_hn = cur_de->dzt_hn;
             new_idir = add_dir_info(par_ei, hn, fpos);
             /*delete in previous hashtable*/
-            pname = kzalloc(sizeof(char)*plen,GFP_ATOMIC);
+            pname = kzalloc(sizeof(char)*plen,GFP_KERNEL);
             get_de_name(cur_de, cur_ze, pname,1);
             old_hn = BKDRHash(pname, strlen(pname));
             make_invalid_htable(sb, cur_ei->ht_head, old_hn, 1);
@@ -2263,7 +2263,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             head = &old_idir->sub_file;
             list_for_each_safe(this, next, head){
                 old_sf = list_entry(this, struct file_p, list);   
-                new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+                new_sf = kzalloc(sizeof(struct file_p), GFP_KERNEL);
                 new_sf->pos = old_sf->pos;
                 list_add_tail(&new_sf->list, &new_idir->sub_file);
                 new_idir->sub_num++;
@@ -2304,7 +2304,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         //des_de->dzt_hn = cur_de->dzt_hn;
         
         /*set name and ext_flag*/
-        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_ATOMIC);
+        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_KERNEL);
         if(cur_de->ext_flag==1){
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
@@ -2386,7 +2386,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
             o_sub = list_entry(this, struct file_p, list);
             pos = o_sub->pos;
             ret = __inherit_dentry(sb, cur_ei, pos, fpos, &tem_pos);
-            fp = kzalloc(sizeof(struct file_p),GFP_ATOMIC);
+            fp = kzalloc(sizeof(struct file_p),GFP_KERNEL);
             fp->pos = tem_pos;
             list_add_tail(&fp->list, &new_idir->sub_file);
         }
@@ -2406,7 +2406,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         des_de->ino = cur_de->ino;
         des_de->size = cur_de->size;
         /*set name and ext_flag*/
-        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_ATOMIC);
+        name = kzalloc((cur_de->name_len)*sizeof(char), GFP_KERNEL);
         if(cur_de->ext_flag==1){
             des_de->ext_flag = 1;
             nlen = cur_de->name_len;
@@ -2453,7 +2453,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
 
         if(par_ei->dzt_eno !=1){
             zlen = par_ei->root_len + plen;
-            pname = kzalloc(sizeof(char)*(zlen+1), GFP_ATOMIC);
+            pname = kzalloc(sizeof(char)*(zlen+1), GFP_KERNEL);
             get_zone_path(sb, par_ei, pname, rname);
             phash = BKDRHash(pname, zlen);
             cur_ei->root_len = zlen;
@@ -2474,7 +2474,7 @@ int __inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, unsi
         head = &old_idir->sub_file;
         list_for_each_safe(this, next, head){
             old_sf = list_entry(this, struct file_p, list);   
-            new_sf = kzalloc(sizeof(struct file_p), GFP_ATOMIC);
+            new_sf = kzalloc(sizeof(struct file_p), GFP_KERNEL);
             new_sf->pos = old_sf->pos;
             list_add_tail(&new_sf->list, &new_idir->sub_file);
             //new_idir->sub_num++;
@@ -2631,7 +2631,7 @@ int dafs_merge_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei)
     /*add dir_info*/
     //dir_sf = kzalloc(sizeof(struct dir_info), GFP_ATOMIC);
     rlen = le64_to_cpu(dafs_orde->fname_len);
-    rname = kzalloc(sizeof(char)*(rlen+1), GFP_ATOMIC);
+    rname = kzalloc(sizeof(char)*(rlen+1), GFP_KERNEL);
     get_de_name(dafs_orde, par_ze, rname, 1);
     root_hash = BKDRHash(rname, rlen);
     dafs_orde->hname = cpu_to_le64(root_hash);
@@ -2722,7 +2722,7 @@ int dafs_inh_zone(struct super_block *sb, struct dzt_entry_info *cur_rdei, u32 n
     /*add dir_info*/
     //dir_sf = kzalloc(sizeof(struct dir_info), GFP_ATOMIC);
     rlen = le64_to_cpu(dafs_orde->fname_len);
-    rname = kzalloc(sizeof(char)*(rlen+1), GFP_ATOMIC);
+    rname = kzalloc(sizeof(char)*(rlen+1), GFP_KERNEL);
     get_de_name(dafs_orde, par_ze, rname, 1);
     root_hash = BKDRHash(rname, rlen);
     dafs_orde->hname = cpu_to_le64(root_hash);

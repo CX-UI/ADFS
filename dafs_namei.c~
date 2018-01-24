@@ -118,14 +118,13 @@ static ino_t dafs_inode_by_name(struct inode *dir, const struct dentry *dentry,\
    
     //nova_dbg("%s: start-- dentry is %s ",__func__, dentry->d_name.name);
     direntry = dafs_find_direntry(sb, dentry,1,0);
-    if(direntry == NULL) {
-        nova_dbg("%s not find dir",__func__);
+    if(direntry == NULL) { 
         return 0;
     }
     
     *res_entry = direntry;
     ino = le64_to_cpu(direntry->ino);
-    nova_dbg("%s:dafs finish inode by name, ino is %llu",__func__, ino);
+    //nova_dbg("%s:dafs finish inode by name, ino is %llu",__func__, ino);
     return ino;
 }
 
@@ -581,17 +580,14 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 
 	nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
 	pidir = nova_get_inode(sb, dir);
-	if (!pidir){
-        BUG();
+	if (!pidir)
 		return -EINVAL;
-    }
+
     //nova_dbg("%s:dafs start to rmdir",__func__);
     /*not sure to add read hot degree*/
-    if(dafs_inode_by_name(dir, dentry, &de) == 0){
-        nova_dbg("%s dentry name, %s", __func__, dentry->d_name.name);
-        BUG();
+    if(dafs_inode_by_name(dir, dentry, &de) == 0)
         return -ENOENT;
-    }
+
     if(!dafs_empty_dir(inode, dentry)){
         BUG();
         return err;
