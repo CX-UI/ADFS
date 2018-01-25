@@ -1,0 +1,3390 @@
+
+hash.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <get_hash_table>:
+//#include "zone.h"
+#include "nova.h"
+
+/*allocate htable blocks and get h_addr*/
+int  get_hash_table(struct super_block *sb, u8 hlevel,  u64 *h_addr)
+{
+       0:	e8 00 00 00 00       	callq  5 <get_hash_table+0x5>
+       5:	55                   	push   %rbp
+       6:	83 ee 01             	sub    $0x1,%esi
+       9:	31 c9                	xor    %ecx,%ecx
+       b:	48 89 e5             	mov    %rsp,%rbp
+       e:	53                   	push   %rbx
+       f:	48 89 d3             	mov    %rdx,%rbx
+      12:	48 83 ec 10          	sub    $0x10,%rsp
+      16:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
+      1d:	00 00 
+      1f:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+      23:	31 c0                	xor    %eax,%eax
+      25:	40 80 fe 04          	cmp    $0x4,%sil
+      29:	77 0c                	ja     37 <get_hash_table+0x37>
+      2b:	40 0f b6 f6          	movzbl %sil,%esi
+      2f:	0f b7 8c 36 00 00 00 	movzwl 0x0(%rsi,%rsi,1),%ecx
+      36:	00 
+            break;
+        case 5:
+            btype = HTABLE_LE_SIZE;
+            break;
+    }
+    allocated = nova_new_blocks(sb, &blocknr, 1, btype, 1, HTABLE);
+      37:	48 8d 75 e8          	lea    -0x18(%rbp),%rsi
+      3b:	41 b9 04 00 00 00    	mov    $0x4,%r9d
+      41:	41 b8 01 00 00 00    	mov    $0x1,%r8d
+      47:	ba 01 00 00 00       	mov    $0x1,%edx
+      4c:	e8 00 00 00 00       	callq  51 <get_hash_table+0x51>
+
+    //nova_dbg("%s: allocate zone @ 0x%lx\n", __func__,
+	//						blocknr);
+    if(allocated != 1 || blocknr == 0)
+      51:	83 f8 01             	cmp    $0x1,%eax
+        return -ENOMEM;
+      54:	b9 f4 ff ff ff       	mov    $0xfffffff4,%ecx
+    }
+    allocated = nova_new_blocks(sb, &blocknr, 1, btype, 1, HTABLE);
+
+    //nova_dbg("%s: allocate zone @ 0x%lx\n", __func__,
+	//						blocknr);
+    if(allocated != 1 || blocknr == 0)
+      59:	75 15                	jne    70 <get_hash_table+0x70>
+      5b:	48 8b 55 e8          	mov    -0x18(%rbp),%rdx
+      5f:	48 85 d2             	test   %rdx,%rdx
+      62:	74 0c                	je     70 <get_hash_table+0x70>
+        return -ENOMEM;
+
+    block = nova_get_block_off(sb, blocknr, btype); 
+    //bp = (unsigned long)nova_get_block(sb, block);
+    /*偏移量*/
+    *h_addr = block;
+      64:	48 c1 e2 0c          	shl    $0xc,%rdx
+      68:	48 89 13             	mov    %rdx,(%rbx)
+	/* TODO: Fix me. */
+}
+
+static inline void PERSISTENT_BARRIER(void)
+{
+	asm volatile ("sfence\n" : : );
+      6b:	0f ae f8             	sfence 
+
+    PERSISTENT_BARRIER();
+    return 0;
+      6e:	31 c9                	xor    %ecx,%ecx
+}
+      70:	48 8b 5d f0          	mov    -0x10(%rbp),%rbx
+      74:	65 48 33 1c 25 28 00 	xor    %gs:0x28,%rbx
+      7b:	00 00 
+      7d:	89 c8                	mov    %ecx,%eax
+      7f:	75 07                	jne    88 <get_hash_table+0x88>
+      81:	48 83 c4 10          	add    $0x10,%rsp
+      85:	5b                   	pop    %rbx
+      86:	5d                   	pop    %rbp
+      87:	c3                   	retq   
+      88:	e8 00 00 00 00       	callq  8d <get_hash_table+0x8d>
+      8d:	0f 1f 00             	nopl   (%rax)
+
+0000000000000090 <record_pos_htable_le>:
+
+/* record dentry-pos pairs in hash table
+ * ht_addr comes from last level*/
+int record_pos_htable_le(struct super_block *sb, u64 block, u64 hashname,\
+         u32 pos, u8 hlevel)
+{
+      90:	e8 00 00 00 00       	callq  95 <record_pos_htable_le+0x5>
+      95:	55                   	push   %rbp
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+      96:	48 85 f6             	test   %rsi,%rsi
+    u8 valid_flag;
+    //u8 level = hlevel;
+
+    ht = (struct hash_table_le *)nova_get_block(sb, block);  
+    if(!ht)
+        return -EINVAL;
+      99:	b8 ea ff ff ff       	mov    $0xffffffea,%eax
+
+/* record dentry-pos pairs in hash table
+ * ht_addr comes from last level*/
+int record_pos_htable_le(struct super_block *sb, u64 block, u64 hashname,\
+         u32 pos, u8 hlevel)
+{
+      9e:	48 89 e5             	mov    %rsp,%rbp
+      a1:	74 66                	je     109 <record_pos_htable_le+0x79>
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+      a3:	48 8b bf b0 03 00 00 	mov    0x3b0(%rdi),%rdi
+    //int offset, buckets;
+    u8 valid_flag;
+    //u8 level = hlevel;
+
+    ht = (struct hash_table_le *)nova_get_block(sb, block);  
+    if(!ht)
+      aa:	48 03 77 18          	add    0x18(%rdi),%rsi
+      ae:	74 59                	je     109 <record_pos_htable_le+0x79>
+      b0:	48 8d 7e 03          	lea    0x3(%rsi),%rdi
+      b4:	31 c0                	xor    %eax,%eax
+      b6:	eb 14                	jmp    cc <record_pos_htable_le+0x3c>
+        he = &ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+        if(!valid_flag)
+            goto fill_he;
+        i++;
+        h_pos ++;
+      b8:	44 8d 40 01          	lea    0x1(%rax),%r8d
+      bc:	48 83 c7 10          	add    $0x10,%rdi
+    if(!ht)
+        return -EINVAL;
+
+    h_pos = 0;
+
+    while(i<NR_HASH_ENTRIES_L5){
+      c0:	41 81 f8 00 10 00 00 	cmp    $0x1000,%r8d
+      c7:	74 08                	je     d1 <record_pos_htable_le+0x41>
+      c9:	44 89 c0             	mov    %r8d,%eax
+        he = &ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+        if(!valid_flag)
+      cc:	80 3f 00             	cmpb   $0x0,(%rdi)
+      cf:	75 e7                	jne    b8 <record_pos_htable_le+0x28>
+        return -EINVAL;
+
+    h_pos = 0;
+
+    while(i<NR_HASH_ENTRIES_L5){
+        he = &ht->hash_entry[h_pos];
+      d1:	48 c1 e0 04          	shl    $0x4,%rax
+      d5:	48 01 f0             	add    %rsi,%rax
+        h_pos ++;
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+      d8:	48 89 50 08          	mov    %rdx,0x8(%rax)
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+      dc:	c6 40 03 01          	movb   $0x1,0x3(%rax)
+}
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+      e0:	89 c6                	mov    %eax,%esi
+	if (support_clwb) {
+      e2:	8b 15 00 00 00 00    	mov    0x0(%rip),%edx        # e8 <record_pos_htable_le+0x58>
+}
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+      e8:	83 e6 3f             	and    $0x3f,%esi
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+    he->hd_pos = cpu_to_le32(pos);
+      eb:	89 48 04             	mov    %ecx,0x4(%rax)
+      ee:	83 c6 10             	add    $0x10,%esi
+	if (support_clwb) {
+      f1:	31 c9                	xor    %ecx,%ecx
+      f3:	85 d2                	test   %edx,%edx
+      f5:	74 14                	je     10b <record_pos_htable_le+0x7b>
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+      f7:	89 ca                	mov    %ecx,%edx
+      f9:	48 01 c2             	add    %rax,%rdx
+      fc:	66 0f ae 32          	clwb   (%rdx)
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     100:	83 c1 40             	add    $0x40,%ecx
+     103:	39 ce                	cmp    %ecx,%esi
+     105:	77 f0                	ja     f7 <record_pos_htable_le+0x67>
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    return 0;
+     107:	31 c0                	xor    %eax,%eax
+}
+     109:	5d                   	pop    %rbp
+     10a:	c3                   	retq   
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clflush(buf + i);
+     10b:	89 ca                	mov    %ecx,%edx
+     10d:	48 01 c2             	add    %rax,%rdx
+     110:	0f ae 3a             	clflush (%rdx)
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     113:	83 c1 40             	add    $0x40,%ecx
+     116:	39 ce                	cmp    %ecx,%esi
+     118:	77 f1                	ja     10b <record_pos_htable_le+0x7b>
+     11a:	eb eb                	jmp    107 <record_pos_htable_le+0x77>
+     11c:	0f 1f 40 00          	nopl   0x0(%rax)
+
+0000000000000120 <record_pos_htable_lf>:
+
+/* record dentry-pos pairs in hash table
+ * ht_addr comes from last level*/
+int record_pos_htable_lf(struct super_block *sb, u64 block, u64 hashname,\
+         u32 pos, u8 hlevel)
+{
+     120:	e8 00 00 00 00       	callq  125 <record_pos_htable_lf+0x5>
+     125:	55                   	push   %rbp
+     126:	48 89 e5             	mov    %rsp,%rbp
+     129:	41 55                	push   %r13
+     12b:	41 54                	push   %r12
+     12d:	53                   	push   %rbx
+     12e:	48 83 ec 18          	sub    $0x18,%rsp
+     132:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
+     139:	00 00 
+     13b:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+     13f:	31 c0                	xor    %eax,%eax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     141:	48 85 f6             	test   %rsi,%rsi
+
+    buckets = 8191;
+    offset = 4;
+    ht = (struct hash_table_lf *)nova_get_block(sb, block);  
+    if(!ht)
+        return -EINVAL;
+     144:	b8 ea ff ff ff       	mov    $0xffffffea,%eax
+     149:	0f 84 ba 00 00 00    	je     209 <record_pos_htable_lf+0xe9>
+     14f:	49 89 d4             	mov    %rdx,%r12
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     152:	48 8b 97 b0 03 00 00 	mov    0x3b0(%rdi),%rdx
+    u8 level = hlevel;
+
+    buckets = 8191;
+    offset = 4;
+    ht = (struct hash_table_lf *)nova_get_block(sb, block);  
+    if(!ht)
+     159:	48 89 f3             	mov    %rsi,%rbx
+     15c:	49 89 fd             	mov    %rdi,%r13
+     15f:	48 03 5a 18          	add    0x18(%rdx),%rbx
+     163:	0f 84 a0 00 00 00    	je     209 <record_pos_htable_lf+0xe9>
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     169:	4c 89 e0             	mov    %r12,%rax
+     16c:	48 ba 01 10 00 02 40 	movabs $0x8004002001001,%rdx
+     173:	00 08 00 
+     176:	4c 89 e7             	mov    %r12,%rdi
+     179:	48 f7 e2             	mul    %rdx
+     17c:	4c 89 e0             	mov    %r12,%rax
+     17f:	48 29 d0             	sub    %rdx,%rax
+     182:	48 d1 e8             	shr    %rax
+     185:	48 01 c2             	add    %rax,%rdx
+     188:	48 c1 ea 0c          	shr    $0xc,%rdx
+     18c:	48 89 d0             	mov    %rdx,%rax
+     18f:	48 c1 e0 0d          	shl    $0xd,%rax
+     193:	48 29 d0             	sub    %rdx,%rax
+     196:	48 29 c7             	sub    %rax,%rdi
+     199:	8d 14 bd fc ff ff ff 	lea    -0x4(,%rdi,4),%edx
+     1a0:	8d 7a 04             	lea    0x4(%rdx),%edi
+
+    while(i<offset){
+        he =  &ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+     1a3:	89 d6                	mov    %edx,%esi
+     1a5:	48 8d 46 04          	lea    0x4(%rsi),%rax
+     1a9:	48 c1 e0 04          	shl    $0x4,%rax
+     1ad:	48 01 d8             	add    %rbx,%rax
+        if(!valid_flag)
+     1b0:	80 78 03 00          	cmpb   $0x0,0x3(%rax)
+     1b4:	0f 84 80 00 00 00    	je     23a <record_pos_htable_lf+0x11a>
+            goto fill_he;
+        i++;
+        h_pos ++;
+     1ba:	83 c2 01             	add    $0x1,%edx
+    if(!ht)
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i<offset){
+     1bd:	39 fa                	cmp    %edi,%edx
+     1bf:	75 e2                	jne    1a3 <record_pos_htable_lf+0x83>
+            goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+     1c1:	48 8b 73 38          	mov    0x38(%rbx),%rsi
+    if(!tail){
+     1c5:	48 85 f6             	test   %rsi,%rsi
+            goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+     1c8:	48 89 75 d8          	mov    %rsi,-0x28(%rbp)
+    if(!tail){
+     1cc:	75 55                	jne    223 <record_pos_htable_lf+0x103>
+        //nova_dbg("%s %d extend",__func__, hlevel);
+        level ++;
+        get_hash_table(sb, hlevel, &tail);
+     1ce:	48 8d 55 d8          	lea    -0x28(%rbp),%rdx
+     1d2:	41 0f b6 f0          	movzbl %r8b,%esi
+     1d6:	4c 89 ef             	mov    %r13,%rdi
+     1d9:	89 4d d0             	mov    %ecx,-0x30(%rbp)
+     1dc:	44 89 45 d4          	mov    %r8d,-0x2c(%rbp)
+     1e0:	e8 00 00 00 00       	callq  1e5 <record_pos_htable_lf+0xc5>
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_le(sb, tail, hashname, pos, level);
+     1e5:	44 8b 45 d4          	mov    -0x2c(%rbp),%r8d
+    tail = le64_to_cpu(ht->hash_tail);
+    if(!tail){
+        //nova_dbg("%s %d extend",__func__, hlevel);
+        level ++;
+        get_hash_table(sb, hlevel, &tail);
+        ht->hash_tail = cpu_to_le64(tail);
+     1e9:	48 8b 75 d8          	mov    -0x28(%rbp),%rsi
+        record_pos_htable_le(sb, tail, hashname, pos, level);
+     1ed:	4c 89 e2             	mov    %r12,%rdx
+     1f0:	8b 4d d0             	mov    -0x30(%rbp),%ecx
+     1f3:	4c 89 ef             	mov    %r13,%rdi
+     1f6:	41 83 c0 01          	add    $0x1,%r8d
+    tail = le64_to_cpu(ht->hash_tail);
+    if(!tail){
+        //nova_dbg("%s %d extend",__func__, hlevel);
+        level ++;
+        get_hash_table(sb, hlevel, &tail);
+        ht->hash_tail = cpu_to_le64(tail);
+     1fa:	48 89 73 38          	mov    %rsi,0x38(%rbx)
+        record_pos_htable_le(sb, tail, hashname, pos, level);
+     1fe:	45 0f b6 c0          	movzbl %r8b,%r8d
+     202:	e8 00 00 00 00       	callq  207 <record_pos_htable_lf+0xe7>
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+     207:	31 c0                	xor    %eax,%eax
+}
+     209:	48 8b 5d e0          	mov    -0x20(%rbp),%rbx
+     20d:	65 48 33 1c 25 28 00 	xor    %gs:0x28,%rbx
+     214:	00 00 
+     216:	75 6d                	jne    285 <record_pos_htable_lf+0x165>
+     218:	48 83 c4 18          	add    $0x18,%rsp
+     21c:	5b                   	pop    %rbx
+     21d:	41 5c                	pop    %r12
+     21f:	41 5d                	pop    %r13
+     221:	5d                   	pop    %rbp
+     222:	c3                   	retq   
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_le(sb, tail, hashname, pos, level);
+        goto out;
+    } else {
+        level ++;
+        record_pos_htable_le(sb, tail, hashname,  pos, level);
+     223:	41 83 c0 01          	add    $0x1,%r8d
+     227:	4c 89 e2             	mov    %r12,%rdx
+     22a:	4c 89 ef             	mov    %r13,%rdi
+     22d:	45 0f b6 c0          	movzbl %r8b,%r8d
+     231:	e8 00 00 00 00       	callq  236 <record_pos_htable_lf+0x116>
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+     236:	31 c0                	xor    %eax,%eax
+        record_pos_htable_le(sb, tail, hashname, pos, level);
+        goto out;
+    } else {
+        level ++;
+        record_pos_htable_le(sb, tail, hashname,  pos, level);
+        goto out;
+     238:	eb cf                	jmp    209 <record_pos_htable_lf+0xe9>
+     23a:	48 c1 e6 04          	shl    $0x4,%rsi
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+     23e:	8b 15 00 00 00 00    	mov    0x0(%rip),%edx        # 244 <record_pos_htable_lf+0x124>
+     244:	48 01 f3             	add    %rsi,%rbx
+}
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+     247:	89 c6                	mov    %eax,%esi
+     249:	83 e6 3f             	and    $0x3f,%esi
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+    he->hd_pos = cpu_to_le32(pos);
+     24c:	89 4b 44             	mov    %ecx,0x44(%rbx)
+	if (support_clwb) {
+     24f:	31 c9                	xor    %ecx,%ecx
+}
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+     251:	83 c6 10             	add    $0x10,%esi
+	if (support_clwb) {
+     254:	85 d2                	test   %edx,%edx
+        goto out;
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+     256:	4c 89 63 48          	mov    %r12,0x48(%rbx)
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+     25a:	c6 43 43 01          	movb   $0x1,0x43(%rbx)
+     25e:	74 14                	je     274 <record_pos_htable_lf+0x154>
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+     260:	89 ca                	mov    %ecx,%edx
+     262:	48 01 c2             	add    %rax,%rdx
+     265:	66 0f ae 32          	clwb   (%rdx)
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     269:	83 c1 40             	add    $0x40,%ecx
+     26c:	39 ce                	cmp    %ecx,%esi
+     26e:	77 f0                	ja     260 <record_pos_htable_lf+0x140>
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+     270:	31 c0                	xor    %eax,%eax
+     272:	eb 95                	jmp    209 <record_pos_htable_lf+0xe9>
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clflush(buf + i);
+     274:	89 ca                	mov    %ecx,%edx
+     276:	48 01 c2             	add    %rax,%rdx
+     279:	0f ae 3a             	clflush (%rdx)
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     27c:	83 c1 40             	add    $0x40,%ecx
+     27f:	39 ce                	cmp    %ecx,%esi
+     281:	77 f1                	ja     274 <record_pos_htable_lf+0x154>
+     283:	eb eb                	jmp    270 <record_pos_htable_lf+0x150>
+}
+     285:	e8 00 00 00 00       	callq  28a <record_pos_htable_lf+0x16a>
+     28a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000000290 <record_pos_htable_lt>:
+/* record dentry-pos pairs in hash table
+ * ht_addr comes from last level*/
+int record_pos_htable_lt(struct super_block *sb, u64 block, u64 hashname,\
+         u32 pos, u8 hlevel)
+{
+     290:	e8 00 00 00 00       	callq  295 <record_pos_htable_lt+0x5>
+     295:	55                   	push   %rbp
+     296:	48 89 e5             	mov    %rsp,%rbp
+     299:	41 57                	push   %r15
+     29b:	41 56                	push   %r14
+     29d:	41 55                	push   %r13
+     29f:	41 54                	push   %r12
+     2a1:	53                   	push   %rbx
+     2a2:	48 83 ec 18          	sub    $0x18,%rsp
+     2a6:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
+     2ad:	00 00 
+     2af:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+     2b3:	31 c0                	xor    %eax,%eax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     2b5:	48 85 f6             	test   %rsi,%rsi
+
+    buckets = 16383;
+    offset = 4;
+    ht = (struct hash_table_lt *)nova_get_block(sb, block);  
+    if(!ht)
+        return -EINVAL;
+     2b8:	b8 ea ff ff ff       	mov    $0xffffffea,%eax
+     2bd:	0f 84 d0 00 00 00    	je     393 <record_pos_htable_lt+0x103>
+     2c3:	48 89 d3             	mov    %rdx,%rbx
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     2c6:	48 8b 97 b0 03 00 00 	mov    0x3b0(%rdi),%rdx
+     2cd:	49 89 fc             	mov    %rdi,%r12
+    u8 level = hlevel;
+
+    buckets = 16383;
+    offset = 4;
+    ht = (struct hash_table_lt *)nova_get_block(sb, block);  
+    if(!ht)
+     2d0:	48 03 72 18          	add    0x18(%rdx),%rsi
+     2d4:	49 89 f5             	mov    %rsi,%r13
+     2d7:	0f 84 b6 00 00 00    	je     393 <record_pos_htable_lt+0x103>
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     2dd:	48 89 d8             	mov    %rbx,%rax
+     2e0:	48 ba 01 01 40 00 10 	movabs $0x4001000400101,%rdx
+     2e7:	00 04 00 
+     2ea:	48 89 df             	mov    %rbx,%rdi
+     2ed:	48 f7 e2             	mul    %rdx
+     2f0:	48 89 d8             	mov    %rbx,%rax
+     2f3:	48 29 d0             	sub    %rdx,%rax
+     2f6:	48 d1 e8             	shr    %rax
+     2f9:	48 01 c2             	add    %rax,%rdx
+     2fc:	48 c1 ea 0d          	shr    $0xd,%rdx
+     300:	48 89 d0             	mov    %rdx,%rax
+     303:	48 c1 e0 0e          	shl    $0xe,%rax
+     307:	48 29 d0             	sub    %rdx,%rax
+     30a:	48 29 c7             	sub    %rax,%rdi
+     30d:	8d 14 bd fc ff ff ff 	lea    -0x4(,%rdi,4),%edx
+     314:	8d 7a 04             	lea    0x4(%rdx),%edi
+
+    while(i<offset){
+        he =  &ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+     317:	89 d6                	mov    %edx,%esi
+     319:	48 8d 46 04          	lea    0x4(%rsi),%rax
+     31d:	48 c1 e0 04          	shl    $0x4,%rax
+     321:	4c 01 e8             	add    %r13,%rax
+        if(!valid_flag)
+     324:	80 78 03 00          	cmpb   $0x0,0x3(%rax)
+     328:	0f 84 9d 00 00 00    	je     3cb <record_pos_htable_lt+0x13b>
+            goto fill_he;
+        i++;
+        h_pos ++;
+     32e:	83 c2 01             	add    $0x1,%edx
+    if(!ht)
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i<offset){
+     331:	39 fa                	cmp    %edi,%edx
+     333:	75 e2                	jne    317 <record_pos_htable_lt+0x87>
+            goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+     335:	4d 8b 7d 38          	mov    0x38(%r13),%r15
+    if(!tail){
+     339:	4d 85 ff             	test   %r15,%r15
+            goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+     33c:	4c 89 7d c8          	mov    %r15,-0x38(%rbp)
+    if(!tail){
+     340:	75 6f                	jne    3b1 <record_pos_htable_lt+0x121>
+        //nova_dbg("%s %d extend",__func__, hlevel);
+        level ++;
+        get_hash_table(sb, hlevel, &tail);
+     342:	48 8d 55 c8          	lea    -0x38(%rbp),%rdx
+     346:	41 0f b6 f0          	movzbl %r8b,%esi
+     34a:	4c 89 e7             	mov    %r12,%rdi
+     34d:	89 4d c4             	mov    %ecx,-0x3c(%rbp)
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+    if(!tail){
+        //nova_dbg("%s %d extend",__func__, hlevel);
+        level ++;
+     350:	45 8d 70 01          	lea    0x1(%r8),%r14d
+        get_hash_table(sb, hlevel, &tail);
+     354:	e8 00 00 00 00       	callq  359 <record_pos_htable_lt+0xc9>
+        htf = (struct hash_table_lf *)nova_get_block(sb, tail);
+     359:	48 8b 75 c8          	mov    -0x38(%rbp),%rsi
+     35d:	49 8b 84 24 b0 03 00 	mov    0x3b0(%r12),%rax
+     364:	00 
+        htf->hash_tail = 0;
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_lf(sb, tail, hashname, pos, level);
+     365:	45 0f b6 c6          	movzbl %r14b,%r8d
+     369:	8b 4d c4             	mov    -0x3c(%rbp),%ecx
+     36c:	48 89 da             	mov    %rbx,%rdx
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     36f:	48 89 f7             	mov    %rsi,%rdi
+     372:	48 03 78 18          	add    0x18(%rax),%rdi
+     376:	48 85 f6             	test   %rsi,%rsi
+     379:	4c 0f 45 ff          	cmovne %rdi,%r15
+     37d:	4c 89 e7             	mov    %r12,%rdi
+    if(!tail){
+        //nova_dbg("%s %d extend",__func__, hlevel);
+        level ++;
+        get_hash_table(sb, hlevel, &tail);
+        htf = (struct hash_table_lf *)nova_get_block(sb, tail);
+        htf->hash_tail = 0;
+     380:	49 c7 47 38 00 00 00 	movq   $0x0,0x38(%r15)
+     387:	00 
+        ht->hash_tail = cpu_to_le64(tail);
+     388:	49 89 75 38          	mov    %rsi,0x38(%r13)
+        record_pos_htable_lf(sb, tail, hashname, pos, level);
+     38c:	e8 00 00 00 00       	callq  391 <record_pos_htable_lt+0x101>
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+     391:	31 c0                	xor    %eax,%eax
+}
+     393:	48 8b 5d d0          	mov    -0x30(%rbp),%rbx
+     397:	65 48 33 1c 25 28 00 	xor    %gs:0x28,%rbx
+     39e:	00 00 
+     3a0:	75 76                	jne    418 <record_pos_htable_lt+0x188>
+     3a2:	48 83 c4 18          	add    $0x18,%rsp
+     3a6:	5b                   	pop    %rbx
+     3a7:	41 5c                	pop    %r12
+     3a9:	41 5d                	pop    %r13
+     3ab:	41 5e                	pop    %r14
+     3ad:	41 5f                	pop    %r15
+     3af:	5d                   	pop    %rbp
+     3b0:	c3                   	retq   
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_lf(sb, tail, hashname, pos, level);
+        goto out;
+    } else {
+        level ++;
+        record_pos_htable_lf(sb, tail, hashname,  pos, level);
+     3b1:	41 83 c0 01          	add    $0x1,%r8d
+     3b5:	48 89 da             	mov    %rbx,%rdx
+     3b8:	4c 89 fe             	mov    %r15,%rsi
+     3bb:	45 0f b6 c0          	movzbl %r8b,%r8d
+     3bf:	4c 89 e7             	mov    %r12,%rdi
+     3c2:	e8 00 00 00 00       	callq  3c7 <record_pos_htable_lt+0x137>
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+     3c7:	31 c0                	xor    %eax,%eax
+        record_pos_htable_lf(sb, tail, hashname, pos, level);
+        goto out;
+    } else {
+        level ++;
+        record_pos_htable_lf(sb, tail, hashname,  pos, level);
+        goto out;
+     3c9:	eb c8                	jmp    393 <record_pos_htable_lt+0x103>
+     3cb:	48 c1 e6 04          	shl    $0x4,%rsi
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+     3cf:	8b 15 00 00 00 00    	mov    0x0(%rip),%edx        # 3d5 <record_pos_htable_lt+0x145>
+     3d5:	49 01 f5             	add    %rsi,%r13
+}
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+     3d8:	89 c6                	mov    %eax,%esi
+     3da:	83 e6 3f             	and    $0x3f,%esi
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+    he->hd_pos = cpu_to_le32(pos);
+     3dd:	41 89 4d 44          	mov    %ecx,0x44(%r13)
+	if (support_clwb) {
+     3e1:	31 c9                	xor    %ecx,%ecx
+}
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+     3e3:	83 c6 10             	add    $0x10,%esi
+	if (support_clwb) {
+     3e6:	85 d2                	test   %edx,%edx
+        goto out;
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+     3e8:	49 89 5d 48          	mov    %rbx,0x48(%r13)
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+     3ec:	41 c6 45 43 01       	movb   $0x1,0x43(%r13)
+     3f1:	74 14                	je     407 <record_pos_htable_lt+0x177>
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+     3f3:	89 ca                	mov    %ecx,%edx
+     3f5:	48 01 c2             	add    %rax,%rdx
+     3f8:	66 0f ae 32          	clwb   (%rdx)
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     3fc:	83 c1 40             	add    $0x40,%ecx
+     3ff:	39 ce                	cmp    %ecx,%esi
+     401:	77 f0                	ja     3f3 <record_pos_htable_lt+0x163>
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+     403:	31 c0                	xor    %eax,%eax
+     405:	eb 8c                	jmp    393 <record_pos_htable_lt+0x103>
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clflush(buf + i);
+     407:	89 ca                	mov    %ecx,%edx
+     409:	48 01 c2             	add    %rax,%rdx
+     40c:	0f ae 3a             	clflush (%rdx)
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     40f:	83 c1 40             	add    $0x40,%ecx
+     412:	39 ce                	cmp    %ecx,%esi
+     414:	77 f1                	ja     407 <record_pos_htable_lt+0x177>
+     416:	eb eb                	jmp    403 <record_pos_htable_lt+0x173>
+}
+     418:	e8 00 00 00 00       	callq  41d <record_pos_htable_lt+0x18d>
+     41d:	0f 1f 00             	nopl   (%rax)
+
+0000000000000420 <record_pos_htable_ls>:
+
+/* record dentry-pos pairs in hash table
+ * ht_addr comes from last level*/
+int record_pos_htable_ls(struct super_block *sb, u64 block, u64 hashname,\
+        u32 pos, u8 hlevel)
+{
+     420:	e8 00 00 00 00       	callq  425 <record_pos_htable_ls+0x5>
+     425:	55                   	push   %rbp
+     426:	48 89 e5             	mov    %rsp,%rbp
+     429:	41 57                	push   %r15
+     42b:	41 56                	push   %r14
+     42d:	41 55                	push   %r13
+     42f:	41 54                	push   %r12
+     431:	53                   	push   %rbx
+     432:	48 83 ec 18          	sub    $0x18,%rsp
+     436:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
+     43d:	00 00 
+     43f:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+     443:	31 c0                	xor    %eax,%eax
+     445:	48 85 f6             	test   %rsi,%rsi
+
+    buckets = 32768;
+    offset = 4;
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    if(!ht)
+        return -EINVAL;
+     448:	b8 ea ff ff ff       	mov    $0xffffffea,%eax
+     44d:	0f 84 aa 00 00 00    	je     4fd <record_pos_htable_ls+0xdd>
+     453:	49 89 d5             	mov    %rdx,%r13
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     456:	48 8b 97 b0 03 00 00 	mov    0x3b0(%rdi),%rdx
+    u8 level = hlevel;
+
+    buckets = 32768;
+    offset = 4;
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    if(!ht)
+     45d:	48 89 f3             	mov    %rsi,%rbx
+     460:	49 89 fc             	mov    %rdi,%r12
+     463:	48 03 5a 18          	add    0x18(%rdx),%rbx
+     467:	0f 84 90 00 00 00    	je     4fd <record_pos_htable_ls+0xdd>
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     46d:	4c 89 e8             	mov    %r13,%rax
+     470:	25 ff 7f 00 00       	and    $0x7fff,%eax
+     475:	8d 14 85 fc ff ff ff 	lea    -0x4(,%rax,4),%edx
+     47c:	44 8d 4a 04          	lea    0x4(%rdx),%r9d
+
+    while(i<offset){
+        he =  &ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+     480:	89 d7                	mov    %edx,%edi
+     482:	48 8d 47 04          	lea    0x4(%rdi),%rax
+     486:	48 c1 e0 04          	shl    $0x4,%rax
+     48a:	48 01 d8             	add    %rbx,%rax
+        if(!valid_flag)
+     48d:	80 78 03 00          	cmpb   $0x0,0x3(%rax)
+     491:	0f 84 9e 00 00 00    	je     535 <record_pos_htable_ls+0x115>
+            goto fill_he;
+        i++;
+        h_pos ++;
+     497:	83 c2 01             	add    $0x1,%edx
+    if(!ht)
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i<offset){
+     49a:	44 39 ca             	cmp    %r9d,%edx
+     49d:	75 e1                	jne    480 <record_pos_htable_ls+0x60>
+            goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+     49f:	4c 8b 7b 38          	mov    0x38(%rbx),%r15
+    if(!tail){
+     4a3:	4d 85 ff             	test   %r15,%r15
+            goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+     4a6:	4c 89 7d c8          	mov    %r15,-0x38(%rbp)
+    if(!tail){
+     4aa:	75 6f                	jne    51b <record_pos_htable_ls+0xfb>
+        //nova_dbg("%s %d extend",__func__, hlevel);
+        level ++;
+        get_hash_table(sb, hlevel, &tail);
+     4ac:	48 8d 55 c8          	lea    -0x38(%rbp),%rdx
+     4b0:	41 0f b6 f0          	movzbl %r8b,%esi
+     4b4:	4c 89 e7             	mov    %r12,%rdi
+     4b7:	89 4d c4             	mov    %ecx,-0x3c(%rbp)
+    }
+
+    tail = le64_to_cpu(ht->hash_tail);
+    if(!tail){
+        //nova_dbg("%s %d extend",__func__, hlevel);
+        level ++;
+     4ba:	45 8d 70 01          	lea    0x1(%r8),%r14d
+        get_hash_table(sb, hlevel, &tail);
+     4be:	e8 00 00 00 00       	callq  4c3 <record_pos_htable_ls+0xa3>
+        htt = (struct hash_table_lt *)nova_get_block(sb, tail);
+     4c3:	48 8b 75 c8          	mov    -0x38(%rbp),%rsi
+     4c7:	49 8b 84 24 b0 03 00 	mov    0x3b0(%r12),%rax
+     4ce:	00 
+        htt->hash_tail = 0;
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_lt(sb, tail, hashname, pos, level);
+     4cf:	45 0f b6 c6          	movzbl %r14b,%r8d
+     4d3:	8b 4d c4             	mov    -0x3c(%rbp),%ecx
+     4d6:	4c 89 ea             	mov    %r13,%rdx
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     4d9:	48 89 f7             	mov    %rsi,%rdi
+     4dc:	48 03 78 18          	add    0x18(%rax),%rdi
+     4e0:	48 85 f6             	test   %rsi,%rsi
+     4e3:	4c 0f 45 ff          	cmovne %rdi,%r15
+     4e7:	4c 89 e7             	mov    %r12,%rdi
+    if(!tail){
+        //nova_dbg("%s %d extend",__func__, hlevel);
+        level ++;
+        get_hash_table(sb, hlevel, &tail);
+        htt = (struct hash_table_lt *)nova_get_block(sb, tail);
+        htt->hash_tail = 0;
+     4ea:	49 c7 47 38 00 00 00 	movq   $0x0,0x38(%r15)
+     4f1:	00 
+        ht->hash_tail = cpu_to_le64(tail);
+     4f2:	48 89 73 38          	mov    %rsi,0x38(%rbx)
+        record_pos_htable_lt(sb, tail, hashname, pos, level);
+     4f6:	e8 00 00 00 00       	callq  4fb <record_pos_htable_ls+0xdb>
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+     4fb:	31 c0                	xor    %eax,%eax
+}
+     4fd:	48 8b 5d d0          	mov    -0x30(%rbp),%rbx
+     501:	65 48 33 1c 25 28 00 	xor    %gs:0x28,%rbx
+     508:	00 00 
+     50a:	75 74                	jne    580 <record_pos_htable_ls+0x160>
+     50c:	48 83 c4 18          	add    $0x18,%rsp
+     510:	5b                   	pop    %rbx
+     511:	41 5c                	pop    %r12
+     513:	41 5d                	pop    %r13
+     515:	41 5e                	pop    %r14
+     517:	41 5f                	pop    %r15
+     519:	5d                   	pop    %rbp
+     51a:	c3                   	retq   
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_lt(sb, tail, hashname, pos, level);
+        goto out;
+    } else {
+        level ++;
+        record_pos_htable_lt(sb, tail, hashname, pos, level);
+     51b:	41 83 c0 01          	add    $0x1,%r8d
+     51f:	4c 89 ea             	mov    %r13,%rdx
+     522:	4c 89 fe             	mov    %r15,%rsi
+     525:	45 0f b6 c0          	movzbl %r8b,%r8d
+     529:	4c 89 e7             	mov    %r12,%rdi
+     52c:	e8 00 00 00 00       	callq  531 <record_pos_htable_ls+0x111>
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+     531:	31 c0                	xor    %eax,%eax
+        record_pos_htable_lt(sb, tail, hashname, pos, level);
+        goto out;
+    } else {
+        level ++;
+        record_pos_htable_lt(sb, tail, hashname, pos, level);
+        goto out;
+     533:	eb c8                	jmp    4fd <record_pos_htable_ls+0xdd>
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+     535:	8b 15 00 00 00 00    	mov    0x0(%rip),%edx        # 53b <record_pos_htable_ls+0x11b>
+     53b:	48 c1 e7 04          	shl    $0x4,%rdi
+}
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+     53f:	89 c6                	mov    %eax,%esi
+     541:	48 01 fb             	add    %rdi,%rbx
+     544:	83 e6 3f             	and    $0x3f,%esi
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+    he->hd_pos = cpu_to_le32(pos);
+     547:	89 4b 44             	mov    %ecx,0x44(%rbx)
+     54a:	83 c6 10             	add    $0x10,%esi
+	if (support_clwb) {
+     54d:	31 c9                	xor    %ecx,%ecx
+     54f:	85 d2                	test   %edx,%edx
+        goto out;
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    he->hd_name = cpu_to_le64(hashname);
+     551:	4c 89 6b 48          	mov    %r13,0x48(%rbx)
+    he->hd_pos = cpu_to_le32(pos);
+    he->invalid = 1;
+     555:	c6 43 43 01          	movb   $0x1,0x43(%rbx)
+     559:	74 14                	je     56f <record_pos_htable_ls+0x14f>
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+     55b:	89 ca                	mov    %ecx,%edx
+     55d:	48 01 c2             	add    %rax,%rdx
+     560:	66 0f ae 32          	clwb   (%rdx)
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     564:	83 c1 40             	add    $0x40,%ecx
+     567:	39 ce                	cmp    %ecx,%esi
+     569:	77 f0                	ja     55b <record_pos_htable_ls+0x13b>
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    return 0;
+     56b:	31 c0                	xor    %eax,%eax
+     56d:	eb 8e                	jmp    4fd <record_pos_htable_ls+0xdd>
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clflush(buf + i);
+     56f:	89 ca                	mov    %ecx,%edx
+     571:	48 01 c2             	add    %rax,%rdx
+     574:	0f ae 3a             	clflush (%rdx)
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     577:	83 c1 40             	add    $0x40,%ecx
+     57a:	39 ce                	cmp    %ecx,%esi
+     57c:	77 f1                	ja     56f <record_pos_htable_ls+0x14f>
+     57e:	eb eb                	jmp    56b <record_pos_htable_ls+0x14b>
+}
+     580:	e8 00 00 00 00       	callq  585 <record_pos_htable_ls+0x165>
+     585:	90                   	nop
+     586:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     58d:	00 00 00 
+
+0000000000000590 <record_pos_htable>:
+/* record dentry-pos pairs in hash table
+ * ht_addr comes from dzt_ei*/
+int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
+         u32 pos, u8 hlevel)
+{
+     590:	e8 00 00 00 00       	callq  595 <record_pos_htable+0x5>
+     595:	55                   	push   %rbp
+     596:	48 89 e5             	mov    %rsp,%rbp
+     599:	41 57                	push   %r15
+     59b:	41 56                	push   %r14
+     59d:	41 55                	push   %r13
+     59f:	41 54                	push   %r12
+     5a1:	53                   	push   %rbx
+     5a2:	48 83 ec 20          	sub    $0x20,%rsp
+     5a6:	89 4d c4             	mov    %ecx,-0x3c(%rbp)
+     5a9:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
+     5b0:	00 00 
+     5b2:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+     5b6:	31 c0                	xor    %eax,%eax
+     5b8:	48 85 f6             	test   %rsi,%rsi
+    //nova_dbg("dafs record pos in hash table address is %llu", block);
+    buckets = 65535; 
+    offset = 4;
+    ht = (struct hash_table *)nova_get_block(sb, block);  
+    if(!ht)
+        return -EINVAL;
+     5bb:	b8 ea ff ff ff       	mov    $0xffffffea,%eax
+     5c0:	0f 84 a6 00 00 00    	je     66c <record_pos_htable+0xdc>
+     5c6:	49 89 d6             	mov    %rdx,%r14
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     5c9:	48 8b 97 b0 03 00 00 	mov    0x3b0(%rdi),%rdx
+     5d0:	49 89 ff             	mov    %rdi,%r15
+
+    //nova_dbg("dafs record pos in hash table address is %llu", block);
+    buckets = 65535; 
+    offset = 4;
+    ht = (struct hash_table *)nova_get_block(sb, block);  
+    if(!ht)
+     5d3:	48 03 72 18          	add    0x18(%rdx),%rsi
+     5d7:	49 89 f5             	mov    %rsi,%r13
+     5da:	0f 84 8c 00 00 00    	je     66c <record_pos_htable+0xdc>
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     5e0:	4c 89 f0             	mov    %r14,%rax
+     5e3:	48 ba 01 80 00 80 00 	movabs $0x8000800080008001,%rdx
+     5ea:	80 00 80 
+     5ed:	4c 89 f1             	mov    %r14,%rcx
+     5f0:	48 f7 e2             	mul    %rdx
+     5f3:	45 89 c4             	mov    %r8d,%r12d
+     5f6:	48 c1 ea 0f          	shr    $0xf,%rdx
+     5fa:	48 89 d0             	mov    %rdx,%rax
+     5fd:	48 c1 e0 10          	shl    $0x10,%rax
+     601:	48 29 d0             	sub    %rdx,%rax
+     604:	48 29 c1             	sub    %rax,%rcx
+     607:	8d 14 8d fc ff ff ff 	lea    -0x4(,%rcx,4),%edx
+     60e:	8d 42 04             	lea    0x4(%rdx),%eax
+
+    while(i<offset){
+        he =  &ht->hash_entry[h_pos];
+        valid_flag = he->invalid;
+     611:	41 89 d0             	mov    %edx,%r8d
+     614:	49 8d 58 04          	lea    0x4(%r8),%rbx
+     618:	48 c1 e3 04          	shl    $0x4,%rbx
+     61c:	4c 01 eb             	add    %r13,%rbx
+        if(!valid_flag)
+     61f:	80 7b 03 00          	cmpb   $0x0,0x3(%rbx)
+     623:	74 65                	je     68a <record_pos_htable+0xfa>
+            goto fill_he;
+        i++;
+        h_pos ++;
+     625:	83 c2 01             	add    $0x1,%edx
+    if(!ht)
+        return -EINVAL;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i<offset){
+     628:	39 c2                	cmp    %eax,%edx
+     62a:	75 e5                	jne    611 <record_pos_htable+0x81>
+            goto fill_he;
+        i++;
+        h_pos ++;
+    }
+
+    nova_dbg("%s buckets full",__func__);
+     62c:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+     633:	48 c7 c7 00 00 00 00 	mov    $0x0,%rdi
+     63a:	e8 00 00 00 00       	callq  63f <record_pos_htable+0xaf>
+    tail = le64_to_cpu(ht->hash_tail);
+     63f:	49 8b 5d 38          	mov    0x38(%r13),%rbx
+    if(!tail){
+     643:	48 85 db             	test   %rbx,%rbx
+        i++;
+        h_pos ++;
+    }
+
+    nova_dbg("%s buckets full",__func__);
+    tail = le64_to_cpu(ht->hash_tail);
+     646:	48 89 5d c8          	mov    %rbx,-0x38(%rbp)
+    if(!tail){
+     64a:	0f 84 aa 00 00 00    	je     6fa <record_pos_htable+0x16a>
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_ls(sb, tail, hashname,  pos, hlevel);
+        goto out;
+    } else {
+        hlevel ++;
+        record_pos_htable_ls(sb, tail, hashname, pos, hlevel);
+     650:	45 8d 44 24 01       	lea    0x1(%r12),%r8d
+     655:	8b 4d c4             	mov    -0x3c(%rbp),%ecx
+     658:	4c 89 f2             	mov    %r14,%rdx
+     65b:	48 89 de             	mov    %rbx,%rsi
+     65e:	4c 89 ff             	mov    %r15,%rdi
+     661:	45 0f b6 c0          	movzbl %r8b,%r8d
+     665:	e8 00 00 00 00       	callq  66a <record_pos_htable+0xda>
+    he->hd_pos = cpu_to_le32(pos);
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    //nova_dbg("dafs finish recording pos in hash table");
+    return 0;
+     66a:	31 c0                	xor    %eax,%eax
+}
+     66c:	48 8b 7d d0          	mov    -0x30(%rbp),%rdi
+     670:	65 48 33 3c 25 28 00 	xor    %gs:0x28,%rdi
+     677:	00 00 
+     679:	75 7a                	jne    6f5 <record_pos_htable+0x165>
+     67b:	48 83 c4 20          	add    $0x20,%rsp
+     67f:	5b                   	pop    %rbx
+     680:	41 5c                	pop    %r12
+     682:	41 5d                	pop    %r13
+     684:	41 5e                	pop    %r14
+     686:	41 5f                	pop    %r15
+     688:	5d                   	pop    %rbp
+     689:	c3                   	retq   
+        goto out;
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    nova_dbg("%s mark in pos %d",__func__, h_pos);
+     68a:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+     691:	48 c7 c7 00 00 00 00 	mov    $0x0,%rdi
+     698:	4c 89 45 b8          	mov    %r8,-0x48(%rbp)
+     69c:	e8 00 00 00 00       	callq  6a1 <record_pos_htable+0x111>
+     6a1:	4c 8b 45 b8          	mov    -0x48(%rbp),%r8
+    he->hd_name = cpu_to_le64(hashname);
+    he->invalid = 1;
+    he->hd_pos = cpu_to_le32(pos);
+     6a5:	8b 45 c4             	mov    -0x3c(%rbp),%eax
+}
+
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+     6a8:	89 da                	mov    %ebx,%edx
+     6aa:	83 e2 3f             	and    $0x3f,%edx
+     6ad:	83 c2 10             	add    $0x10,%edx
+     6b0:	49 c1 e0 04          	shl    $0x4,%r8
+     6b4:	4b 8d 4c 05 00       	lea    0x0(%r13,%r8,1),%rcx
+     6b9:	89 41 44             	mov    %eax,0x44(%rcx)
+    }
+
+fill_he:
+    //he = &ht->hash_entry[h_pos];
+    nova_dbg("%s mark in pos %d",__func__, h_pos);
+    he->hd_name = cpu_to_le64(hashname);
+     6bc:	4c 89 71 48          	mov    %r14,0x48(%rcx)
+	if (support_clwb) {
+     6c0:	31 c0                	xor    %eax,%eax
+    he->invalid = 1;
+     6c2:	c6 41 43 01          	movb   $0x1,0x43(%rcx)
+     6c6:	8b 0d 00 00 00 00    	mov    0x0(%rip),%ecx        # 6cc <record_pos_htable+0x13c>
+     6cc:	85 c9                	test   %ecx,%ecx
+     6ce:	74 14                	je     6e4 <record_pos_htable+0x154>
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+     6d0:	89 c1                	mov    %eax,%ecx
+     6d2:	48 01 d9             	add    %rbx,%rcx
+     6d5:	66 0f ae 31          	clwb   (%rcx)
+static inline void nova_flush_buffer(void *buf, uint32_t len, bool fence)
+{
+	uint32_t i;
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     6d9:	83 c0 40             	add    $0x40,%eax
+     6dc:	39 c2                	cmp    %eax,%edx
+     6de:	77 f0                	ja     6d0 <record_pos_htable+0x140>
+    he->hd_pos = cpu_to_le32(pos);
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    //nova_dbg("dafs finish recording pos in hash table");
+    return 0;
+     6e0:	31 c0                	xor    %eax,%eax
+     6e2:	eb 88                	jmp    66c <record_pos_htable+0xdc>
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clflush(buf + i);
+     6e4:	89 c1                	mov    %eax,%ecx
+     6e6:	48 01 d9             	add    %rbx,%rcx
+     6e9:	0f ae 39             	clflush (%rcx)
+	len = len + ((unsigned long)(buf) & (CACHELINE_SIZE - 1));
+	if (support_clwb) {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+			_mm_clwb(buf + i);
+	} else {
+		for (i = 0; i < len; i += CACHELINE_SIZE)
+     6ec:	83 c0 40             	add    $0x40,%eax
+     6ef:	39 c2                	cmp    %eax,%edx
+     6f1:	77 f1                	ja     6e4 <record_pos_htable+0x154>
+     6f3:	eb eb                	jmp    6e0 <record_pos_htable+0x150>
+}
+     6f5:	e8 00 00 00 00       	callq  6fa <record_pos_htable+0x16a>
+    }
+
+    nova_dbg("%s buckets full",__func__);
+    tail = le64_to_cpu(ht->hash_tail);
+    if(!tail){
+        nova_dbg("%s hashtable %d extend",__func__, hlevel);
+     6fa:	41 0f b6 d4          	movzbl %r12b,%edx
+     6fe:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+     705:	48 c7 c7 00 00 00 00 	mov    $0x0,%rdi
+        hlevel ++;
+        get_hash_table(sb, hlevel, &tail);
+     70c:	41 83 c4 01          	add    $0x1,%r12d
+    }
+
+    nova_dbg("%s buckets full",__func__);
+    tail = le64_to_cpu(ht->hash_tail);
+    if(!tail){
+        nova_dbg("%s hashtable %d extend",__func__, hlevel);
+     710:	e8 00 00 00 00       	callq  715 <record_pos_htable+0x185>
+        hlevel ++;
+        get_hash_table(sb, hlevel, &tail);
+     715:	45 0f b6 e4          	movzbl %r12b,%r12d
+     719:	48 8d 55 c8          	lea    -0x38(%rbp),%rdx
+     71d:	4c 89 ff             	mov    %r15,%rdi
+     720:	44 89 e6             	mov    %r12d,%esi
+     723:	e8 00 00 00 00       	callq  728 <record_pos_htable+0x198>
+        hts = (struct hash_table_ls *)nova_get_block(sb, tail);
+     728:	48 8b 75 c8          	mov    -0x38(%rbp),%rsi
+     72c:	49 8b 87 b0 03 00 00 	mov    0x3b0(%r15),%rax
+        hts->hash_tail = 0;
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_ls(sb, tail, hashname,  pos, hlevel);
+     733:	45 89 e0             	mov    %r12d,%r8d
+     736:	8b 4d c4             	mov    -0x3c(%rbp),%ecx
+     739:	4c 89 f2             	mov    %r14,%rdx
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     73c:	48 89 f7             	mov    %rsi,%rdi
+     73f:	48 03 78 18          	add    0x18(%rax),%rdi
+     743:	48 85 f6             	test   %rsi,%rsi
+     746:	48 0f 45 df          	cmovne %rdi,%rbx
+     74a:	4c 89 ff             	mov    %r15,%rdi
+    if(!tail){
+        nova_dbg("%s hashtable %d extend",__func__, hlevel);
+        hlevel ++;
+        get_hash_table(sb, hlevel, &tail);
+        hts = (struct hash_table_ls *)nova_get_block(sb, tail);
+        hts->hash_tail = 0;
+     74d:	48 c7 43 38 00 00 00 	movq   $0x0,0x38(%rbx)
+     754:	00 
+        ht->hash_tail = cpu_to_le64(tail);
+     755:	49 89 75 38          	mov    %rsi,0x38(%r13)
+        record_pos_htable_ls(sb, tail, hashname,  pos, hlevel);
+     759:	e8 00 00 00 00       	callq  75e <record_pos_htable+0x1ce>
+    he->hd_pos = cpu_to_le32(pos);
+    nova_flush_buffer(he, sizeof(struct hash_entry),0);
+    
+out:
+    //nova_dbg("dafs finish recording pos in hash table");
+    return 0;
+     75e:	31 c0                	xor    %eax,%eax
+        get_hash_table(sb, hlevel, &tail);
+        hts = (struct hash_table_ls *)nova_get_block(sb, tail);
+        hts->hash_tail = 0;
+        ht->hash_tail = cpu_to_le64(tail);
+        record_pos_htable_ls(sb, tail, hashname,  pos, hlevel);
+        goto out;
+     760:	e9 07 ff ff ff       	jmpq   66c <record_pos_htable+0xdc>
+     765:	90                   	nop
+     766:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     76d:	00 00 00 
+
+0000000000000770 <lookup_ht_le>:
+    //nova_dbg("dafs finish recording pos in hash table");
+    return 0;
+}
+
+int lookup_ht_le(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)
+{
+     770:	e8 00 00 00 00       	callq  775 <lookup_ht_le+0x5>
+     775:	55                   	push   %rbp
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     776:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     77d:	48 89 f7             	mov    %rsi,%rdi
+     780:	48 89 e5             	mov    %rsp,%rbp
+     783:	48 03 78 18          	add    0x18(%rax),%rdi
+     787:	48 85 f6             	test   %rsi,%rsi
+     78a:	48 89 f8             	mov    %rdi,%rax
+     78d:	bf 00 00 00 00       	mov    $0x0,%edi
+     792:	48 0f 45 f8          	cmovne %rax,%rdi
+     796:	b8 01 00 00 00       	mov    $0x1,%eax
+     79b:	48 8d 4f 03          	lea    0x3(%rdi),%rcx
+     79f:	eb 0e                	jmp    7af <lookup_ht_le+0x3f>
+     7a1:	83 c0 01             	add    $0x1,%eax
+     7a4:	48 83 c1 10          	add    $0x10,%rcx
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_le *)nova_get_block(sb, block);  
+
+    h_pos = 0;
+
+    while(h_pos< NR_HASH_ENTRIES_L5) {
+     7a8:	3d 01 10 00 00       	cmp    $0x1001,%eax
+     7ad:	74 20                	je     7cf <lookup_ht_le+0x5f>
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     7af:	80 39 00             	cmpb   $0x0,(%rcx)
+     7b2:	8d 70 ff             	lea    -0x1(%rax),%esi
+     7b5:	74 ea                	je     7a1 <lookup_ht_le+0x31>
+            h_pos++;
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     7b7:	48 39 51 05          	cmp    %rdx,0x5(%rcx)
+     7bb:	75 e4                	jne    7a1 <lookup_ht_le+0x31>
+            *pos = le32_to_cpu(he->hd_pos);
+     7bd:	48 c1 e6 04          	shl    $0x4,%rsi
+     7c1:	8b 44 37 04          	mov    0x4(%rdi,%rsi,1),%eax
+        }
+    }
+
+out: 
+    return ret;
+}
+     7c5:	5d                   	pop    %rbp
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+     7c6:	41 89 00             	mov    %eax,(%r8)
+            ret = 1;
+     7c9:	b8 01 00 00 00       	mov    $0x1,%eax
+        }
+    }
+
+out: 
+    return ret;
+}
+     7ce:	c3                   	retq   
+{
+    struct hash_table_le *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    //u64 tail;
+    int  ret=0;
+     7cf:	31 c0                	xor    %eax,%eax
+        }
+    }
+
+out: 
+    return ret;
+}
+     7d1:	5d                   	pop    %rbp
+     7d2:	c3                   	retq   
+     7d3:	0f 1f 00             	nopl   (%rax)
+     7d6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     7dd:	00 00 00 
+
+00000000000007e0 <lookup_ht_lf>:
+
+int lookup_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)
+{
+     7e0:	e8 00 00 00 00       	callq  7e5 <lookup_ht_lf+0x5>
+     7e5:	55                   	push   %rbp
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     7e6:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+     7ed:	49 89 d1             	mov    %rdx,%r9
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     7f0:	48 85 f6             	test   %rsi,%rsi
+     7f3:	4c 89 c9             	mov    %r9,%rcx
+     7f6:	48 89 e5             	mov    %rsp,%rbp
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     7f9:	48 8b 78 18          	mov    0x18(%rax),%rdi
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     7fd:	b8 00 00 00 00       	mov    $0x0,%eax
+     802:	48 8d 14 37          	lea    (%rdi,%rsi,1),%rdx
+     806:	48 0f 45 c2          	cmovne %rdx,%rax
+     80a:	48 ba 01 10 00 02 40 	movabs $0x8004002001001,%rdx
+     811:	00 08 00 
+     814:	48 89 c6             	mov    %rax,%rsi
+     817:	4c 89 c8             	mov    %r9,%rax
+     81a:	48 f7 e2             	mul    %rdx
+     81d:	4c 89 c8             	mov    %r9,%rax
+     820:	48 29 d0             	sub    %rdx,%rax
+     823:	48 d1 e8             	shr    %rax
+     826:	48 01 c2             	add    %rax,%rdx
+     829:	48 c1 ea 0c          	shr    $0xc,%rdx
+     82d:	48 89 d0             	mov    %rdx,%rax
+     830:	48 c1 e0 0d          	shl    $0xd,%rax
+     834:	48 29 d0             	sub    %rdx,%rax
+     837:	48 29 c1             	sub    %rax,%rcx
+     83a:	8d 14 8d fd ff ff ff 	lea    -0x3(,%rcx,4),%edx
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_lf *)nova_get_block(sb, block);  
+    buckets = 8191;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     841:	b9 01 00 00 00       	mov    $0x1,%ecx
+     846:	44 8d 52 ff          	lea    -0x1(%rdx),%r10d
+     84a:	4c 89 d0             	mov    %r10,%rax
+     84d:	48 c1 e0 04          	shl    $0x4,%rax
+     851:	48 01 f0             	add    %rsi,%rax
+
+    while(i < offset) {
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     854:	80 78 43 00          	cmpb   $0x0,0x43(%rax)
+     858:	74 06                	je     860 <lookup_ht_lf+0x80>
+            h_pos++;
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     85a:	4c 3b 48 48          	cmp    0x48(%rax),%r9
+     85e:	74 58                	je     8b8 <lookup_ht_lf+0xd8>
+     860:	83 c1 01             	add    $0x1,%ecx
+     863:	83 c2 01             	add    $0x1,%edx
+    buckets = 8191;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+     866:	83 f9 05             	cmp    $0x5,%ecx
+     869:	75 db                	jne    846 <lookup_ht_lf+0x66>
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+     86b:	48 8b 56 38          	mov    0x38(%rsi),%rdx
+{
+    struct hash_table_lf *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset, s_pos = 0;
+    u64 tail;
+    int i = 0, ret=0;
+     86f:	31 c0                	xor    %eax,%eax
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+     871:	48 85 d2             	test   %rdx,%rdx
+     874:	74 3a                	je     8b0 <lookup_ht_lf+0xd0>
+     876:	48 01 d7             	add    %rdx,%rdi
+     879:	b8 01 00 00 00       	mov    $0x1,%eax
+     87e:	48 8d 57 03          	lea    0x3(%rdi),%rdx
+     882:	eb 0e                	jmp    892 <lookup_ht_lf+0xb2>
+     884:	83 c0 01             	add    $0x1,%eax
+     887:	48 83 c2 10          	add    $0x10,%rdx
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_le *)nova_get_block(sb, block);  
+
+    h_pos = 0;
+
+    while(h_pos< NR_HASH_ENTRIES_L5) {
+     88b:	3d 01 10 00 00       	cmp    $0x1001,%eax
+     890:	74 20                	je     8b2 <lookup_ht_lf+0xd2>
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     892:	80 3a 00             	cmpb   $0x0,(%rdx)
+     895:	8d 48 ff             	lea    -0x1(%rax),%ecx
+     898:	74 ea                	je     884 <lookup_ht_lf+0xa4>
+            h_pos++;
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     89a:	4c 3b 4a 05          	cmp    0x5(%rdx),%r9
+     89e:	75 e4                	jne    884 <lookup_ht_lf+0xa4>
+            *pos = le32_to_cpu(he->hd_pos);
+     8a0:	48 c1 e1 04          	shl    $0x4,%rcx
+            ret = 1;
+     8a4:	b8 01 00 00 00       	mov    $0x1,%eax
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+     8a9:	8b 54 0f 04          	mov    0x4(%rdi,%rcx,1),%edx
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        //nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
+        hlevel++;
+        ret = lookup_ht_le(sb, tail, hashname, hlevel, &s_pos);
+        *pos = s_pos;
+     8ad:	41 89 10             	mov    %edx,(%r8)
+    }
+out: 
+    return ret;
+}
+     8b0:	5d                   	pop    %rbp
+     8b1:	c3                   	retq   
+
+int lookup_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)
+{
+    struct hash_table_lf *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset, s_pos = 0;
+     8b2:	31 d2                	xor    %edx,%edx
+{
+    struct hash_table_le *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    //u64 tail;
+    int  ret=0;
+     8b4:	31 c0                	xor    %eax,%eax
+     8b6:	eb f5                	jmp    8ad <lookup_ht_lf+0xcd>
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+     8b8:	49 83 c2 04          	add    $0x4,%r10
+     8bc:	49 c1 e2 04          	shl    $0x4,%r10
+     8c0:	42 8b 44 16 04       	mov    0x4(%rsi,%r10,1),%eax
+        ret = lookup_ht_le(sb, tail, hashname, hlevel, &s_pos);
+        *pos = s_pos;
+    }
+out: 
+    return ret;
+}
+     8c5:	5d                   	pop    %rbp
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+     8c6:	41 89 00             	mov    %eax,(%r8)
+            ret = 1;
+     8c9:	b8 01 00 00 00       	mov    $0x1,%eax
+        ret = lookup_ht_le(sb, tail, hashname, hlevel, &s_pos);
+        *pos = s_pos;
+    }
+out: 
+    return ret;
+}
+     8ce:	c3                   	retq   
+     8cf:	90                   	nop
+
+00000000000008d0 <lookup_ht_lt>:
+
+int lookup_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)
+{
+     8d0:	e8 00 00 00 00       	callq  8d5 <lookup_ht_lt+0x5>
+     8d5:	55                   	push   %rbp
+     8d6:	49 89 d1             	mov    %rdx,%r9
+     8d9:	48 ba 01 01 40 00 10 	movabs $0x4001000400101,%rdx
+     8e0:	00 04 00 
+     8e3:	48 89 e5             	mov    %rsp,%rbp
+     8e6:	53                   	push   %rbx
+     8e7:	4c 89 c3             	mov    %r8,%rbx
+     8ea:	49 89 f0             	mov    %rsi,%r8
+     8ed:	48 83 ec 10          	sub    $0x10,%rsp
+    struct hash_table_lt *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset, s_pos = 0;
+     8f1:	c7 45 ec 00 00 00 00 	movl   $0x0,-0x14(%rbp)
+out: 
+    return ret;
+}
+
+int lookup_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)
+{
+     8f8:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
+     8ff:	00 00 
+     901:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+     905:	31 c0                	xor    %eax,%eax
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     907:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     90e:	4c 03 40 18          	add    0x18(%rax),%r8
+     912:	48 85 f6             	test   %rsi,%rsi
+     915:	b8 00 00 00 00       	mov    $0x0,%eax
+     91a:	4c 89 ce             	mov    %r9,%rsi
+     91d:	4c 0f 44 c0          	cmove  %rax,%r8
+     921:	4c 89 c8             	mov    %r9,%rax
+     924:	48 f7 e2             	mul    %rdx
+     927:	4c 89 c8             	mov    %r9,%rax
+     92a:	48 29 d0             	sub    %rdx,%rax
+     92d:	48 d1 e8             	shr    %rax
+     930:	48 01 c2             	add    %rax,%rdx
+     933:	48 c1 ea 0d          	shr    $0xd,%rdx
+     937:	48 89 d0             	mov    %rdx,%rax
+     93a:	48 c1 e0 0e          	shl    $0xe,%rax
+     93e:	48 29 d0             	sub    %rdx,%rax
+     941:	48 29 c6             	sub    %rax,%rsi
+     944:	8d 14 b5 fd ff ff ff 	lea    -0x3(,%rsi,4),%edx
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_lt *)nova_get_block(sb, block);  
+    buckets = 16383;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     94b:	be 01 00 00 00       	mov    $0x1,%esi
+     950:	44 8d 52 ff          	lea    -0x1(%rdx),%r10d
+     954:	4c 89 d0             	mov    %r10,%rax
+     957:	48 c1 e0 04          	shl    $0x4,%rax
+     95b:	4c 01 c0             	add    %r8,%rax
+
+    while(i < offset) {
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     95e:	80 78 43 00          	cmpb   $0x0,0x43(%rax)
+     962:	74 06                	je     96a <lookup_ht_lt+0x9a>
+            h_pos++;
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     964:	4c 3b 48 48          	cmp    0x48(%rax),%r9
+     968:	74 43                	je     9ad <lookup_ht_lt+0xdd>
+     96a:	83 c6 01             	add    $0x1,%esi
+     96d:	83 c2 01             	add    $0x1,%edx
+    buckets = 16383;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+     970:	83 fe 05             	cmp    $0x5,%esi
+     973:	75 db                	jne    950 <lookup_ht_lt+0x80>
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+     975:	49 8b 70 38          	mov    0x38(%r8),%rsi
+{
+    struct hash_table_lt *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset, s_pos = 0;
+    u64 tail;
+    int i = 0, ret=0;
+     979:	31 c0                	xor    %eax,%eax
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+     97b:	48 85 f6             	test   %rsi,%rsi
+     97e:	74 17                	je     997 <lookup_ht_lt+0xc7>
+        //nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
+        hlevel++;
+        ret = lookup_ht_lf(sb, tail, hashname, hlevel, &s_pos);
+     980:	83 c1 01             	add    $0x1,%ecx
+     983:	4c 8d 45 ec          	lea    -0x14(%rbp),%r8
+     987:	4c 89 ca             	mov    %r9,%rdx
+     98a:	0f b6 c9             	movzbl %cl,%ecx
+     98d:	e8 00 00 00 00       	callq  992 <lookup_ht_lt+0xc2>
+        *pos = s_pos;
+     992:	8b 55 ec             	mov    -0x14(%rbp),%edx
+     995:	89 13                	mov    %edx,(%rbx)
+    }
+out: 
+    return ret;
+}
+     997:	48 8b 5d f0          	mov    -0x10(%rbp),%rbx
+     99b:	65 48 33 1c 25 28 00 	xor    %gs:0x28,%rbx
+     9a2:	00 00 
+     9a4:	75 1d                	jne    9c3 <lookup_ht_lt+0xf3>
+     9a6:	48 83 c4 10          	add    $0x10,%rsp
+     9aa:	5b                   	pop    %rbx
+     9ab:	5d                   	pop    %rbp
+     9ac:	c3                   	retq   
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+     9ad:	49 83 c2 04          	add    $0x4,%r10
+     9b1:	49 c1 e2 04          	shl    $0x4,%r10
+     9b5:	43 8b 44 10 04       	mov    0x4(%r8,%r10,1),%eax
+     9ba:	89 03                	mov    %eax,(%rbx)
+            ret = 1;
+     9bc:	b8 01 00 00 00       	mov    $0x1,%eax
+            goto out;
+     9c1:	eb d4                	jmp    997 <lookup_ht_lt+0xc7>
+        ret = lookup_ht_lf(sb, tail, hashname, hlevel, &s_pos);
+        *pos = s_pos;
+    }
+out: 
+    return ret;
+}
+     9c3:	e8 00 00 00 00       	callq  9c8 <lookup_ht_lt+0xf8>
+     9c8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+     9cf:	00 
+
+00000000000009d0 <lookup_ht_ls>:
+/*look up hashname in hash table for right position
+ * &pos for position of dentry
+ * hlevel for hash table level 
+ * return 1 for found*/
+int lookup_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)
+{
+     9d0:	e8 00 00 00 00       	callq  9d5 <lookup_ht_ls+0x5>
+     9d5:	55                   	push   %rbp
+     9d6:	49 89 d1             	mov    %rdx,%r9
+     9d9:	48 ba 11 00 08 00 04 	movabs $0x2000400080011,%rdx
+     9e0:	00 02 00 
+     9e3:	48 89 e5             	mov    %rsp,%rbp
+     9e6:	53                   	push   %rbx
+     9e7:	4c 89 c3             	mov    %r8,%rbx
+     9ea:	49 89 f0             	mov    %rsi,%r8
+     9ed:	48 83 ec 10          	sub    $0x10,%rsp
+    struct hash_table_ls *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset, s_pos = 0;
+     9f1:	c7 45 ec 00 00 00 00 	movl   $0x0,-0x14(%rbp)
+/*look up hashname in hash table for right position
+ * &pos for position of dentry
+ * hlevel for hash table level 
+ * return 1 for found*/
+int lookup_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)
+{
+     9f8:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
+     9ff:	00 00 
+     a01:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+     a05:	31 c0                	xor    %eax,%eax
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     a07:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     a0e:	4c 03 40 18          	add    0x18(%rax),%r8
+     a12:	48 85 f6             	test   %rsi,%rsi
+     a15:	b8 00 00 00 00       	mov    $0x0,%eax
+     a1a:	4c 89 ce             	mov    %r9,%rsi
+     a1d:	4c 0f 44 c0          	cmove  %rax,%r8
+     a21:	4c 89 c8             	mov    %r9,%rax
+     a24:	48 f7 e2             	mul    %rdx
+     a27:	4c 89 c8             	mov    %r9,%rax
+     a2a:	48 29 d0             	sub    %rdx,%rax
+     a2d:	48 d1 e8             	shr    %rax
+     a30:	48 01 c2             	add    %rax,%rdx
+     a33:	48 c1 ea 0e          	shr    $0xe,%rdx
+     a37:	48 89 d0             	mov    %rdx,%rax
+     a3a:	48 c1 e0 0f          	shl    $0xf,%rax
+     a3e:	48 29 d0             	sub    %rdx,%rax
+     a41:	48 29 c6             	sub    %rax,%rsi
+     a44:	8d 14 b5 fd ff ff ff 	lea    -0x3(,%rsi,4),%edx
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    buckets = 32767;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     a4b:	be 01 00 00 00       	mov    $0x1,%esi
+     a50:	44 8d 52 ff          	lea    -0x1(%rdx),%r10d
+     a54:	4c 89 d0             	mov    %r10,%rax
+     a57:	48 c1 e0 04          	shl    $0x4,%rax
+     a5b:	4c 01 c0             	add    %r8,%rax
+
+    while(i < offset) {
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     a5e:	80 78 43 00          	cmpb   $0x0,0x43(%rax)
+     a62:	74 06                	je     a6a <lookup_ht_ls+0x9a>
+            h_pos++;
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     a64:	4c 3b 48 48          	cmp    0x48(%rax),%r9
+     a68:	74 43                	je     aad <lookup_ht_ls+0xdd>
+     a6a:	83 c6 01             	add    $0x1,%esi
+     a6d:	83 c2 01             	add    $0x1,%edx
+    buckets = 32767;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+     a70:	83 fe 05             	cmp    $0x5,%esi
+     a73:	75 db                	jne    a50 <lookup_ht_ls+0x80>
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+     a75:	49 8b 70 38          	mov    0x38(%r8),%rsi
+{
+    struct hash_table_ls *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset, s_pos = 0;
+    u64 tail;
+    int i = 0, ret=0;
+     a79:	31 c0                	xor    %eax,%eax
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+     a7b:	48 85 f6             	test   %rsi,%rsi
+     a7e:	74 17                	je     a97 <lookup_ht_ls+0xc7>
+        //nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
+        hlevel++;
+        ret = lookup_ht_lt(sb, tail, hashname, hlevel, &s_pos);
+     a80:	83 c1 01             	add    $0x1,%ecx
+     a83:	4c 8d 45 ec          	lea    -0x14(%rbp),%r8
+     a87:	4c 89 ca             	mov    %r9,%rdx
+     a8a:	0f b6 c9             	movzbl %cl,%ecx
+     a8d:	e8 00 00 00 00       	callq  a92 <lookup_ht_ls+0xc2>
+        *pos = s_pos;
+     a92:	8b 55 ec             	mov    -0x14(%rbp),%edx
+     a95:	89 13                	mov    %edx,(%rbx)
+    }
+out: 
+    return ret;
+}
+     a97:	48 8b 5d f0          	mov    -0x10(%rbp),%rbx
+     a9b:	65 48 33 1c 25 28 00 	xor    %gs:0x28,%rbx
+     aa2:	00 00 
+     aa4:	75 1d                	jne    ac3 <lookup_ht_ls+0xf3>
+     aa6:	48 83 c4 10          	add    $0x10,%rsp
+     aaa:	5b                   	pop    %rbx
+     aab:	5d                   	pop    %rbp
+     aac:	c3                   	retq   
+            continue;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            *pos = le32_to_cpu(he->hd_pos);
+     aad:	49 83 c2 04          	add    $0x4,%r10
+     ab1:	49 c1 e2 04          	shl    $0x4,%r10
+     ab5:	43 8b 44 10 04       	mov    0x4(%r8,%r10,1),%eax
+     aba:	89 03                	mov    %eax,(%rbx)
+            ret = 1;
+     abc:	b8 01 00 00 00       	mov    $0x1,%eax
+            goto out;
+     ac1:	eb d4                	jmp    a97 <lookup_ht_ls+0xc7>
+        ret = lookup_ht_lt(sb, tail, hashname, hlevel, &s_pos);
+        *pos = s_pos;
+    }
+out: 
+    return ret;
+}
+     ac3:	e8 00 00 00 00       	callq  ac8 <lookup_ht_ls+0xf8>
+     ac8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+     acf:	00 
+
+0000000000000ad0 <lookup_in_hashtable>:
+/*look up hashname in hash table for right position
+ * &pos for position of dentry
+ * hlevel for hash table level 
+ * return 1 for found*/
+int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)
+{
+     ad0:	e8 00 00 00 00       	callq  ad5 <lookup_in_hashtable+0x5>
+     ad5:	55                   	push   %rbp
+     ad6:	48 89 e5             	mov    %rsp,%rbp
+     ad9:	41 54                	push   %r12
+     adb:	53                   	push   %rbx
+     adc:	48 83 ec 10          	sub    $0x10,%rsp
+    struct hash_table *ht;
+    struct hash_entry *he;
+    //struct ht_ptr *ht_p;
+    u32 h_pos, buckets, offset, s_pos=0;
+     ae0:	c7 45 e4 00 00 00 00 	movl   $0x0,-0x1c(%rbp)
+/*look up hashname in hash table for right position
+ * &pos for position of dentry
+ * hlevel for hash table level 
+ * return 1 for found*/
+int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32 *pos)
+{
+     ae7:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
+     aee:	00 00 
+     af0:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+     af4:	31 c0                	xor    %eax,%eax
+    u64 h_name;
+    u8 valid_flag;
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    //nova_dbg("%s start",__func__);
+    BUG_ON(block==0);
+     af6:	48 85 f6             	test   %rsi,%rsi
+     af9:	0f 84 b0 00 00 00    	je     baf <lookup_in_hashtable+0xdf>
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     aff:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+     b06:	49 89 d4             	mov    %rdx,%r12
+     b09:	48 ba 01 80 00 80 00 	movabs $0x8000800080008001,%rdx
+     b10:	80 00 80 
+     b13:	4c 89 c3             	mov    %r8,%rbx
+    ht = (struct hash_table *)nova_get_block(sb, block);  
+
+    buckets = 65535;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     b16:	41 ba 01 00 00 00    	mov    $0x1,%r10d
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     b1c:	48 03 70 18          	add    0x18(%rax),%rsi
+     b20:	4c 89 e0             	mov    %r12,%rax
+     b23:	48 f7 e2             	mul    %rdx
+     b26:	48 c1 ea 0f          	shr    $0xf,%rdx
+     b2a:	48 89 d0             	mov    %rdx,%rax
+     b2d:	48 c1 e0 10          	shl    $0x10,%rax
+     b31:	48 29 d0             	sub    %rdx,%rax
+     b34:	4c 89 e2             	mov    %r12,%rdx
+     b37:	48 29 c2             	sub    %rax,%rdx
+     b3a:	44 8d 0c 95 fd ff ff 	lea    -0x3(,%rdx,4),%r9d
+     b41:	ff 
+     b42:	45 8d 59 ff          	lea    -0x1(%r9),%r11d
+     b46:	4c 89 d8             	mov    %r11,%rax
+     b49:	48 c1 e0 04          	shl    $0x4,%rax
+     b4d:	48 01 f0             	add    %rsi,%rax
+
+    while(i < offset) {
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     b50:	80 78 43 00          	cmpb   $0x0,0x43(%rax)
+     b54:	74 06                	je     b5c <lookup_in_hashtable+0x8c>
+            i++;
+            h_pos++;
+        }else{
+            /*found valid pos*/
+            h_name = le64_to_cpu(he->hd_name);
+            if(h_name==hashname){
+     b56:	4c 3b 60 48          	cmp    0x48(%rax),%r12
+     b5a:	74 55                	je     bb1 <lookup_in_hashtable+0xe1>
+     b5c:	41 83 c2 01          	add    $0x1,%r10d
+     b60:	41 83 c1 01          	add    $0x1,%r9d
+    buckets = 65535;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+     b64:	41 83 fa 05          	cmp    $0x5,%r10d
+     b68:	75 d8                	jne    b42 <lookup_in_hashtable+0x72>
+            }
+        }
+    }
+
+    //nova_dbg("%s:not find pos",__func__);
+    tail = le64_to_cpu(ht->hash_tail);
+     b6a:	48 8b 76 38          	mov    0x38(%rsi),%rsi
+    if(tail) {
+     b6e:	48 85 f6             	test   %rsi,%rsi
+     b71:	75 23                	jne    b96 <lookup_in_hashtable+0xc6>
+        hlevel++;
+        ret = lookup_ht_ls(sb, tail, hashname, hlevel, &s_pos);
+        *pos = s_pos;
+
+    } else
+        nova_dbgv("%s:not find tail ",__func__);
+     b73:	f6 05 00 00 00 00 10 	testb  $0x10,0x0(%rip)        # b7a <lookup_in_hashtable+0xaa>
+     b7a:	75 4b                	jne    bc7 <lookup_in_hashtable+0xf7>
+    struct hash_table *ht;
+    struct hash_entry *he;
+    //struct ht_ptr *ht_p;
+    u32 h_pos, buckets, offset, s_pos=0;
+    u64 tail;
+    int i = 0, ret=0;
+     b7c:	31 c0                	xor    %eax,%eax
+        nova_dbgv("%s:not find tail ",__func__);
+
+out: 
+    //nova_dbg("dafs finish lookup in hash table");
+    return ret;
+}
+     b7e:	48 8b 5d e8          	mov    -0x18(%rbp),%rbx
+     b82:	65 48 33 1c 25 28 00 	xor    %gs:0x28,%rbx
+     b89:	00 00 
+     b8b:	75 51                	jne    bde <lookup_in_hashtable+0x10e>
+     b8d:	48 83 c4 10          	add    $0x10,%rsp
+     b91:	5b                   	pop    %rbx
+     b92:	41 5c                	pop    %r12
+     b94:	5d                   	pop    %rbp
+     b95:	c3                   	retq   
+    //nova_dbg("%s:not find pos",__func__);
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        //nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
+        hlevel++;
+        ret = lookup_ht_ls(sb, tail, hashname, hlevel, &s_pos);
+     b96:	83 c1 01             	add    $0x1,%ecx
+     b99:	4c 8d 45 e4          	lea    -0x1c(%rbp),%r8
+     b9d:	4c 89 e2             	mov    %r12,%rdx
+     ba0:	0f b6 c9             	movzbl %cl,%ecx
+     ba3:	e8 00 00 00 00       	callq  ba8 <lookup_in_hashtable+0xd8>
+        *pos = s_pos;
+     ba8:	8b 55 e4             	mov    -0x1c(%rbp),%edx
+     bab:	89 13                	mov    %edx,(%rbx)
+     bad:	eb cf                	jmp    b7e <lookup_in_hashtable+0xae>
+    u64 h_name;
+    u8 valid_flag;
+
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    //nova_dbg("%s start",__func__);
+    BUG_ON(block==0);
+     baf:	0f 0b                	ud2    
+        }else{
+            /*found valid pos*/
+            h_name = le64_to_cpu(he->hd_name);
+            if(h_name==hashname){
+                //nova_dbg("%s hashname %llu, pos %d",__func__, h_name, he->hd_pos);
+                *pos = le32_to_cpu(he->hd_pos);
+     bb1:	49 83 c3 04          	add    $0x4,%r11
+     bb5:	49 c1 e3 04          	shl    $0x4,%r11
+     bb9:	42 8b 44 1e 04       	mov    0x4(%rsi,%r11,1),%eax
+     bbe:	89 03                	mov    %eax,(%rbx)
+                ret = 1;
+     bc0:	b8 01 00 00 00       	mov    $0x1,%eax
+                goto out;
+     bc5:	eb b7                	jmp    b7e <lookup_in_hashtable+0xae>
+        hlevel++;
+        ret = lookup_ht_ls(sb, tail, hashname, hlevel, &s_pos);
+        *pos = s_pos;
+
+    } else
+        nova_dbgv("%s:not find tail ",__func__);
+     bc7:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+     bce:	48 c7 c7 00 00 00 00 	mov    $0x0,%rdi
+     bd5:	e8 00 00 00 00       	callq  bda <lookup_in_hashtable+0x10a>
+    struct hash_table *ht;
+    struct hash_entry *he;
+    //struct ht_ptr *ht_p;
+    u32 h_pos, buckets, offset, s_pos=0;
+    u64 tail;
+    int i = 0, ret=0;
+     bda:	31 c0                	xor    %eax,%eax
+     bdc:	eb a0                	jmp    b7e <lookup_in_hashtable+0xae>
+        nova_dbgv("%s:not find tail ",__func__);
+
+out: 
+    //nova_dbg("dafs finish lookup in hash table");
+    return ret;
+}
+     bde:	e8 00 00 00 00       	callq  be3 <lookup_in_hashtable+0x113>
+     be3:	0f 1f 00             	nopl   (%rax)
+     be6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     bed:	00 00 00 
+
+0000000000000bf0 <make_invalid_ht_le>:
+
+int make_invalid_ht_le(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     bf0:	e8 00 00 00 00       	callq  bf5 <make_invalid_ht_le+0x5>
+     bf5:	55                   	push   %rbp
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     bf6:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     bfd:	48 89 f7             	mov    %rsi,%rdi
+     c00:	48 89 e5             	mov    %rsp,%rbp
+     c03:	48 03 78 18          	add    0x18(%rax),%rdi
+     c07:	48 85 f6             	test   %rsi,%rsi
+     c0a:	be 00 00 00 00       	mov    $0x0,%esi
+     c0f:	48 0f 45 f7          	cmovne %rdi,%rsi
+    u64 h_name;
+    u8 valid_flag;
+
+    ht = (struct hash_table_le *)nova_get_block(sb, block);  
+
+    h_pos = 0;
+     c13:	31 c9                	xor    %ecx,%ecx
+     c15:	89 c8                	mov    %ecx,%eax
+     c17:	48 c1 e0 04          	shl    $0x4,%rax
+     c1b:	48 01 f0             	add    %rsi,%rax
+
+    while(h_pos< NR_HASH_ENTRIES_L5) {
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+            h_pos++;
+     c1e:	80 78 03 01          	cmpb   $0x1,0x3(%rax)
+     c22:	83 d1 00             	adc    $0x0,%ecx
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     c25:	48 39 50 08          	cmp    %rdx,0x8(%rax)
+     c29:	74 0f                	je     c3a <make_invalid_ht_le+0x4a>
+           he->invalid = 0;
+            ret = 1;
+            goto out;
+        } else {
+            h_pos++;
+     c2b:	83 c1 01             	add    $0x1,%ecx
+
+    ht = (struct hash_table_le *)nova_get_block(sb, block);  
+
+    h_pos = 0;
+
+    while(h_pos< NR_HASH_ENTRIES_L5) {
+     c2e:	81 f9 ff 0f 00 00    	cmp    $0xfff,%ecx
+     c34:	76 df                	jbe    c15 <make_invalid_ht_le+0x25>
+{
+    struct hash_table_le *ht;
+    struct hash_entry *he;
+    u32 h_pos;
+    //u64 tail;
+    int ret=0;
+     c36:	31 c0                	xor    %eax,%eax
+            h_pos++;
+        }
+    }
+out:
+    return ret;
+}
+     c38:	5d                   	pop    %rbp
+     c39:	c3                   	retq   
+            h_pos++;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+           he->invalid = 0;
+     c3a:	c6 40 03 00          	movb   $0x0,0x3(%rax)
+            ret = 1;
+     c3e:	b8 01 00 00 00       	mov    $0x1,%eax
+            h_pos++;
+        }
+    }
+out:
+    return ret;
+}
+     c43:	5d                   	pop    %rbp
+     c44:	c3                   	retq   
+     c45:	90                   	nop
+     c46:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     c4d:	00 00 00 
+
+0000000000000c50 <make_invalid_ht_lf>:
+
+int make_invalid_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     c50:	e8 00 00 00 00       	callq  c55 <make_invalid_ht_lf+0x5>
+     c55:	55                   	push   %rbp
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     c56:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     c5d:	48 85 f6             	test   %rsi,%rsi
+     c60:	49 89 d0             	mov    %rdx,%r8
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_lf *)nova_get_block(sb, block);  
+    buckets = 8191;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     c63:	48 ba 01 10 00 02 40 	movabs $0x8004002001001,%rdx
+     c6a:	00 08 00 
+     c6d:	4c 89 c1             	mov    %r8,%rcx
+out:
+    return ret;
+}
+
+int make_invalid_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     c70:	48 89 e5             	mov    %rsp,%rbp
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     c73:	4c 8b 48 18          	mov    0x18(%rax),%r9
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     c77:	b8 00 00 00 00       	mov    $0x0,%eax
+     c7c:	49 8d 3c 31          	lea    (%r9,%rsi,1),%rdi
+     c80:	48 0f 44 f8          	cmove  %rax,%rdi
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_lf *)nova_get_block(sb, block);  
+    buckets = 8191;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     c84:	4c 89 c0             	mov    %r8,%rax
+     c87:	48 f7 e2             	mul    %rdx
+     c8a:	4c 89 c0             	mov    %r8,%rax
+     c8d:	48 29 d0             	sub    %rdx,%rax
+     c90:	48 d1 e8             	shr    %rax
+     c93:	48 01 c2             	add    %rax,%rdx
+     c96:	48 c1 ea 0c          	shr    $0xc,%rdx
+     c9a:	48 89 d0             	mov    %rdx,%rax
+     c9d:	48 c1 e0 0d          	shl    $0xd,%rax
+     ca1:	48 29 d0             	sub    %rdx,%rax
+     ca4:	48 29 c1             	sub    %rax,%rcx
+     ca7:	8d 04 8d fc ff ff ff 	lea    -0x4(,%rcx,4),%eax
+{
+    struct hash_table_lf *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset;
+    u64 tail;
+    int i = 0, ret=0;
+     cae:	31 c9                	xor    %ecx,%ecx
+     cb0:	eb 0b                	jmp    cbd <make_invalid_ht_lf+0x6d>
+        if(h_name==hashname){
+            he->invalid = 0;
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+     cb2:	83 c1 01             	add    $0x1,%ecx
+            h_pos++;
+     cb5:	83 c0 01             	add    $0x1,%eax
+    buckets = 8191;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+     cb8:	83 f9 03             	cmp    $0x3,%ecx
+     cbb:	7f 32                	jg     cef <make_invalid_ht_lf+0x9f>
+     cbd:	89 c6                	mov    %eax,%esi
+     cbf:	48 89 f2             	mov    %rsi,%rdx
+     cc2:	48 c1 e2 04          	shl    $0x4,%rdx
+     cc6:	48 01 fa             	add    %rdi,%rdx
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     cc9:	80 7a 43 00          	cmpb   $0x0,0x43(%rdx)
+     ccd:	75 06                	jne    cd5 <make_invalid_ht_lf+0x85>
+            i++;
+     ccf:	83 c1 01             	add    $0x1,%ecx
+            h_pos++;
+     cd2:	83 c0 01             	add    $0x1,%eax
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     cd5:	4c 3b 42 48          	cmp    0x48(%rdx),%r8
+     cd9:	75 d7                	jne    cb2 <make_invalid_ht_lf+0x62>
+            he->invalid = 0;
+     cdb:	48 83 c6 04          	add    $0x4,%rsi
+            ret = 1;
+     cdf:	b8 01 00 00 00       	mov    $0x1,%eax
+            h_pos++;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            he->invalid = 0;
+     ce4:	48 c1 e6 04          	shl    $0x4,%rsi
+     ce8:	c6 44 37 03 00       	movb   $0x0,0x3(%rdi,%rsi,1)
+        hlevel++;
+        ret = make_invalid_ht_le(sb, tail, hashname, hlevel);
+    }
+out: 
+    return ret;
+}
+     ced:	5d                   	pop    %rbp
+     cee:	c3                   	retq   
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+     cef:	48 8b 57 38          	mov    0x38(%rdi),%rdx
+{
+    struct hash_table_lf *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset;
+    u64 tail;
+    int i = 0, ret=0;
+     cf3:	31 c0                	xor    %eax,%eax
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+     cf5:	48 85 d2             	test   %rdx,%rdx
+     cf8:	74 f3                	je     ced <make_invalid_ht_lf+0x9d>
+     cfa:	49 01 d1             	add    %rdx,%r9
+    u64 h_name;
+    u8 valid_flag;
+
+    ht = (struct hash_table_le *)nova_get_block(sb, block);  
+
+    h_pos = 0;
+     cfd:	31 d2                	xor    %edx,%edx
+     cff:	89 d0                	mov    %edx,%eax
+     d01:	48 c1 e0 04          	shl    $0x4,%rax
+     d05:	4c 01 c8             	add    %r9,%rax
+
+    while(h_pos< NR_HASH_ENTRIES_L5) {
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+            h_pos++;
+     d08:	80 78 03 01          	cmpb   $0x1,0x3(%rax)
+     d0c:	83 d2 00             	adc    $0x0,%edx
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     d0f:	4c 3b 40 08          	cmp    0x8(%rax),%r8
+     d13:	74 0f                	je     d24 <make_invalid_ht_lf+0xd4>
+           he->invalid = 0;
+            ret = 1;
+            goto out;
+        } else {
+            h_pos++;
+     d15:	83 c2 01             	add    $0x1,%edx
+
+    ht = (struct hash_table_le *)nova_get_block(sb, block);  
+
+    h_pos = 0;
+
+    while(h_pos< NR_HASH_ENTRIES_L5) {
+     d18:	81 fa ff 0f 00 00    	cmp    $0xfff,%edx
+     d1e:	76 df                	jbe    cff <make_invalid_ht_lf+0xaf>
+{
+    struct hash_table_lf *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset;
+    u64 tail;
+    int i = 0, ret=0;
+     d20:	31 c0                	xor    %eax,%eax
+        hlevel++;
+        ret = make_invalid_ht_le(sb, tail, hashname, hlevel);
+    }
+out: 
+    return ret;
+}
+     d22:	5d                   	pop    %rbp
+     d23:	c3                   	retq   
+            h_pos++;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+           he->invalid = 0;
+     d24:	c6 40 03 00          	movb   $0x0,0x3(%rax)
+            ret = 1;
+     d28:	b8 01 00 00 00       	mov    $0x1,%eax
+        hlevel++;
+        ret = make_invalid_ht_le(sb, tail, hashname, hlevel);
+    }
+out: 
+    return ret;
+}
+     d2d:	5d                   	pop    %rbp
+     d2e:	c3                   	retq   
+     d2f:	90                   	nop
+
+0000000000000d30 <make_invalid_ht_lt>:
+
+int make_invalid_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     d30:	e8 00 00 00 00       	callq  d35 <make_invalid_ht_lt+0x5>
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     d35:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     d3c:	49 89 f3             	mov    %rsi,%r11
+     d3f:	49 89 d2             	mov    %rdx,%r10
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_lt *)nova_get_block(sb, block);  
+    buckets = 16383;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     d42:	48 ba 01 01 40 00 10 	movabs $0x4001000400101,%rdx
+     d49:	00 04 00 
+     d4c:	4c 03 58 18          	add    0x18(%rax),%r11
+     d50:	48 85 f6             	test   %rsi,%rsi
+     d53:	b8 00 00 00 00       	mov    $0x0,%eax
+     d58:	4c 0f 44 d8          	cmove  %rax,%r11
+     d5c:	4c 89 d0             	mov    %r10,%rax
+{
+    struct hash_table_lt *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset;
+    u64 tail;
+    int i = 0, ret=0;
+     d5f:	45 31 c0             	xor    %r8d,%r8d
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_lt *)nova_get_block(sb, block);  
+    buckets = 16383;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     d62:	48 f7 e2             	mul    %rdx
+     d65:	4c 89 d0             	mov    %r10,%rax
+     d68:	48 29 d0             	sub    %rdx,%rax
+     d6b:	48 d1 e8             	shr    %rax
+     d6e:	48 01 c2             	add    %rax,%rdx
+     d71:	48 c1 ea 0d          	shr    $0xd,%rdx
+     d75:	48 89 d0             	mov    %rdx,%rax
+     d78:	48 c1 e0 0e          	shl    $0xe,%rax
+     d7c:	48 29 d0             	sub    %rdx,%rax
+     d7f:	4c 89 d2             	mov    %r10,%rdx
+     d82:	48 29 c2             	sub    %rax,%rdx
+     d85:	8d 04 95 fc ff ff ff 	lea    -0x4(,%rdx,4),%eax
+     d8c:	eb 0d                	jmp    d9b <make_invalid_ht_lt+0x6b>
+        if(h_name==hashname){
+            he->invalid = 0;
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+     d8e:	41 83 c0 01          	add    $0x1,%r8d
+            h_pos++;
+     d92:	83 c0 01             	add    $0x1,%eax
+    buckets = 16383;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+     d95:	41 83 f8 03          	cmp    $0x3,%r8d
+     d99:	7f 34                	jg     dcf <make_invalid_ht_lt+0x9f>
+     d9b:	41 89 c1             	mov    %eax,%r9d
+     d9e:	4c 89 ce             	mov    %r9,%rsi
+     da1:	48 c1 e6 04          	shl    $0x4,%rsi
+     da5:	4c 01 de             	add    %r11,%rsi
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     da8:	80 7e 43 00          	cmpb   $0x0,0x43(%rsi)
+     dac:	75 07                	jne    db5 <make_invalid_ht_lt+0x85>
+            i++;
+     dae:	41 83 c0 01          	add    $0x1,%r8d
+            h_pos++;
+     db2:	83 c0 01             	add    $0x1,%eax
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     db5:	4c 3b 56 48          	cmp    0x48(%rsi),%r10
+     db9:	75 d3                	jne    d8e <make_invalid_ht_lt+0x5e>
+            he->invalid = 0;
+     dbb:	49 83 c1 04          	add    $0x4,%r9
+            ret = 1;
+     dbf:	b8 01 00 00 00       	mov    $0x1,%eax
+            h_pos++;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            he->invalid = 0;
+     dc4:	49 c1 e1 04          	shl    $0x4,%r9
+     dc8:	43 c6 44 0b 03 00    	movb   $0x0,0x3(%r11,%r9,1)
+        hlevel++;
+        ret = make_invalid_ht_lf(sb, tail, hashname, hlevel);
+    }
+out: 
+    return ret;
+}
+     dce:	c3                   	retq   
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+     dcf:	49 8b 73 38          	mov    0x38(%r11),%rsi
+{
+    struct hash_table_lt *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset;
+    u64 tail;
+    int i = 0, ret=0;
+     dd3:	31 c0                	xor    %eax,%eax
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+     dd5:	48 85 f6             	test   %rsi,%rsi
+     dd8:	75 02                	jne    ddc <make_invalid_ht_lt+0xac>
+        hlevel++;
+        ret = make_invalid_ht_lf(sb, tail, hashname, hlevel);
+    }
+out: 
+    return ret;
+}
+     dda:	f3 c3                	repz retq 
+out: 
+    return ret;
+}
+
+int make_invalid_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     ddc:	55                   	push   %rbp
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = make_invalid_ht_lf(sb, tail, hashname, hlevel);
+     ddd:	83 c1 01             	add    $0x1,%ecx
+     de0:	4c 89 d2             	mov    %r10,%rdx
+     de3:	0f b6 c9             	movzbl %cl,%ecx
+out: 
+    return ret;
+}
+
+int make_invalid_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     de6:	48 89 e5             	mov    %rsp,%rbp
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = make_invalid_ht_lf(sb, tail, hashname, hlevel);
+     de9:	e8 00 00 00 00       	callq  dee <make_invalid_ht_lt+0xbe>
+    }
+out: 
+    return ret;
+}
+     dee:	5d                   	pop    %rbp
+     def:	c3                   	retq   
+
+0000000000000df0 <make_invalid_ht_ls>:
+
+int make_invalid_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     df0:	e8 00 00 00 00       	callq  df5 <make_invalid_ht_ls+0x5>
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     df5:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     dfc:	49 89 f3             	mov    %rsi,%r11
+     dff:	49 89 d2             	mov    %rdx,%r10
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    buckets = 32767;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     e02:	48 ba 11 00 08 00 04 	movabs $0x2000400080011,%rdx
+     e09:	00 02 00 
+     e0c:	4c 03 58 18          	add    0x18(%rax),%r11
+     e10:	48 85 f6             	test   %rsi,%rsi
+     e13:	b8 00 00 00 00       	mov    $0x0,%eax
+     e18:	4c 0f 44 d8          	cmove  %rax,%r11
+     e1c:	4c 89 d0             	mov    %r10,%rax
+{
+    struct hash_table_ls *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset;
+    u64 tail;
+    int i = 0, ret=0;
+     e1f:	45 31 c0             	xor    %r8d,%r8d
+    //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
+    ht = (struct hash_table_ls *)nova_get_block(sb, block);  
+    buckets = 32767;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     e22:	48 f7 e2             	mul    %rdx
+     e25:	4c 89 d0             	mov    %r10,%rax
+     e28:	48 29 d0             	sub    %rdx,%rax
+     e2b:	48 d1 e8             	shr    %rax
+     e2e:	48 01 c2             	add    %rax,%rdx
+     e31:	48 c1 ea 0e          	shr    $0xe,%rdx
+     e35:	48 89 d0             	mov    %rdx,%rax
+     e38:	48 c1 e0 0f          	shl    $0xf,%rax
+     e3c:	48 29 d0             	sub    %rdx,%rax
+     e3f:	4c 89 d2             	mov    %r10,%rdx
+     e42:	48 29 c2             	sub    %rax,%rdx
+     e45:	8d 04 95 fc ff ff ff 	lea    -0x4(,%rdx,4),%eax
+     e4c:	eb 0d                	jmp    e5b <make_invalid_ht_ls+0x6b>
+        if(h_name==hashname){
+            he->invalid = 0;
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+     e4e:	41 83 c0 01          	add    $0x1,%r8d
+            h_pos++;
+     e52:	83 c0 01             	add    $0x1,%eax
+    buckets = 32767;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+     e55:	41 83 f8 03          	cmp    $0x3,%r8d
+     e59:	7f 34                	jg     e8f <make_invalid_ht_ls+0x9f>
+     e5b:	41 89 c1             	mov    %eax,%r9d
+     e5e:	4c 89 ce             	mov    %r9,%rsi
+     e61:	48 c1 e6 04          	shl    $0x4,%rsi
+     e65:	4c 01 de             	add    %r11,%rsi
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     e68:	80 7e 43 00          	cmpb   $0x0,0x43(%rsi)
+     e6c:	75 07                	jne    e75 <make_invalid_ht_ls+0x85>
+            i++;
+     e6e:	41 83 c0 01          	add    $0x1,%r8d
+            h_pos++;
+     e72:	83 c0 01             	add    $0x1,%eax
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     e75:	4c 3b 56 48          	cmp    0x48(%rsi),%r10
+     e79:	75 d3                	jne    e4e <make_invalid_ht_ls+0x5e>
+            he->invalid = 0;
+     e7b:	49 83 c1 04          	add    $0x4,%r9
+            ret = 1;
+     e7f:	b8 01 00 00 00       	mov    $0x1,%eax
+            h_pos++;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            he->invalid = 0;
+     e84:	49 c1 e1 04          	shl    $0x4,%r9
+     e88:	43 c6 44 0b 03 00    	movb   $0x0,0x3(%r11,%r9,1)
+        hlevel++;
+        ret = make_invalid_ht_lt(sb, tail, hashname, hlevel);
+    }
+out: 
+    return ret;
+}
+     e8e:	c3                   	retq   
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+     e8f:	49 8b 73 38          	mov    0x38(%r11),%rsi
+{
+    struct hash_table_ls *ht;
+    struct hash_entry *he;
+    u32 h_pos, buckets, offset;
+    u64 tail;
+    int i = 0, ret=0;
+     e93:	31 c0                	xor    %eax,%eax
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+     e95:	48 85 f6             	test   %rsi,%rsi
+     e98:	75 02                	jne    e9c <make_invalid_ht_ls+0xac>
+        hlevel++;
+        ret = make_invalid_ht_lt(sb, tail, hashname, hlevel);
+    }
+out: 
+    return ret;
+}
+     e9a:	f3 c3                	repz retq 
+out: 
+    return ret;
+}
+
+int make_invalid_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     e9c:	55                   	push   %rbp
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = make_invalid_ht_lt(sb, tail, hashname, hlevel);
+     e9d:	83 c1 01             	add    $0x1,%ecx
+     ea0:	4c 89 d2             	mov    %r10,%rdx
+     ea3:	0f b6 c9             	movzbl %cl,%ecx
+out: 
+    return ret;
+}
+
+int make_invalid_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     ea6:	48 89 e5             	mov    %rsp,%rbp
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = make_invalid_ht_lt(sb, tail, hashname, hlevel);
+     ea9:	e8 00 00 00 00       	callq  eae <make_invalid_ht_ls+0xbe>
+    }
+out: 
+    return ret;
+}
+     eae:	5d                   	pop    %rbp
+     eaf:	c3                   	retq   
+
+0000000000000eb0 <make_invalid_htable>:
+
+/*make invalid 
+ * return 1 for invalid successfully
+ * return 0 for fail invalid*/
+int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     eb0:	e8 00 00 00 00       	callq  eb5 <make_invalid_htable+0x5>
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     eb5:	48 8b 87 b0 03 00 00 	mov    0x3b0(%rdi),%rax
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     ebc:	49 89 f2             	mov    %rsi,%r10
+     ebf:	49 89 d3             	mov    %rdx,%r11
+    ht = (struct hash_table *)nova_get_block(sb, block);  
+
+    buckets = 65535;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     ec2:	48 ba 01 80 00 80 00 	movabs $0x8000800080008001,%rdx
+     ec9:	80 00 80 
+     ecc:	4c 03 50 18          	add    0x18(%rax),%r10
+     ed0:	48 85 f6             	test   %rsi,%rsi
+     ed3:	b8 00 00 00 00       	mov    $0x0,%eax
+     ed8:	4c 0f 44 d0          	cmove  %rax,%r10
+     edc:	4c 89 d8             	mov    %r11,%rax
+    struct hash_table *ht;
+    struct hash_entry *he;
+    //struct ht_ptr *ht_p;
+    u32 h_pos, buckets, offset;
+    u64 tail;
+    int i = 0, ret=0;
+     edf:	45 31 c0             	xor    %r8d,%r8d
+    ht = (struct hash_table *)nova_get_block(sb, block);  
+
+    buckets = 65535;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+     ee2:	48 f7 e2             	mul    %rdx
+     ee5:	48 c1 ea 0f          	shr    $0xf,%rdx
+     ee9:	48 89 d0             	mov    %rdx,%rax
+     eec:	48 c1 e0 10          	shl    $0x10,%rax
+     ef0:	48 29 d0             	sub    %rdx,%rax
+     ef3:	4c 89 da             	mov    %r11,%rdx
+     ef6:	48 29 c2             	sub    %rax,%rdx
+     ef9:	8d 04 95 fc ff ff ff 	lea    -0x4(,%rdx,4),%eax
+     f00:	eb 0d                	jmp    f0f <make_invalid_htable+0x5f>
+        if(h_name==hashname){
+            he->invalid =0;
+            ret = 1;
+            goto out;
+        } else {
+            i++;
+     f02:	41 83 c0 01          	add    $0x1,%r8d
+            h_pos++;
+     f06:	83 c0 01             	add    $0x1,%eax
+    buckets = 65535;
+    offset = 4;
+
+    h_pos = ((hashname % buckets)-1) * offset;
+
+    while(i < offset) {
+     f09:	41 83 f8 03          	cmp    $0x3,%r8d
+     f0d:	7f 34                	jg     f43 <make_invalid_htable+0x93>
+     f0f:	41 89 c1             	mov    %eax,%r9d
+     f12:	4c 89 ce             	mov    %r9,%rsi
+     f15:	48 c1 e6 04          	shl    $0x4,%rsi
+     f19:	4c 01 d6             	add    %r10,%rsi
+        he = &ht->hash_entry[h_pos];
+        valid_flag = ht->hash_entry[h_pos].invalid;
+        if(!valid_flag){
+     f1c:	80 7e 43 00          	cmpb   $0x0,0x43(%rsi)
+     f20:	75 07                	jne    f29 <make_invalid_htable+0x79>
+            i++;
+     f22:	41 83 c0 01          	add    $0x1,%r8d
+            h_pos++;
+     f26:	83 c0 01             	add    $0x1,%eax
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+     f29:	4c 3b 5e 48          	cmp    0x48(%rsi),%r11
+     f2d:	75 d3                	jne    f02 <make_invalid_htable+0x52>
+            he->invalid =0;
+     f2f:	49 83 c1 04          	add    $0x4,%r9
+            ret = 1;
+     f33:	b8 01 00 00 00       	mov    $0x1,%eax
+            h_pos++;
+        }
+        /*found valid pos*/
+        h_name = le64_to_cpu(he->hd_name);
+        if(h_name==hashname){
+            he->invalid =0;
+     f38:	49 c1 e1 04          	shl    $0x4,%r9
+     f3c:	43 c6 44 0a 03 00    	movb   $0x0,0x3(%r10,%r9,1)
+        ret = make_invalid_ht_ls(sb, tail, hashname, hlevel);
+    }
+out:
+    //nova_dbg("%s end",__func__);
+    return ret;
+}
+     f42:	c3                   	retq   
+            h_pos++;
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+     f43:	49 8b 72 38          	mov    0x38(%r10),%rsi
+    struct hash_table *ht;
+    struct hash_entry *he;
+    //struct ht_ptr *ht_p;
+    u32 h_pos, buckets, offset;
+    u64 tail;
+    int i = 0, ret=0;
+     f47:	31 c0                	xor    %eax,%eax
+        }
+    }
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+     f49:	48 85 f6             	test   %rsi,%rsi
+     f4c:	75 02                	jne    f50 <make_invalid_htable+0xa0>
+        ret = make_invalid_ht_ls(sb, tail, hashname, hlevel);
+    }
+out:
+    //nova_dbg("%s end",__func__);
+    return ret;
+}
+     f4e:	f3 c3                	repz retq 
+
+/*make invalid 
+ * return 1 for invalid successfully
+ * return 0 for fail invalid*/
+int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     f50:	55                   	push   %rbp
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = make_invalid_ht_ls(sb, tail, hashname, hlevel);
+     f51:	83 c1 01             	add    $0x1,%ecx
+     f54:	4c 89 da             	mov    %r11,%rdx
+     f57:	0f b6 c9             	movzbl %cl,%ecx
+
+/*make invalid 
+ * return 1 for invalid successfully
+ * return 0 for fail invalid*/
+int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlevel)
+{
+     f5a:	48 89 e5             	mov    %rsp,%rbp
+
+    /*not found pos*/
+    tail = le64_to_cpu(ht->hash_tail);
+    if(tail) {
+        hlevel++;
+        ret = make_invalid_ht_ls(sb, tail, hashname, hlevel);
+     f5d:	e8 00 00 00 00       	callq  f62 <make_invalid_htable+0xb2>
+    }
+out:
+    //nova_dbg("%s end",__func__);
+    return ret;
+}
+     f62:	5d                   	pop    %rbp
+     f63:	c3                   	retq   
+     f64:	66 90                	xchg   %ax,%ax
+     f66:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     f6d:	00 00 00 
+
+0000000000000f70 <free_htable>:
+
+int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
+{
+     f70:	e8 00 00 00 00       	callq  f75 <free_htable+0x5>
+    u64 tail, tem;
+    unsigned short btype;
+
+    //nova_dbg("%s start",__func__);
+    tail = ht_addr;
+    while(tail){
+     f75:	48 85 f6             	test   %rsi,%rsi
+     f78:	0f 84 47 01 00 00    	je     10c5 <free_htable+0x155>
+    //nova_dbg("%s end",__func__);
+    return ret;
+}
+
+int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
+{
+     f7e:	55                   	push   %rbp
+     f7f:	48 89 e5             	mov    %rsp,%rbp
+     f82:	41 56                	push   %r14
+     f84:	44 0f b6 f2          	movzbl %dl,%r14d
+     f88:	41 55                	push   %r13
+     f8a:	41 89 d5             	mov    %edx,%r13d
+     f8d:	41 54                	push   %r12
+     f8f:	49 89 fc             	mov    %rdi,%r12
+     f92:	53                   	push   %rbx
+     f93:	48 89 f3             	mov    %rsi,%rbx
+
+    //nova_dbg("%s start",__func__);
+    tail = ht_addr;
+    while(tail){
+        //nova_dbg("%s hash table addr %llu",__func__,tail);
+        switch (hlevel) {
+     f96:	41 80 fd 05          	cmp    $0x5,%r13b
+     f9a:	0f 87 f8 00 00 00    	ja     1098 <free_htable+0x128>
+     fa0:	42 ff 24 f5 00 00 00 	jmpq   *0x0(,%r14,8)
+     fa7:	00 
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     fa8:	49 8b 84 24 b0 03 00 	mov    0x3b0(%r12),%rax
+     faf:	00 
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     fb0:	48 89 d9             	mov    %rbx,%rcx
+            case 1:
+                ht = (struct hash_table *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(ht->hash_tail);
+                btype = HTABLE_DEF_SIZE;
+                hlevel = 2;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT,1);
+     fb3:	48 c1 eb 0c          	shr    $0xc,%rbx
+     fb7:	48 89 da             	mov    %rbx,%rdx
+     fba:	be 05 00 00 00       	mov    $0x5,%esi
+     fbf:	4c 89 e7             	mov    %r12,%rdi
+     fc2:	48 03 48 18          	add    0x18(%rax),%rcx
+    while(tail){
+        //nova_dbg("%s hash table addr %llu",__func__,tail);
+        switch (hlevel) {
+            case 1:
+                ht = (struct hash_table *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(ht->hash_tail);
+     fc6:	4c 8b 69 38          	mov    0x38(%rcx),%r13
+                btype = HTABLE_DEF_SIZE;
+                hlevel = 2;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT,1);
+     fca:	b9 01 00 00 00       	mov    $0x1,%ecx
+     fcf:	e8 00 00 00 00       	callq  fd4 <free_htable+0x64>
+                BUG_ON(tem == 0);
+     fd4:	4d 85 ed             	test   %r13,%r13
+     fd7:	0f 84 e6 00 00 00    	je     10c3 <free_htable+0x153>
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+     fdd:	49 8b 84 24 b0 03 00 	mov    0x3b0(%r12),%rax
+     fe4:	00 
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+     fe5:	4c 89 ee             	mov    %r13,%rsi
+            case 2:
+                hts = (struct hash_table_ls *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(hts->hash_tail);
+                btype = HTABLE_LS_SIZE;
+                hlevel = 3;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+     fe8:	4c 89 ea             	mov    %r13,%rdx
+     feb:	48 c1 ea 0c          	shr    $0xc,%rdx
+     fef:	b9 01 00 00 00       	mov    $0x1,%ecx
+     ff4:	4c 89 e7             	mov    %r12,%rdi
+     ff7:	48 03 70 18          	add    0x18(%rax),%rsi
+                BUG_ON(tem == 0);
+                tail = tem;
+                continue;
+            case 2:
+                hts = (struct hash_table_ls *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(hts->hash_tail);
+     ffb:	48 8b 5e 38          	mov    0x38(%rsi),%rbx
+                btype = HTABLE_LS_SIZE;
+                hlevel = 3;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+     fff:	be 04 00 00 00       	mov    $0x4,%esi
+    1004:	e8 00 00 00 00       	callq  1009 <free_htable+0x99>
+                BUG_ON(tem == 0);
+    1009:	48 85 db             	test   %rbx,%rbx
+    100c:	0f 84 ab 00 00 00    	je     10bd <free_htable+0x14d>
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+    1012:	49 8b 84 24 b0 03 00 	mov    0x3b0(%r12),%rax
+    1019:	00 
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+    101a:	48 89 df             	mov    %rbx,%rdi
+            case 3:
+                htt = (struct hash_table_lt *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(htt->hash_tail);
+                btype = HTABLE_LT_SIZE;
+                hlevel = 4;
+                dafs_free_htable_blocks(sb, btype,tail>>PAGE_SHIFT, 1);
+    101d:	48 c1 eb 0c          	shr    $0xc,%rbx
+    1021:	48 89 da             	mov    %rbx,%rdx
+    1024:	b9 01 00 00 00       	mov    $0x1,%ecx
+    1029:	be 03 00 00 00       	mov    $0x3,%esi
+    102e:	48 03 78 18          	add    0x18(%rax),%rdi
+                BUG_ON(tem == 0);
+                tail = tem;
+                continue;
+            case 3:
+                htt = (struct hash_table_lt *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(htt->hash_tail);
+    1032:	4c 8b 6f 38          	mov    0x38(%rdi),%r13
+                btype = HTABLE_LT_SIZE;
+                hlevel = 4;
+                dafs_free_htable_blocks(sb, btype,tail>>PAGE_SHIFT, 1);
+    1036:	4c 89 e7             	mov    %r12,%rdi
+    1039:	e8 00 00 00 00       	callq  103e <free_htable+0xce>
+                BUG_ON(tem == 0);
+    103e:	4d 85 ed             	test   %r13,%r13
+    1041:	74 7e                	je     10c1 <free_htable+0x151>
+ * nova_memunlock_super() before calling! */
+static inline struct nova_super_block *nova_get_super(struct super_block *sb)
+{
+	struct nova_sb_info *sbi = NOVA_SB(sb);
+
+	return (struct nova_super_block *)sbi->virt_addr;
+    1043:	49 8b 84 24 b0 03 00 	mov    0x3b0(%r12),%rax
+    104a:	00 
+ * 得到了block的地址*/
+static inline void *nova_get_block(struct super_block *sb, u64 block)
+{
+	struct nova_super_block *ps = nova_get_super(sb);
+
+	return block ? ((void *)ps + block) : NULL;
+    104b:	4c 89 e9             	mov    %r13,%rcx
+            case 4:
+                htf = (struct hash_table_lf *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(htf->hash_tail);
+                btype = HTABLE_LF_SIZE;
+                hlevel = 5;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+    104e:	4c 89 ea             	mov    %r13,%rdx
+    1051:	48 c1 ea 0c          	shr    $0xc,%rdx
+    1055:	be 02 00 00 00       	mov    $0x2,%esi
+    105a:	4c 89 e7             	mov    %r12,%rdi
+    105d:	48 03 48 18          	add    0x18(%rax),%rcx
+                BUG_ON(tem == 0);
+                tail = tem;
+                continue;
+            case 4:
+                htf = (struct hash_table_lf *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(htf->hash_tail);
+    1061:	48 8b 59 38          	mov    0x38(%rcx),%rbx
+                btype = HTABLE_LF_SIZE;
+                hlevel = 5;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+    1065:	b9 01 00 00 00       	mov    $0x1,%ecx
+    106a:	e8 00 00 00 00       	callq  106f <free_htable+0xff>
+                BUG_ON(tem == 0);
+    106f:	48 85 db             	test   %rbx,%rbx
+    1072:	74 4b                	je     10bf <free_htable+0x14f>
+                continue;
+            case 5:
+                hte = (struct hash_table_le *)nova_get_block(sb, tail);
+                tem = 0;
+                btype = HTABLE_LE_SIZE;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+    1074:	48 c1 eb 0c          	shr    $0xc,%rbx
+    1078:	4c 89 e7             	mov    %r12,%rdi
+    107b:	b9 01 00 00 00       	mov    $0x1,%ecx
+    1080:	48 89 da             	mov    %rbx,%rdx
+    1083:	be 01 00 00 00       	mov    $0x1,%esi
+    1088:	e8 00 00 00 00       	callq  108d <free_htable+0x11d>
+        }
+    }
+
+    //nova_dbg("%s end",__func__);
+    return 0;
+}
+    108d:	5b                   	pop    %rbx
+    108e:	31 c0                	xor    %eax,%eax
+    1090:	41 5c                	pop    %r12
+    1092:	41 5d                	pop    %r13
+    1094:	41 5e                	pop    %r14
+    1096:	5d                   	pop    %rbp
+    1097:	c3                   	retq   
+                btype = HTABLE_LE_SIZE;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+                tail = tem;
+                continue;
+            default:
+                nova_dbg("%s wrong free",__func__);
+    1098:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+    109f:	48 c7 c7 00 00 00 00 	mov    $0x0,%rdi
+    10a6:	e8 00 00 00 00       	callq  10ab <free_htable+0x13b>
+    10ab:	e9 e6 fe ff ff       	jmpq   f96 <free_htable+0x26>
+
+    //nova_dbg("%s start",__func__);
+    tail = ht_addr;
+    while(tail){
+        //nova_dbg("%s hash table addr %llu",__func__,tail);
+        switch (hlevel) {
+    10b0:	49 89 dd             	mov    %rbx,%r13
+    10b3:	eb 8e                	jmp    1043 <free_htable+0xd3>
+    10b5:	49 89 dd             	mov    %rbx,%r13
+    10b8:	e9 20 ff ff ff       	jmpq   fdd <free_htable+0x6d>
+                hts = (struct hash_table_ls *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(hts->hash_tail);
+                btype = HTABLE_LS_SIZE;
+                hlevel = 3;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+                BUG_ON(tem == 0);
+    10bd:	0f 0b                	ud2    
+                htf = (struct hash_table_lf *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(htf->hash_tail);
+                btype = HTABLE_LF_SIZE;
+                hlevel = 5;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
+                BUG_ON(tem == 0);
+    10bf:	0f 0b                	ud2    
+                htt = (struct hash_table_lt *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(htt->hash_tail);
+                btype = HTABLE_LT_SIZE;
+                hlevel = 4;
+                dafs_free_htable_blocks(sb, btype,tail>>PAGE_SHIFT, 1);
+                BUG_ON(tem == 0);
+    10c1:	0f 0b                	ud2    
+                ht = (struct hash_table *)nova_get_block(sb, tail);
+                tem = le64_to_cpu(ht->hash_tail);
+                btype = HTABLE_DEF_SIZE;
+                hlevel = 2;
+                dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT,1);
+                BUG_ON(tem == 0);
+    10c3:	0f 0b                	ud2    
+        }
+    }
+
+    //nova_dbg("%s end",__func__);
+    return 0;
+}
+    10c5:	31 c0                	xor    %eax,%eax
+    10c7:	c3                   	retq   

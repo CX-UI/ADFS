@@ -464,8 +464,10 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     //dafs_rde->sub_num = 0;
     //dafs_rde->sub_pos[NR_DENTRY_IN_ZONE]={0};
     memcpy(dafs_rde->name, "/",1);
+    dafs_rde->name[1]='\0';
     dafs_rde->fname_len = 1;
     memcpy(dafs_rde->ful_name.f_name, "/", 1);
+    dafs_rde->ful_name.f_name[1]='\0';
     nova_dbg("dafs finish creat root directory");
 
     record_pos_htable(sb, ei->ht_head, hn, 0, 1);
@@ -475,7 +477,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     test_and_set_bit_le(1, (void *)z_p->statemap);
     zone_entry->dz_no = cpu_to_le32(ei->dzt_eno);
 
-    dafs_append_dir_init_entries(sb, 0, ei, NOVA_ROOT_INO, NOVA_ROOT_INO, "/");
+    //dafs_append_dir_init_entries(sb, 0, ei, NOVA_ROOT_INO, NOVA_ROOT_INO, "/");
 
     nova_dbg("dafs finish init dir zones");
     return 0;
@@ -929,7 +931,8 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
         /*get ful_name of rde*/
         if(!dafs_rde->ext_flag){
             memcpy(cur_name, dafs_rde->ful_name.f_name, de_nlen);
-            memcpy(cur_name+de_nlen, end, 1);
+            cur_name[de_nlen]='\0';
+            //memcpy(cur_name+de_nlen, end, 1);
         } else {
             get_ext_name(dafs_rde->ful_name.fn_ext, cur_name);
         }
@@ -1133,7 +1136,8 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             //fname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
             /*get fname*/
             memcpy(fname, "/",1);
-            memcpy(fname+1,end,1);
+            fname[1]='\0';
+            //memcpy(fname+1,end,1);
             strcat(fname, name);
             /*set ful name*/
             if(new_de->ext_flag ==0){
@@ -1156,7 +1160,8 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             /*get ful_name*/
             get_de_name(old_de, old_ze, tname, 1);
             memcpy(fname, tname+old_len, name_len);
-            memcpy(fname+name_len, end, 1);
+            fname[name_len]='\0';
+            //memcpy(fname+name_len, end, 1);
 
         } 
 
@@ -1238,7 +1243,8 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             //fname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
             /*get fname*/
             memcpy(fname, "/",1);
-            memcpy(fname+1,end,1);
+            fname[1]='\0';
+            //memcpy(fname+1,end,1);
             strcat(fname, name);
             /*set ful name*/
             if(new_de->ext_flag ==0){
@@ -1264,14 +1270,15 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             if(new_de->ext_flag==0){
                 if(name_len<SMALL_NAME_LEN){
                     memcpy(fname, old_de->ful_name.f_name+old_len, name_len);
-                    memcpy(fname+name_len, end, 1);
+                    //memcpy(fname+name_len, end, 1);
+                    fname[name_len]='\0';
                     memcpy(new_de->ful_name.f_name, fname, name_len+1);
                 } else {
                     new_de->ext_flag = 2;
                     //tname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
                     get_ext_name(old_de->ful_name.fn_ext, tname);
                     memcpy(fname, tname+old_len, name_len);
-                    memcpy(fname+name_len, end, 1);
+                    fname[name_len]='\0';
                     ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
                     //kfree(tname);
                 }
@@ -1279,7 +1286,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
                 //tname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
                 get_ext_name(old_de->ful_name.fn_ext, tname);
                 memcpy(fname, tname+old_len, name_len);
-                memcpy(fname+name_len, end, 1);
+                fname[name_len]='\0';
                 ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
                 //kfree(tname);
             }
@@ -1314,7 +1321,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
         if(old_de->ext_flag==0){
             name_len = le64_to_cpu(old_de->fname_len);
             memcpy(tname, old_de->ful_name.f_name, name_len);
-            memcpy(tname+name_len, end, 1);
+            tname[name_len]='\0';
         } else {
             name_len = le64_to_cpu(old_de->fname_len);
             get_ext_name(old_de->ful_name.fn_ext, tname);
@@ -1386,7 +1393,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             //fname = kzalloc(sizeof(char)*name_len, GFP_KERNEL);
             /*get fname*/
             memcpy(fname, "/",1);
-            memcpy(fname+1, end,1);
+            fname[1]='\0';
             strcat(fname, name);
             nova_dbg("%s ful name is %s",__func__,fname);
             /*set ful name*/
@@ -1413,14 +1420,15 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             if(new_de->ext_flag==0){
                 if(name_len<SMALL_NAME_LEN){
                     memcpy(fname, old_de->ful_name.f_name+old_len, name_len);
-                    memcpy(fname+name_len, end, 1);
-                    memcpy(new_de->ful_name.f_name, fname, name_len+1);
+                    fname[name_len]='\0';
+                    memcpy(new_de->ful_name.f_name, fname, name_len);
+                    new_de->ful_name.f_name[name_len]='\0';
                 } else {
                     new_de->ext_flag = 2;
                     //tname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
                     get_ext_name(old_de->ful_name.fn_ext, tname);
                     memcpy(fname, tname+old_len, name_len);
-                    memcpy(fname+name_len, end, 1);
+                    fname[name_len]='\0';
                     ext_de_name(sb, old_ei,new_ze, new_p, new_id, name_len, fname, 1);
                     //kfree(tname);
                 }
@@ -1428,7 +1436,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
                 //tname = kzalloc(sizeof(char)*name_len, GFP_ATOMIC);
                 get_ext_name(old_de->ful_name.fn_ext, tname);
                 memcpy(fname, tname+old_len, name_len);
-                memcpy(fname+name_len, end, 1);
+                fname[name_len]='\0';
                 ext_de_name(sb, old_ei, new_ze, new_p, new_id, name_len, fname, 1);
                 //kfree(tname);
             }
@@ -1879,7 +1887,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
             tname = kzalloc(sizeof(char*)*(o_plen+1),GFP_KERNEL);
             if(cur_de->ext_flag==0){
                 memcpy(tname,cur_de->ful_name.f_name,o_plen);
-                memcpy(tname+o_plen, end, 1);
+                tname[o_plen]='\0';
             } else {
                 get_ext_name(cur_de->ful_name.fn_ext, tname);
             }
@@ -2038,7 +2046,7 @@ u64 get_par_hn(const char *name, u64 hash_name, u64 *len)
     //hn = BKDRHash(ph, temlen);
     while(!temlen) {
         memcpy(ph, pname, temlen);
-        memcpy(ph+temlen, end, 1);
+        ph[temlen]='\0';
         hn = BKDRHash(ph, temlen);
         if(hn == hash_name){
             hn = BKDRHash(pname, namelen);
@@ -2046,7 +2054,8 @@ u64 get_par_hn(const char *name, u64 hash_name, u64 *len)
             break;
         }
 
-        memcpy(pname, ph, temlen+1);
+        memcpy(pname, ph, temlen);
+        pname[temlen]='\0';
         namelen = strlen(pname);
         tem = strrchr(pname, '/');
         temlen = namelen - strlen(tem);
@@ -2546,34 +2555,6 @@ void inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
             }
         }
         filepos++;
-        /*
-        if(test_bit_le(bitpos, (void *)z_p->statemap)){
-            de = &cur_ze->dentry[filepos];
-            plen = de->ful_name.f_namelen;
-            nlen = plen - le64_to_cpu(de->name_len); 
-            memcpy(name, de->ful_name.f_name, nlen);
-            memcpy(name+plen, end, 1);
-            if(plen!=namelen ){
-                memcpy(tem, name, namelen);
-                re = strcmp(tem,iname);
-                if(re){
-                    hn = BKDRHash(name, nlen);
-                    if(hn == cur_ei->hash_name){
-                        pos = filepos;
-                        __inherit_dentry(sb, cur_ei, pos, rde);
-                    } else {
-                        hn = get_par_hn(name, cur_ei->hash_name, &len);
-                        if(!hn)
-                            nova_err(sb, "can not find par dir");
-                        ret = lookup_in_hashtable(sb, cur_ei->ht_head, hn,1, &pos);
-                        __inherit_dentry(sb, cur_ei, pos, rde);
-                    }
-                }
-            }
-        }
-        bitpos++;
-        filepos++;
-        */
     }
     //kfree(iname);
     //kfree(tem);

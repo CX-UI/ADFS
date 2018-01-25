@@ -592,10 +592,53 @@ struct inode_table *nova_get_inode_table(struct super_block *sb, int cpu)
 		NOVA_DEF_BLOCK_SIZE_4K * 3) + cpu * CACHELINE_SIZE);
 }
 
+/*static inline u64 BKDRHash(const void *key, int len)
+{  
+            const u64 m = 0xc6a4a7935bd1e995;  
+            const int r = 47;  
+            unsigned int seed = 5;
+            u64 h = seed ^ (len * m);  
+      
+            const uint64_t * data = (const uint64_t *)key;  
+            const uint64_t * end = data + (len/8);  
+     	    const unsigned char * data2;	
+	     
+            while(data != end)  
+            {  
+                    uint64_t k = *data++;  
+      
+                    k *= m;   
+                    k ^= k >> r;   
+                    k *= m;   
+      
+                    h ^= k;  
+                    h *= m;   
+            }  
+      
+           data2 = (const unsigned char*)data;  
+      
+            switch(len & 7)  
+            {  
+            case 7: h ^= (uint64_t)(data2[6]) << 48;  
+            case 6: h ^= (uint64_t)(data2[5]) << 40;  
+            case 5: h ^= (uint64_t)(data2[4]) << 32;  
+            case 4: h ^= (uint64_t)(data2[3]) << 24;  
+            case 3: h ^= (uint64_t)(data2[2]) << 16;  
+            case 2: h ^= (uint64_t)(data2[1]) << 8;  
+            case 1: h ^= (uint64_t)(data2[0]);  
+                    h *= m;  
+            };  
+       
+            h ^= h >> r;  
+            h *= m;  
+            h ^= h >> r;  
+      
+            return h;  
+}*/
 // BKDR String Hash Function
 static inline unsigned long BKDRHash(const char *str, int length)
 {
-	unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
+	unsigned int seed = 31; // 31 131 1313 13131 131313 etc..
 	unsigned long hash = 0;
 	int i;
 
@@ -603,6 +646,7 @@ static inline unsigned long BKDRHash(const char *str, int length)
 		hash = hash * seed + (*str++);
 	}
 
+    //nova_dbg("%s end hash",__func__);
 	return hash;
 }
 

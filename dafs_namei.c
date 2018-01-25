@@ -137,7 +137,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     ino_t ino;
     timing_t lookup_time;
     
-    //nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
+    nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(lookup_t, lookup_time);
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
 		/*nova_dbg("%s: namelen %u exceeds limit\n",
@@ -147,7 +147,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
 
 	//nova_dbg("%s: %s\n", __func__, dentry->d_name.name);
     ino = dafs_inode_by_name(dir, dentry, &de);
-	//nova_dbg("%s: look up get ino %llu", __func__, ino);
+	nova_dbg("%s: look up get ino %llu", __func__, ino);
 	if (ino) {
         //根据ino得到整个inode的数据结构
 		inode = nova_iget(dir->i_sb, ino);
@@ -557,20 +557,10 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     struct super_block *sb = dir->i_sb;
     struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
     u64 pidir_tail = 0, pi_tail = 0;
-    //struct nova_inode_info *si = NOVA_I(inode);
-    //struct ptr_pair *pair; // for debug
-    //int cpu;  //for debug
-    //struct nova_inode_info_header *sih = &si->header;
-    //struct dafs_dzt_block *dzt_blk;
     int err = -ENOTEMPTY;
     timing_t rmdir_time;
     /*debug*/
     struct nova_sb_info *sbi = NOVA_SB(sb);
-    //struct dzt_manager *dzt_m = sbi->dzt_m_info;
-    //struct dzt_entry_info *ei;
-    //struct dzt_entry_info *dzt_eis[FREE_BATCH];
-    //int nr=0, i, ret;
-    //u64 ei_index = 0;
 
     nova_dbg("%s:dafs start to rmdir",__func__);
 	NOVA_START_TIMING(rmdir_t, rmdir_time);
@@ -585,13 +575,15 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
         BUG();
 		return -EINVAL;
     }
+
     //nova_dbg("%s:dafs start to rmdir",__func__);
     /*not sure to add read hot degree*/
-    if(dafs_inode_by_name(dir, dentry, &de) == 0){
+    /*if(dafs_inode_by_name(dir, dentry, &de) == 0){
         nova_dbg("%s dentry name, %s", __func__, dentry->d_name.name);
         BUG();
         return -ENOENT;
-    }
+    }*/
+
     if(!dafs_empty_dir(inode, dentry)){
         BUG();
         return err;
@@ -626,9 +618,6 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
 	if (err)
 		goto end_rmdir;
-
-
-    //pidir_tail = pidir->log_tail;
 
 	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
 						pi_tail, pidir_tail, 1);
