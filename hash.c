@@ -122,7 +122,7 @@ int record_pos_htable_lf(struct super_block *sb, u64 block, u64 hashname,\
     if(!ht)
         return -EINVAL;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i<offset){
         he =  &ht->hash_entry[h_pos];
@@ -178,7 +178,7 @@ int record_pos_htable_lt(struct super_block *sb, u64 block, u64 hashname,\
     if(!ht)
         return -EINVAL;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i<offset){
         he =  &ht->hash_entry[h_pos];
@@ -237,7 +237,7 @@ int record_pos_htable_ls(struct super_block *sb, u64 block, u64 hashname,\
     if(!ht)
         return -EINVAL;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i<offset){
         he =  &ht->hash_entry[h_pos];
@@ -296,7 +296,7 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
     if(!ht)
         return -EINVAL;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i<offset){
         he =  &ht->hash_entry[h_pos];
@@ -307,10 +307,10 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
         h_pos ++;
     }
 
-    nova_dbg("%s buckets full",__func__);
+    //nova_dbg("%s buckets full",__func__);
     tail = le64_to_cpu(ht->hash_tail);
     if(!tail){
-        nova_dbg("%s hashtable %d extend",__func__, hlevel);
+        //nova_dbg("%s hashtable %d extend",__func__, hlevel);
         hlevel ++;
         get_hash_table(sb, hlevel, &tail);
         hts = (struct hash_table_ls *)nova_get_block(sb, tail);
@@ -326,14 +326,13 @@ int record_pos_htable(struct super_block *sb, u64 block, u64 hashname,\
 
 fill_he:
     //he = &ht->hash_entry[h_pos];
-    nova_dbg("%s mark in pos %d",__func__, h_pos);
+    //nova_dbg("%s mark in pos %d",__func__, h_pos);
     he->hd_name = cpu_to_le64(hashname);
     he->invalid = 1;
     he->hd_pos = cpu_to_le32(pos);
     nova_flush_buffer(he, sizeof(struct hash_entry),0);
     
 out:
-    nova_dbg("dafs finish recording pos in hash table");
     return 0;
 }
 
@@ -389,7 +388,7 @@ int lookup_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
     buckets = 8191;
     offset = 4;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i < offset) {
         he = &ht->hash_entry[h_pos];
@@ -438,7 +437,7 @@ int lookup_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
     buckets = 16383;
     offset = 4;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i < offset) {
         he = &ht->hash_entry[h_pos];
@@ -491,7 +490,7 @@ int lookup_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hlevel, u32
     buckets = 32767;
     offset = 4;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i < offset) {
         he = &ht->hash_entry[h_pos];
@@ -537,30 +536,34 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     u64 tail;
     int i = 0, ret=0;
     u64 h_name;
-    u8 valid_flag;
+    u32 valid_flag;
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
-    //nova_dbg("%s start",__func__);
+    //nova_dbg("%s start hash adddr 0x%llu",__func__,block);
     BUG_ON(block==0);
     BUG_ON(block==NULL);
     ht = (struct hash_table *)nova_get_block(sb, block);  
-
+    
+    //nova_dbg("%s debug",__func__);
     buckets = 65535;
     offset = 4;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
+    //nova_dbg("%s hpos is %d",__func__,h_pos);
 
     while(i < offset) {
         he = &ht->hash_entry[h_pos];
+        BUG_ON(he==NULL);
         valid_flag = ht->hash_entry[h_pos].invalid;
         if(!valid_flag){
+            //nova_dbg("%s i is %d pos is %d",__func__, i, h_pos);
             i++;
             h_pos++;
         }else{
             /*found valid pos*/
             h_name = le64_to_cpu(he->hd_name);
             if(h_name==hashname){
-                nova_dbg("%s hashname %llu, pos %d",__func__, h_name, he->hd_pos);
+                //nova_dbg("%s hashname %llu, pos %d",__func__, h_name, he->hd_pos);
                 *pos = le32_to_cpu(he->hd_pos);
                 ret = 1;
                 goto out;
@@ -571,17 +574,17 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         }
     }
 
-    nova_dbg("%s:not find pos",__func__);
+    //nova_dbg("%s:not find pos",__func__);
     tail = le64_to_cpu(ht->hash_tail);
     //BUG_ON(tail==NULL);
     if(tail) {
-        nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
+        //nova_dbg("%s need to find in next hashtable 0x%llu",__func__,tail);
         hlevel++;
         ret = lookup_ht_ls(sb, tail, hashname, hlevel, &s_pos);
         *pos = s_pos;
 
-    } else
-        nova_dbg("%s:not find tail ",__func__);
+    }/*else 
+        nova_dbgv("%s:not find tail ",__func__);*/
 
 out: 
     //nova_dbg("dafs finish lookup in hash table");
@@ -637,7 +640,7 @@ int make_invalid_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hleve
     buckets = 8191;
     offset = 4;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i < offset) {
         he = &ht->hash_entry[h_pos];
@@ -683,7 +686,7 @@ int make_invalid_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hleve
     buckets = 16383;
     offset = 4;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i < offset) {
         he = &ht->hash_entry[h_pos];
@@ -729,7 +732,7 @@ int make_invalid_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hleve
     buckets = 32767;
     offset = 4;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i < offset) {
         he = &ht->hash_entry[h_pos];
@@ -781,7 +784,7 @@ int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     buckets = 65535;
     offset = 4;
 
-    h_pos = ((hashname % buckets)-1) * offset;
+    h_pos = (hashname % buckets) * offset;
 
     while(i < offset) {
         he = &ht->hash_entry[h_pos];
@@ -872,7 +875,8 @@ int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
                 tail = tem;
                 continue;
             default:
-                nova_dbg("%s wrong free",__func__);
+                BUG();
+                //nova_dbgv("%s wrong free",__func__);
         }
     }
 

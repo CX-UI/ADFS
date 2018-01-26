@@ -904,7 +904,7 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
     unsigned long eno_pos; 
     int ret;
     u64 de_nlen, phash, ht_addr;
-    char *pname, *cur_name, *end = "";
+    char *pname, *cur_name;
 
     nova_dbg("%s start",__func__);
     par_ze = (struct dafs_zone_entry *)nova_get_block(sb, par_dei->dz_addr); 
@@ -932,7 +932,6 @@ struct dzt_entry_info *add_dzt_entry(struct super_block *sb, struct dzt_entry_in
         if(!dafs_rde->ext_flag){
             memcpy(cur_name, dafs_rde->ful_name.f_name, de_nlen);
             cur_name[de_nlen]='\0';
-            //memcpy(cur_name+de_nlen, end, 1);
         } else {
             get_ext_name(dafs_rde->ful_name.fn_ext, cur_name);
         }
@@ -1050,7 +1049,7 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
     struct dir_info *o_dir, *new_dir;
     struct file_p *new_sf, *old_sf;
     //unsigned long old_len = r_ze->name_len;
-    char *name, *fname, *tname, *end = ""; 
+    char *name, *fname, *tname; 
     u32 sub_no, np_id;
     //u64 ch_len;
     u32 new_id = *ch_pos;  /* ch_pos initalized as 0*/
@@ -1137,7 +1136,6 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             /*get fname*/
             memcpy(fname, "/",1);
             fname[1]='\0';
-            //memcpy(fname+1,end,1);
             strcat(fname, name);
             /*set ful name*/
             if(new_de->ext_flag ==0){
@@ -1161,7 +1159,6 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             get_de_name(old_de, old_ze, tname, 1);
             memcpy(fname, tname+old_len, name_len);
             fname[name_len]='\0';
-            //memcpy(fname+name_len, end, 1);
 
         } 
 
@@ -1244,7 +1241,6 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             /*get fname*/
             memcpy(fname, "/",1);
             fname[1]='\0';
-            //memcpy(fname+1,end,1);
             strcat(fname, name);
             /*set ful name*/
             if(new_de->ext_flag ==0){
@@ -1270,7 +1266,6 @@ static  void cpy_new_zentry(struct super_block *sb, struct dzt_entry_info *new_e
             if(new_de->ext_flag==0){
                 if(name_len<SMALL_NAME_LEN){
                     memcpy(fname, old_de->ful_name.f_name+old_len, name_len);
-                    //memcpy(fname+name_len, end, 1);
                     fname[name_len]='\0';
                     memcpy(new_de->ful_name.f_name, fname, name_len+1);
                 } else {
@@ -1799,7 +1794,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
     int ret =0;
     char *name;
     //char *tem;
-    char *rname, *tname, *end="";
+    char *rname, *tname;
     unsigned short nlen;
 
     nova_dbg("%s start",__func__);
@@ -2032,7 +2027,7 @@ int __merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei, u32 cu
 /*find root par_dir hn*/
 u64 get_par_hn(const char *name, u64 hash_name, u64 *len)
 {
-    char *ph, *tem, *pname, *end = "";
+    char *ph, *tem, *pname;
     u64 namelen, temlen, hn;
     
     namelen = strlen(name);
@@ -2117,7 +2112,6 @@ int merge_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
             }
             /*
             memcpy(name, de->ful_name->f_name, nlen);
-            memcpy(name+plen, end, 1);
             hn = BKDRHash(name, nlen);
             
             if(hn == cur_ei->hash_name){
@@ -2526,7 +2520,7 @@ void inherit_dentry(struct super_block *sb, struct dzt_entry_info *cur_ei)
     struct dafs_zone_entry *cur_ze;
     struct dafs_dentry *de;
     struct zone_ptr *cur_p;
-    //char *iname, *name, *tem, *end;
+    //char *iname, *name, *tem;
     //u64 namelen, phlen;
     u32 bitpos = 0, rde_pos, filepos=0, new_sp = 0;
     //int re;
