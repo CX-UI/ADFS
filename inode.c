@@ -127,7 +127,6 @@ int nova_get_inode_address(struct super_block *sb, u64 ino,
 	unsigned long curr_addr;
 	int allocated;
 
-    //nova_dbg("%s:dafs get inode addr",__func__);
 	pi = nova_get_inode_by_ino(sb, NOVA_INODETABLE_INO);
 	data_bits = blk_type_to_shift[pi->i_blk_type];
     //nova_dbg("%s:dbg blk_type is %d, dafs_bits is %d", __func__, pi->i_blk_type,data_bits);
@@ -139,7 +138,6 @@ int nova_get_inode_address(struct super_block *sb, u64 ino,
     //nova_dbg("%s:dbg ino is%llu,internal_ino is %llu, num cpus is %d",__func__,ino, internal_ino, sbi->cpus);
 
 	inode_table = nova_get_inode_table(sb, cpuid);
-    //nova_dbg("%s:inode_table log head is %llu",__func__,inode_table->log_head);
 	superpage_count = internal_ino >> num_inodes_bits;
     /*感觉是取低五位*/
 	index = internal_ino & ((1 << num_inodes_bits) - 1);
@@ -713,7 +711,7 @@ static int nova_alloc_unused_inode(struct super_block *sb, int cpuid,
 	sbi->s_inodes_used_count++;
 	inode_map->allocated++;
 
-	nova_dbg_verbose("Alloc ino %lu\n", *ino);
+	//nova_dbg_verbose("Alloc ino %lu\n", *ino);
 	return 0;
 }
 
@@ -728,8 +726,6 @@ static int nova_free_inuse_inode(struct super_block *sb, unsigned long ino)
 	unsigned long internal_ino = ino / sbi->cpus;
 	int ret = 0;
 
-    //nova_dbg("%s start",__func__);
-	//nova_dbg("Free inuse ino: %lu\n", ino);
 	inode_map = &sbi->inode_maps[cpuid];
 
 	mutex_lock(&inode_map->inode_table_mutex);
@@ -869,12 +865,12 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
 
 	if (ino == NOVA_ROOT_INO) {
 		pi_addr = NOVA_ROOT_INO_START;
-        nova_dbgv("%s: pi_addr is 0x%llu", __func__, pi_addr);
+        //nova_dbgv("%s: pi_addr is 0x%llu", __func__, pi_addr);
 	} else {
 		err = nova_get_inode_address(sb, ino, &pi_addr, 0);
 		if (err) {
-			nova_dbgv("%s: get inode %lu address failed %d\n",
-					__func__, ino, err);
+			//nova_dbgv("%s: get inode %lu address failed %d\n",
+			//		__func__, ino, err);
 			goto fail;
 		}
 	}
@@ -894,7 +890,6 @@ struct inode *nova_iget(struct super_block *sb, unsigned long ino)
 	inode->i_ino = ino;
 
 	unlock_new_inode(inode);
-    //nova_dbg("sucessfully get inode");
 	return inode;
 fail:
     //nova_dbg("%s:dafs failed get inode",__func__);
@@ -935,7 +930,7 @@ void nova_evict_inode(struct inode *inode)
 	int freed = 0;
 	int destroy = 0;
 
-    nova_dbg("%s start",__func__);
+    //nova_dbg("%s start",__func__);
 	if (!sih) {
 		nova_err(sb, "%s: ino %lu sih is NULL!\n",
 				__func__, inode->i_ino);
@@ -959,7 +954,7 @@ void nova_evict_inode(struct inode *inode)
 						last_blocknr, true, true);
 			break;
 		case S_IFDIR:
-			nova_dbg("%s: dir ino %lu\n", __func__, inode->i_ino);
+			//nova_dbg("%s: dir ino %lu\n", __func__, inode->i_ino);
             //dentry = d_obtain_alias(inode);
             //if(dentry)
             //    nova_dbg("%s dentry %s", __func__, dentry->d_name.name);
@@ -1393,7 +1388,7 @@ int nova_notify_change(struct dentry *dentry, struct iattr *attr)
 	u64 new_tail;
 	timing_t setattr_time;
 
-    nova_dbg("%s:dafs start to notify change",__func__);
+    //nova_dbg("%s:dafs start to notify change",__func__);
 	NOVA_START_TIMING(setattr_t, setattr_time);
 	if (!pi)
 		return -EACCES;
@@ -2203,7 +2198,7 @@ u64 nova_append_file_write_entry(struct super_block *sb, struct nova_inode *pi,
 	/* entry->invalid is set to 0 */
 
 	NOVA_END_TIMING(append_file_entry_t, append_time);
-    nova_dbg("%s end",__func__);
+    //nova_dbg("%s end",__func__);
 	return curr_p;
 }
 

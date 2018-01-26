@@ -597,8 +597,8 @@ retry:
 			free_list->num_free_blocks, num_blocks,
 			free_list->num_blocknode);
 		if (free_list->num_free_blocks >= num_blocks) {
-			nova_dbg("first node is NULL "
-				"but still has free blocks\n");
+			//nova_dbg("first node is NULL "
+			//	"but still has free blocks\n");
 			temp = rb_first(&free_list->block_free_tree);
 			first = container_of(temp, struct nova_range_node, node);
 			free_list->first_node = first;
@@ -641,7 +641,7 @@ retry:
 	}
 	*blocknr = new_blocknr;
 
-	nova_dbg_verbose("Alloc %lu NVMM blocks 0x%lx\n", ret_blocks, *blocknr);
+	//nova_dbg_verbose("Alloc %lu NVMM blocks 0x%lx\n", ret_blocks, *blocknr);
 	return ret_blocks / nova_get_numblocks(btype);
 }
 
@@ -686,9 +686,9 @@ inline int dafs_new_dzt_blocks(struct super_block *sb, unsigned short btype, uns
 	allocated = nova_new_blocks(sb, blocknr, num,
 					btype, zero, LOG);
 	NOVA_END_TIMING(new_zone_blocks_t, alloc_time);
-	nova_dbg("dzt alloc %d dzt blocks from %lu to %lu\n",
-			 allocated, *blocknr,
-			*blocknr + allocated - 1);
+	//nova_dbg("dzt alloc %d dzt blocks from %lu to %lu\n",
+	//		 allocated, *blocknr,
+	//		*blocknr + allocated - 1);
 	return allocated;
 }
 
@@ -701,9 +701,9 @@ inline int dafs_new_zone_blocks(struct super_block *sb, struct dafs_dzt_entry *d
 	allocated = nova_new_blocks(sb, blocknr, num,
 					dzt_e->zone_blk_type, zero, ZONE);
 	NOVA_END_TIMING(new_zone_blocks_t, alloc_time);
-	nova_dbg("Zone %d, alloc %d zone blocks from %lu to %lu\n",
-			le32_to_cpu(dzt_e->dzt_eno), allocated, *blocknr,
-			*blocknr + allocated - 1);
+	//nova_dbg("Zone %d, alloc %d zone blocks from %lu to %lu\n",
+	//		le32_to_cpu(dzt_e->dzt_eno), allocated, *blocknr,
+	//		*blocknr + allocated - 1);
 	return allocated;
 }
 

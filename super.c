@@ -298,7 +298,7 @@ static struct nova_inode *nova_init(struct super_block *sb,
 		return ERR_PTR(-EINVAL);
 	}
 
-	nova_dbg("nova: Default block size set to 4K\n");
+	//nova_dbg("nova: Default block size set to 4K\n");
 	//nova_dbg_verbose("nova: Default block size set to 4K\n");
 	blocksize = sbi->blocksize = NOVA_DEF_BLOCK_SIZE_4K;
 
@@ -309,7 +309,7 @@ static struct nova_inode *nova_init(struct super_block *sb,
 		sbi->blocksize = blocksize;
 
 	if (!nova_check_size(sb, size)) {
-		nova_dbg("Specified NOVA size too small 0x%lx.\n", size);
+		//nova_dbg("Specified NOVA size too small 0x%lx.\n", size);
 		return ERR_PTR(-EINVAL);
 	}
 
@@ -397,7 +397,7 @@ static struct nova_inode *nova_init(struct super_block *sb,
 	PERSISTENT_MARK();
 	PERSISTENT_BARRIER();
 	NOVA_END_TIMING(new_init_t, init_time);
-    nova_dbg("dafs finish nova_init");
+    //nova_dbg("dafs finish nova_init");
 	return root_i;
 }
 
@@ -562,11 +562,11 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 
     /*zone info
     *set_up dzt_manager*/
-    nova_dbg("start init radix tree");
+    //nova_dbg("start init radix tree");
     dzt_m = kzalloc(sizeof(struct dzt_manager), GFP_KERNEL);
     INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);
     sbi->dzt_m_info = dzt_m;
-    nova_dbg("finish init radix tree");
+    //nova_dbg("finish init radix tree");
  
     /*start check zone kthread*/
     //retval = start_cz_thread(sbi);
@@ -574,7 +574,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
         //goto out;
 
 	/* Init a new nova instance */
-    nova_dbg("start nova init");
+    //nova_dbg("start nova init");
 	if (sbi->s_mount_opt & NOVA_MOUNT_FORMAT) {
 		root_pi = nova_init(sb, sbi->initsize);
 		if (IS_ERR(root_pi))
@@ -582,7 +582,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 		super = nova_get_super(sb);
 		goto setup_sb;
 	}
-    nova_dbg("end nova_init");
+    //nova_dbg("end nova_init");
     
 	nova_dbg_verbose("checking physical address 0x%016llx for nova image\n",
 		  (u64)sbi->phys_addr);
@@ -590,7 +590,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 	super = nova_get_super(sb);
 
 	if (nova_check_integrity(sb, super) == 0) {
-		nova_dbg("Memory contains invalid nova %x:%x\n",
+		nova_dbgv("Memory contains invalid nova %x:%x\n",
 				le32_to_cpu(super->s_magic), NOVA_SUPER_MAGIC);
 		goto out;
 	}
@@ -617,7 +617,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 
 	/* Set it all up.. */
 setup_sb:
-    nova_dbg("dafs start setting sb");
+    //nova_dbg("dafs start setting sb");
 	sb->s_magic = le32_to_cpu(super->s_magic);
 	sb->s_op = &nova_sops;
 	sb->s_maxbytes = nova_max_size(sb->s_blocksize_bits);
@@ -626,7 +626,7 @@ setup_sb:
 	sb->s_xattr = NULL;
 	sb->s_flags |= MS_NOSEC;
 
-    nova_dbg("dafs end setting sb");
+    //nova_dbg("dafs end setting sb");
 	/* If the FS was not formatted on this mount, scan the meta-data after
 	 * truncate list has been processed */
 	if ((sbi->s_mount_opt & NOVA_MOUNT_FORMAT) == 0){
@@ -647,7 +647,7 @@ setup_sb:
 		goto out;
 	}
 
-    nova_dbg("root_dentry name is %s", sb->s_root->d_name.name);
+    //nova_dbg("root_dentry name is %s", sb->s_root->d_name.name);
     /*build root zone*/
     //dafs_build_zone(sb);
 

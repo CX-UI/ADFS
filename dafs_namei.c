@@ -56,7 +56,6 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
     struct nova_inode *pidir, *pi;
     int file_type;
     u64 pi_addr = 0;
-    u64 tail = 0;
     u64 ino;
     timing_t create_time;
 
@@ -551,14 +550,12 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 {
     //nova_dbg("%s:dafs start to rmdir",__func__);
     struct inode *inode = dentry->d_inode;
-    struct dafs_dentry *de;
     struct super_block *sb = dir->i_sb;
     struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
     u64 pidir_tail = 0, pi_tail = 0;
     int err = -ENOTEMPTY;
     timing_t rmdir_time;
     /*debug*/
-    struct nova_sb_info *sbi = NOVA_SB(sb);
 
     //nova_dbg("%s:dafs start to rmdir",__func__);
 	NOVA_START_TIMING(rmdir_t, rmdir_time);
@@ -592,8 +589,8 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 //				inode->i_ino, dir->i_ino, dir->i_nlink);
 
 	if (inode->i_nlink != 2)
-		nova_dbgv("empty directory %lu has nlink!=2 (%d), dir %lu",
-				inode->i_ino, inode->i_nlink, dir->i_ino);
+		//nova_dbgv("empty directory %lu has nlink!=2 (%d), dir %lu",
+		//		inode->i_ino, inode->i_nlink, dir->i_ino);
 
     /*add log to dzt for suddenly shut down*/
     //record_dir_log(sb, dentry, NULL, DIR_RMDIR);
@@ -672,9 +669,6 @@ static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, de
 	ino = nova_new_nova_inode(sb, &pi_addr);
 	if (ino == 0)
 		goto out_err;
-
-	//nova_dbgv("%s: %s\n", __func__, dentry->d_name.name);
-	//nova_dbgv("%s: inode %llu, dir %lu\n", __func__, ino, dir->i_ino);
 
     if(S_ISDIR(mode))
         file_type = 1;

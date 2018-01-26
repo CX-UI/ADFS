@@ -540,8 +540,6 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
 
     //block = nova_get_block_off(sb, blocknr, HTABLE_SIZE);
     //nova_dbg("%s start hash adddr 0x%llu",__func__,block);
-    BUG_ON(block==0);
-    BUG_ON(block==NULL);
     ht = (struct hash_table *)nova_get_block(sb, block);  
     
     //nova_dbg("%s debug",__func__);
@@ -553,7 +551,6 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
 
     while(i < offset) {
         he = &ht->hash_entry[h_pos];
-        BUG_ON(he==NULL);
         valid_flag = ht->hash_entry[h_pos].invalid;
         if(!valid_flag){
             //nova_dbg("%s i is %d pos is %d",__func__, i, h_pos);
@@ -837,7 +834,7 @@ int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
                 btype = HTABLE_DEF_SIZE;
                 hlevel = 2;
                 dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT,1);
-                BUG_ON(tem == 0);
+                //BUG_ON(tem == 0);
                 tail = tem;
                 continue;
             case 2:
@@ -846,7 +843,7 @@ int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
                 btype = HTABLE_LS_SIZE;
                 hlevel = 3;
                 dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
-                BUG_ON(tem == 0);
+                //BUG_ON(tem == 0);
                 tail = tem;
                 continue;
             case 3:
@@ -855,7 +852,7 @@ int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
                 btype = HTABLE_LT_SIZE;
                 hlevel = 4;
                 dafs_free_htable_blocks(sb, btype,tail>>PAGE_SHIFT, 1);
-                BUG_ON(tem == 0);
+                //BUG_ON(tem == 0);
                 tail = tem;
                 continue;
             case 4:
@@ -864,7 +861,7 @@ int free_htable(struct super_block *sb, u64 ht_addr, u8 hlevel)
                 btype = HTABLE_LF_SIZE;
                 hlevel = 5;
                 dafs_free_htable_blocks(sb, btype, tail>>PAGE_SHIFT, 1);
-                BUG_ON(tem == 0);
+                //BUG_ON(tem == 0);
                 tail = tem;
                 continue;
             case 5:
