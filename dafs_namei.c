@@ -136,7 +136,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     ino_t ino;
     timing_t lookup_time;
     
-    //nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
+    nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(lookup_t, lookup_time);
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
 		/*nova_dbg("%s: namelen %u exceeds limit\n",
@@ -287,7 +287,7 @@ static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentr
     timing_t link_time;
     int file_type;
 
-    //nova_dbg("%s start",__func__);
+    nova_dbg("%s start %s",__func__, dentry->d_name.name);
     NOVA_START_TIMING(link_t, link_time);
     
 	if (inode->i_nlink >= NOVA_LINK_MAX) {
@@ -352,7 +352,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
     int invalidate = 0;
     timing_t unlink_time;
 
-    //nova_dbg("%s start", __func__);
+    nova_dbg("%s start %s ", __func__,dentry->d_name.name);
     //BUG();
 	NOVA_START_TIMING(unlink_t, unlink_time);
 
@@ -378,6 +378,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
 		drop_nlink(inode);
 	}
 
+    nova_dbg("%s link count is %d", __func__, inode->i_nlink);
     /*not decided 返回值没有弄好*/
     retval = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
 	if (retval)
@@ -497,7 +498,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	if (ino == 0)
 		goto out_err;
 
-	//nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
+	nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
 
     /*.文件指向目录项*/
     err = dafs_add_dentry(dentry, ino, 1, 1);
@@ -557,7 +558,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     timing_t rmdir_time;
     /*debug*/
 
-    //nova_dbg("%s:dafs start to rmdir",__func__);
+    nova_dbg("%s:dafs start to rmdir %s",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(rmdir_t, rmdir_time);
 	if (!inode){
         BUG();
@@ -587,18 +588,19 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     
 //	nova_dbgv("%s: inode %lu, dir %lu, link %d\n", __func__,
 //				inode->i_ino, dir->i_ino, dir->i_nlink);
-
-	if (inode->i_nlink != 2)
-		//nova_dbgv("empty directory %lu has nlink!=2 (%d), dir %lu",
-		//		inode->i_ino, inode->i_nlink, dir->i_ino);
-
+    //not decided
+	/*if (inode->i_nlink != 2)
+		nova_dbgv("empty directory %lu has nlink!=2 (%d), dir %lu",
+				inode->i_ino, inode->i_nlink, dir->i_ino);
+    */
     /*add log to dzt for suddenly shut down*/
     //record_dir_log(sb, dentry, NULL, DIR_RMDIR);
     err = dafs_rm_dir(dentry, -1);
 
-	if (err)
+	if (err){
+        nova_dbg("%s rm fault",__func__);
 		goto end_rmdir;
-
+    }
 	/*inode->i_version++; */
 	clear_nlink(inode);
 	inode->i_ctime = dir->i_ctime;
@@ -606,39 +608,23 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	if (dir->i_nlink)
 		drop_nlink(dir);
 
+    nova_dbg("%s dir links %d",__func__, dir->i_nlink);
     /*finish log make it invalid*/
     //delete_dir_log(sb);
 
     /* not decided*/
     err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
-	if (err)
+	if (err){
+        nova_dbg("%s append link fault",__func__);
 		goto end_rmdir;
-
+    }
 	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
 						pi_tail, pidir_tail, 1);
 
 	NOVA_END_TIMING(rmdir_t, rmdir_time);
 
     
-    /*nova_dbg("%s:start to debug statemap", __func__);
-        do{
-            nr = radix_tree_gang_lookup(&dzt_m->dzt_root, (void **)dzt_eis, ei_index, FREE_BATCH);
-            BUG_ON(nr==0);
-            nova_dbg("%s check dzt num is %d", __func__, nr);
-            for(i=0; i<nr; i++) {
-                ei = dzt_eis[i];
-                ei_index = ei->hash_name;
-                ret = zone_set_statemap(sb, ei);
-                BUG_ON(ret!=0);
-                if(ret)
-                    return -EINVAL;
-                ret = dafs_check_zones(sb, ei);
-                if(ret)
-                    return -EINVAL;
-            }
-            ei_index ++;
-        }while(nr==FREE_BATCH);*/
-    //nova_dbg("%s:dafs end rmdir",__func__);
+	nova_dbg("%s return first %d\n", __func__, err);
 	return err;
 
 end_rmdir:
@@ -661,7 +647,7 @@ static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, de
     
 	NOVA_START_TIMING(mknod_t, mknod_time);
 
-    //nova_dbg("%s start",__func__);
+    nova_dbg("%s start %s",__func__, dentry->d_name.name);
 	pidir = nova_get_inode(sb, dir);
 	if (!pidir)
 		goto out_err;

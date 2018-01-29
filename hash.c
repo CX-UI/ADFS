@@ -560,7 +560,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
             /*found valid pos*/
             h_name = le64_to_cpu(he->hd_name);
             if(h_name==hashname){
-                //nova_dbg("%s hashname %llu, pos %d",__func__, h_name, he->hd_pos);
+                nova_dbg("%s find hashname %llu, pos %d",__func__, h_name, he->hd_pos);
                 *pos = le32_to_cpu(he->hd_pos);
                 ret = 1;
                 goto out;
@@ -571,7 +571,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         }
     }
 
-    //nova_dbg("%s:not find pos",__func__);
+    nova_dbg("%s:not find pos",__func__);
     tail = le64_to_cpu(ht->hash_tail);
     //BUG_ON(tail==NULL);
     if(tail) {
@@ -584,7 +584,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         nova_dbgv("%s:not find tail ",__func__);*/
 
 out: 
-    //nova_dbg("dafs finish lookup in hash table");
+    nova_dbg("%s end with ret is %d",__func__,ret);
     return ret;
 }
 
@@ -607,6 +607,7 @@ int make_invalid_ht_le(struct super_block *sb, u64 block, u64 hashname, u8 hleve
         valid_flag = ht->hash_entry[h_pos].invalid;
         if(!valid_flag){
             h_pos++;
+            continue;
         }
         /*found valid pos*/
         h_name = le64_to_cpu(he->hd_name);
@@ -645,6 +646,7 @@ int make_invalid_ht_lf(struct super_block *sb, u64 block, u64 hashname, u8 hleve
         if(!valid_flag){
             i++;
             h_pos++;
+            continue;
         }
         /*found valid pos*/
         h_name = le64_to_cpu(he->hd_name);
@@ -691,6 +693,7 @@ int make_invalid_ht_lt(struct super_block *sb, u64 block, u64 hashname, u8 hleve
         if(!valid_flag){
             i++;
             h_pos++;
+            continue;
         }
         /*found valid pos*/
         h_name = le64_to_cpu(he->hd_name);
@@ -737,6 +740,7 @@ int make_invalid_ht_ls(struct super_block *sb, u64 block, u64 hashname, u8 hleve
         if(!valid_flag){
             i++;
             h_pos++;
+            continue;
         }
         /*found valid pos*/
         h_name = le64_to_cpu(he->hd_name);
@@ -789,6 +793,7 @@ int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         if(!valid_flag){
             i++;
             h_pos++;
+            continue;
         }
         /*found valid pos*/
         h_name = le64_to_cpu(he->hd_name);
@@ -805,6 +810,7 @@ int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     /*not found pos*/
     tail = le64_to_cpu(ht->hash_tail);
     if(tail) {
+        nova_dbg("%s table extended",__func__);
         hlevel++;
         ret = make_invalid_ht_ls(sb, tail, hashname, hlevel);
     }

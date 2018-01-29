@@ -1096,7 +1096,7 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 			inode->i_fop = &nova_dax_file_operations;
 			break;
 		case TYPE_MKNOD:
-            //nova_dbg("dafs make TYPE_MKNOD");
+            nova_dbg("dafs make TYPE_MKNOD");
 			init_special_inode(inode, mode, rdev);
 			//inode->i_op = &nova_special_inode_operations;
 			inode->i_op = &dafs_special_inode_operations;
