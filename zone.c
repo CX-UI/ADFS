@@ -35,14 +35,14 @@ void make_dzt_ptr(struct super_block *sb, struct dzt_ptr **dzt_p)
     struct dzt_ptr *def_dp = (struct dzt_ptr *)kzalloc(sizeof(struct dzt_ptr), GFP_KERNEL);
     //struct dzt_ptr *p;
 
-    nova_dbg("dafs make dzt pointer");
+    //nova_dbg("dafs make dzt pointer");
     dzt_blk = dafs_get_dzt_block(sb);
 
     def_dp->bitmap = dzt_blk->dzt_bitmap;
     def_dp->max = DAFS_DZT_ENTRIES_IN_BLOCK;
     def_dp->dzt_entry = dzt_blk->dzt_entry;
     *dzt_p = def_dp;
-    nova_dbg("dafs finish make dzt bitmap pointer");
+    //nova_dbg("dafs finish make dzt bitmap pointer");
 }
 
 /*

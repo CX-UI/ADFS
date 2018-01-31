@@ -30,14 +30,14 @@
 * 64K-1 128B entries
 * 128B for reserve and id*/
 #define SIZE_OF_ZONE_BITMAP ((NR_DENTRY_IN_ZONE*2 + BITS_PER_BYTE-1)/BITS_PER_BYTE)
-#define NR_DENTRY_IN_ZONE 65535
+#define NR_DENTRY_IN_ZONE 32768
 
 /*dafs_dentry*/
-#define SMALL_NAME_LEN 39
-#define LARGE_NAME_LEN 112
+#define SMALL_NAME_LEN 167
+#define LARGE_NAME_LEN 240
 #define DAFS_NAME_LEN 255
 #define DAFS_PATH_LEN 1024
-#define DAFS_DEF_DENTRY_SIZE 128
+#define DAFS_DEF_DENTRY_SIZE 256
 #define DAFS_DZT_SIZE 56
 
 /*hash table*/
@@ -48,7 +48,7 @@
 #define NR_HASH_ENTRIES_L5  4096
 
 /*block size*/
-#define DAFS_DEF_DENTRY_SIZE 128
+#define DAFS_DEF_DENTRY_SIZE 256
 /*zone movement*/
 #define POSITIVE_SPLIT 1
 #define NEGTIVE_SPLIT  0
