@@ -556,11 +556,12 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
             //nova_dbg("%s i is %d pos is %d",__func__, i, h_pos);
             i++;
             h_pos++;
-        }else{
+            continue;
+        }
             /*found valid pos*/
             h_name = le64_to_cpu(he->hd_name);
             if(h_name==hashname){
-                nova_dbg("%s find hashname %llu, pos %d",__func__, h_name, he->hd_pos);
+                //nova_dbg("%s find hashname %llu, pos %d",__func__, h_name, he->hd_pos);
                 *pos = le32_to_cpu(he->hd_pos);
                 ret = 1;
                 goto out;
@@ -568,10 +569,9 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
                 i++;
                 h_pos++;
             }
-        }
     }
 
-    nova_dbg("%s:not find pos",__func__);
+    //nova_dbg("%s:not find pos",__func__);
     tail = le64_to_cpu(ht->hash_tail);
     //BUG_ON(tail==NULL);
     if(tail) {
@@ -584,7 +584,7 @@ int lookup_in_hashtable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
         nova_dbgv("%s:not find tail ",__func__);*/
 
 out: 
-    nova_dbg("%s end with ret is %d",__func__,ret);
+    //nova_dbg("%s end with ret is %d",__func__,ret);
     return ret;
 }
 
@@ -810,7 +810,7 @@ int make_invalid_htable(struct super_block *sb, u64 block, u64 hashname, u8 hlev
     /*not found pos*/
     tail = le64_to_cpu(ht->hash_tail);
     if(tail) {
-        nova_dbg("%s table extended",__func__);
+        //nova_dbg("%s table extended",__func__);
         hlevel++;
         ret = make_invalid_ht_ls(sb, tail, hashname, hlevel);
     }

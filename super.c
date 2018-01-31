@@ -484,6 +484,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 	struct inode_map *inode_map;
     struct dzt_manager *dzt_m;
 	unsigned long blocksize;
+    char *r = "/";
 	u32 random = 0;
 	int retval = -EINVAL;
 	int i;
@@ -560,6 +561,14 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 		goto out;
 	}
 
+    /*prealloc buffers*/
+   /* 
+    sbi->ph_f = (char *)kzalloc(sizeof(char )*DAFS_PATH_LEN, GFP_KERNEL);
+    sbi->ph_dzt = (char *)kzalloc(sizeof(char)*DAFS_PATH_LEN, GFP_KERNEL);
+    sbi->ph_name = (char *)kzalloc(sizeof(char)*DAFS_PATH_LEN, GFP_KERNEL);
+    sbi->ph_ex = (char *)kzalloc(sizeof(char)*DAFS_PATH_LEN, GFP_KERNEL);
+    sbi->ph_te = (char *)kzalloc(sizeof(char)*DAFS_PATH_LEN, GFP_KERNEL);
+*/
     /*zone info
     *set_up dzt_manager*/
     //nova_dbg("start init radix tree");

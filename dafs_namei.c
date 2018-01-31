@@ -136,7 +136,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     ino_t ino;
     timing_t lookup_time;
     
-    nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
+    //nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(lookup_t, lookup_time);
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
 		/*nova_dbg("%s: namelen %u exceeds limit\n",
@@ -287,7 +287,7 @@ static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentr
     timing_t link_time;
     int file_type;
 
-    nova_dbg("%s start %s",__func__, dentry->d_name.name);
+    //nova_dbg("%s start %s",__func__, dentry->d_name.name);
     NOVA_START_TIMING(link_t, link_time);
     
 	if (inode->i_nlink >= NOVA_LINK_MAX) {
@@ -352,7 +352,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
     int invalidate = 0;
     timing_t unlink_time;
 
-    nova_dbg("%s start %s ", __func__,dentry->d_name.name);
+   // nova_dbg("%s start %s ", __func__,dentry->d_name.name);
     //BUG();
 	NOVA_START_TIMING(unlink_t, unlink_time);
 
@@ -378,7 +378,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
 		drop_nlink(inode);
 	}
 
-    nova_dbg("%s link count is %d", __func__, inode->i_nlink);
+    //nova_dbg("%s link count is %d", __func__, inode->i_nlink);
     /*not decided 返回值没有弄好*/
     retval = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
 	if (retval)
@@ -498,7 +498,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	if (ino == 0)
 		goto out_err;
 
-	nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
+	//nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
 
     /*.文件指向目录项*/
     err = dafs_add_dentry(dentry, ino, 1, 1);
@@ -558,7 +558,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     timing_t rmdir_time;
     /*debug*/
 
-    nova_dbg("%s:dafs start to rmdir %s",__func__, dentry->d_name.name);
+    //nova_dbg("%s:dafs start to rmdir %s",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(rmdir_t, rmdir_time);
 	if (!inode){
         BUG();
@@ -598,7 +598,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     err = dafs_rm_dir(dentry, -1);
 
 	if (err){
-        nova_dbg("%s rm fault",__func__);
+        //nova_dbg("%s rm fault",__func__);
 		goto end_rmdir;
     }
 	/*inode->i_version++; */
@@ -608,14 +608,14 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	if (dir->i_nlink)
 		drop_nlink(dir);
 
-    nova_dbg("%s dir links %d",__func__, dir->i_nlink);
+    //nova_dbg("%s dir links %d",__func__, dir->i_nlink);
     /*finish log make it invalid*/
     //delete_dir_log(sb);
 
     /* not decided*/
     err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
 	if (err){
-        nova_dbg("%s append link fault",__func__);
+        //nova_dbg("%s append link fault",__func__);
 		goto end_rmdir;
     }
 	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
@@ -624,7 +624,7 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
 	NOVA_END_TIMING(rmdir_t, rmdir_time);
 
     
-	nova_dbg("%s return first %d\n", __func__, err);
+	//nova_dbg("%s return first %d\n", __func__, err);
 	return err;
 
 end_rmdir:
@@ -647,7 +647,7 @@ static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, de
     
 	NOVA_START_TIMING(mknod_t, mknod_time);
 
-    nova_dbg("%s start %s",__func__, dentry->d_name.name);
+    //nova_dbg("%s start %s",__func__, dentry->d_name.name);
 	pidir = nova_get_inode(sb, dir);
 	if (!pidir)
 		goto out_err;
@@ -702,12 +702,12 @@ static int dafs_rename(struct inode *old_dir, struct dentry *old_dentry,
     timing_t rename_time;
 
     //nova_dbg("%s start", __func__); 
-	nova_dbgv("%s: rename %s to %s,\n", __func__,
-			old_dentry->d_name.name, new_dentry->d_name.name);
-	nova_dbgv("%s: %s inode %lu, old dir %lu, new dir %lu, new inode %lu\n",
-			__func__, S_ISDIR(old_inode->i_mode) ? "dir" : "normal",
-			old_inode->i_ino, old_dir->i_ino, new_dir->i_ino,
-			new_inode ? new_inode->i_ino : 0);
+	//nova_dbgv("%s: rename %s to %s,\n", __func__,
+	//		old_dentry->d_name.name, new_dentry->d_name.name);
+	//nova_dbgv("%s: %s inode %lu, old dir %lu, new dir %lu, new inode %lu\n",
+	//		__func__, S_ISDIR(old_inode->i_mode) ? "dir" : "normal",
+	//		old_inode->i_ino, old_dir->i_ino, new_dir->i_ino,
+	//		new_inode ? new_inode->i_ino : 0);
 	NOVA_START_TIMING(rename_t, rename_time);
 
     /*检查rename的情况*/
@@ -806,7 +806,6 @@ struct dentry *dafs_get_parent(struct dentry *child)
     ino_t ino;
   
     //nova_dbg("%s start",__func__);
-    //nova_dbg("%s: dafs start get [parent]",__func__);
     de = dafs_find_direntry(sb, child,1,0);
     if(!de)
         return ERR_PTR(-ENOENT);
