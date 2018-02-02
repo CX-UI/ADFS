@@ -1,748 +1,1033 @@
-make -C /lib/modules/4.3.0/build M=`pwd`
-make[1]: Entering directory '/usr/src/linux-4.3'
-  LD      /home/cx-dir/git/ADFS/built-in.o
-  CC [M]  /home/cx-dir/git/ADFS/balloc.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/balloc.c:26:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/bbuild.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/bbuild.c:26:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/dax.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from include/linux/buffer_head.h:11,
-                 from /home/cx-dir/git/ADFS/dax.c:16:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/file.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/preempt.h:10,
-                 from include/linux/spinlock.h:50,
-                 from include/linux/mmzone.h:7,
-                 from include/linux/gfp.h:5,
-                 from include/linux/slab.h:14,
-                 from /home/cx-dir/git/ADFS/file.c:18:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/inode.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/inode.c:18:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-/home/cx-dir/git/ADFS/inode.c: In function ‘nova_evict_inode’:
-/home/cx-dir/git/ADFS/inode.c:931:20: warning: unused variable ‘dentry’ [-Wunused-variable]
-     struct dentry *dentry;
-                    ^
-/home/cx-dir/git/ADFS/inode.c: In function ‘free_curr_page’:
-/home/cx-dir/git/ADFS/inode.c:1720:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-  unsigned short btype = pi->i_blk_type;
-  ^
-  CC [M]  /home/cx-dir/git/ADFS/ioctl.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/preempt.h:10,
-                 from include/linux/spinlock.h:50,
-                 from include/linux/seqlock.h:35,
-                 from include/linux/time.h:5,
-                 from /home/cx-dir/git/ADFS/ioctl.c:17:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/journal.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/module.h:9,
-                 from /home/cx-dir/git/ADFS/journal.c:26:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/stats.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/nova.h:20,
-                 from /home/cx-dir/git/ADFS/stats.c:21:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/super.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/module.h:9,
-                 from /home/cx-dir/git/ADFS/super.c:21:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/symlink.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/symlink.c:21:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/sysfs.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/nova.h:20,
-                 from /home/cx-dir/git/ADFS/sysfs.c:21:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/wprotect.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/module.h:9,
-                 from /home/cx-dir/git/ADFS/wprotect.c:21:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-  CC [M]  /home/cx-dir/git/ADFS/zone.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from /home/cx-dir/git/ADFS/zone.c:9:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘zone_set_statemap’:
-/home/cx-dir/git/ADFS/zone.c:245:9: warning: unused variable ‘par_eno’ [-Wunused-variable]
-     u32 par_eno;
-         ^
-/home/cx-dir/git/ADFS/zone.c:243:9: warning: unused variable ‘id’ [-Wunused-variable]
-     u32 id = 0;
-         ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_split_zone’:
-/home/cx-dir/git/ADFS/zone.c:1667:9: warning: unused variable ‘hashname’ [-Wunused-variable]
-     u64 hashname;
-         ^
-/home/cx-dir/git/ADFS/zone.c:1663:9: warning: unused variable ‘bitpos’ [-Wunused-variable]
-     u32 bitpos = 0;
-         ^
-/home/cx-dir/git/ADFS/zone.c:1653:25: warning: unused variable ‘dafs_de’ [-Wunused-variable]
-     struct dafs_dentry *dafs_de;
-                         ^
-/home/cx-dir/git/ADFS/zone.c:1652:22: warning: unused variable ‘z_p’ [-Wunused-variable]
-     struct zone_ptr *z_p;
-                      ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘__merge_dentry’:
-/home/cx-dir/git/ADFS/zone.c:1790:11: warning: unused variable ‘tem’ [-Wunused-variable]
-     char *tem;
-           ^
-/home/cx-dir/git/ADFS/zone.c:1783:44: warning: unused variable ‘par_idir’ [-Wunused-variable]
-     struct dir_info *old_idir, *new_idir, *par_idir;
-                                            ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_inh_zone’:
-/home/cx-dir/git/ADFS/zone.c:2693:37: warning: unused variable ‘next’ [-Wunused-variable]
-     struct list_head *this, *head, *next;
-                                     ^
-/home/cx-dir/git/ADFS/zone.c: In function ‘add_dzt_entry’:
-/home/cx-dir/git/ADFS/zone.c:968:7: warning: ‘ret’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-     if(ret)
-       ^
-In file included from include/linux/kernel.h:13:0,
-                 from include/linux/list.h:8,
-                 from /home/cx-dir/git/ADFS/zone.c:9:
-/home/cx-dir/git/ADFS/zone.c: In function ‘dafs_split_zone’:
-include/linux/printk.h:259:2: warning: ‘new_dzt_ei’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-  ^
-/home/cx-dir/git/ADFS/zone.c:1655:28: note: ‘new_dzt_ei’ was declared here
-     struct dzt_entry_info *new_dzt_ei;
-                            ^
-  CC [M]  /home/cx-dir/git/ADFS/dafs_dir.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘delete_dir_info’:
-include/linux/kern_levels.h:4:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘u64 {aka long long unsigned int}’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:35:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("dir sub num is %d",dir_i->sub_num);
-     ^
-In file included from include/linux/spinlock.h:274:0,
-                 from include/linux/wait.h:8,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘get_dentry_path’:
-/home/cx-dir/git/ADFS/dafs_dir.c:207:15: warning: passing argument 1 of ‘_raw_read_lock’ from incompatible pointer type [-Wincompatible-pointer-types]
-     read_lock(&fs->lock);
-               ^
-include/linux/rwlock.h:65:41: note: in definition of macro ‘read_lock’
- #define read_lock(lock)  _raw_read_lock(lock)
-                                         ^
-In file included from include/linux/spinlock_api_smp.h:192:0,
-                 from include/linux/spinlock.h:280,
-                 from include/linux/wait.h:8,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-include/linux/rwlock_api_smp.h:18:17: note: expected ‘rwlock_t * {aka struct <anonymous> *}’ but argument is of type ‘spinlock_t * {aka struct spinlock *}’
- void __lockfunc _raw_read_lock(rwlock_t *lock)  __acquires(lock);
-                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c:219:17: warning: passing argument 1 of ‘__raw_read_unlock’ from incompatible pointer type [-Wincompatible-pointer-types]
-     read_unlock(&fs->lock);
-                 ^
-include/linux/rwlock_api_smp.h:84:50: note: in definition of macro ‘_raw_read_unlock’
- #define _raw_read_unlock(lock) __raw_read_unlock(lock)
-                                                  ^
-/home/cx-dir/git/ADFS/dafs_dir.c:219:5: note: in expansion of macro ‘read_unlock’
-     read_unlock(&fs->lock);
-     ^
-include/linux/rwlock_api_smp.h:223:20: note: expected ‘rwlock_t * {aka struct <anonymous> *}’ but argument is of type ‘spinlock_t * {aka struct spinlock *}’
- static inline void __raw_read_unlock(rwlock_t *lock)
-                    ^
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_add_dentry’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 4 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:729:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("%s full name is %s, name len is %llu",__func__, phname, flen);
-     ^
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 3 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:833:9: note: in expansion of macro ‘nova_dbg’
-         nova_dbg("%s:temlen is %llu, zone num is %d",__func__, tm_len, dzt_ei->dzt_eno);
-         ^
-include/linux/kern_levels.h:4:18: warning: too many arguments for format [-Wformat-extra-args]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:845:13: note: in expansion of macro ‘nova_dbg’
-             nova_dbg("%s: par %s is not root, hash value is ", __func__, par_de->name, par_hn);
-             ^
-include/linux/kern_levels.h:4:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘u64 {aka long long unsigned int}’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:855:9: note: in expansion of macro ‘nova_dbg’
-         nova_dbg("%s:sub num is %d", __func__, par_dir->sub_num);
-         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:671:17: warning: unused variable ‘name’ [-Wunused-variable]
-     const char *name = dentry->d_name.name;
-                 ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_rebuild_dir_inode_tree’:
-/home/cx-dir/git/ADFS/dafs_dir.c:980:6: warning: unused variable ‘ret’ [-Wunused-variable]
-  int ret;
-      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:978:6: warning: unused variable ‘next’ [-Wunused-variable]
-  u64 next;
-      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:973:6: warning: unused variable ‘ino’ [-Wunused-variable]
-  u64 ino = pi->nova_ino;
-      ^
-/home/cx-dir/git/ADFS/dafs_dir.c:972:30: warning: unused variable ‘curr_page’ [-Wunused-variable]
-  struct nova_inode_log_page *curr_page;
-                              ^
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_rm_dir’:
-/home/cx-dir/git/ADFS/dafs_dir.c:1304:32: warning: unused variable ‘tlen’ [-Wunused-variable]
-     unsigned long phlen, flen, tlen;
-                                ^
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘__rename_dir_direntry’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘size_t {aka long unsigned int}’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:2317:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("strictly full name length is %llu", strlen(ph));
-     ^
-/home/cx-dir/git/ADFS/dafs_dir.c:2308:26: warning: unused variable ‘par_pos’ [-Wunused-variable]
-     u32 dzt_eno, de_pos, par_pos;
-                          ^
-/home/cx-dir/git/ADFS/dafs_dir.c:2307:41: warning: unused variable ‘pdot’ [-Wunused-variable]
-     char *phname, *ph, *phn, *dot=".", *pdot = "..";
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:2307:31: warning: unused variable ‘dot’ [-Wunused-variable]
-     char *phname, *ph, *phn, *dot=".", *pdot = "..";
-                               ^
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_dir.c:8:
-/home/cx-dir/git/ADFS/dafs_dir.c: In function ‘dafs_readdir’:
-include/linux/kern_levels.h:4:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘u64 {aka long long unsigned int}’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_dir.c:2649:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("%s:dir_subfile num is%d, zone addr is %llu",__func__,dir->sub_num, ei->dz_addr);
-     ^
-/home/cx-dir/git/ADFS/dafs_dir.c:2539:20: warning: unused variable ‘ph’ [-Wunused-variable]
-     char *phname, *ph, *phn;
-                    ^
-  CC [M]  /home/cx-dir/git/ADFS/dafs_namei.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_namei.c:8:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-/home/cx-dir/git/ADFS/dafs_namei.c: In function ‘dafs_create’:
-/home/cx-dir/git/ADFS/dafs_namei.c:59:9: warning: unused variable ‘tail’ [-Wunused-variable]
-     u64 tail = 0;
-         ^
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/dafs_namei.c:8:
-/home/cx-dir/git/ADFS/dafs_namei.c: In function ‘dafs_lookup’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 3 has type ‘ino_t {aka long unsigned int}’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_namei.c:149:2: note: in expansion of macro ‘nova_dbg’
-  nova_dbg("%s: look up get ino %llu\n", __func__, ino);
-  ^
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 3 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_namei.c:164:9: note: in expansion of macro ‘nova_dbg’
-         nova_dbg("%s:dafs finish lookup inode exist %llu",__func__, inode->i_ino);
-         ^
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 3 has type ‘ino_t {aka long unsigned int}’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/dafs_namei.c:166:9: note: in expansion of macro ‘nova_dbg’
-         nova_dbg("%s:dafs finish lookup %llu",__func__, ino);
-         ^
-/home/cx-dir/git/ADFS/dafs_namei.c: In function ‘dafs_append_link_change_entry’:
-/home/cx-dir/git/ADFS/dafs_namei.c:178:22: warning: unused variable ‘pair’ [-Wunused-variable]
-     struct ptr_pair *pair;
-                      ^
-/home/cx-dir/git/ADFS/dafs_namei.c: In function ‘dafs_mkdir’:
-/home/cx-dir/git/ADFS/dafs_namei.c:498:18: warning: unused variable ‘ret’ [-Wunused-variable]
-     int nr=0, i, ret;
-                  ^
-/home/cx-dir/git/ADFS/dafs_namei.c:498:15: warning: unused variable ‘i’ [-Wunused-variable]
-     int nr=0, i, ret;
-               ^
-/home/cx-dir/git/ADFS/dafs_namei.c:498:9: warning: unused variable ‘nr’ [-Wunused-variable]
-     int nr=0, i, ret;
-         ^
-/home/cx-dir/git/ADFS/dafs_namei.c:497:28: warning: unused variable ‘dzt_eis’ [-Wunused-variable]
-     struct dzt_entry_info *dzt_eis[FREE_BATCH];
-                            ^
-/home/cx-dir/git/ADFS/dafs_namei.c:496:28: warning: unused variable ‘ei’ [-Wunused-variable]
-     struct dzt_entry_info *ei;
-                            ^
-/home/cx-dir/git/ADFS/dafs_namei.c:495:25: warning: unused variable ‘dzt_m’ [-Wunused-variable]
-     struct dzt_manager *dzt_m = sbi->dzt_m_info;
-                         ^
-/home/cx-dir/git/ADFS/dafs_namei.c:492:22: warning: unused variable ‘pair’ [-Wunused-variable]
-     struct ptr_pair *pair;
-                      ^
-/home/cx-dir/git/ADFS/dafs_namei.c:491:9: warning: unused variable ‘cpu’ [-Wunused-variable]
-     int cpu;
-         ^
-/home/cx-dir/git/ADFS/dafs_namei.c: In function ‘dafs_rmdir’:
-/home/cx-dir/git/ADFS/dafs_namei.c:600:9: warning: unused variable ‘ei_index’ [-Wunused-variable]
-     u64 ei_index = 0;
-         ^
-/home/cx-dir/git/ADFS/dafs_namei.c:599:18: warning: unused variable ‘ret’ [-Wunused-variable]
-     int nr=0, i, ret;
-                  ^
-/home/cx-dir/git/ADFS/dafs_namei.c:599:15: warning: unused variable ‘i’ [-Wunused-variable]
-     int nr=0, i, ret;
-               ^
-/home/cx-dir/git/ADFS/dafs_namei.c:599:9: warning: unused variable ‘nr’ [-Wunused-variable]
-     int nr=0, i, ret;
-         ^
-/home/cx-dir/git/ADFS/dafs_namei.c:598:28: warning: unused variable ‘dzt_eis’ [-Wunused-variable]
-     struct dzt_entry_info *dzt_eis[FREE_BATCH];
-                            ^
-/home/cx-dir/git/ADFS/dafs_namei.c:597:28: warning: unused variable ‘ei’ [-Wunused-variable]
-     struct dzt_entry_info *ei;
-                            ^
-/home/cx-dir/git/ADFS/dafs_namei.c:596:25: warning: unused variable ‘dzt_m’ [-Wunused-variable]
-     struct dzt_manager *dzt_m = sbi->dzt_m_info;
-                         ^
-/home/cx-dir/git/ADFS/dafs_namei.c:587:29: warning: unused variable ‘si’ [-Wunused-variable]
-     struct nova_inode_info *si = NOVA_I(inode);
-                             ^
-  CC [M]  /home/cx-dir/git/ADFS/hash.o
-In file included from include/linux/printk.h:6:0,
-                 from include/linux/kernel.h:13,
-                 from include/linux/list.h:8,
-                 from include/linux/wait.h:6,
-                 from include/linux/fs.h:5,
-                 from /home/cx-dir/git/ADFS/nova.h:20,
-                 from /home/cx-dir/git/ADFS/hash.c:10:
-/home/cx-dir/git/ADFS/nova.h: In function ‘nova_get_inode’:
-include/linux/kern_levels.h:4:18: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
- #define KERN_SOH "\001"  /* ASCII Start Of Header */
-                  ^
-include/linux/kern_levels.h:13:19: note: in expansion of macro ‘KERN_SOH’
- #define KERN_INFO KERN_SOH "6" /* informational */
-                   ^
-include/linux/printk.h:259:9: note: in expansion of macro ‘KERN_INFO’
-  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-         ^
-/home/cx-dir/git/ADFS/nova.h:69:41: note: in expansion of macro ‘pr_info’
- #define nova_dbg(s, args ...)           pr_info(s, ## args)
-                                         ^
-/home/cx-dir/git/ADFS/nova.h:802:5: note: in expansion of macro ‘nova_dbg’
-     nova_dbg("inode addr is %llu", sih->pi_addr);
-     ^
-In file included from include/linux/linkage.h:4:0,
-                 from include/linux/fs.h:4,
-                 from /home/cx-dir/git/ADFS/nova.h:20,
-                 from /home/cx-dir/git/ADFS/hash.c:10:
-/home/cx-dir/git/ADFS/hash.c: In function ‘lookup_in_hashtable’:
-/home/cx-dir/git/ADFS/hash.c:539:17: warning: comparison between pointer and integer
-     BUG_ON(block==NULL);
-                 ^
-include/linux/compiler.h:166:42: note: in definition of macro ‘unlikely’
- # define unlikely(x) __builtin_expect(!!(x), 0)
-                                          ^
-/home/cx-dir/git/ADFS/hash.c:539:5: note: in expansion of macro ‘BUG_ON’
-     BUG_ON(block==NULL);
-     ^
-  LD [M]  /home/cx-dir/git/ADFS/nova.o
-  Building modules, stage 2.
-  MODPOST 1 modules
-  CC      /home/cx-dir/git/ADFS/nova.mod.o
-  LD [M]  /home/cx-dir/git/ADFS/nova.ko
-make[1]: Leaving directory '/usr/src/linux-4.3'
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Initializing cgroup subsys cpuacct
+[    0.000000] Linux version 4.3.0 (root@cxdafs-OptiPlex-9020) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.4) ) #1 SMP Tue Jan 23 17:04:37 CST 2018
+[    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-4.3.0 memmap=4G!2G root=UUID=461d99c2-65f5-4635-a31a-48a29395e262 ro quiet splash vt.handoff=7
+[    0.000000] KERNEL supported cpus:
+[    0.000000]   Intel GenuineIntel
+[    0.000000]   AMD AuthenticAMD
+[    0.000000]   Centaur CentaurHauls
+[    0.000000] x86/fpu: xstate_offset[2]: 0240, xstate_sizes[2]: 0100
+[    0.000000] x86/fpu: Supporting XSAVE feature 0x01: 'x87 floating point registers'
+[    0.000000] x86/fpu: Supporting XSAVE feature 0x02: 'SSE registers'
+[    0.000000] x86/fpu: Supporting XSAVE feature 0x04: 'AVX registers'
+[    0.000000] x86/fpu: Enabled xstate features 0x7, context size is 0x340 bytes, using 'standard' format.
+[    0.000000] x86/fpu: Using 'eager' FPU context switches.
+[    0.000000] e820: BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x00000000000917ff] usable
+[    0.000000] BIOS-e820: [mem 0x0000000000091800-0x000000000009ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000000e0000-0x00000000000fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x00000000d495ffff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000d4960000-0x00000000d4966fff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x00000000d4967000-0x00000000d4d9afff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000d4d9b000-0x00000000d5227fff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000d5228000-0x00000000daee9fff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000daeea000-0x00000000daffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000db000000-0x00000000db75efff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000db75f000-0x00000000db7fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000db800000-0x00000000dbfadfff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000dbfae000-0x00000000dbffffff] ACPI data
+[    0.000000] BIOS-e820: [mem 0x00000000dc000000-0x00000000dd71bfff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000dd71c000-0x00000000dd7fffff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x00000000dd800000-0x00000000dee10fff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000dee11000-0x00000000deffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000f8000000-0x00000000fbffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fec00000-0x00000000fec00fff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fed00000-0x00000000fed03fff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fed1c000-0x00000000fed1ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fee00000-0x00000000fee00fff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000ff000000-0x00000000ffffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000100000000-0x000000021dffffff] usable
+[    0.000000] NX (Execute Disable) protection: active
+[    0.000000] e820: user-defined physical RAM map:
+[    0.000000] user: [mem 0x0000000000000000-0x00000000000917ff] usable
+[    0.000000] user: [mem 0x0000000000091800-0x000000000009ffff] reserved
+[    0.000000] user: [mem 0x00000000000e0000-0x00000000000fffff] reserved
+[    0.000000] user: [mem 0x0000000000100000-0x000000007fffffff] usable
+[    0.000000] user: [mem 0x0000000080000000-0x00000000d495ffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000d4960000-0x00000000d4966fff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000d4967000-0x00000000d4d9afff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000d4d9b000-0x00000000d5227fff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000d5228000-0x00000000daee9fff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000daeea000-0x00000000daffffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000db000000-0x00000000db75efff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000db75f000-0x00000000db7fffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000db800000-0x00000000dbfadfff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000dbfae000-0x00000000dbffffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000dc000000-0x00000000dd71bfff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000dd71c000-0x00000000dd7fffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000dd800000-0x00000000dee10fff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000dee11000-0x00000000deffffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000df000000-0x00000000f7ffffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000f8000000-0x00000000fbffffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000fc000000-0x00000000febfffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000fec00000-0x00000000fec00fff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000fec01000-0x00000000fecfffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000fed00000-0x00000000fed03fff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000fed04000-0x00000000fed1bfff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000fed1c000-0x00000000fed1ffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000fed20000-0x00000000fedfffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000fee00000-0x00000000fee00fff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000fee01000-0x00000000feffffff] persistent (type 12)
+[    0.000000] user: [mem 0x00000000ff000000-0x00000000ffffffff] persistent (type 12)
+[    0.000000] user: [mem 0x0000000100000000-0x000000017fffffff] persistent (type 12)
+[    0.000000] user: [mem 0x0000000180000000-0x000000021dffffff] usable
+[    0.000000] SMBIOS 2.7 present.
+[    0.000000] DMI: Dell Inc. OptiPlex 9020/03CPWF, BIOS A09 11/20/2014
+[    0.000000] e820: update [mem 0x00000000-0x00000fff] usable ==> reserved
+[    0.000000] e820: remove [mem 0x000a0000-0x000fffff] usable
+[    0.000000] e820: last_pfn = 0x21e000 max_arch_pfn = 0x400000000
+[    0.000000] MTRR default type: uncachable
+[    0.000000] MTRR fixed ranges enabled:
+[    0.000000]   00000-9FFFF write-back
+[    0.000000]   A0000-BFFFF uncachable
+[    0.000000]   C0000-DBFFF write-protect
+[    0.000000]   DC000-E7FFF uncachable
+[    0.000000]   E8000-FFFFF write-protect
+[    0.000000] MTRR variable ranges enabled:
+[    0.000000]   0 base 0000000000 mask 7E00000000 write-back
+[    0.000000]   1 base 0200000000 mask 7FF0000000 write-back
+[    0.000000]   2 base 0210000000 mask 7FF8000000 write-back
+[    0.000000]   3 base 0218000000 mask 7FFC000000 write-back
+[    0.000000]   4 base 021C000000 mask 7FFE000000 write-back
+[    0.000000]   5 base 00E0000000 mask 7FE0000000 uncachable
+[    0.000000]   6 disabled
+[    0.000000]   7 disabled
+[    0.000000]   8 disabled
+[    0.000000]   9 disabled
+[    0.000000] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WC  UC- WT  
+[    0.000000] original variable MTRRs
+[    0.000000] reg 0, base: 0GB, range: 8GB, type WB
+[    0.000000] reg 1, base: 8GB, range: 256MB, type WB
+[    0.000000] reg 2, base: 8448MB, range: 128MB, type WB
+[    0.000000] reg 3, base: 8576MB, range: 64MB, type WB
+[    0.000000] reg 4, base: 8640MB, range: 32MB, type WB
+[    0.000000] reg 5, base: 3584MB, range: 512MB, type UC
+[    0.000000] total RAM covered: 8160M
+[    0.000000] Found optimal setting for mtrr clean up
+[    0.000000]  gran_size: 64K 	chunk_size: 64M 	num_reg: 6  	lose cover RAM: 0G
+[    0.000000] New variable MTRRs
+[    0.000000] reg 0, base: 0GB, range: 2GB, type WB
+[    0.000000] reg 1, base: 2GB, range: 1GB, type WB
+[    0.000000] reg 2, base: 3GB, range: 512MB, type WB
+[    0.000000] reg 3, base: 4GB, range: 4GB, type WB
+[    0.000000] reg 4, base: 8GB, range: 512MB, type WB
+[    0.000000] reg 5, base: 8672MB, range: 32MB, type UC
+[    0.000000] e820: update [mem 0xe0000000-0xffffffff] usable ==> reserved
+[    0.000000] e820: last_pfn = 0x100000 max_arch_pfn = 0x400000000
+[    0.000000] found SMP MP-table at [mem 0x000fd970-0x000fd97f] mapped at [ffff8800000fd970]
+[    0.000000] Scanning 1 areas for low memory corruption
+[    0.000000] Base memory trampoline at [ffff88000008b000] 8b000 size 24576
+[    0.000000] Using GB pages for direct mapping
+[    0.000000] init_memory_mapping: [mem 0x00000000-0x000fffff]
+[    0.000000]  [mem 0x00000000-0x000fffff] page 4k
+[    0.000000] BRK [0x01ffc000, 0x01ffcfff] PGTABLE
+[    0.000000] BRK [0x01ffd000, 0x01ffdfff] PGTABLE
+[    0.000000] BRK [0x01ffe000, 0x01ffefff] PGTABLE
+[    0.000000] init_memory_mapping: [mem 0x21de00000-0x21dffffff]
+[    0.000000]  [mem 0x21de00000-0x21dffffff] page 2M
+[    0.000000] BRK [0x01fff000, 0x01ffffff] PGTABLE
+[    0.000000] init_memory_mapping: [mem 0x200000000-0x21ddfffff]
+[    0.000000]  [mem 0x200000000-0x21ddfffff] page 2M
+[    0.000000] init_memory_mapping: [mem 0x1e0000000-0x1ffffffff]
+[    0.000000]  [mem 0x1e0000000-0x1ffffffff] page 1G
+[    0.000000] init_memory_mapping: [mem 0x00100000-0x7fffffff]
+[    0.000000]  [mem 0x00100000-0x001fffff] page 4k
+[    0.000000]  [mem 0x00200000-0x3fffffff] page 2M
+[    0.000000]  [mem 0x40000000-0x7fffffff] page 1G
+[    0.000000] init_memory_mapping: [mem 0x180000000-0x1dfffffff]
+[    0.000000]  [mem 0x180000000-0x1dfffffff] page 1G
+[    0.000000] RAMDISK: [mem 0x15b6a000-0x26dacfff]
+[    0.000000] ACPI: Early table checksum verification disabled
+[    0.000000] ACPI: RSDP 0x00000000000F0490 000024 (v02 DELL  )
+[    0.000000] ACPI: XSDT 0x00000000DBFEE088 000094 (v01 DELL   CBX3     01072009 AMI  00010013)
+[    0.000000] ACPI: FACP 0x00000000DBFF9470 00010C (v05 DELL   CBX3     01072009 AMI  00010013)
+[    0.000000] ACPI: DSDT 0x00000000DBFEE1B0 00B2B9 (v02 DELL   CBX3     00000014 INTL 20091112)
+[    0.000000] ACPI: FACS 0x00000000DD7FE080 000040
+[    0.000000] ACPI: APIC 0x00000000DBFF9580 000092 (v03 DELL   CBX3     01072009 AMI  00010013)
+[    0.000000] ACPI: FPDT 0x00000000DBFF9618 000044 (v01 DELL   CBX3     01072009 AMI  00010013)
+[    0.000000] ACPI: SLIC 0x00000000DBFF9660 000176 (v03 DELL   CBX3     01072009 MSFT 00010013)
+[    0.000000] ACPI: LPIT 0x00000000DBFF97D8 00005C (v01 DELL   CBX3     00000000 AMI. 00000005)
+[    0.000000] ACPI: SSDT 0x00000000DBFF9838 000539 (v01 PmRef  Cpu0Ist  00003000 INTL 20120711)
+[    0.000000] ACPI: SSDT 0x00000000DBFF9D78 000AD8 (v01 PmRef  CpuPm    00003000 INTL 20120711)
+[    0.000000] ACPI: SSDT 0x00000000DBFFA850 0001C7 (v01 PmRef  LakeTiny 00003000 INTL 20120711)
+[    0.000000] ACPI: HPET 0x00000000DBFFAA18 000038 (v01 DELL   CBX3     01072009 AMI. 00000005)
+[    0.000000] ACPI: SSDT 0x00000000DBFFAA50 00036D (v01 SataRe SataTabl 00001000 INTL 20120711)
+[    0.000000] ACPI: MCFG 0x00000000DBFFADC0 00003C (v01 DELL   CBX3     01072009 MSFT 00000097)
+[    0.000000] ACPI: SSDT 0x00000000DBFFAE00 0034D6 (v01 SaSsdt SaSsdt   00003000 INTL 20091112)
+[    0.000000] ACPI: ASF! 0x00000000DBFFE2D8 0000A5 (v32 INTEL   HCG     00000001 TFSM 000F4240)
+[    0.000000] ACPI: DMAR 0x00000000DBFFE380 000080 (v01 INTEL  HSW      00000001 INTL 00000001)
+[    0.000000] ACPI: Local APIC address 0xfee00000
+[    0.000000] No NUMA configuration found
+[    0.000000] Faking a node at [mem 0x0000000000000000-0x000000021dffffff]
+[    0.000000] NODE_DATA(0) allocated [mem 0x21dffb000-0x21dffffff]
+[    0.000000]  [ffffea0000000000-ffffea00087fffff] PMD -> [ffff880218e00000-ffff88021d5fffff] on node 0
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+[    0.000000]   DMA32    [mem 0x0000000001000000-0x00000000ffffffff]
+[    0.000000]   Normal   [mem 0x0000000100000000-0x000000021dffffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000000001000-0x0000000000090fff]
+[    0.000000]   node   0: [mem 0x0000000000100000-0x000000007fffffff]
+[    0.000000]   node   0: [mem 0x0000000180000000-0x000000021dffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000000001000-0x000000021dffffff]
+[    0.000000] On node 0 totalpages: 1171344
+[    0.000000]   DMA zone: 64 pages used for memmap
+[    0.000000]   DMA zone: 21 pages reserved
+[    0.000000]   DMA zone: 3984 pages, LIFO batch:0
+[    0.000000]   DMA32 zone: 8128 pages used for memmap
+[    0.000000]   DMA32 zone: 520192 pages, LIFO batch:31
+[    0.000000]   Normal zone: 10112 pages used for memmap
+[    0.000000]   Normal zone: 647168 pages, LIFO batch:31
+[    0.000000] ACPI: PM-Timer IO Port: 0x1808
+[    0.000000] ACPI: Local APIC address 0xfee00000
+[    0.000000] ACPI: LAPIC_NMI (acpi_id[0xff] high edge lint[0x1])
+[    0.000000] IOAPIC[0]: apic_id 8, version 32, address 0xfec00000, GSI 0-23
+[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.000000] ACPI: IRQ0 used by override.
+[    0.000000] ACPI: IRQ9 used by override.
+[    0.000000] Using ACPI (MADT) for SMP configuration information
+[    0.000000] ACPI: HPET id: 0x8086a701 base: 0xfed00000
+[    0.000000] smpboot: Allowing 8 CPUs, 0 hotplug CPUs
+[    0.000000] PM: Registered nosave memory: [mem 0x00000000-0x00000fff]
+[    0.000000] PM: Registered nosave memory: [mem 0x00091000-0x00091fff]
+[    0.000000] PM: Registered nosave memory: [mem 0x00092000-0x0009ffff]
+[    0.000000] PM: Registered nosave memory: [mem 0x000a0000-0x000dffff]
+[    0.000000] PM: Registered nosave memory: [mem 0x000e0000-0x000fffff]
+[    0.000000] PM: Registered nosave memory: [mem 0x80000000-0xd495ffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xd4960000-0xd4966fff]
+[    0.000000] PM: Registered nosave memory: [mem 0xd4967000-0xd4d9afff]
+[    0.000000] PM: Registered nosave memory: [mem 0xd4d9b000-0xd5227fff]
+[    0.000000] PM: Registered nosave memory: [mem 0xd5228000-0xdaee9fff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdaeea000-0xdaffffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdb000000-0xdb75efff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdb75f000-0xdb7fffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdb800000-0xdbfadfff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdbfae000-0xdbffffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdc000000-0xdd71bfff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdd71c000-0xdd7fffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdd800000-0xdee10fff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdee11000-0xdeffffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xdf000000-0xf7ffffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xf8000000-0xfbffffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xfc000000-0xfebfffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xfec00000-0xfec00fff]
+[    0.000000] PM: Registered nosave memory: [mem 0xfec01000-0xfecfffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xfed00000-0xfed03fff]
+[    0.000000] PM: Registered nosave memory: [mem 0xfed04000-0xfed1bfff]
+[    0.000000] PM: Registered nosave memory: [mem 0xfed1c000-0xfed1ffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xfed20000-0xfedfffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xfee00000-0xfee00fff]
+[    0.000000] PM: Registered nosave memory: [mem 0xfee01000-0xfeffffff]
+[    0.000000] PM: Registered nosave memory: [mem 0xff000000-0xffffffff]
+[    0.000000] PM: Registered nosave memory: [mem 0x100000000-0x17fffffff]
+[    0.000000] e820: cannot find a gap in the 32bit address range
+               e820: PCI devices with unassigned 32bit BARs may break!
+[    0.000000] e820: [mem 0x21e100000-0x21e4fffff] available for PCI devices
+[    0.000000] Booting paravirtualized kernel on bare hardware
+[    0.000000] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645519600211568 ns
+[    0.000000] setup_percpu: NR_CPUS:512 nr_cpumask_bits:512 nr_cpu_ids:8 nr_node_ids:1
+[    0.000000] PERCPU: Embedded 33 pages/cpu @ffff88021dc00000 s97496 r8192 d29480 u262144
+[    0.000000] pcpu-alloc: s97496 r8192 d29480 u262144 alloc=1*2097152
+[    0.000000] pcpu-alloc: [0] 0 1 2 3 4 5 6 7 
+[    0.000000] Built 1 zonelists in Node order, mobility grouping on.  Total pages: 1153019
+[    0.000000] Policy zone: Normal
+[    0.000000] Kernel command line: BOOT_IMAGE=/boot/vmlinuz-4.3.0 memmap=4G!2G root=UUID=461d99c2-65f5-4635-a31a-48a29395e262 ro quiet splash vt.handoff=7
+[    0.000000] PID hash table entries: 4096 (order: 3, 32768 bytes)
+[    0.000000] Calgary: detecting Calgary via BIOS EBDA area
+[    0.000000] Calgary: Unable to locate Rio Grande table in EBDA - bailing!
+[    0.000000] Memory: 4246948K/4685376K available (8146K kernel code, 1248K rwdata, 3880K rodata, 1456K init, 1332K bss, 438428K reserved, 0K cma-reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
+[    0.000000] Hierarchical RCU implementation.
+[    0.000000] 	Build-time adjustment of leaf fanout to 64.
+[    0.000000] 	RCU restricting CPUs from NR_CPUS=512 to nr_cpu_ids=8.
+[    0.000000] RCU: Adjusting geometry for rcu_fanout_leaf=64, nr_cpu_ids=8
+[    0.000000] NR_IRQS:33024 nr_irqs:488 16
+[    0.000000] spurious 8259A interrupt: IRQ7.
+[    0.000000] Console: colour dummy device 80x25
+[    0.000000] console [tty0] enabled
+[    0.000000] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 133484882848 ns
+[    0.000000] hpet clockevent registered
+[    0.000000] tsc: Fast TSC calibration using PIT
+[    0.000000] tsc: Detected 3591.706 MHz processor
+[    0.000019] Calibrating delay loop (skipped), value calculated using timer frequency.. 7183.41 BogoMIPS (lpj=14366824)
+[    0.000020] pid_max: default: 32768 minimum: 301
+[    0.000024] ACPI: Core revision 20150818
+[    0.006696] ACPI: 6 ACPI AML tables successfully acquired and loaded
+[    0.006708] Security Framework initialized
+[    0.006710] Yama: becoming mindful.
+[    0.006715] AppArmor: AppArmor initialized
+[    0.007053] Dentry cache hash table entries: 1048576 (order: 11, 8388608 bytes)
+[    0.008074] Inode-cache hash table entries: 524288 (order: 10, 4194304 bytes)
+[    0.008513] Mount-cache hash table entries: 16384 (order: 5, 131072 bytes)
+[    0.008519] Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes)
+[    0.008657] Initializing cgroup subsys io
+[    0.008660] Initializing cgroup subsys memory
+[    0.008665] Initializing cgroup subsys devices
+[    0.008666] Initializing cgroup subsys freezer
+[    0.008668] Initializing cgroup subsys net_cls
+[    0.008669] Initializing cgroup subsys perf_event
+[    0.008670] Initializing cgroup subsys net_prio
+[    0.008672] Initializing cgroup subsys hugetlb
+[    0.008674] Initializing cgroup subsys pids
+[    0.008690] CPU: Physical Processor ID: 0
+[    0.008690] CPU: Processor Core ID: 0
+[    0.008693] ENERGY_PERF_BIAS: Set to 'normal', was 'performance'
+[    0.008693] ENERGY_PERF_BIAS: View and update with x86_energy_perf_policy(8)
+[    0.009385] mce: CPU supports 9 MCE banks
+[    0.009395] CPU0: Thermal monitoring enabled (TM1)
+[    0.009402] process: using mwait in idle threads
+[    0.009404] Last level iTLB entries: 4KB 1024, 2MB 1024, 4MB 1024
+[    0.009404] Last level dTLB entries: 4KB 1024, 2MB 1024, 4MB 1024, 1GB 4
+[    0.009628] Freeing SMP alternatives memory: 28K (ffffffff81ea6000 - ffffffff81ead000)
+[    0.010787] ftrace: allocating 31180 entries in 122 pages
+[    0.019013] DMAR: Host address width 39
+[    0.019014] DMAR: DRHD base: 0x000000fed90000 flags: 0x1
+[    0.019019] DMAR: dmar0: reg_base_addr fed90000 ver 1:0 cap d2008c20660462 ecap f010da
+[    0.019020] DMAR: RMRR base: 0x000000def7b000 end: 0x000000def88fff
+[    0.019022] DMAR-IR: IOAPIC id 8 under DRHD base  0xfed90000 IOMMU 0
+[    0.019023] DMAR-IR: HPET id 0 under DRHD base 0xfed90000
+[    0.019023] DMAR-IR: Queued invalidation will be enabled to support x2apic and Intr-remapping.
+[    0.019161] DMAR-IR: Enabled IRQ remapping in x2apic mode
+[    0.019162] x2apic enabled
+[    0.019166] Switched APIC routing to cluster x2apic.
+[    0.019570] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.059242] TSC deadline timer enabled
+[    0.059246] smpboot: CPU0: Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (family: 0x6, model: 0x3c, stepping: 0x3)
+[    0.059259] Performance Events: PEBS fmt2+, 16-deep LBR, Haswell events, full-width counters, Intel PMU driver.
+[    0.059271] ... version:                3
+[    0.059272] ... bit width:              48
+[    0.059272] ... generic registers:      4
+[    0.059273] ... value mask:             0000ffffffffffff
+[    0.059273] ... max period:             0000ffffffffffff
+[    0.059274] ... fixed-purpose events:   3
+[    0.059274] ... event mask:             000000070000000f
+[    0.059730] x86: Booting SMP configuration:
+[    0.059731] .... node  #0, CPUs:      #1
+[    0.073463] NMI watchdog: enabled on all CPUs, permanently consumes one hw-PMU counter.
+[    0.073512]  #2 #3 #4 #5 #6 #7
+[    0.155850] x86: Booted up 1 node, 8 CPUs
+[    0.155853] smpboot: Total of 8 processors activated (57467.29 BogoMIPS)
+[    0.162118] devtmpfs: initialized
+[    0.163285] evm: security.selinux
+[    0.163285] evm: security.SMACK64
+[    0.163286] evm: security.SMACK64EXEC
+[    0.163286] evm: security.SMACK64TRANSMUTE
+[    0.163287] evm: security.SMACK64MMAP
+[    0.163287] evm: security.ima
+[    0.163288] evm: security.capability
+[    0.163381] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    0.163437] pinctrl core: initialized pinctrl subsystem
+[    0.163512] RTC time:  2:55:22, date: 02/02/18
+[    0.163583] NET: Registered protocol family 16
+[    0.174027] cpuidle: using governor ladder
+[    0.186014] cpuidle: using governor menu
+[    0.186016] PCCT header not found.
+[    0.186079] ACPI: bus type PCI registered
+[    0.186081] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+[    0.186131] PCI: MMCONFIG for domain 0000 [bus 00-3f] at [mem 0xf8000000-0xfbffffff] (base 0xf8000000)
+[    0.186133] PCI: not using MMCONFIG
+[    0.186133] PCI: Using configuration type 1 for base access
+[    0.186138] dmi type 0xB1 record - unknown flag
+[    0.186316] perf_event_intel: PMU erratum BJ122, BV98, HSD29 worked around, HT is on
+[    0.206260] ACPI: Added _OSI(Module Device)
+[    0.206261] ACPI: Added _OSI(Processor Device)
+[    0.206261] ACPI: Added _OSI(3.0 _SCP Extensions)
+[    0.206262] ACPI: Added _OSI(Processor Aggregator Device)
+[    0.208317] ACPI: Executed 1 blocks of module-level executable AML code
+[    0.209680] [Firmware Bug]: ACPI: BIOS _OSI(Linux) query ignored
+[    0.209953] ACPI: Dynamic OEM Table Load:
+[    0.209957] ACPI: SSDT 0xFFFF880217043C00 0003D3 (v01 PmRef  Cpu0Cst  00003001 INTL 20120711)
+[    0.210316] ACPI: Dynamic OEM Table Load:
+[    0.210319] ACPI: SSDT 0xFFFF8802170D1000 0005AA (v01 PmRef  ApIst    00003000 INTL 20120711)
+[    0.210699] ACPI: Dynamic OEM Table Load:
+[    0.210701] ACPI: SSDT 0xFFFF8802170D8E00 000119 (v01 PmRef  ApCst    00003000 INTL 20120711)
+[    0.211601] ACPI: Interpreter enabled
+[    0.211606] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S1_] (20150818/hwxface-580)
+[    0.211609] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S2_] (20150818/hwxface-580)
+[    0.211620] ACPI: (supports S0 S3 S4 S5)
+[    0.211621] ACPI: Using IOAPIC for interrupt routing
+[    0.211637] PCI: MMCONFIG for domain 0000 [bus 00-3f] at [mem 0xf8000000-0xfbffffff] (base 0xf8000000)
+[    0.211926] PCI: MMCONFIG at [mem 0xf8000000-0xfbffffff] reserved in ACPI motherboard resources
+[    0.211931] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+[    0.217306] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-3e])
+[    0.217310] acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MSI]
+[    0.217664] acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME AER PCIeCapability]
+[    0.217897] PCI host bridge to bus 0000:00
+[    0.217899] pci_bus 0000:00: root bus resource [bus 00-3e]
+[    0.217900] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+[    0.217901] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+[    0.217902] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+[    0.217903] pci_bus 0000:00: root bus resource [mem 0x000dc000-0x000dffff window]
+[    0.217904] pci_bus 0000:00: root bus resource [mem 0x000e0000-0x000e3fff window]
+[    0.217904] pci_bus 0000:00: root bus resource [mem 0x000e4000-0x000e7fff window]
+[    0.217905] pci_bus 0000:00: root bus resource [mem 0xe0000000-0xfeafffff window]
+[    0.217910] pci 0000:00:00.0: [8086:0c00] type 00 class 0x060000
+[    0.217961] pci 0000:00:01.0: [8086:0c01] type 01 class 0x060400
+[    0.217982] pci 0000:00:01.0: PME# supported from D0 D3hot D3cold
+[    0.218027] pci 0000:00:01.0: System wakeup disabled by ACPI
+[    0.218075] pci 0000:00:14.0: [8086:8c31] type 00 class 0x0c0330
+[    0.218096] pci 0000:00:14.0: reg 0x10: [mem 0xf7120000-0xf712ffff 64bit]
+[    0.218136] pci 0000:00:14.0: PME# supported from D3hot D3cold
+[    0.218158] pci 0000:00:14.0: System wakeup disabled by ACPI
+[    0.218182] pci 0000:00:16.0: [8086:8c3a] type 00 class 0x078000
+[    0.218204] pci 0000:00:16.0: reg 0x10: [mem 0xf713c000-0xf713c00f 64bit]
+[    0.218245] pci 0000:00:16.0: PME# supported from D0 D3hot D3cold
+[    0.218292] pci 0000:00:19.0: [8086:153a] type 00 class 0x020000
+[    0.218313] pci 0000:00:19.0: reg 0x10: [mem 0xf7100000-0xf711ffff]
+[    0.218319] pci 0000:00:19.0: reg 0x14: [mem 0xf7139000-0xf7139fff]
+[    0.218326] pci 0000:00:19.0: reg 0x18: [io  0xf040-0xf05f]
+[    0.218362] pci 0000:00:19.0: PME# supported from D0 D3hot D3cold
+[    0.218383] pci 0000:00:19.0: System wakeup disabled by ACPI
+[    0.218408] pci 0000:00:1a.0: [8086:8c2d] type 00 class 0x0c0320
+[    0.218431] pci 0000:00:1a.0: reg 0x10: [mem 0xf7138000-0xf71383ff]
+[    0.218487] pci 0000:00:1a.0: PME# supported from D0 D3hot D3cold
+[    0.218510] pci 0000:00:1a.0: System wakeup disabled by ACPI
+[    0.218534] pci 0000:00:1b.0: [8086:8c20] type 00 class 0x040300
+[    0.218555] pci 0000:00:1b.0: reg 0x10: [mem 0xf7130000-0xf7133fff 64bit]
+[    0.218599] pci 0000:00:1b.0: PME# supported from D0 D3hot D3cold
+[    0.218622] pci 0000:00:1b.0: System wakeup disabled by ACPI
+[    0.218644] pci 0000:00:1c.0: [8086:8c10] type 01 class 0x060400
+[    0.218691] pci 0000:00:1c.0: PME# supported from D0 D3hot D3cold
+[    0.218733] pci 0000:00:1c.0: System wakeup disabled by ACPI
+[    0.218757] pci 0000:00:1c.1: [8086:8c12] type 01 class 0x060400
+[    0.218805] pci 0000:00:1c.1: PME# supported from D0 D3hot D3cold
+[    0.218844] pci 0000:00:1c.1: System wakeup disabled by ACPI
+[    0.218872] pci 0000:00:1d.0: [8086:8c26] type 00 class 0x0c0320
+[    0.218896] pci 0000:00:1d.0: reg 0x10: [mem 0xf7137000-0xf71373ff]
+[    0.218951] pci 0000:00:1d.0: PME# supported from D0 D3hot D3cold
+[    0.218975] pci 0000:00:1d.0: System wakeup disabled by ACPI
+[    0.218998] pci 0000:00:1f.0: [8086:8c4e] type 00 class 0x060100
+[    0.219119] pci 0000:00:1f.2: [8086:2822] type 00 class 0x010400
+[    0.219135] pci 0000:00:1f.2: reg 0x10: [io  0xf090-0xf097]
+[    0.219141] pci 0000:00:1f.2: reg 0x14: [io  0xf080-0xf083]
+[    0.219147] pci 0000:00:1f.2: reg 0x18: [io  0xf070-0xf077]
+[    0.219153] pci 0000:00:1f.2: reg 0x1c: [io  0xf060-0xf063]
+[    0.219159] pci 0000:00:1f.2: reg 0x20: [io  0xf020-0xf03f]
+[    0.219165] pci 0000:00:1f.2: reg 0x24: [mem 0xf7136000-0xf71367ff]
+[    0.219184] pci 0000:00:1f.2: PME# supported from D3hot
+[    0.219223] pci 0000:00:1f.3: [8086:8c22] type 00 class 0x0c0500
+[    0.219237] pci 0000:00:1f.3: reg 0x10: [mem 0xf7135000-0xf71350ff 64bit]
+[    0.219253] pci 0000:00:1f.3: reg 0x20: [io  0xf000-0xf01f]
+[    0.219327] pci 0000:01:00.0: [10de:1382] type 00 class 0x030000
+[    0.219345] pci 0000:01:00.0: reg 0x10: [mem 0xf6000000-0xf6ffffff]
+[    0.219354] pci 0000:01:00.0: reg 0x14: [mem 0xe0000000-0xefffffff 64bit pref]
+[    0.219362] pci 0000:01:00.0: reg 0x1c: [mem 0xf0000000-0xf1ffffff 64bit pref]
+[    0.219369] pci 0000:01:00.0: reg 0x24: [io  0xe000-0xe07f]
+[    0.219375] pci 0000:01:00.0: reg 0x30: [mem 0xf7000000-0xf707ffff pref]
+[    0.219414] pci 0000:01:00.0: System wakeup disabled by ACPI
+[    0.219438] pci 0000:01:00.1: [10de:0fbc] type 00 class 0x040300
+[    0.219454] pci 0000:01:00.1: reg 0x10: [mem 0xf7080000-0xf7083fff]
+[    0.226085] pci 0000:00:01.0: PCI bridge to [bus 01]
+[    0.226086] pci 0000:00:01.0:   bridge window [io  0xe000-0xefff]
+[    0.226088] pci 0000:00:01.0:   bridge window [mem 0xf6000000-0xf70fffff]
+[    0.226090] pci 0000:00:01.0:   bridge window [mem 0xe0000000-0xf1ffffff 64bit pref]
+[    0.226135] acpiphp: Slot [1] registered
+[    0.226139] pci 0000:00:1c.0: PCI bridge to [bus 02]
+[    0.226203] pci 0000:03:00.0: [104c:8240] type 01 class 0x060400
+[    0.226311] pci 0000:03:00.0: supports D1 D2
+[    0.226331] pci 0000:03:00.0: System wakeup disabled by ACPI
+[    0.234086] pci 0000:00:1c.1: PCI bridge to [bus 03-04]
+[    0.234213] pci 0000:03:00.0: PCI bridge to [bus 04]
+[    0.234682] ACPI: PCI Interrupt Link [LNKA] (IRQs 3 4 5 6 10 *11 12 14 15)
+[    0.234714] ACPI: PCI Interrupt Link [LNKB] (IRQs 3 4 5 6 *10 11 12 14 15)
+[    0.234743] ACPI: PCI Interrupt Link [LNKC] (IRQs 3 4 *5 6 10 11 12 14 15)
+[    0.234771] ACPI: PCI Interrupt Link [LNKD] (IRQs 3 4 *5 6 10 11 12 14 15)
+[    0.234801] ACPI: PCI Interrupt Link [LNKE] (IRQs *3 4 5 6 10 11 12 14 15)
+[    0.234831] ACPI: PCI Interrupt Link [LNKF] (IRQs 3 4 5 6 10 11 12 14 15) *0, disabled.
+[    0.234860] ACPI: PCI Interrupt Link [LNKG] (IRQs 3 4 5 6 10 *11 12 14 15)
+[    0.234888] ACPI: PCI Interrupt Link [LNKH] (IRQs 3 4 5 6 *10 11 12 14 15)
+[    0.234992] ACPI: Enabled 6 GPEs in block 00 to 3F
+[    0.235060] vgaarb: setting as boot device: PCI:0000:01:00.0
+[    0.235061] vgaarb: device added: PCI:0000:01:00.0,decodes=io+mem,owns=io+mem,locks=none
+[    0.235061] vgaarb: loaded
+[    0.235062] vgaarb: bridge control possible 0000:01:00.0
+[    0.235191] SCSI subsystem initialized
+[    0.235211] libata version 3.00 loaded.
+[    0.235225] ACPI: bus type USB registered
+[    0.235234] usbcore: registered new interface driver usbfs
+[    0.235239] usbcore: registered new interface driver hub
+[    0.235251] usbcore: registered new device driver usb
+[    0.235327] PCI: Using ACPI for IRQ routing
+[    0.236477] PCI: pci_cache_line_size set to 64 bytes
+[    0.236517] Expanded resource Persistent Memory (legacy) due to conflict with PCI Bus 0000:00
+[    0.236518] Expanded resource Persistent Memory (legacy) due to conflict with Persistent Memory (legacy)
+[    0.236520] e820: reserve RAM buffer [mem 0x00091800-0x0009ffff]
+[    0.236521] e820: reserve RAM buffer [mem 0x21e000000-0x21fffffff]
+[    0.236590] NetLabel: Initializing
+[    0.236591] NetLabel:  domain hash size = 128
+[    0.236591] NetLabel:  protocols = UNLABELED CIPSOv4
+[    0.236599] NetLabel:  unlabeled traffic allowed by default
+[    0.236640] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0, 0, 0, 0, 0, 0
+[    0.236643] hpet0: 8 comparators, 64-bit 14.318180 MHz counter
+[    0.238662] clocksource: Switched to clocksource hpet
+[    0.242106] AppArmor: AppArmor Filesystem Enabled
+[    0.242137] pnp: PnP ACPI init
+[    0.242179] system 00:00: [mem 0xfed40000-0xfed44fff] has been reserved
+[    0.242181] system 00:00: Plug and Play ACPI device, IDs PNP0c01 (active)
+[    0.242272] system 00:01: [io  0x0680-0x069f] has been reserved
+[    0.242273] system 00:01: [io  0xffff] has been reserved
+[    0.242274] system 00:01: [io  0xffff] has been reserved
+[    0.242275] system 00:01: [io  0xffff] has been reserved
+[    0.242276] system 00:01: [io  0x1c00-0x1cfe] has been reserved
+[    0.242277] system 00:01: [io  0x1d00-0x1dfe] has been reserved
+[    0.242277] system 00:01: [io  0x1e00-0x1efe] has been reserved
+[    0.242278] system 00:01: [io  0x1f00-0x1ffe] has been reserved
+[    0.242279] system 00:01: [io  0x1800-0x18fe] could not be reserved
+[    0.242280] system 00:01: [io  0x164e-0x164f] has been reserved
+[    0.242282] system 00:01: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.242294] pnp 00:02: Plug and Play ACPI device, IDs PNP0b00 (active)
+[    0.242319] system 00:03: [io  0x1854-0x1857] has been reserved
+[    0.242320] system 00:03: Plug and Play ACPI device, IDs INT3f0d PNP0c02 (active)
+[    0.242370] system 00:04: [io  0x0a00-0x0a0f] has been reserved
+[    0.242372] system 00:04: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.242397] system 00:05: [io  0x04d0-0x04d1] has been reserved
+[    0.242398] system 00:05: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.242710] pnp 00:06: [dma 0 disabled]
+[    0.242734] pnp 00:06: Plug and Play ACPI device, IDs PNP0501 (active)
+[    0.242954] system 00:07: [mem 0xfed1c000-0xfed1ffff] has been reserved
+[    0.242955] system 00:07: [mem 0xfed10000-0xfed17fff] has been reserved
+[    0.242956] system 00:07: [mem 0xfed18000-0xfed18fff] has been reserved
+[    0.242957] system 00:07: [mem 0xfed19000-0xfed19fff] has been reserved
+[    0.242958] system 00:07: [mem 0xf8000000-0xfbffffff] has been reserved
+[    0.242959] system 00:07: [mem 0xfed20000-0xfed3ffff] has been reserved
+[    0.242960] system 00:07: [mem 0xfed90000-0xfed93fff] could not be reserved
+[    0.242961] system 00:07: [mem 0xfed45000-0xfed8ffff] has been reserved
+[    0.242962] system 00:07: [mem 0xff000000-0xffffffff] has been reserved
+[    0.242963] system 00:07: [mem 0xfee00000-0xfeefffff] could not be reserved
+[    0.242964] system 00:07: [mem 0xf7fdf000-0xf7fdffff] has been reserved
+[    0.242966] system 00:07: [mem 0xf7fe0000-0xf7feffff] has been reserved
+[    0.242967] system 00:07: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.243079] pnp: PnP ACPI: found 8 devices
+[    0.248750] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+[    0.248778] pci 0000:00:01.0: PCI bridge to [bus 01]
+[    0.248780] pci 0000:00:01.0:   bridge window [io  0xe000-0xefff]
+[    0.248781] pci 0000:00:01.0:   bridge window [mem 0xf6000000-0xf70fffff]
+[    0.248783] pci 0000:00:01.0:   bridge window [mem 0xe0000000-0xf1ffffff 64bit pref]
+[    0.248785] pci 0000:00:1c.0: PCI bridge to [bus 02]
+[    0.248793] pci 0000:03:00.0: PCI bridge to [bus 04]
+[    0.248809] pci 0000:00:1c.1: PCI bridge to [bus 03-04]
+[    0.248818] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
+[    0.248819] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
+[    0.248820] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
+[    0.248821] pci_bus 0000:00: resource 7 [mem 0x000dc000-0x000dffff window]
+[    0.248822] pci_bus 0000:00: resource 8 [mem 0x000e0000-0x000e3fff window]
+[    0.248822] pci_bus 0000:00: resource 9 [mem 0x000e4000-0x000e7fff window]
+[    0.248823] pci_bus 0000:00: resource 10 [mem 0xe0000000-0xfeafffff window]
+[    0.248824] pci_bus 0000:01: resource 0 [io  0xe000-0xefff]
+[    0.248825] pci_bus 0000:01: resource 1 [mem 0xf6000000-0xf70fffff]
+[    0.248826] pci_bus 0000:01: resource 2 [mem 0xe0000000-0xf1ffffff 64bit pref]
+[    0.248845] NET: Registered protocol family 2
+[    0.248943] TCP established hash table entries: 65536 (order: 7, 524288 bytes)
+[    0.249031] TCP bind hash table entries: 65536 (order: 8, 1048576 bytes)
+[    0.249135] TCP: Hash tables configured (established 65536 bind 65536)
+[    0.249151] UDP hash table entries: 4096 (order: 5, 131072 bytes)
+[    0.249170] UDP-Lite hash table entries: 4096 (order: 5, 131072 bytes)
+[    0.249207] NET: Registered protocol family 1
+[    0.286689] pci 0000:01:00.0: Video device with shadowed ROM
+[    0.286699] PCI: CLS 64 bytes, default 64
+[    0.286729] Trying to unpack rootfs image as initramfs...
+[    2.920012] Freeing initrd memory: 280844K (ffff880015b6a000 - ffff880026dad000)
+[    2.920038] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+[    2.920039] software IO TLB [mem 0x7c000000-0x80000000] (64MB) mapped at [ffff88007c000000-ffff88007fffffff]
+[    2.920087] RAPL PMU detected, API unit is 2^-32 Joules, 4 fixed counters 655360 ms ovfl timer
+[    2.920087] hw unit of domain pp0-core 2^-14 Joules
+[    2.920088] hw unit of domain package 2^-14 Joules
+[    2.920089] hw unit of domain dram 2^-14 Joules
+[    2.920089] hw unit of domain pp1-gpu 2^-14 Joules
+[    2.920185] microcode: CPU0 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.920191] microcode: CPU1 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.920195] microcode: CPU2 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.920200] microcode: CPU3 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.920206] microcode: CPU4 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.920213] microcode: CPU5 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.920217] microcode: CPU6 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.920222] microcode: CPU7 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.920257] microcode: Microcode Update Driver: v2.00 <tigran@aivazian.fsnet.co.uk>, Peter Oruba
+[    2.920279] Scanning for low memory corruption every 60 seconds
+[    2.920494] futex hash table entries: 2048 (order: 5, 131072 bytes)
+[    2.920520] audit: initializing netlink subsys (disabled)
+[    2.920529] audit: type=2000 audit(1517540124.904:1): initialized
+[    2.920743] Initialise system trusted keyring
+[    2.920794] HugeTLB registered 1 GB page size, pre-allocated 0 pages
+[    2.920794] HugeTLB registered 2 MB page size, pre-allocated 0 pages
+[    2.921651] zbud: loaded
+[    2.921805] VFS: Disk quotas dquot_6.6.0
+[    2.921827] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    2.921976] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    2.922114] fuse init (API version 7.23)
+[    2.922192] Key type big_key registered
+[    2.923054] Key type asymmetric registered
+[    2.923056] Asymmetric key parser 'x509' registered
+[    2.923066] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 249)
+[    2.923095] io scheduler noop registered
+[    2.923097] io scheduler deadline registered (default)
+[    2.923116] io scheduler cfq registered
+[    2.923548] pcieport 0000:00:01.0: Signaling PME through PCIe PME interrupt
+[    2.923550] pci 0000:01:00.0: Signaling PME through PCIe PME interrupt
+[    2.923551] pci 0000:01:00.1: Signaling PME through PCIe PME interrupt
+[    2.923552] pcie_pme 0000:00:01.0:pcie01: service driver pcie_pme loaded
+[    2.923568] pcieport 0000:00:1c.0: Signaling PME through PCIe PME interrupt
+[    2.923571] pcie_pme 0000:00:1c.0:pcie01: service driver pcie_pme loaded
+[    2.923584] pcieport 0000:00:1c.1: Signaling PME through PCIe PME interrupt
+[    2.923585] pci 0000:03:00.0: Signaling PME through PCIe PME interrupt
+[    2.923588] pcie_pme 0000:00:1c.1:pcie01: service driver pcie_pme loaded
+[    2.923592] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
+[    2.923595] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
+[    2.923611] vesafb: mode is 1920x1080x32, linelength=7680, pages=0
+[    2.923612] vesafb: scrolling: redraw
+[    2.923613] vesafb: Truecolor: size=8:8:8:8, shift=24:16:8:0
+[    2.923620] vesafb: framebuffer at 0xf1000000, mapped to 0xffffc90001000000, using 8128k, total 8128k
+[    3.024301] Console: switching to colour frame buffer device 240x67
+[    3.124545] fb0: VESA VGA frame buffer device
+[    3.124555] intel_idle: MWAIT substates: 0x42120
+[    3.124556] intel_idle: v0.4 model 0x3C
+[    3.124557] intel_idle: lapic_timer_reliable_states 0xffffffff
+[    3.124787] input: Power Button as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0C:00/input/input0
+[    3.124790] ACPI: Power Button [PWRB]
+[    3.124809] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input1
+[    3.124810] ACPI: Power Button [PWRF]
+[    3.125061] ACPI: Invalid active0 threshold
+[    3.125115] thermal LNXTHERM:00: registered as thermal_zone0
+[    3.125116] ACPI: Thermal Zone [TZ00] (28 C)
+[    3.125219] thermal LNXTHERM:01: registered as thermal_zone1
+[    3.125220] ACPI: Thermal Zone [TZ01] (30 C)
+[    3.125245] GHES: HEST is not enabled!
+[    3.125308] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[    3.145912] 00:06: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+[    3.146837] Linux agpgart interface v0.103
+[    3.148753] brd: module loaded
+[    3.149649] loop: module loaded
+[    3.149871] libphy: Fixed MDIO Bus: probed
+[    3.149874] tun: Universal TUN/TAP device driver, 1.6
+[    3.149874] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[    3.149926] PPP generic driver version 2.4.2
+[    3.150069] xhci_hcd 0000:00:14.0: xHCI Host Controller
+[    3.150075] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 1
+[    3.150148] xhci_hcd 0000:00:14.0: hcc params 0x200077c1 hci version 0x100 quirks 0x00009810
+[    3.150154] xhci_hcd 0000:00:14.0: cache line size of 64 is not supported
+[    3.150244] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+[    3.150245] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.150246] usb usb1: Product: xHCI Host Controller
+[    3.150247] usb usb1: Manufacturer: Linux 4.3.0 xhci-hcd
+[    3.150248] usb usb1: SerialNumber: 0000:00:14.0
+[    3.150403] hub 1-0:1.0: USB hub found
+[    3.150418] hub 1-0:1.0: 15 ports detected
+[    3.152815] xhci_hcd 0000:00:14.0: xHCI Host Controller
+[    3.152817] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 2
+[    3.152843] usb usb2: New USB device found, idVendor=1d6b, idProduct=0003
+[    3.152844] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.152845] usb usb2: Product: xHCI Host Controller
+[    3.152846] usb usb2: Manufacturer: Linux 4.3.0 xhci-hcd
+[    3.152846] usb usb2: SerialNumber: 0000:00:14.0
+[    3.152926] hub 2-0:1.0: USB hub found
+[    3.152936] hub 2-0:1.0: 6 ports detected
+[    3.153586] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    3.153589] ehci-pci: EHCI PCI platform driver
+[    3.153683] ehci-pci 0000:00:1a.0: EHCI Host Controller
+[    3.153686] ehci-pci 0000:00:1a.0: new USB bus registered, assigned bus number 3
+[    3.153694] ehci-pci 0000:00:1a.0: debug port 2
+[    3.157581] ehci-pci 0000:00:1a.0: cache line size of 64 is not supported
+[    3.157588] ehci-pci 0000:00:1a.0: irq 16, io mem 0xf7138000
+[    3.169612] ehci-pci 0000:00:1a.0: USB 2.0 started, EHCI 1.00
+[    3.169636] usb usb3: New USB device found, idVendor=1d6b, idProduct=0002
+[    3.169637] usb usb3: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.169638] usb usb3: Product: EHCI Host Controller
+[    3.169639] usb usb3: Manufacturer: Linux 4.3.0 ehci_hcd
+[    3.169640] usb usb3: SerialNumber: 0000:00:1a.0
+[    3.169780] hub 3-0:1.0: USB hub found
+[    3.169783] hub 3-0:1.0: 2 ports detected
+[    3.169909] ehci-pci 0000:00:1d.0: EHCI Host Controller
+[    3.169913] ehci-pci 0000:00:1d.0: new USB bus registered, assigned bus number 4
+[    3.169922] ehci-pci 0000:00:1d.0: debug port 2
+[    3.173810] ehci-pci 0000:00:1d.0: cache line size of 64 is not supported
+[    3.173817] ehci-pci 0000:00:1d.0: irq 23, io mem 0xf7137000
+[    3.185668] ehci-pci 0000:00:1d.0: USB 2.0 started, EHCI 1.00
+[    3.185709] usb usb4: New USB device found, idVendor=1d6b, idProduct=0002
+[    3.185711] usb usb4: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.185712] usb usb4: Product: EHCI Host Controller
+[    3.185712] usb usb4: Manufacturer: Linux 4.3.0 ehci_hcd
+[    3.185713] usb usb4: SerialNumber: 0000:00:1d.0
+[    3.185878] hub 4-0:1.0: USB hub found
+[    3.185882] hub 4-0:1.0: 2 ports detected
+[    3.185981] ehci-platform: EHCI generic platform driver
+[    3.185991] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    3.185995] ohci-pci: OHCI PCI platform driver
+[    3.186004] ohci-platform: OHCI generic platform driver
+[    3.186009] uhci_hcd: USB Universal Host Controller Interface driver
+[    3.186044] i8042: PNP: No PS/2 controller found. Probing ports directly.
+[    3.188952] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    3.188955] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    3.189169] mousedev: PS/2 mouse device common for all mice
+[    3.189386] rtc_cmos 00:02: RTC can wake from S4
+[    3.189490] rtc_cmos 00:02: rtc core: registered rtc_cmos as rtc0
+[    3.189516] rtc_cmos 00:02: alarms up to one month, y3k, 242 bytes nvram, hpet irqs
+[    3.189521] i2c /dev entries driver
+[    3.189558] device-mapper: uevent: version 1.0.3
+[    3.189626] device-mapper: ioctl: 4.33.0-ioctl (2015-8-18) initialised: dm-devel@redhat.com
+[    3.189634] Intel P-state driver initializing.
+[    3.189843] ledtrig-cpu: registered to indicate activity on CPUs
+[    3.190710] NET: Registered protocol family 10
+[    3.191195] NET: Registered protocol family 17
+[    3.191218] Key type dns_resolver registered
+[    3.192389] registered taskstats version 1
+[    3.192443] Loading compiled-in X.509 certificates
+[    3.192458] Problem loading in-kernel X.509 certificate (-74)
+[    3.194174] zswap: loaded using pool lzo/zbud
+[    3.198070] Key type trusted registered
+[    3.200766] Key type encrypted registered
+[    3.200772] AppArmor: AppArmor sha1 policy hashing enabled
+[    3.200775] ima: No TPM chip found, activating TPM-bypass!
+[    3.200787] evm: HMAC attrs: 0x1
+[    3.201081]   Magic number: 6:224:914
+[    3.201084]  ep_00: hash matches
+[    3.201085]  ep_00: hash matches
+[    3.201086]  ep_00: hash matches
+[    3.201087]  ep_00: hash matches
+[    3.201189] rtc_cmos 00:02: setting system clock to 2018-02-02 02:55:25 UTC (1517540125)
+[    3.201224] BIOS EDD facility v0.16 2004-Jun-25, 0 devices found
+[    3.201224] EDD information not available.
+[    3.201272] PM: Hibernation image not present or could not be loaded.
+[    3.201483] Freeing unused kernel memory: 1456K (ffffffff81d3a000 - ffffffff81ea6000)
+[    3.201484] Write protecting the kernel read-only data: 12288k
+[    3.201615] Freeing unused kernel memory: 36K (ffff8800017f7000 - ffff880001800000)
+[    3.201687] Freeing unused kernel memory: 216K (ffff880001bca000 - ffff880001c00000)
+[    3.207195] random: systemd-udevd urandom read with 5 bits of entropy available
+[    3.223241] video: module verification failed: signature and/or required key missing - tainting kernel
+[    3.225170] FUJITSU Extended Socket Network Device Driver - version 1.0 - Copyright (c) 2015 FUJITSU LIMITED
+[    3.234653] pps_core: LinuxPPS API ver. 1 registered
+[    3.234656] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    3.237542] PTP clock support registered
+[    3.238772] ahci 0000:00:1f.2: version 3.0
+[    3.238904] ahci 0000:00:1f.2: AHCI 0001.0300 32 slots 6 ports 6 Gbps 0x5 impl RAID mode
+[    3.238908] ahci 0000:00:1f.2: flags: 64bit ncq pm led clo pio slum part ems apst 
+[    3.246272] scsi host0: ahci
+[    3.246377] scsi host1: ahci
+[    3.246454] scsi host2: ahci
+[    3.246525] scsi host3: ahci
+[    3.246597] scsi host4: ahci
+[    3.246674] scsi host5: ahci
+[    3.246707] ata1: SATA max UDMA/133 abar m2048@0xf7136000 port 0xf7136100 irq 29
+[    3.246708] ata2: DUMMY
+[    3.246710] ata3: SATA max UDMA/133 abar m2048@0xf7136000 port 0xf7136200 irq 29
+[    3.246710] ata4: DUMMY
+[    3.246711] ata5: DUMMY
+[    3.246711] ata6: DUMMY
+[    3.255624] e1000e: Intel(R) PRO/1000 Network Driver - 3.2.6-k
+[    3.255625] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+[    3.255738] e1000e 0000:00:19.0: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
+[    3.271968] [drm] Initialized drm 1.1.0 20060810
+[    3.295369] wmi: Mapper loaded
+[    3.430410] e1000e 0000:00:19.0 eth0: registered PHC clock
+[    3.430412] e1000e 0000:00:19.0 eth0: (PCI Express:2.5GT/s:Width x1) 98:90:96:c1:6b:85
+[    3.430413] e1000e 0000:00:19.0 eth0: Intel(R) PRO/1000 Network Connection
+[    3.430455] e1000e 0000:00:19.0 eth0: MAC: 11, PHY: 12, PBA No: FFFFFF-0FF
+[    3.431046] e1000e 0000:00:19.0 eno1: renamed from eth0
+[    3.481540] usb 3-1: new high-speed USB device number 2 using ehci-pci
+[    3.497529] usb 4-1: new high-speed USB device number 2 using ehci-pci
+[    3.565511] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[    3.566308] ata1.00: ATA-9: ST1000DM003-1ER162, CC45, max UDMA/133
+[    3.566310] ata1.00: 1953525168 sectors, multi 16: LBA48 NCQ (depth 31/32), AA
+[    3.566988] ata1.00: configured for UDMA/133
+[    3.567203] scsi 0:0:0:0: Direct-Access     ATA      ST1000DM003-1ER1 CC45 PQ: 0 ANSI: 5
+[    3.567468] sd 0:0:0:0: [sda] 1953525168 512-byte logical blocks: (1.00 TB/931 GiB)
+[    3.567470] sd 0:0:0:0: [sda] 4096-byte physical blocks
+[    3.567475] sd 0:0:0:0: Attached scsi generic sg0 type 0
+[    3.567531] sd 0:0:0:0: [sda] Write Protect is off
+[    3.567533] sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+[    3.567590] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[    3.573496] ata3: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[    3.577116] ata3.00: ATAPI: HL-DT-ST DVD+/-RW GHB0N, A1B1, max UDMA/100
+[    3.578794] ata3.00: configured for UDMA/100
+[    3.587319] scsi 2:0:0:0: CD-ROM            HL-DT-ST DVD+-RW GHB0N    A1B1 PQ: 0 ANSI: 5
+[    3.607153]  sda: sda1 sda2 < sda5 sda6 sda7 >
+[    3.607723] sd 0:0:0:0: [sda] Attached SCSI disk
+[    3.609106] sr 2:0:0:0: [sr0] scsi3-mmc drive: 48x/12x writer dvd-ram cd/rw xa/form2 cdda tray
+[    3.609108] cdrom: Uniform CD-ROM driver Revision: 3.20
+[    3.609179] sr 2:0:0:0: Attached scsi CD-ROM sr0
+[    3.609234] sr 2:0:0:0: Attached scsi generic sg1 type 5
+[    3.613848] usb 3-1: New USB device found, idVendor=8087, idProduct=8008
+[    3.613849] usb 3-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    3.614129] hub 3-1:1.0: USB hub found
+[    3.614210] hub 3-1:1.0: 6 ports detected
+[    3.629840] usb 4-1: New USB device found, idVendor=8087, idProduct=8000
+[    3.629841] usb 4-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    3.630113] hub 4-1:1.0: USB hub found
+[    3.630218] hub 4-1:1.0: 8 ports detected
+[    3.640382] checking generic (f1000000 7f0000) vs hw (e0000000 10000000)
+[    3.640383] checking generic (f1000000 7f0000) vs hw (f0000000 2000000)
+[    3.640384] fb: switching to nouveaufb from VESA VGA
+[    3.640397] Console: switching to colour dummy device 80x25
+[    3.640502] nouveau 0000:01:00.0: NVIDIA GM107 (117020a2)
+[    3.754691] nouveau 0000:01:00.0: bios: version 82.07.32.00.04
+[    3.755625] nouveau 0000:01:00.0: fb: 4096 MiB DDR3
+[    3.885360] usb 3-1.3: new high-speed USB device number 3 using ehci-pci
+[    3.917370] tsc: Refined TSC clocksource calibration: 3591.678 MHz
+[    3.917372] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x33c59e164a3, max_idle_ns: 440795385527 ns
+[    3.978461] usb 3-1.3: New USB device found, idVendor=0781, idProduct=5590
+[    3.978463] usb 3-1.3: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[    3.978464] usb 3-1.3: Product: Ultra
+[    3.978466] usb 3-1.3: Manufacturer: SanDisk
+[    3.978467] usb 3-1.3: SerialNumber: 4C531001570114103552
+[    3.986475] usb-storage 3-1.3:1.0: USB Mass Storage device detected
+[    3.986886] scsi host6: usb-storage 3-1.3:1.0
+[    3.986964] usbcore: registered new interface driver usb-storage
+[    3.988696] usbcore: registered new interface driver uas
+[    4.049297] usb 3-1.4: new full-speed USB device number 4 using ehci-pci
+[    4.143655] usb 3-1.4: New USB device found, idVendor=0483, idProduct=5710
+[    4.143657] usb 3-1.4: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+[    4.143658] usb 3-1.4: Product: USB KB
+[    4.143659] usb 3-1.4: Manufacturer: STMicroelectronics
+[    4.148992] hidraw: raw HID events driver (C) Jiri Kosina
+[    4.153850] usbcore: registered new interface driver usbhid
+[    4.153856] usbhid: USB HID core driver
+[    4.155362] input: STMicroelectronics USB KB as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.4/3-1.4:1.0/0003:0483:5710.0001/input/input5
+[    4.209566] hid-generic 0003:0483:5710.0001: input,hidraw0: USB HID v1.11 Keyboard [STMicroelectronics USB KB] on usb-0000:00:1a.0-1.4/input0
+[    4.210587] input: STMicroelectronics USB KB as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.4/3-1.4:1.1/0003:0483:5710.0002/input/input6
+[    4.213245] usb 3-1.5: new full-speed USB device number 5 using ehci-pci
+[    4.265414] hid-generic 0003:0483:5710.0002: input,hidraw1: USB HID v1.11 Keyboard [STMicroelectronics USB KB] on usb-0000:00:1a.0-1.4/input1
+[    4.308468] usb 3-1.5: New USB device found, idVendor=046d, idProduct=c52f
+[    4.308470] usb 3-1.5: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+[    4.308471] usb 3-1.5: Product: USB Receiver
+[    4.308472] usb 3-1.5: Manufacturer: Logitech
+[    4.310458] input: Logitech USB Receiver as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.5/3-1.5:1.0/0003:046D:C52F.0003/input/input7
+[    4.310624] hid-generic 0003:046D:C52F.0003: input,hidraw2: USB HID v1.11 Mouse [Logitech USB Receiver] on usb-0000:00:1a.0-1.5/input0
+[    4.312649] input: Logitech USB Receiver as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.5/3-1.5:1.1/0003:046D:C52F.0004/input/input8
+[    4.365442] hid-generic 0003:046D:C52F.0004: input,hiddev0,hidraw3: USB HID v1.11 Device [Logitech USB Receiver] on usb-0000:00:1a.0-1.5/input1
+[    4.921014] clocksource: Switched to clocksource tsc
+[    4.985619] scsi 6:0:0:0: Direct-Access     SanDisk  Ultra            1.00 PQ: 0 ANSI: 6
+[    5.001186] sd 6:0:0:0: Attached scsi generic sg2 type 0
+[    5.001763] sd 6:0:0:0: [sdb] 30375936 512-byte logical blocks: (15.5 GB/14.4 GiB)
+[    5.002736] sd 6:0:0:0: [sdb] Write Protect is off
+[    5.002738] sd 6:0:0:0: [sdb] Mode Sense: 43 00 00 00
+[    5.003726] sd 6:0:0:0: [sdb] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+[    5.008726]  sdb: sdb4
+[    5.012098] sd 6:0:0:0: [sdb] Attached SCSI removable disk
+[    5.053098] [TTM] Zone  kernel: Available graphics memory: 2264764 kiB
+[    5.053099] [TTM] Zone   dma32: Available graphics memory: 2097152 kiB
+[    5.053100] [TTM] Initializing pool allocator
+[    5.053102] [TTM] Initializing DMA pool allocator
+[    5.053109] nouveau 0000:01:00.0: DRM: VRAM: 4096 MiB
+[    5.053110] nouveau 0000:01:00.0: DRM: GART: 1048576 MiB
+[    5.053112] nouveau 0000:01:00.0: DRM: TMDS table version 2.0
+[    5.053113] nouveau 0000:01:00.0: DRM: DCB version 4.0
+[    5.053114] nouveau 0000:01:00.0: DRM: DCB outp 00: 01000f02 00020030
+[    5.053115] nouveau 0000:01:00.0: DRM: DCB outp 01: 02011f62 0f420010
+[    5.053116] nouveau 0000:01:00.0: DRM: DCB outp 02: 02022f10 00000000
+[    5.053117] nouveau 0000:01:00.0: DRM: DCB conn 00: 00001031
+[    5.053117] nouveau 0000:01:00.0: DRM: DCB conn 01: 00002161
+[    5.053118] nouveau 0000:01:00.0: DRM: DCB conn 02: 00000200
+[    5.066142] [drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
+[    5.066143] [drm] Driver supports precise vblank timestamp query.
+[    5.146506] nouveau 0000:01:00.0: DRM: MM: using COPY for buffer copies
+[    5.268199] nouveau 0000:01:00.0: DRM: allocated 1920x1080 fb: 0x60000, bo ffff880026a1d000
+[    5.268251] fbcon: nouveaufb (fb0) is primary device
+[    5.503872] Console: switching to colour frame buffer device 240x67
+[    5.505446] nouveau 0000:01:00.0: fb0: nouveaufb frame buffer device
+[    5.516768] [drm] Initialized nouveau 1.3.0 20120801 for 0000:01:00.0 on minor 0
+[    5.627969] EXT4-fs (sda7): mounted filesystem with ordered data mode. Opts: (null)
+[    6.115473] random: nonblocking pool is initialized
+[    6.308114] systemd[1]: systemd 229 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ -LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN)
+[    6.308227] systemd[1]: Detected architecture x86-64.
+[    6.314769] systemd[1]: Set hostname to <cxdafs-OptiPlex-9020>.
+[    6.992260] systemd[1]: Reached target User and Group Name Lookups.
+[    6.992359] systemd[1]: Set up automount Arbitrary Executable File Formats File System Automount Point.
+[    6.992379] systemd[1]: Listening on /dev/initctl Compatibility Named Pipe.
+[    6.992386] systemd[1]: Reached target Encrypted Volumes.
+[    6.992435] systemd[1]: Created slice User and Session Slice.
+[    6.992457] systemd[1]: Listening on Journal Socket (/dev/log).
+[    6.992467] systemd[1]: Listening on Syslog Socket.
+[    6.992500] systemd[1]: Listening on Journal Audit Socket.
+[    6.992506] systemd[1]: Reached target Remote File Systems (Pre).
+[    6.992524] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[    6.992540] systemd[1]: Listening on udev Control Socket.
+[    6.992549] systemd[1]: Listening on fsck to fsckd communication Socket.
+[    6.992553] systemd[1]: Reached target Remote File Systems.
+[    6.992588] systemd[1]: Created slice System Slice.
+[    6.992599] systemd[1]: Reached target Slices.
+[    6.992615] systemd[1]: Listening on Journal Socket.
+[    6.992825] systemd[1]: Starting Uncomplicated firewall...
+[    6.995149] systemd[1]: Starting Load Kernel Modules...
+[    6.995350] systemd[1]: Started Braille Device Support.
+[    6.995669] systemd[1]: Started Read required files in advance.
+[    6.995937] systemd[1]: Starting Create list of required static device nodes for the current kernel...
+[    6.996147] systemd[1]: Mounting Huge Pages File System...
+[    6.996364] systemd[1]: Mounting POSIX Message Queue File System...
+[    6.998316] systemd[1]: Mounting Debug File System...
+[    6.998526] systemd[1]: Starting Set console keymap...
+[    6.998728] systemd[1]: Starting Journal Service...
+[    6.998749] systemd[1]: Listening on udev Kernel Socket.
+[    7.124785] systemd[1]: Started Create list of required static device nodes for the current kernel.
+[    7.125050] systemd[1]: Starting Create Static Device Nodes in /dev...
+[    7.285342] systemd[1]: Started Uncomplicated firewall.
+[    7.412514] systemd[1]: Started Journal Service.
+[    7.894917] lp: driver loaded but no devices found
+[    7.963020] ppdev: user-space parallel port driver
+[    8.607335] EXT4-fs (sda7): re-mounted. Opts: errors=remount-ro
+[    9.057987] systemd-journald[296]: Received request to flush runtime journal from PID 1
+[    9.238424] nd_pmem namespace0.0: unable to guarantee persistence of writes
+[    9.240509] pmem0: detected capacity change from 0 to 1419116544
+[    9.240541] nd_pmem namespace2.0: unable to guarantee persistence of writes
+[    9.240744] pmem2: detected capacity change from 0 to 4407296
+[    9.240766] nd_pmem namespace3.0: unable to guarantee persistence of writes
+[    9.240922] pmem3: detected capacity change from 0 to 4771840
+[    9.240933] nd_pmem namespace4.0: unable to guarantee persistence of writes
+[    9.241563] pmem4: detected capacity change from 0 to 97263616
+[    9.241574] nd_pmem namespace6.0: unable to guarantee persistence of writes
+[    9.241717] pmem6: detected capacity change from 0 to 7729152
+[    9.241747] nd_pmem namespace8.0: unable to guarantee persistence of writes
+[    9.241873] pmem8: detected capacity change from 0 to 8052736
+[    9.241890] nd_pmem namespace10.0: unable to guarantee persistence of writes
+[    9.242459] pmem10: detected capacity change from 0 to 24231936
+[    9.242476] nd_pmem namespace12.0: unable to guarantee persistence of writes
+[    9.242605] pmem12: detected capacity change from 0 to 23138304
+[    9.242620] nd_pmem namespace14.0: unable to guarantee persistence of writes
+[    9.242622] nd_pmem namespace14.0: could not reserve region [0x0x00000000df000000:0x1fc00000]
+[    9.242625] nd_pmem: probe of namespace14.0 failed with error -16
+[    9.242686] nd_pmem namespace23.0: unable to guarantee persistence of writes
+[    9.251552] pmem23: detected capacity change from 0 to 16777216
+[    9.251575] nd_pmem namespace24.0: unable to guarantee persistence of writes
+[    9.251780] pmem24: detected capacity change from 0 to 2147483648
+[    9.523840] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+[    9.877344] AVX2 version of gcm_enc/dec engaged.
+[    9.877347] AES CTR mode by8 optimization enabled
+[   11.532474] intel_rapl: Found RAPL domain package
+[   11.532477] intel_rapl: Found RAPL domain core
+[   11.532479] intel_rapl: Found RAPL domain dram
+[   11.563157] dcdbas dcdbas: Dell Systems Management Base Driver (version 5.6.0-3.2)
+[   11.769065] audit: type=1400 audit(1517540134.064:2): apparmor="STATUS" operation="profile_load" name="/usr/sbin/ippusbxd" pid=676 comm="apparmor_parser"
+[   11.777961] audit: type=1400 audit(1517540134.072:3): apparmor="STATUS" operation="profile_load" name="/usr/lib/snapd/snap-confine" pid=673 comm="apparmor_parser"
+[   11.777965] audit: type=1400 audit(1517540134.072:4): apparmor="STATUS" operation="profile_load" name="mount-namespace-capture-helper" pid=673 comm="apparmor_parser"
+[   11.863534] audit: type=1400 audit(1517540134.160:5): apparmor="STATUS" operation="profile_load" name="/usr/sbin/cups-browsed" pid=674 comm="apparmor_parser"
+[   11.865038] audit: type=1400 audit(1517540134.160:6): apparmor="STATUS" operation="profile_load" name="/usr/sbin/tcpdump" pid=852 comm="apparmor_parser"
+[   11.880901] audit: type=1400 audit(1517540134.176:7): apparmor="STATUS" operation="profile_load" name="/usr/lib/lightdm/lightdm-guest-session" pid=668 comm="apparmor_parser"
+[   11.880905] audit: type=1400 audit(1517540134.176:8): apparmor="STATUS" operation="profile_load" name="chromium" pid=668 comm="apparmor_parser"
+[   11.881337] audit: type=1400 audit(1517540134.176:9): apparmor="STATUS" operation="profile_load" name="/usr/lib/cups/backend/cups-pdf" pid=675 comm="apparmor_parser"
+[   11.881340] audit: type=1400 audit(1517540134.176:10): apparmor="STATUS" operation="profile_load" name="/usr/sbin/cupsd" pid=675 comm="apparmor_parser"
+[   11.881342] audit: type=1400 audit(1517540134.176:11): apparmor="STATUS" operation="profile_load" name="third_party" pid=675 comm="apparmor_parser"
+[   12.012584] snd_hda_intel 0000:01:00.1: Disabling MSI
+[   12.012589] snd_hda_intel 0000:01:00.1: Handle VGA-switcheroo audio client
+[   12.235456] snd_hda_codec_realtek hdaudioC0D0: autoconfig for ALC3220: line_outs=1 (0x1b/0x0/0x0/0x0/0x0) type:line
+[   12.235458] snd_hda_codec_realtek hdaudioC0D0:    speaker_outs=1 (0x14/0x0/0x0/0x0/0x0)
+[   12.235459] snd_hda_codec_realtek hdaudioC0D0:    hp_outs=1 (0x15/0x0/0x0/0x0/0x0)
+[   12.235460] snd_hda_codec_realtek hdaudioC0D0:    mono: mono_out=0x0
+[   12.235461] snd_hda_codec_realtek hdaudioC0D0:    inputs:
+[   12.235462] snd_hda_codec_realtek hdaudioC0D0:      Front Mic=0x1a
+[   12.235463] snd_hda_codec_realtek hdaudioC0D0:      Rear Mic=0x18
+[   12.242625] input: HDA Intel PCH Front Mic as /devices/pci0000:00/0000:00:1b.0/sound/card0/input9
+[   12.242690] input: HDA Intel PCH Rear Mic as /devices/pci0000:00/0000:00:1b.0/sound/card0/input10
+[   12.242738] input: HDA Intel PCH Line Out as /devices/pci0000:00/0000:00:1b.0/sound/card0/input11
+[   12.242789] input: HDA Intel PCH Front Headphone as /devices/pci0000:00/0000:00:1b.0/sound/card0/input12
+[   12.610593] input: HDA NVidia HDMI/DP,pcm=3 as /devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input13
+[   12.610652] input: HDA NVidia HDMI/DP,pcm=7 as /devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input14
+[   13.552784] Adding 8328188k swap on /dev/sda5.  Priority:-1 extents:1 across:8328188k FS
+[   18.454913] IPv6: ADDRCONF(NETDEV_UP): eno1: link is not ready
+[   18.660249] IPv6: ADDRCONF(NETDEV_UP): eno1: link is not ready
+[   21.480789] e1000e: eno1 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
+[   21.480819] IPv6: ADDRCONF(NETDEV_CHANGE): eno1: link becomes ready
+[   54.783266] FAT-fs (sdb4): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+[  169.974634] nova: dafs init nova_fs
+[  169.974636] nova: init_nova_fs: 8 cpus online
+[  169.974637] nova: Arch new instructions support: PCOMMIT NO, CLWB NO
+[  169.974666] nova: dafs register file sytem nova
+[  169.974669] nova: dafs end init_fs
+[  170.011996] nova: dafs start to mount
+[  170.012012] nova: creating an empty nova of size 1419116544
+[  170.012015] nova: dafs init dzt block
+[  170.012016] nova: dafs_get dzt blk
+[  170.012017] nova: dafs_init_dzt_block: allocate log @ 0x1fb84
+[  170.012827] nova: dafs_get dzt blk
+[  170.013028] nova: dafs allocate zone blocks
+[  170.013434] nova: dafs_alloc_dir_zone: allocate zone @ 0x20f8d
+[  170.013435] nova: dafs_get dzt blk
+[  170.013435] nova: dafs start build dzt
+[  170.013436] nova: dafs finish build dzt_e
+[  170.013437] nova: dafs start init dir zones
+[  170.013437] nova: root ze addr is 553177088
+[  170.013438] nova: the root dir hashname is 47
+[  170.013438] nova: test root hash name is 47
+[  170.013439] nova: dafs finish creat root directory
+[  170.013440] nova: dafs finish init dir zones
+[  170.013440] nova: init_dir_info start
+[  170.013598] nova: init_dir_info end
+[  170.013602] nova: dafs end fill super
+[  170.013603] nova: dafs finish mount
+[  170.013794] nova: dafs_lookup:dafs start lookup .Trash 
+[  170.013796] nova: dafs_find_direntry:dafs start to find direntry
+[  170.013797] nova: get_dentry_path:start .Trash
+[  170.013808] BUG: unable to handle kernel NULL pointer dereference at 0000000000000040
+[  170.013821] IP: [<ffffffffc05b9cfe>] get_dentry_path+0x8e/0x450 [nova]
+[  170.013830] PGD 2154c9067 PUD 2154c8067 PMD 0 
+[  170.013834] Oops: 0000 [#1] SMP 
+[  170.013837] Modules linked in: nova(OE) nls_iso8859_1(E) snd_hda_codec_hdmi(E) snd_hda_codec_realtek(E) snd_hda_codec_generic(E) snd_hda_intel(E) snd_hda_codec(E) snd_hda_core(E) dcdbas(E) intel_rapl(E) x86_pkg_temp_thermal(E) snd_hwdep(E) snd_pcm(E) intel_powerclamp(E) snd_seq_midi(E) coretemp(E) snd_seq_midi_event(E) kvm_intel(E) snd_rawmidi(E) snd_seq(E) kvm(E) snd_seq_device(E) snd_timer(E) snd(E) crct10dif_pclmul(E) crc32_pclmul(E) mei_me(E) joydev(E) input_leds(E) mei(E) aesni_intel(E) aes_x86_64(E) lrw(E) glue_helper(E) ablk_helper(E) cryptd(E) soundcore(E) serio_raw(E) shpchp(E) lpc_ich(E) nd_pmem(E) nd_btt(E) mac_hid(E) parport_pc(E) ppdev(E) lp(E) parport(E) autofs4(E) hid_generic(E) usbhid(E) hid(E) uas(E) usb_storage(E) nouveau(E) mxm_wmi(E) wmi(E) i2c_algo_bit(E) ttm(E) drm_kms_helper(E)
+[  170.013898]  syscopyarea(E) sysfillrect(E) sysimgblt(E) fb_sys_fops(E) drm(E) e1000e(E) psmouse(E) ahci(E) ptp(E) libahci(E) pps_core(E) fjes(E) video(E)
+[  170.013912] CPU: 6 PID: 2045 Comm: gvfsd-trash Tainted: G           OE   4.3.0 #1
+[  170.013915] Hardware name: Dell Inc. OptiPlex 9020/03CPWF, BIOS A09 11/20/2014
+[  170.013918] task: ffff880216a04740 ti: ffff88021296c000 task.ti: ffff88021296c000
+[  170.013921] RIP: 0010:[<ffffffffc05b9cfe>]  [<ffffffffc05b9cfe>] get_dentry_path+0x8e/0x450 [nova]
+[  170.013927] RSP: 0018:ffff88021296e700  EFLAGS: 00010246
+[  170.013929] RAX: 0000000000000000 RBX: ffff88021296efb0 RCX: 0000000000000000
+[  170.013932] RDX: 00000000000000aa RSI: 0000000000000000 RDI: ffff880079b79620
+[  170.013934] RBP: ffff88021296ef78 R08: 00000000004746a0 R09: 00000000000000aa
+[  170.013937] R10: 00000099c1efa695 R11: 00000000000003be R12: ffff880079b79620
+[  170.013939] R13: ffff88021488c078 R14: ffff88021497ca80 R15: ffff88021296efb0
+[  170.013942] FS:  00007faea7137800(0000) GS:ffff88021dd80000(0000) knlGS:0000000000000000
+[  170.013945] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  170.013947] CR2: 0000000000000040 CR3: 00000002154c5000 CR4: 00000000001406e0
+[  170.013950] Stack:
+[  170.013952]  0000000000000000 0000000000000000 ffff880200b979c0 0000000000000000
+[  170.013957]  0000000000000000 00000000000000aa 0000000003dca06b 0000000000000000
+[  170.013961]  0000000000000000 0000000000000000 0000000000000000 0000000000000000
+[  170.013966] Call Trace:
+[  170.013974]  [<ffffffff813d828b>] ? string.isra.4+0x3b/0xd0
+[  170.013977]  [<ffffffff813d9e63>] ? vsnprintf+0x253/0x510
+[  170.013982]  [<ffffffff810c5d02>] ? up+0x32/0x50
+[  170.013985]  [<ffffffff810d38dc>] ? console_unlock+0x1cc/0x540
+[  170.013990]  [<ffffffff810d448e>] ? vprintk_emit+0x2de/0x530
+[  170.013993]  [<ffffffff810d4869>] ? vprintk_default+0x29/0x40
+[  170.013999]  [<ffffffff81183c97>] ? printk+0x57/0x73
+[  170.014003]  [<ffffffffc05bcab8>] dafs_find_direntry+0x68/0x390 [nova]
+[  170.014009]  [<ffffffff811a557c>] ? zone_statistics+0x7c/0xa0
+[  170.014013]  [<ffffffff8118e819>] ? __alloc_pages_nodemask+0x1a9/0xa10
+[  170.014020]  [<ffffffff810b0959>] ? update_curr+0x79/0x150
+[  170.014022]  [<ffffffff810b0959>] ? update_curr+0x79/0x150
+[  170.014025]  [<ffffffff810b29a8>] ? dequeue_entity+0x3b8/0xa80
+[  170.014028]  [<ffffffff810b0959>] ? update_curr+0x79/0x150
+[  170.014031]  [<ffffffff813d6e88>] ? put_dec+0x18/0xa0
+[  170.014034]  [<ffffffff813d8d7c>] ? number.isra.13+0x2cc/0x2f0
+[  170.014037]  [<ffffffff813d9e63>] ? vsnprintf+0x253/0x510
+[  170.014040]  [<ffffffff813da2b6>] ? sprintf+0x56/0x70
+[  170.014042]  [<ffffffff810d31f8>] ? print_prefix+0xd8/0x1c0
+[  170.014045]  [<ffffffff810d33bf>] ? msg_print_text+0xdf/0x1a0
+[  170.014048]  [<ffffffff810c5d02>] ? up+0x32/0x50
+[  170.014052]  [<ffffffff81169f8e>] ? irq_work_queue+0x8e/0xa0
+[  170.014055]  [<ffffffff810d391d>] ? console_unlock+0x20d/0x540
+[  170.014058]  [<ffffffff810d448e>] ? vprintk_emit+0x2de/0x530
+[  170.014061]  [<ffffffff810d4869>] ? vprintk_default+0x29/0x40
+[  170.014064]  [<ffffffff81183c97>] ? printk+0x57/0x73
+[  170.014068]  [<ffffffff81218595>] ? __d_alloc+0x25/0x180
+[  170.014072]  [<ffffffffc05c103b>] dafs_lookup+0x9b/0x180 [nova]
+[  170.014075]  [<ffffffff812093fd>] lookup_real+0x1d/0x60
+[  170.014087]  [<ffffffff8120acc2>] __lookup_hash+0x42/0x60
+[  170.014090]  [<ffffffff8120c410>] walk_component+0x1e0/0x2a0
+[  170.014095]  [<ffffffff8120c05c>] ? path_init+0x1ec/0x3c0
+[  170.014097]  [<ffffffff8120d54d>] path_lookupat+0x5d/0x110
+[  170.014100]  [<ffffffff8120f0d1>] filename_lookup+0xb1/0x180
+[  170.014103]  [<ffffffff8120ec74>] ? putname+0x54/0x60
+[  170.014106]  [<ffffffff8120f111>] ? filename_lookup+0xf1/0x180
+[  170.014109]  [<ffffffff811dff01>] ? kmem_cache_alloc+0x31/0x140
+[  170.014112]  [<ffffffff8120ecd6>] ? getname_flags+0x56/0x1f0
+[  170.014115]  [<ffffffff8120f276>] user_path_at_empty+0x36/0x40
+[  170.014118]  [<ffffffff81204736>] vfs_fstatat+0x66/0xc0
+[  170.014160]  [<ffffffff81204cf1>] SYSC_newlstat+0x31/0x60
+[  170.014669]  [<ffffffff8120945e>] ? path_put+0x1e/0x30
+[  170.014979]  [<ffffffff81244869>] ? SyS_inotify_add_watch+0x1c9/0x340
+[  170.015260]  [<ffffffff81204e2e>] SyS_newlstat+0xe/0x10
+[  170.015553]  [<ffffffff817ef6b2>] entry_SYSCALL_64_fastpath+0x16/0x71
+[  170.015833] Code: 00 00 4c 8b a0 d8 01 00 00 e8 5f 9f bc c0 48 8d bd b0 f7 ff ff e8 43 55 b3 c0 8b 0d 21 10 01 00 85 c9 75 57 49 8b 46 30 4c 89 e7 <48> 8b 70 40 e8 a9 9c e1 c0 48 85 c0 49 89 c7 74 4d 48 8b 50 08 
+[  170.016252] RIP  [<ffffffffc05b9cfe>] get_dentry_path+0x8e/0x450 [nova]
+[  170.016468]  RSP <ffff88021296e700>
+[  170.016695] CR2: 0000000000000040
+[  170.019378] ---[ end trace 3b9126e2e6c61cff ]---

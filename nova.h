@@ -434,6 +434,7 @@ struct path_tree {
 /*best for dynamic alloc*/
 struct path_entry {
     u64 ino;
+    u64 len;
     char path[DAFS_PATH_LEN];
 };
 /*

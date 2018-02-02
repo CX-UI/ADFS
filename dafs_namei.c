@@ -136,7 +136,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     ino_t ino;
     timing_t lookup_time, st;
     
-    nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
+    //nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(lookup_t, lookup_time);
     getrawmonotonic(&st); 
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
@@ -145,7 +145,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
 		return ERR_PTR(-ENAMETOOLONG);
 	}
 
-    ino = dafs_inode_by_name(dir, dentry, &de);
+    ino = dafs_inode_by_name(dir, dentry, &de );
 	if (ino) {
         //根据ino得到整个inode的数据结构
 		inode = nova_iget(dir->i_sb, ino);
@@ -159,8 +159,8 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
 	}
 
 	NOVA_END_TIMING(lookup_t, lookup_time);
-    print_time(st);
-    nova_dbg("%s", __func__);
+    //print_time(st);
+    //nova_dbg("%s", __func__);
     /*if(inode)
         nova_dbg("%s:dafs finish lookup inode exist %llu",__func__, inode->i_ino);
     else
@@ -492,7 +492,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     int err = -EMLINK;
     timing_t mkdir_time, st;
    
-	nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
+	//nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
     //nova_dbg("%s:dafs start to mkdir",__func__);
     NOVA_START_TIMING(mkdir_t, mkdir_time);
     getrawmonotonic(&st); 
@@ -542,8 +542,8 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
-    print_time(st);
-    nova_dbg("%s ", __func__);
+    //print_time(st);
+    //nova_dbg("%s ", __func__);
 	return err;
 
 out_err:
