@@ -13,6 +13,7 @@
 #include<linux/path.h>
 #include<linux/netdevice.h>
 #include<linux/fs_struct.h>
+#include<linux/time.h>
 #include "nova.h"
 //#include "zone.h"
 
@@ -229,12 +230,19 @@ static inline int  get_dentry_path(const struct dentry *dentry, char *ph)
     //struct path path;
     struct dentry *tem_dentry, *p_dentry = dentry->d_parent;
     struct dentry *rd;
-    //u64 slen;
+    struct path_tree *pt= sbi->pt;
+    struct path_entry *pe = NULL;
+    u64 ino;
     u64 phlen=0,tlen=0,plen=0,pplen=0;
     u32 i;
+    timing_t getpath_time, st;
 
-    //nova_dbg("%s:start %s",__func__,dentry->d_name.name);
-
+    nova_dbg("%s:start %s",__func__,dentry->d_name.name);
+    getrawmonotonic(&st); 
+    NOVA_START_TIMING(getpath_t, getpath_time);
+    
+    ino = dentry->d_inode->i_ino;
+    
     read_lock(&fs->lock);
     vfsmnt = mntget(fs->pwd.mnt);
     if(!vfsmnt){
@@ -292,8 +300,9 @@ static inline int  get_dentry_path(const struct dentry *dentry, char *ph)
     mntput(vfsmnt);
     
 ERR:
-    //nova_dbg("%s ful ph is %s len %llu",__func__,ph, strlen(ph));
-    BUG_ON(ph==NULL);
+	NOVA_END_TIMING(getpath_t, getpath_time);
+    print_time(st);
+    nova_dbg("%s", __func__);
     return 0;
 }
 
@@ -309,8 +318,10 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char
     u64 hashname;
     u64 phlen, tlen;
     char *tem;
+    timing_t st;
 
-    //nova_dbg("%s start %s",__func__,phstr);
+    nova_dbg("%s start %s",__func__,phstr);
+    getrawmonotonic(&st); 
     tlen = strlen(phstr);
     memcpy(phs, phstr, tlen);
     phs[tlen]='\0';
@@ -345,6 +356,8 @@ static inline struct dzt_entry_info *find_dzt(struct super_block *sb, const char
         return ERR_PTR(-EINVAL);
     }
 
+    print_time(st);
+    nova_dbg("%s", __func__);
     //nova_dbg("dafs finish finding dzt:%d, zone addr 0x%llu",dzt_ei->dzt_eno, dzt_ei->dz_addr);
     return dzt_ei;
 }
@@ -753,7 +766,9 @@ int dafs_add_dentry( struct dentry *dentry, u64 ino, int link_change, int file_t
 
     dzt_ei = find_dzt(sb, ph, phn);
     dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb,dzt_ei->dz_addr);
-    make_zone_ptr(&zone_p, dafs_ze);
+    
+    zone_p = dzt_ei->ztr;
+    //make_zone_ptr(&zone_p, dafs_ze);
     
     while(cur_pos<NR_DENTRY_IN_ZONE){
         if(test_bit_le(bitpos, (void *)zone_p->statemap)||test_bit_le(bitpos+1, (void *)zone_p->statemap)){
@@ -916,7 +931,9 @@ int dafs_add_dentry( struct dentry *dentry, u64 ino, int link_change, int file_t
 
 OUT:
     NOVA_END_TIMING(add_dentry_t, add_dentry_time);
-    kfree(zone_p);
+
+    //kfree(zone_p);
+
     //nova_dbg("%s: finish, ino %llu, parent name %s",
     //     __func__, dafs_de->ino, dentry->d_parent->d_name.name);
     return ret;
@@ -945,8 +962,10 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dent
     char *ph = ph_f, *dot=".", *pdot = "..";
     char *phname = ph_name, *phn = ph_dzt;
     int ret;
+    timing_t st;
 
-    //nova_dbg("%s:dafs start to find direntry",__func__);
+    nova_dbg("%s:dafs start to find direntry",__func__);
+    getrawmonotonic(&st); 
     /*
     if(!strcmp(dentry->d_name.name, dot)|| !strcmp(dentry->d_name.name,pdot)){
         //nova_dbg("%s init dentry . and ..",__func__);
@@ -990,6 +1009,8 @@ struct dafs_dentry *dafs_find_direntry(struct super_block *sb, const struct dent
     }
 OUT:
     //nova_dbg("%s:dafs finish find direntry",__func__);
+    print_time(st);
+    nova_dbg("%s", __func__);
     return direntry;
 }
 
@@ -2545,13 +2566,14 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     char *ppath = ph_f;
     u64 phlen, flen,ph_hash, ht_head;
     u32 de_pos;
-    timing_t readdir_time;
+    timing_t readdir_time, st;
 
     //nova_dbg("%s: inode ino %llu, dentry ino %llu",__func__, inode->i_ino, dentry->d_inode->i_ino);
 
-    //nova_dbg("%s start %s",__func__,dentry->d_name.name);
+    nova_dbg("%s start %s",__func__,dentry->d_name.name);
     NOVA_START_TIMING(readdir_t, readdir_time);
-    
+    getrawmonotonic(&st); 
+
     pidir = nova_get_inode(sb ,inode);
     pos = ctx->pos;
 
@@ -2713,6 +2735,8 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     //nova_dbg("dafs ctx pos is %llx", ctx->pos);
 OUT:
 	NOVA_END_TIMING(readdir_t, readdir_time);
+    print_time(st);
+    nova_dbg("%s ", __func__);
 	//nova_dbg("%s readdir return", __func__);
 	return 0;
 

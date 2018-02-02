@@ -134,10 +134,11 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     struct inode *inode = NULL;
     struct dafs_dentry *de;
     ino_t ino;
-    timing_t lookup_time;
+    timing_t lookup_time, st;
     
-    //nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
+    nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(lookup_t, lookup_time);
+    getrawmonotonic(&st); 
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
 		/*nova_dbg("%s: namelen %u exceeds limit\n",
 			__func__, dentry->d_name.len);*/
@@ -158,6 +159,8 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
 	}
 
 	NOVA_END_TIMING(lookup_t, lookup_time);
+    print_time(st);
+    nova_dbg("%s", __func__);
     /*if(inode)
         nova_dbg("%s:dafs finish lookup inode exist %llu",__func__, inode->i_ino);
     else
@@ -487,10 +490,12 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     u64 tail = 0;
     u64 ino;
     int err = -EMLINK;
-    timing_t mkdir_time;
+    timing_t mkdir_time, st;
    
+	nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
     //nova_dbg("%s:dafs start to mkdir",__func__);
     NOVA_START_TIMING(mkdir_t, mkdir_time);
+    getrawmonotonic(&st); 
     if(dir->i_nlink >= NOVA_LINK_MAX)
         goto out;
     
@@ -537,7 +542,8 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
-    //nova_dbg("%s: dafs end mkdir",__func__);
+    print_time(st);
+    nova_dbg("%s ", __func__);
 	return err;
 
 out_err:

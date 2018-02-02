@@ -42,6 +42,8 @@ const char *Timingstring[TIMING_NUM] =
 	"remove_dentry",
 	"setattr",
 
+    "getpath",
+        
 	"dax_read",
 	"cow_write",
 	"copy_to_nvmm",
@@ -92,6 +94,20 @@ u64 Countstats[TIMING_NUM];
 DEFINE_PER_CPU(u64[TIMING_NUM], Countstats_percpu);
 u64 IOstats[STATS_NUM];
 DEFINE_PER_CPU(u64[STATS_NUM], IOstats_percpu);
+
+void start_time(timing_t start)
+{
+    //clock_gettime(CLOCK_REALTIME, &start);   
+}
+
+void print_time(timing_t start)
+{
+    timing_t end;
+    getrawmonotonic(&end);
+    //clock_gettime(CLOCK_REALTIME, &end); 
+    //end = current_kernel_time();
+    nova_dbg("time is %llu ", (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec));
+}
 
 static void nova_print_alloc_stats(struct super_block *sb)
 {

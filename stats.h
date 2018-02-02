@@ -42,6 +42,9 @@ enum timing_category {
 	remove_dentry_t,
 	setattr_t,
 
+    /*full path operations*/
+    getpath_t,
+
 	/* I/O operations */
 	dax_read_t,
 	cow_write_t,
@@ -120,6 +123,7 @@ extern u64 IOstats[STATS_NUM];
 DECLARE_PER_CPU(u64[STATS_NUM], IOstats_percpu);
 
 typedef struct timespec timing_t;
+
 
 #define NOVA_START_TIMING(name, start) \
     {if (measure_timing) getrawmonotonic(&start);}

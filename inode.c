@@ -1151,7 +1151,7 @@ struct inode *nova_new_vfs_inode(enum nova_new_inode_type type,
 
 	nova_flush_buffer(&pi, NOVA_INODE_SIZE, 0);
 	NOVA_END_TIMING(new_vfs_inode_t, new_inode_time);
-    //nova_dbg("dafs end making inode");
+    //nova_dbg("%s time %llu ns",__func__,new_inode_time);
 	return inode;
 fail1:
 	make_bad_inode(inode);

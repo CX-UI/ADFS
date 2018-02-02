@@ -39,6 +39,7 @@
 #include <linux/uio.h>
 #include <asm/tlbflush.h>
 #include <linux/version.h>
+#include <linux/time.h>
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 0)
 #include <linux/pfn_t.h>
 #endif
@@ -425,6 +426,16 @@ struct zone_kthread{
 struct dzt_manager {
     struct radix_tree_root dzt_root;
 };
+
+struct path_tree {
+    struct radix_tree_root de_path;
+};
+
+/*best for dynamic alloc*/
+struct path_entry {
+    u64 ino;
+    char path[DAFS_PATH_LEN];
+};
 /*
  * NOVA super-block data in memory
  */
@@ -488,6 +499,7 @@ struct nova_sb_info {
 	unsigned long per_list_blocks;
 	struct free_list shared_free_list;
 
+    struct path_tree *pt;
     /* dzt info not decided yet*/
     struct dzt_manager *dzt_m_info;
 
@@ -1211,6 +1223,8 @@ void nova_sysfs_init(struct super_block *sb);
 void nova_sysfs_exit(struct super_block *sb);
 
 /* nova_stats.c */
+void start_time(timing_t start);
+void print_time(timing_t start);
 void nova_get_timing_stats(void);
 void nova_print_timing_stats(struct super_block *sb);
 void nova_clear_stats(void);

@@ -319,6 +319,7 @@ struct dzt_entry_info{
     u64 pdz_addr;
     u64 root_len;
     u64 hash_name;
+    struct zone_ptr *ztr;
     struct radix_tree_root dir_tree;   /*record frequency and dir info */
     //struct radix_tree_root rf_tree;    /*read frequence root*/
     //struct radix_tree_root sub_tree;   /*for dir infor in this root*/

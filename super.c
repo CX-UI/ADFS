@@ -483,6 +483,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
 	struct inode *root_i = NULL;
 	struct inode_map *inode_map;
     struct dzt_manager *dzt_m;
+    struct path_tree *pt;
 	unsigned long blocksize;
     char *r = "/";
 	u32 random = 0;
@@ -572,6 +573,10 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
     /*zone info
     *set_up dzt_manager*/
     //nova_dbg("start init radix tree");
+    pt = kzalloc(sizeof(struct path_tree), GFP_KERNEL);
+    INIT_RADIX_TREE(&pt->de_path, GFP_ATOMIC);
+    sbi->pt = pt;
+
     dzt_m = kzalloc(sizeof(struct dzt_manager), GFP_KERNEL);
     INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);
     sbi->dzt_m_info = dzt_m;

@@ -251,1108 +251,799 @@
 [    0.000000] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 133484882848 ns
 [    0.000000] hpet clockevent registered
 [    0.000000] tsc: Fast TSC calibration using PIT
-[    0.000000] tsc: Detected 3591.887 MHz processor
-[    0.000019] Calibrating delay loop (skipped), value calculated using timer frequency.. 7183.77 BogoMIPS (lpj=14367548)
-[    0.000021] pid_max: default: 32768 minimum: 301
+[    0.000000] tsc: Detected 3591.685 MHz processor
+[    0.000019] Calibrating delay loop (skipped), value calculated using timer frequency.. 7183.37 BogoMIPS (lpj=14366740)
+[    0.000020] pid_max: default: 32768 minimum: 301
 [    0.000024] ACPI: Core revision 20150818
-[    0.006695] ACPI: 6 ACPI AML tables successfully acquired and loaded
-[    0.006708] Security Framework initialized
-[    0.006709] Yama: becoming mindful.
-[    0.006714] AppArmor: AppArmor initialized
-[    0.007051] Dentry cache hash table entries: 1048576 (order: 11, 8388608 bytes)
-[    0.008071] Inode-cache hash table entries: 524288 (order: 10, 4194304 bytes)
-[    0.008509] Mount-cache hash table entries: 16384 (order: 5, 131072 bytes)
-[    0.008515] Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes)
+[    0.006694] ACPI: 6 ACPI AML tables successfully acquired and loaded
+[    0.006707] Security Framework initialized
+[    0.006708] Yama: becoming mindful.
+[    0.006713] AppArmor: AppArmor initialized
+[    0.007047] Dentry cache hash table entries: 1048576 (order: 11, 8388608 bytes)
+[    0.008069] Inode-cache hash table entries: 524288 (order: 10, 4194304 bytes)
+[    0.008507] Mount-cache hash table entries: 16384 (order: 5, 131072 bytes)
+[    0.008513] Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes)
 [    0.008652] Initializing cgroup subsys io
-[    0.008656] Initializing cgroup subsys memory
-[    0.008660] Initializing cgroup subsys devices
+[    0.008655] Initializing cgroup subsys memory
+[    0.008659] Initializing cgroup subsys devices
 [    0.008661] Initializing cgroup subsys freezer
-[    0.008663] Initializing cgroup subsys net_cls
-[    0.008664] Initializing cgroup subsys perf_event
+[    0.008662] Initializing cgroup subsys net_cls
+[    0.008663] Initializing cgroup subsys perf_event
 [    0.008665] Initializing cgroup subsys net_prio
-[    0.008667] Initializing cgroup subsys hugetlb
+[    0.008666] Initializing cgroup subsys hugetlb
 [    0.008669] Initializing cgroup subsys pids
-[    0.008685] CPU: Physical Processor ID: 0
+[    0.008684] CPU: Physical Processor ID: 0
 [    0.008685] CPU: Processor Core ID: 0
-[    0.008688] ENERGY_PERF_BIAS: Set to 'normal', was 'performance'
-[    0.008689] ENERGY_PERF_BIAS: View and update with x86_energy_perf_policy(8)
+[    0.008687] ENERGY_PERF_BIAS: Set to 'normal', was 'performance'
+[    0.008688] ENERGY_PERF_BIAS: View and update with x86_energy_perf_policy(8)
 [    0.009380] mce: CPU supports 9 MCE banks
 [    0.009390] CPU0: Thermal monitoring enabled (TM1)
-[    0.009397] process: using mwait in idle threads
-[    0.009399] Last level iTLB entries: 4KB 1024, 2MB 1024, 4MB 1024
-[    0.009400] Last level dTLB entries: 4KB 1024, 2MB 1024, 4MB 1024, 1GB 4
+[    0.009396] process: using mwait in idle threads
+[    0.009398] Last level iTLB entries: 4KB 1024, 2MB 1024, 4MB 1024
+[    0.009399] Last level dTLB entries: 4KB 1024, 2MB 1024, 4MB 1024, 1GB 4
 [    0.009624] Freeing SMP alternatives memory: 28K (ffffffff81ea6000 - ffffffff81ead000)
-[    0.010774] ftrace: allocating 31180 entries in 122 pages
-[    0.019011] DMAR: Host address width 39
-[    0.019012] DMAR: DRHD base: 0x000000fed90000 flags: 0x1
-[    0.019017] DMAR: dmar0: reg_base_addr fed90000 ver 1:0 cap d2008c20660462 ecap f010da
-[    0.019018] DMAR: RMRR base: 0x000000def7b000 end: 0x000000def88fff
-[    0.019020] DMAR-IR: IOAPIC id 8 under DRHD base  0xfed90000 IOMMU 0
-[    0.019020] DMAR-IR: HPET id 0 under DRHD base 0xfed90000
-[    0.019021] DMAR-IR: Queued invalidation will be enabled to support x2apic and Intr-remapping.
-[    0.019158] DMAR-IR: Enabled IRQ remapping in x2apic mode
-[    0.019159] x2apic enabled
-[    0.019163] Switched APIC routing to cluster x2apic.
-[    0.019568] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
-[    0.059242] TSC deadline timer enabled
-[    0.059246] smpboot: CPU0: Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (family: 0x6, model: 0x3c, stepping: 0x3)
-[    0.059259] Performance Events: PEBS fmt2+, 16-deep LBR, Haswell events, full-width counters, Intel PMU driver.
-[    0.059272] ... version:                3
-[    0.059272] ... bit width:              48
-[    0.059273] ... generic registers:      4
-[    0.059273] ... value mask:             0000ffffffffffff
-[    0.059274] ... max period:             0000ffffffffffff
-[    0.059274] ... fixed-purpose events:   3
-[    0.059274] ... event mask:             000000070000000f
-[    0.059732] x86: Booting SMP configuration:
-[    0.059733] .... node  #0, CPUs:      #1
-[    0.073465] NMI watchdog: enabled on all CPUs, permanently consumes one hw-PMU counter.
-[    0.073513]  #2 #3 #4 #5 #6 #7
-[    0.155849] x86: Booted up 1 node, 8 CPUs
-[    0.155852] smpboot: Total of 8 processors activated (57470.19 BogoMIPS)
-[    0.162122] devtmpfs: initialized
-[    0.163373] evm: security.selinux
-[    0.163374] evm: security.SMACK64
-[    0.163374] evm: security.SMACK64EXEC
-[    0.163375] evm: security.SMACK64TRANSMUTE
-[    0.163375] evm: security.SMACK64MMAP
-[    0.163375] evm: security.ima
-[    0.163376] evm: security.capability
-[    0.163469] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
-[    0.163524] pinctrl core: initialized pinctrl subsystem
-[    0.163601] RTC time: 10:12:29, date: 01/31/18
-[    0.163671] NET: Registered protocol family 16
-[    0.174030] cpuidle: using governor ladder
-[    0.186018] cpuidle: using governor menu
-[    0.186020] PCCT header not found.
-[    0.186083] ACPI: bus type PCI registered
-[    0.186084] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
-[    0.186133] PCI: MMCONFIG for domain 0000 [bus 00-3f] at [mem 0xf8000000-0xfbffffff] (base 0xf8000000)
-[    0.186134] PCI: not using MMCONFIG
-[    0.186135] PCI: Using configuration type 1 for base access
-[    0.186139] dmi type 0xB1 record - unknown flag
-[    0.186317] perf_event_intel: PMU erratum BJ122, BV98, HSD29 worked around, HT is on
-[    0.198261] ACPI: Added _OSI(Module Device)
-[    0.198262] ACPI: Added _OSI(Processor Device)
-[    0.198262] ACPI: Added _OSI(3.0 _SCP Extensions)
-[    0.198263] ACPI: Added _OSI(Processor Aggregator Device)
-[    0.200330] ACPI: Executed 1 blocks of module-level executable AML code
-[    0.201695] [Firmware Bug]: ACPI: BIOS _OSI(Linux) query ignored
-[    0.201968] ACPI: Dynamic OEM Table Load:
-[    0.201972] ACPI: SSDT 0xFFFF880217043C00 0003D3 (v01 PmRef  Cpu0Cst  00003001 INTL 20120711)
-[    0.202331] ACPI: Dynamic OEM Table Load:
-[    0.202334] ACPI: SSDT 0xFFFF8802170E9000 0005AA (v01 PmRef  ApIst    00003000 INTL 20120711)
-[    0.202718] ACPI: Dynamic OEM Table Load:
-[    0.202721] ACPI: SSDT 0xFFFF8802170DD200 000119 (v01 PmRef  ApCst    00003000 INTL 20120711)
-[    0.203622] ACPI: Interpreter enabled
-[    0.203626] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S1_] (20150818/hwxface-580)
-[    0.203630] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S2_] (20150818/hwxface-580)
-[    0.203641] ACPI: (supports S0 S3 S4 S5)
-[    0.203642] ACPI: Using IOAPIC for interrupt routing
-[    0.203657] PCI: MMCONFIG for domain 0000 [bus 00-3f] at [mem 0xf8000000-0xfbffffff] (base 0xf8000000)
-[    0.203948] PCI: MMCONFIG at [mem 0xf8000000-0xfbffffff] reserved in ACPI motherboard resources
-[    0.203953] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
-[    0.209329] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-3e])
-[    0.209332] acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MSI]
-[    0.209688] acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME AER PCIeCapability]
-[    0.209925] PCI host bridge to bus 0000:00
-[    0.209927] pci_bus 0000:00: root bus resource [bus 00-3e]
-[    0.209928] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
-[    0.209929] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
-[    0.209930] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
-[    0.209931] pci_bus 0000:00: root bus resource [mem 0x000dc000-0x000dffff window]
-[    0.209931] pci_bus 0000:00: root bus resource [mem 0x000e0000-0x000e3fff window]
-[    0.209932] pci_bus 0000:00: root bus resource [mem 0x000e4000-0x000e7fff window]
-[    0.209933] pci_bus 0000:00: root bus resource [mem 0xe0000000-0xfeafffff window]
-[    0.209938] pci 0000:00:00.0: [8086:0c00] type 00 class 0x060000
-[    0.209990] pci 0000:00:01.0: [8086:0c01] type 01 class 0x060400
-[    0.210010] pci 0000:00:01.0: PME# supported from D0 D3hot D3cold
-[    0.210056] pci 0000:00:01.0: System wakeup disabled by ACPI
-[    0.210105] pci 0000:00:14.0: [8086:8c31] type 00 class 0x0c0330
-[    0.210127] pci 0000:00:14.0: reg 0x10: [mem 0xf7120000-0xf712ffff 64bit]
-[    0.210166] pci 0000:00:14.0: PME# supported from D3hot D3cold
-[    0.210188] pci 0000:00:14.0: System wakeup disabled by ACPI
-[    0.210211] pci 0000:00:16.0: [8086:8c3a] type 00 class 0x078000
-[    0.210233] pci 0000:00:16.0: reg 0x10: [mem 0xf713c000-0xf713c00f 64bit]
-[    0.210275] pci 0000:00:16.0: PME# supported from D0 D3hot D3cold
-[    0.210322] pci 0000:00:19.0: [8086:153a] type 00 class 0x020000
-[    0.210343] pci 0000:00:19.0: reg 0x10: [mem 0xf7100000-0xf711ffff]
-[    0.210349] pci 0000:00:19.0: reg 0x14: [mem 0xf7139000-0xf7139fff]
-[    0.210356] pci 0000:00:19.0: reg 0x18: [io  0xf040-0xf05f]
-[    0.210392] pci 0000:00:19.0: PME# supported from D0 D3hot D3cold
-[    0.210414] pci 0000:00:19.0: System wakeup disabled by ACPI
-[    0.210438] pci 0000:00:1a.0: [8086:8c2d] type 00 class 0x0c0320
-[    0.210462] pci 0000:00:1a.0: reg 0x10: [mem 0xf7138000-0xf71383ff]
-[    0.210518] pci 0000:00:1a.0: PME# supported from D0 D3hot D3cold
-[    0.210541] pci 0000:00:1a.0: System wakeup disabled by ACPI
-[    0.210565] pci 0000:00:1b.0: [8086:8c20] type 00 class 0x040300
-[    0.210586] pci 0000:00:1b.0: reg 0x10: [mem 0xf7130000-0xf7133fff 64bit]
-[    0.210630] pci 0000:00:1b.0: PME# supported from D0 D3hot D3cold
-[    0.210653] pci 0000:00:1b.0: System wakeup disabled by ACPI
-[    0.210675] pci 0000:00:1c.0: [8086:8c10] type 01 class 0x060400
-[    0.210722] pci 0000:00:1c.0: PME# supported from D0 D3hot D3cold
-[    0.210764] pci 0000:00:1c.0: System wakeup disabled by ACPI
-[    0.210788] pci 0000:00:1c.1: [8086:8c12] type 01 class 0x060400
-[    0.210836] pci 0000:00:1c.1: PME# supported from D0 D3hot D3cold
-[    0.210875] pci 0000:00:1c.1: System wakeup disabled by ACPI
-[    0.210903] pci 0000:00:1d.0: [8086:8c26] type 00 class 0x0c0320
-[    0.210926] pci 0000:00:1d.0: reg 0x10: [mem 0xf7137000-0xf71373ff]
-[    0.210982] pci 0000:00:1d.0: PME# supported from D0 D3hot D3cold
-[    0.211006] pci 0000:00:1d.0: System wakeup disabled by ACPI
-[    0.211030] pci 0000:00:1f.0: [8086:8c4e] type 00 class 0x060100
-[    0.211150] pci 0000:00:1f.2: [8086:2822] type 00 class 0x010400
-[    0.211167] pci 0000:00:1f.2: reg 0x10: [io  0xf090-0xf097]
-[    0.211173] pci 0000:00:1f.2: reg 0x14: [io  0xf080-0xf083]
-[    0.211178] pci 0000:00:1f.2: reg 0x18: [io  0xf070-0xf077]
-[    0.211184] pci 0000:00:1f.2: reg 0x1c: [io  0xf060-0xf063]
-[    0.211190] pci 0000:00:1f.2: reg 0x20: [io  0xf020-0xf03f]
-[    0.211196] pci 0000:00:1f.2: reg 0x24: [mem 0xf7136000-0xf71367ff]
-[    0.211214] pci 0000:00:1f.2: PME# supported from D3hot
-[    0.211254] pci 0000:00:1f.3: [8086:8c22] type 00 class 0x0c0500
-[    0.211267] pci 0000:00:1f.3: reg 0x10: [mem 0xf7135000-0xf71350ff 64bit]
-[    0.211283] pci 0000:00:1f.3: reg 0x20: [io  0xf000-0xf01f]
-[    0.211358] pci 0000:01:00.0: [10de:1382] type 00 class 0x030000
-[    0.211375] pci 0000:01:00.0: reg 0x10: [mem 0xf6000000-0xf6ffffff]
-[    0.211384] pci 0000:01:00.0: reg 0x14: [mem 0xe0000000-0xefffffff 64bit pref]
-[    0.211393] pci 0000:01:00.0: reg 0x1c: [mem 0xf0000000-0xf1ffffff 64bit pref]
-[    0.211399] pci 0000:01:00.0: reg 0x24: [io  0xe000-0xe07f]
-[    0.211405] pci 0000:01:00.0: reg 0x30: [mem 0xf7000000-0xf707ffff pref]
-[    0.211444] pci 0000:01:00.0: System wakeup disabled by ACPI
-[    0.211468] pci 0000:01:00.1: [10de:0fbc] type 00 class 0x040300
-[    0.211484] pci 0000:01:00.1: reg 0x10: [mem 0xf7080000-0xf7083fff]
-[    0.218095] pci 0000:00:01.0: PCI bridge to [bus 01]
-[    0.218097] pci 0000:00:01.0:   bridge window [io  0xe000-0xefff]
-[    0.218098] pci 0000:00:01.0:   bridge window [mem 0xf6000000-0xf70fffff]
-[    0.218100] pci 0000:00:01.0:   bridge window [mem 0xe0000000-0xf1ffffff 64bit pref]
-[    0.218145] acpiphp: Slot [1] registered
-[    0.218150] pci 0000:00:1c.0: PCI bridge to [bus 02]
-[    0.218214] pci 0000:03:00.0: [104c:8240] type 01 class 0x060400
-[    0.218324] pci 0000:03:00.0: supports D1 D2
-[    0.218343] pci 0000:03:00.0: System wakeup disabled by ACPI
-[    0.226096] pci 0000:00:1c.1: PCI bridge to [bus 03-04]
-[    0.226224] pci 0000:03:00.0: PCI bridge to [bus 04]
-[    0.226690] ACPI: PCI Interrupt Link [LNKA] (IRQs 3 4 5 6 10 *11 12 14 15)
-[    0.226724] ACPI: PCI Interrupt Link [LNKB] (IRQs 3 4 5 6 *10 11 12 14 15)
-[    0.226753] ACPI: PCI Interrupt Link [LNKC] (IRQs 3 4 *5 6 10 11 12 14 15)
-[    0.226782] ACPI: PCI Interrupt Link [LNKD] (IRQs 3 4 *5 6 10 11 12 14 15)
-[    0.226810] ACPI: PCI Interrupt Link [LNKE] (IRQs *3 4 5 6 10 11 12 14 15)
-[    0.226840] ACPI: PCI Interrupt Link [LNKF] (IRQs 3 4 5 6 10 11 12 14 15) *0, disabled.
-[    0.226868] ACPI: PCI Interrupt Link [LNKG] (IRQs 3 4 5 6 10 *11 12 14 15)
-[    0.226899] ACPI: PCI Interrupt Link [LNKH] (IRQs 3 4 5 6 *10 11 12 14 15)
-[    0.227004] ACPI: Enabled 6 GPEs in block 00 to 3F
-[    0.227067] vgaarb: setting as boot device: PCI:0000:01:00.0
-[    0.227069] vgaarb: device added: PCI:0000:01:00.0,decodes=io+mem,owns=io+mem,locks=none
-[    0.227069] vgaarb: loaded
-[    0.227070] vgaarb: bridge control possible 0000:01:00.0
-[    0.227204] SCSI subsystem initialized
-[    0.227226] libata version 3.00 loaded.
-[    0.227241] ACPI: bus type USB registered
-[    0.227250] usbcore: registered new interface driver usbfs
-[    0.227255] usbcore: registered new interface driver hub
-[    0.227268] usbcore: registered new device driver usb
-[    0.227353] PCI: Using ACPI for IRQ routing
-[    0.228494] PCI: pci_cache_line_size set to 64 bytes
-[    0.228533] Expanded resource Persistent Memory (legacy) due to conflict with PCI Bus 0000:00
-[    0.228534] Expanded resource Persistent Memory (legacy) due to conflict with Persistent Memory (legacy)
-[    0.228535] e820: reserve RAM buffer [mem 0x00091800-0x0009ffff]
-[    0.228536] e820: reserve RAM buffer [mem 0x21e000000-0x21fffffff]
-[    0.228604] NetLabel: Initializing
-[    0.228605] NetLabel:  domain hash size = 128
-[    0.228606] NetLabel:  protocols = UNLABELED CIPSOv4
-[    0.228613] NetLabel:  unlabeled traffic allowed by default
-[    0.228655] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0, 0, 0, 0, 0, 0
-[    0.228657] hpet0: 8 comparators, 64-bit 14.318180 MHz counter
-[    0.230676] clocksource: Switched to clocksource hpet
-[    0.234120] AppArmor: AppArmor Filesystem Enabled
-[    0.234151] pnp: PnP ACPI init
-[    0.234193] system 00:00: [mem 0xfed40000-0xfed44fff] has been reserved
-[    0.234195] system 00:00: Plug and Play ACPI device, IDs PNP0c01 (active)
-[    0.234284] system 00:01: [io  0x0680-0x069f] has been reserved
-[    0.234285] system 00:01: [io  0xffff] has been reserved
-[    0.234286] system 00:01: [io  0xffff] has been reserved
-[    0.234287] system 00:01: [io  0xffff] has been reserved
-[    0.234288] system 00:01: [io  0x1c00-0x1cfe] has been reserved
-[    0.234289] system 00:01: [io  0x1d00-0x1dfe] has been reserved
-[    0.234290] system 00:01: [io  0x1e00-0x1efe] has been reserved
-[    0.234291] system 00:01: [io  0x1f00-0x1ffe] has been reserved
-[    0.234292] system 00:01: [io  0x1800-0x18fe] could not be reserved
-[    0.234293] system 00:01: [io  0x164e-0x164f] has been reserved
-[    0.234294] system 00:01: Plug and Play ACPI device, IDs PNP0c02 (active)
-[    0.234307] pnp 00:02: Plug and Play ACPI device, IDs PNP0b00 (active)
-[    0.234332] system 00:03: [io  0x1854-0x1857] has been reserved
-[    0.234333] system 00:03: Plug and Play ACPI device, IDs INT3f0d PNP0c02 (active)
-[    0.234383] system 00:04: [io  0x0a00-0x0a0f] has been reserved
-[    0.234384] system 00:04: Plug and Play ACPI device, IDs PNP0c02 (active)
-[    0.234410] system 00:05: [io  0x04d0-0x04d1] has been reserved
-[    0.234411] system 00:05: Plug and Play ACPI device, IDs PNP0c02 (active)
-[    0.234723] pnp 00:06: [dma 0 disabled]
-[    0.234747] pnp 00:06: Plug and Play ACPI device, IDs PNP0501 (active)
-[    0.234969] system 00:07: [mem 0xfed1c000-0xfed1ffff] has been reserved
-[    0.234970] system 00:07: [mem 0xfed10000-0xfed17fff] has been reserved
-[    0.234971] system 00:07: [mem 0xfed18000-0xfed18fff] has been reserved
-[    0.234972] system 00:07: [mem 0xfed19000-0xfed19fff] has been reserved
-[    0.234973] system 00:07: [mem 0xf8000000-0xfbffffff] has been reserved
-[    0.234974] system 00:07: [mem 0xfed20000-0xfed3ffff] has been reserved
-[    0.234975] system 00:07: [mem 0xfed90000-0xfed93fff] could not be reserved
-[    0.234976] system 00:07: [mem 0xfed45000-0xfed8ffff] has been reserved
-[    0.234978] system 00:07: [mem 0xff000000-0xffffffff] has been reserved
-[    0.234979] system 00:07: [mem 0xfee00000-0xfeefffff] could not be reserved
-[    0.234980] system 00:07: [mem 0xf7fdf000-0xf7fdffff] has been reserved
-[    0.234981] system 00:07: [mem 0xf7fe0000-0xf7feffff] has been reserved
-[    0.234982] system 00:07: Plug and Play ACPI device, IDs PNP0c02 (active)
-[    0.235098] pnp: PnP ACPI: found 8 devices
-[    0.240778] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
-[    0.240807] pci 0000:00:01.0: PCI bridge to [bus 01]
-[    0.240808] pci 0000:00:01.0:   bridge window [io  0xe000-0xefff]
-[    0.240810] pci 0000:00:01.0:   bridge window [mem 0xf6000000-0xf70fffff]
-[    0.240812] pci 0000:00:01.0:   bridge window [mem 0xe0000000-0xf1ffffff 64bit pref]
-[    0.240814] pci 0000:00:1c.0: PCI bridge to [bus 02]
-[    0.240822] pci 0000:03:00.0: PCI bridge to [bus 04]
-[    0.240838] pci 0000:00:1c.1: PCI bridge to [bus 03-04]
-[    0.240848] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
-[    0.240849] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
-[    0.240849] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
-[    0.240850] pci_bus 0000:00: resource 7 [mem 0x000dc000-0x000dffff window]
-[    0.240851] pci_bus 0000:00: resource 8 [mem 0x000e0000-0x000e3fff window]
-[    0.240852] pci_bus 0000:00: resource 9 [mem 0x000e4000-0x000e7fff window]
-[    0.240853] pci_bus 0000:00: resource 10 [mem 0xe0000000-0xfeafffff window]
-[    0.240854] pci_bus 0000:01: resource 0 [io  0xe000-0xefff]
-[    0.240855] pci_bus 0000:01: resource 1 [mem 0xf6000000-0xf70fffff]
-[    0.240855] pci_bus 0000:01: resource 2 [mem 0xe0000000-0xf1ffffff 64bit pref]
-[    0.240875] NET: Registered protocol family 2
-[    0.240973] TCP established hash table entries: 65536 (order: 7, 524288 bytes)
-[    0.241061] TCP bind hash table entries: 65536 (order: 8, 1048576 bytes)
-[    0.241166] TCP: Hash tables configured (established 65536 bind 65536)
-[    0.241181] UDP hash table entries: 4096 (order: 5, 131072 bytes)
-[    0.241201] UDP-Lite hash table entries: 4096 (order: 5, 131072 bytes)
-[    0.241238] NET: Registered protocol family 1
-[    0.278702] pci 0000:01:00.0: Video device with shadowed ROM
-[    0.278712] PCI: CLS 64 bytes, default 64
-[    0.278742] Trying to unpack rootfs image as initramfs...
-[    2.911808] Freeing initrd memory: 280844K (ffff880015b6a000 - ffff880026dad000)
-[    2.911849] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
-[    2.911851] software IO TLB [mem 0x7c000000-0x80000000] (64MB) mapped at [ffff88007c000000-ffff88007fffffff]
-[    2.911906] RAPL PMU detected, API unit is 2^-32 Joules, 4 fixed counters 655360 ms ovfl timer
-[    2.911907] hw unit of domain pp0-core 2^-14 Joules
-[    2.911908] hw unit of domain package 2^-14 Joules
-[    2.911908] hw unit of domain dram 2^-14 Joules
-[    2.911909] hw unit of domain pp1-gpu 2^-14 Joules
-[    2.912011] microcode: CPU0 sig=0x306c3, pf=0x2, revision=0x1c
-[    2.912013] microcode: CPU1 sig=0x306c3, pf=0x2, revision=0x1c
-[    2.912018] microcode: CPU2 sig=0x306c3, pf=0x2, revision=0x1c
-[    2.912024] microcode: CPU3 sig=0x306c3, pf=0x2, revision=0x1c
-[    2.912028] microcode: CPU4 sig=0x306c3, pf=0x2, revision=0x1c
-[    2.912033] microcode: CPU5 sig=0x306c3, pf=0x2, revision=0x1c
-[    2.912037] microcode: CPU6 sig=0x306c3, pf=0x2, revision=0x1c
-[    2.912042] microcode: CPU7 sig=0x306c3, pf=0x2, revision=0x1c
-[    2.912072] microcode: Microcode Update Driver: v2.00 <tigran@aivazian.fsnet.co.uk>, Peter Oruba
-[    2.912094] Scanning for low memory corruption every 60 seconds
-[    2.912312] futex hash table entries: 2048 (order: 5, 131072 bytes)
-[    2.912338] audit: initializing netlink subsys (disabled)
-[    2.912350] audit: type=2000 audit(1517393551.896:1): initialized
-[    2.912569] Initialise system trusted keyring
-[    2.912618] HugeTLB registered 1 GB page size, pre-allocated 0 pages
-[    2.912619] HugeTLB registered 2 MB page size, pre-allocated 0 pages
-[    2.913408] zbud: loaded
-[    2.913538] VFS: Disk quotas dquot_6.6.0
-[    2.913558] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
-[    2.913699] squashfs: version 4.0 (2009/01/31) Phillip Lougher
-[    2.913836] fuse init (API version 7.23)
-[    2.913909] Key type big_key registered
-[    2.914685] Key type asymmetric registered
-[    2.914687] Asymmetric key parser 'x509' registered
-[    2.914697] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 249)
-[    2.914726] io scheduler noop registered
-[    2.914728] io scheduler deadline registered (default)
-[    2.914747] io scheduler cfq registered
-[    2.915183] pcieport 0000:00:01.0: Signaling PME through PCIe PME interrupt
-[    2.915184] pci 0000:01:00.0: Signaling PME through PCIe PME interrupt
-[    2.915185] pci 0000:01:00.1: Signaling PME through PCIe PME interrupt
-[    2.915187] pcie_pme 0000:00:01.0:pcie01: service driver pcie_pme loaded
-[    2.915210] pcieport 0000:00:1c.0: Signaling PME through PCIe PME interrupt
-[    2.915213] pcie_pme 0000:00:1c.0:pcie01: service driver pcie_pme loaded
-[    2.915227] pcieport 0000:00:1c.1: Signaling PME through PCIe PME interrupt
-[    2.915228] pci 0000:03:00.0: Signaling PME through PCIe PME interrupt
-[    2.915231] pcie_pme 0000:00:1c.1:pcie01: service driver pcie_pme loaded
-[    2.915234] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
-[    2.915238] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
-[    2.915254] vesafb: mode is 1920x1080x32, linelength=7680, pages=0
-[    2.915255] vesafb: scrolling: redraw
-[    2.915256] vesafb: Truecolor: size=8:8:8:8, shift=24:16:8:0
-[    2.915262] vesafb: framebuffer at 0xf1000000, mapped to 0xffffc90001000000, using 8128k, total 8128k
-[    3.016683] Console: switching to colour frame buffer device 240x67
-[    3.117661] fb0: VESA VGA frame buffer device
-[    3.117671] intel_idle: MWAIT substates: 0x42120
-[    3.117672] intel_idle: v0.4 model 0x3C
-[    3.117672] intel_idle: lapic_timer_reliable_states 0xffffffff
-[    3.117904] input: Power Button as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0C:00/input/input0
-[    3.117907] ACPI: Power Button [PWRB]
-[    3.117926] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input1
-[    3.117927] ACPI: Power Button [PWRF]
-[    3.118170] ACPI: Invalid active0 threshold
-[    3.118222] thermal LNXTHERM:00: registered as thermal_zone0
-[    3.118223] ACPI: Thermal Zone [TZ00] (28 C)
-[    3.118325] thermal LNXTHERM:01: registered as thermal_zone1
-[    3.118326] ACPI: Thermal Zone [TZ01] (30 C)
-[    3.118351] GHES: HEST is not enabled!
-[    3.118411] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
-[    3.138976] 00:06: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-[    3.139860] Linux agpgart interface v0.103
-[    3.141767] brd: module loaded
-[    3.142607] loop: module loaded
-[    3.142851] libphy: Fixed MDIO Bus: probed
-[    3.142854] tun: Universal TUN/TAP device driver, 1.6
-[    3.142854] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
-[    3.142905] PPP generic driver version 2.4.2
-[    3.143028] xhci_hcd 0000:00:14.0: xHCI Host Controller
-[    3.143034] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 1
-[    3.143110] xhci_hcd 0000:00:14.0: hcc params 0x200077c1 hci version 0x100 quirks 0x00009810
-[    3.143115] xhci_hcd 0000:00:14.0: cache line size of 64 is not supported
-[    3.143206] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
-[    3.143207] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
-[    3.143208] usb usb1: Product: xHCI Host Controller
-[    3.143209] usb usb1: Manufacturer: Linux 4.3.0 xhci-hcd
-[    3.143210] usb usb1: SerialNumber: 0000:00:14.0
-[    3.143367] hub 1-0:1.0: USB hub found
-[    3.143386] hub 1-0:1.0: 15 ports detected
-[    3.145805] xhci_hcd 0000:00:14.0: xHCI Host Controller
-[    3.145808] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 2
-[    3.145832] usb usb2: New USB device found, idVendor=1d6b, idProduct=0003
-[    3.145833] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
-[    3.145834] usb usb2: Product: xHCI Host Controller
-[    3.145835] usb usb2: Manufacturer: Linux 4.3.0 xhci-hcd
-[    3.145836] usb usb2: SerialNumber: 0000:00:14.0
-[    3.145890] hub 2-0:1.0: USB hub found
-[    3.145900] hub 2-0:1.0: 6 ports detected
-[    3.146573] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
-[    3.146576] ehci-pci: EHCI PCI platform driver
-[    3.146630] ehci-pci 0000:00:1a.0: EHCI Host Controller
-[    3.146633] ehci-pci 0000:00:1a.0: new USB bus registered, assigned bus number 3
-[    3.146641] ehci-pci 0000:00:1a.0: debug port 2
-[    3.150547] ehci-pci 0000:00:1a.0: cache line size of 64 is not supported
-[    3.150555] ehci-pci 0000:00:1a.0: irq 16, io mem 0xf7138000
-[    3.165689] ehci-pci 0000:00:1a.0: USB 2.0 started, EHCI 1.00
-[    3.165731] usb usb3: New USB device found, idVendor=1d6b, idProduct=0002
-[    3.165732] usb usb3: New USB device strings: Mfr=3, Product=2, SerialNumber=1
-[    3.165733] usb usb3: Product: EHCI Host Controller
-[    3.165734] usb usb3: Manufacturer: Linux 4.3.0 ehci_hcd
-[    3.165735] usb usb3: SerialNumber: 0000:00:1a.0
-[    3.165826] hub 3-0:1.0: USB hub found
-[    3.165828] hub 3-0:1.0: 2 ports detected
-[    3.165988] ehci-pci 0000:00:1d.0: EHCI Host Controller
-[    3.165991] ehci-pci 0000:00:1d.0: new USB bus registered, assigned bus number 4
-[    3.166000] ehci-pci 0000:00:1d.0: debug port 2
-[    3.169888] ehci-pci 0000:00:1d.0: cache line size of 64 is not supported
-[    3.169898] ehci-pci 0000:00:1d.0: irq 23, io mem 0xf7137000
-[    3.181691] ehci-pci 0000:00:1d.0: USB 2.0 started, EHCI 1.00
-[    3.181726] usb usb4: New USB device found, idVendor=1d6b, idProduct=0002
-[    3.181728] usb usb4: New USB device strings: Mfr=3, Product=2, SerialNumber=1
-[    3.181729] usb usb4: Product: EHCI Host Controller
-[    3.181730] usb usb4: Manufacturer: Linux 4.3.0 ehci_hcd
-[    3.181730] usb usb4: SerialNumber: 0000:00:1d.0
-[    3.181825] hub 4-0:1.0: USB hub found
-[    3.181828] hub 4-0:1.0: 2 ports detected
-[    3.181920] ehci-platform: EHCI generic platform driver
-[    3.181930] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
-[    3.181933] ohci-pci: OHCI PCI platform driver
-[    3.181941] ohci-platform: OHCI generic platform driver
-[    3.181947] uhci_hcd: USB Universal Host Controller Interface driver
-[    3.181980] i8042: PNP: No PS/2 controller found. Probing ports directly.
-[    3.184935] serio: i8042 KBD port at 0x60,0x64 irq 1
-[    3.184938] serio: i8042 AUX port at 0x60,0x64 irq 12
-[    3.185022] mousedev: PS/2 mouse device common for all mice
-[    3.185109] rtc_cmos 00:02: RTC can wake from S4
-[    3.185214] rtc_cmos 00:02: rtc core: registered rtc_cmos as rtc0
-[    3.185237] rtc_cmos 00:02: alarms up to one month, y3k, 242 bytes nvram, hpet irqs
-[    3.185242] i2c /dev entries driver
-[    3.185273] device-mapper: uevent: version 1.0.3
-[    3.185331] device-mapper: ioctl: 4.33.0-ioctl (2015-8-18) initialised: dm-devel@redhat.com
-[    3.185338] Intel P-state driver initializing.
-[    3.185585] ledtrig-cpu: registered to indicate activity on CPUs
-[    3.186494] NET: Registered protocol family 10
-[    3.186926] NET: Registered protocol family 17
-[    3.186948] Key type dns_resolver registered
-[    3.187965] registered taskstats version 1
-[    3.188019] Loading compiled-in X.509 certificates
-[    3.188034] Problem loading in-kernel X.509 certificate (-74)
-[    3.189682] zswap: loaded using pool lzo/zbud
-[    3.190825] Key type trusted registered
-[    3.193236] Key type encrypted registered
-[    3.193241] AppArmor: AppArmor sha1 policy hashing enabled
-[    3.193243] ima: No TPM chip found, activating TPM-bypass!
-[    3.193265] evm: HMAC attrs: 0x1
-[    3.193523]   Magic number: 2:526:225
-[    3.193660] rtc_cmos 00:02: setting system clock to 2018-01-31 10:12:32 UTC (1517393552)
-[    3.193731] BIOS EDD facility v0.16 2004-Jun-25, 0 devices found
-[    3.193732] EDD information not available.
-[    3.193779] PM: Hibernation image not present or could not be loaded.
-[    3.193999] Freeing unused kernel memory: 1456K (ffffffff81d3a000 - ffffffff81ea6000)
-[    3.194000] Write protecting the kernel read-only data: 12288k
-[    3.194129] Freeing unused kernel memory: 36K (ffff8800017f7000 - ffff880001800000)
-[    3.194194] Freeing unused kernel memory: 216K (ffff880001bca000 - ffff880001c00000)
-[    3.199981] random: systemd-udevd urandom read with 4 bits of entropy available
-[    3.217329] video: module verification failed: signature and/or required key missing - tainting kernel
-[    3.217754] FUJITSU Extended Socket Network Device Driver - version 1.0 - Copyright (c) 2015 FUJITSU LIMITED
-[    3.230861] pps_core: LinuxPPS API ver. 1 registered
-[    3.230863] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
-[    3.234613] PTP clock support registered
-[    3.235787] ahci 0000:00:1f.2: version 3.0
-[    3.235912] ahci 0000:00:1f.2: AHCI 0001.0300 32 slots 6 ports 6 Gbps 0x5 impl RAID mode
-[    3.235915] ahci 0000:00:1f.2: flags: 64bit ncq pm led clo pio slum part ems apst 
-[    3.242218] scsi host0: ahci
-[    3.242300] scsi host1: ahci
-[    3.242371] scsi host2: ahci
-[    3.242441] scsi host3: ahci
-[    3.242507] scsi host4: ahci
-[    3.242577] scsi host5: ahci
-[    3.242616] ata1: SATA max UDMA/133 abar m2048@0xf7136000 port 0xf7136100 irq 29
-[    3.242617] ata2: DUMMY
-[    3.242619] ata3: SATA max UDMA/133 abar m2048@0xf7136000 port 0xf7136200 irq 29
-[    3.242620] ata4: DUMMY
-[    3.242621] ata5: DUMMY
-[    3.242622] ata6: DUMMY
-[    3.256690] e1000e: Intel(R) PRO/1000 Network Driver - 3.2.6-k
-[    3.256692] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
-[    3.256810] e1000e 0000:00:19.0: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
-[    3.264395] [drm] Initialized drm 1.1.0 20060810
-[    3.288143] wmi: Mapper loaded
-[    3.424275] e1000e 0000:00:19.0 eth0: registered PHC clock
-[    3.424277] e1000e 0000:00:19.0 eth0: (PCI Express:2.5GT/s:Width x1) 98:90:96:c1:6b:85
-[    3.424278] e1000e 0000:00:19.0 eth0: Intel(R) PRO/1000 Network Connection
-[    3.424326] e1000e 0000:00:19.0 eth0: MAC: 11, PHY: 12, PBA No: FFFFFF-0FF
-[    3.424809] e1000e 0000:00:19.0 eno1: renamed from eth0
-[    3.477551] usb 3-1: new high-speed USB device number 2 using ehci-pci
-[    3.497532] usb 4-1: new high-speed USB device number 2 using ehci-pci
-[    3.561516] ata3: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
-[    3.561554] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
-[    3.562352] ata1.00: ATA-9: ST1000DM003-1ER162, CC45, max UDMA/133
-[    3.562354] ata1.00: 1953525168 sectors, multi 16: LBA48 NCQ (depth 31/32), AA
-[    3.563031] ata1.00: configured for UDMA/133
-[    3.563282] scsi 0:0:0:0: Direct-Access     ATA      ST1000DM003-1ER1 CC45 PQ: 0 ANSI: 5
-[    3.563526] sd 0:0:0:0: [sda] 1953525168 512-byte logical blocks: (1.00 TB/931 GiB)
-[    3.563528] sd 0:0:0:0: [sda] 4096-byte physical blocks
-[    3.563578] sd 0:0:0:0: Attached scsi generic sg0 type 0
-[    3.563607] sd 0:0:0:0: [sda] Write Protect is off
-[    3.563609] sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
-[    3.563630] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
-[    3.566799] ata3.00: ATAPI: HL-DT-ST DVD+/-RW GHB0N, A1B1, max UDMA/100
-[    3.568548] ata3.00: configured for UDMA/100
-[    3.579483] scsi 2:0:0:0: CD-ROM            HL-DT-ST DVD+-RW GHB0N    A1B1 PQ: 0 ANSI: 5
-[    3.605163] sr 2:0:0:0: [sr0] scsi3-mmc drive: 48x/12x writer dvd-ram cd/rw xa/form2 cdda tray
-[    3.605165] cdrom: Uniform CD-ROM driver Revision: 3.20
-[    3.605277] sr 2:0:0:0: Attached scsi CD-ROM sr0
-[    3.605349] sr 2:0:0:0: Attached scsi generic sg1 type 5
-[    3.607286]  sda: sda1 sda2 < sda5 sda6 sda7 >
-[    3.607647] sd 0:0:0:0: [sda] Attached SCSI disk
-[    3.609806] usb 3-1: New USB device found, idVendor=8087, idProduct=8008
-[    3.609807] usb 3-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-[    3.609962] hub 3-1:1.0: USB hub found
-[    3.610052] hub 3-1:1.0: 6 ports detected
-[    3.629811] usb 4-1: New USB device found, idVendor=8087, idProduct=8000
-[    3.629813] usb 4-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-[    3.630098] hub 4-1:1.0: USB hub found
-[    3.630174] hub 4-1:1.0: 8 ports detected
-[    3.633002] checking generic (f1000000 7f0000) vs hw (e0000000 10000000)
-[    3.633003] checking generic (f1000000 7f0000) vs hw (f0000000 2000000)
-[    3.633004] fb: switching to nouveaufb from VESA VGA
-[    3.633021] Console: switching to colour dummy device 80x25
-[    3.633091] nouveau 0000:01:00.0: NVIDIA GM107 (117020a2)
-[    3.747177] nouveau 0000:01:00.0: bios: version 82.07.32.00.04
-[    3.748243] nouveau 0000:01:00.0: fb: 4096 MiB DDR3
-[    3.881368] usb 3-1.3: new high-speed USB device number 3 using ehci-pci
-[    3.921433] tsc: Refined TSC clocksource calibration: 3591.682 MHz
-[    3.921435] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x33c5a15be52, max_idle_ns: 440795280454 ns
-[    3.986565] usb 3-1.3: New USB device found, idVendor=0781, idProduct=5590
-[    3.986567] usb 3-1.3: New USB device strings: Mfr=1, Product=2, SerialNumber=3
-[    3.986568] usb 3-1.3: Product: Ultra
-[    3.986568] usb 3-1.3: Manufacturer: SanDisk
-[    3.986569] usb 3-1.3: SerialNumber: 4C531001570114103552
-[    3.994614] usb-storage 3-1.3:1.0: USB Mass Storage device detected
-[    3.994929] scsi host6: usb-storage 3-1.3:1.0
-[    3.995010] usbcore: registered new interface driver usb-storage
-[    3.996809] usbcore: registered new interface driver uas
-[    4.057330] usb 3-1.4: new full-speed USB device number 4 using ehci-pci
-[    4.151635] usb 3-1.4: New USB device found, idVendor=0483, idProduct=5710
-[    4.151636] usb 3-1.4: New USB device strings: Mfr=1, Product=2, SerialNumber=0
-[    4.151637] usb 3-1.4: Product: USB KB
-[    4.151638] usb 3-1.4: Manufacturer: STMicroelectronics
-[    4.157800] hidraw: raw HID events driver (C) Jiri Kosina
-[    4.162713] usbcore: registered new interface driver usbhid
-[    4.162718] usbhid: USB HID core driver
-[    4.164871] input: STMicroelectronics USB KB as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.4/3-1.4:1.0/0003:0483:5710.0001/input/input5
-[    4.217511] hid-generic 0003:0483:5710.0001: input,hidraw0: USB HID v1.11 Keyboard [STMicroelectronics USB KB] on usb-0000:00:1a.0-1.4/input0
-[    4.218544] input: STMicroelectronics USB KB as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.4/3-1.4:1.1/0003:0483:5710.0002/input/input6
-[    4.221279] usb 3-1.5: new low-speed USB device number 5 using ehci-pci
-[    4.273489] hid-generic 0003:0483:5710.0002: input,hidraw1: USB HID v1.11 Keyboard [STMicroelectronics USB KB] on usb-0000:00:1a.0-1.4/input1
-[    4.317072] usb 3-1.5: New USB device found, idVendor=17ef, idProduct=6019
-[    4.317074] usb 3-1.5: New USB device strings: Mfr=0, Product=2, SerialNumber=0
-[    4.317074] usb 3-1.5: Product: Lenovo Optical USB Mouse
-[    4.320673] input: Lenovo Optical USB Mouse as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.5/3-1.5:1.0/0003:17EF:6019.0003/input/input7
-[    4.320891] hid-generic 0003:17EF:6019.0003: input,hidraw2: USB HID v1.11 Mouse [Lenovo Optical USB Mouse] on usb-0000:00:1a.0-1.5/input0
-[    4.929020] clocksource: Switched to clocksource tsc
-[    4.993579] scsi 6:0:0:0: Direct-Access     SanDisk  Ultra            1.00 PQ: 0 ANSI: 6
-[    5.009238] sd 6:0:0:0: Attached scsi generic sg2 type 0
-[    5.009814] sd 6:0:0:0: [sdb] 30375936 512-byte logical blocks: (15.5 GB/14.4 GiB)
-[    5.010812] sd 6:0:0:0: [sdb] Write Protect is off
-[    5.010814] sd 6:0:0:0: [sdb] Mode Sense: 43 00 00 00
-[    5.011809] sd 6:0:0:0: [sdb] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
-[    5.016684]  sdb: sdb4
-[    5.020057] sd 6:0:0:0: [sdb] Attached SCSI removable disk
-[    5.045116] [TTM] Zone  kernel: Available graphics memory: 2264764 kiB
-[    5.045117] [TTM] Zone   dma32: Available graphics memory: 2097152 kiB
-[    5.045118] [TTM] Initializing pool allocator
-[    5.045121] [TTM] Initializing DMA pool allocator
-[    5.045127] nouveau 0000:01:00.0: DRM: VRAM: 4096 MiB
-[    5.045128] nouveau 0000:01:00.0: DRM: GART: 1048576 MiB
-[    5.045130] nouveau 0000:01:00.0: DRM: TMDS table version 2.0
-[    5.045131] nouveau 0000:01:00.0: DRM: DCB version 4.0
-[    5.045132] nouveau 0000:01:00.0: DRM: DCB outp 00: 01000f02 00020030
-[    5.045134] nouveau 0000:01:00.0: DRM: DCB outp 01: 02011f62 0f420010
-[    5.045134] nouveau 0000:01:00.0: DRM: DCB outp 02: 02022f10 00000000
-[    5.045135] nouveau 0000:01:00.0: DRM: DCB conn 00: 00001031
-[    5.045136] nouveau 0000:01:00.0: DRM: DCB conn 01: 00002161
-[    5.045137] nouveau 0000:01:00.0: DRM: DCB conn 02: 00000200
-[    5.058141] [drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
-[    5.058142] [drm] Driver supports precise vblank timestamp query.
-[    5.140077] nouveau 0000:01:00.0: DRM: MM: using COPY for buffer copies
-[    5.273868] nouveau 0000:01:00.0: DRM: allocated 1920x1080 fb: 0x60000, bo ffff880026a9d000
-[    5.273921] fbcon: nouveaufb (fb0) is primary device
-[    5.509537] Console: switching to colour frame buffer device 240x67
-[    5.511104] nouveau 0000:01:00.0: fb0: nouveaufb frame buffer device
-[    5.520764] [drm] Initialized nouveau 1.3.0 20120801 for 0000:01:00.0 on minor 0
-[    5.603968] EXT4-fs (sda7): mounted filesystem with ordered data mode. Opts: (null)
-[    6.234776] random: nonblocking pool is initialized
-[    6.291575] systemd[1]: systemd 229 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ -LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN)
-[    6.291685] systemd[1]: Detected architecture x86-64.
-[    6.298236] systemd[1]: Set hostname to <cxdafs-OptiPlex-9020>.
-[    6.938109] systemd[1]: Listening on Journal Socket.
-[    6.938150] systemd[1]: Listening on Syslog Socket.
-[    6.938200] systemd[1]: Created slice User and Session Slice.
-[    6.938206] systemd[1]: Reached target User and Group Name Lookups.
-[    6.938223] systemd[1]: Listening on udev Control Socket.
-[    6.938239] systemd[1]: Listening on /dev/initctl Compatibility Named Pipe.
-[    6.938248] systemd[1]: Listening on fsck to fsckd communication Socket.
-[    6.938258] systemd[1]: Listening on Journal Socket (/dev/log).
-[    6.938277] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
-[    6.938311] systemd[1]: Created slice System Slice.
-[    6.938531] systemd[1]: Mounting Huge Pages File System...
-[    6.938547] systemd[1]: Reached target Slices.
-[    6.938745] systemd[1]: Mounting POSIX Message Queue File System...
-[    6.941446] systemd[1]: Starting Load Kernel Modules...
-[    6.941650] systemd[1]: Mounting Debug File System...
-[    6.941851] systemd[1]: Starting Uncomplicated firewall...
-[    6.941894] systemd[1]: Listening on Journal Audit Socket.
-[    6.942125] systemd[1]: Started Read required files in advance.
-[    6.942263] systemd[1]: Listening on udev Kernel Socket.
-[    6.942522] systemd[1]: Starting Create list of required static device nodes for the current kernel...
-[    6.942747] systemd[1]: Started Braille Device Support.
-[    6.942962] systemd[1]: Starting Set console keymap...
-[    6.942968] systemd[1]: Reached target Encrypted Volumes.
-[    6.943155] systemd[1]: Starting Journal Service...
-[    6.943224] systemd[1]: Set up automount Arbitrary Executable File Formats File System Automount Point.
-[    6.944088] systemd[1]: Reached target Remote File Systems (Pre).
-[    6.944096] systemd[1]: Reached target Remote File Systems.
-[    7.041578] systemd[1]: Started Create list of required static device nodes for the current kernel.
-[    7.041862] systemd[1]: Starting Create Static Device Nodes in /dev...
-[    7.124955] systemd[1]: Started Uncomplicated firewall.
-[    7.304156] systemd[1]: Started Journal Service.
-[    7.758206] lp: driver loaded but no devices found
-[    7.763837] ppdev: user-space parallel port driver
-[    8.391069] EXT4-fs (sda7): re-mounted. Opts: errors=remount-ro
-[    8.514787] systemd-journald[296]: Received request to flush runtime journal from PID 1
-[    8.746308] nd_pmem namespace0.0: unable to guarantee persistence of writes
-[    8.747249] pmem0: detected capacity change from 0 to 1419116544
-[    8.747273] nd_pmem namespace2.0: unable to guarantee persistence of writes
-[    8.747448] pmem2: detected capacity change from 0 to 4407296
-[    8.747458] nd_pmem namespace3.0: unable to guarantee persistence of writes
-[    8.747564] pmem3: detected capacity change from 0 to 4771840
-[    8.747570] nd_pmem namespace4.0: unable to guarantee persistence of writes
-[    8.749123] pmem4: detected capacity change from 0 to 97263616
-[    8.749134] nd_pmem namespace6.0: unable to guarantee persistence of writes
-[    8.749240] pmem6: detected capacity change from 0 to 7729152
-[    8.749258] nd_pmem namespace8.0: unable to guarantee persistence of writes
-[    8.749364] pmem8: detected capacity change from 0 to 8052736
-[    8.749378] nd_pmem namespace10.0: unable to guarantee persistence of writes
-[    8.749486] pmem10: detected capacity change from 0 to 24231936
-[    8.749496] nd_pmem namespace12.0: unable to guarantee persistence of writes
-[    8.749599] pmem12: detected capacity change from 0 to 23138304
-[    8.749612] nd_pmem namespace14.0: unable to guarantee persistence of writes
-[    8.749613] nd_pmem namespace14.0: could not reserve region [0x0x00000000df000000:0x1fc00000]
-[    8.749614] nd_pmem: probe of namespace14.0 failed with error -16
-[    8.749651] nd_pmem namespace23.0: unable to guarantee persistence of writes
-[    8.758577] pmem23: detected capacity change from 0 to 16777216
-[    8.758589] nd_pmem namespace24.0: unable to guarantee persistence of writes
-[    8.758708] pmem24: detected capacity change from 0 to 2147483648
-[    9.182314] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
-[    9.478549] AVX2 version of gcm_enc/dec engaged.
-[    9.478551] AES CTR mode by8 optimization enabled
-[   10.490389] intel_rapl: Found RAPL domain package
-[   10.490392] intel_rapl: Found RAPL domain core
-[   10.490395] intel_rapl: Found RAPL domain dram
-[   10.988448] snd_hda_intel 0000:01:00.1: Disabling MSI
-[   10.988453] snd_hda_intel 0000:01:00.1: Handle VGA-switcheroo audio client
-[   11.077677] snd_hda_codec_realtek hdaudioC0D0: autoconfig for ALC3220: line_outs=1 (0x1b/0x0/0x0/0x0/0x0) type:line
-[   11.077679] snd_hda_codec_realtek hdaudioC0D0:    speaker_outs=1 (0x14/0x0/0x0/0x0/0x0)
-[   11.077680] snd_hda_codec_realtek hdaudioC0D0:    hp_outs=1 (0x15/0x0/0x0/0x0/0x0)
-[   11.077681] snd_hda_codec_realtek hdaudioC0D0:    mono: mono_out=0x0
-[   11.077682] snd_hda_codec_realtek hdaudioC0D0:    inputs:
-[   11.077683] snd_hda_codec_realtek hdaudioC0D0:      Front Mic=0x1a
-[   11.077684] snd_hda_codec_realtek hdaudioC0D0:      Rear Mic=0x18
-[   11.084771] input: HDA Intel PCH Front Mic as /devices/pci0000:00/0000:00:1b.0/sound/card0/input8
-[   11.084814] input: HDA Intel PCH Rear Mic as /devices/pci0000:00/0000:00:1b.0/sound/card0/input9
-[   11.084853] input: HDA Intel PCH Line Out as /devices/pci0000:00/0000:00:1b.0/sound/card0/input10
-[   11.084890] input: HDA Intel PCH Front Headphone as /devices/pci0000:00/0000:00:1b.0/sound/card0/input11
-[   11.571004] input: HDA NVidia HDMI/DP,pcm=3 as /devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input12
-[   11.571040] input: HDA NVidia HDMI/DP,pcm=7 as /devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input13
-[   11.677152] dcdbas dcdbas: Dell Systems Management Base Driver (version 5.6.0-3.2)
-[   12.039017] audit: type=1400 audit(1517393561.344:2): apparmor="STATUS" operation="profile_load" name="/usr/sbin/ippusbxd" pid=835 comm="apparmor_parser"
-[   12.053032] audit: type=1400 audit(1517393561.356:3): apparmor="STATUS" operation="profile_load" name="/usr/lib/snapd/snap-confine" pid=832 comm="apparmor_parser"
-[   12.053035] audit: type=1400 audit(1517393561.356:4): apparmor="STATUS" operation="profile_load" name="mount-namespace-capture-helper" pid=832 comm="apparmor_parser"
-[   12.088271] audit: type=1400 audit(1517393561.392:5): apparmor="STATUS" operation="profile_load" name="/sbin/dhclient" pid=828 comm="apparmor_parser"
-[   12.088274] audit: type=1400 audit(1517393561.392:6): apparmor="STATUS" operation="profile_load" name="/usr/lib/NetworkManager/nm-dhcp-client.action" pid=828 comm="apparmor_parser"
-[   12.088276] audit: type=1400 audit(1517393561.392:7): apparmor="STATUS" operation="profile_load" name="/usr/lib/NetworkManager/nm-dhcp-helper" pid=828 comm="apparmor_parser"
-[   12.088278] audit: type=1400 audit(1517393561.392:8): apparmor="STATUS" operation="profile_load" name="/usr/lib/connman/scripts/dhclient-script" pid=828 comm="apparmor_parser"
-[   12.105684] audit: type=1400 audit(1517393561.408:9): apparmor="STATUS" operation="profile_load" name="/usr/lib/cups/backend/cups-pdf" pid=834 comm="apparmor_parser"
-[   12.105688] audit: type=1400 audit(1517393561.408:10): apparmor="STATUS" operation="profile_load" name="/usr/sbin/cupsd" pid=834 comm="apparmor_parser"
-[   12.105690] audit: type=1400 audit(1517393561.408:11): apparmor="STATUS" operation="profile_load" name="third_party" pid=834 comm="apparmor_parser"
-[   13.177708] Adding 8328188k swap on /dev/sda5.  Priority:-1 extents:1 across:8328188k FS
-[   20.712644] IPv6: ADDRCONF(NETDEV_UP): eno1: link is not ready
-[   20.923492] IPv6: ADDRCONF(NETDEV_UP): eno1: link is not ready
-[   23.724000] e1000e: eno1 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
-[   23.724032] IPv6: ADDRCONF(NETDEV_CHANGE): eno1: link becomes ready
-[   47.659539] FAT-fs (sdb4): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
-[  374.089469] nova: dafs init nova_fs
-[  374.089471] nova: init_nova_fs: 8 cpus online
-[  374.089473] nova: Arch new instructions support: PCOMMIT NO, CLWB NO
-[  374.089506] nova: dafs register file sytem nova
-[  374.089510] nova: dafs end init_fs
-[  374.134356] nova: dafs start to mount
-[  374.134371] nova: creating an empty nova of size 1419116544
-[  374.134374] nova: dafs init dzt block
-[  374.134374] nova: dafs_get dzt blk
-[  374.134376] nova: dafs_init_dzt_block: allocate log @ 0x1fb84
-[  374.135193] nova: dafs_get dzt blk
-[  374.135379] nova: dafs allocate zone blocks
-[  374.135750] nova: dafs_alloc_dir_zone: allocate zone @ 0x20f8d
-[  374.135751] nova: dafs make dzt pointer
-[  374.135751] nova: dafs_get dzt blk
-[  374.135752] nova: dafs finish make dzt bitmap pointer
-[  374.135752] nova: dafs start build dzt
-[  374.135753] nova: dafs finish build dzt_e
-[  374.135754] nova: dafs start init dir zones
-[  374.135754] nova: root ze addr is 553177088
-[  374.135754] nova: the root dir hashname is 47
-[  374.135755] nova: test root hash name is 47
-[  374.135755] nova: dafs finish creat root directory
-[  374.135756] nova: dafs finish init dir zones
-[  374.135757] nova: init_dir_info start
-[  374.136080] nova: init_dir_info end
-[  374.136085] nova: dafs end fill super
-[  374.136085] nova: dafs finish mount
-[  374.136306] nova: dafs_find_direntry:dafs start to find direntry
-[  374.136309] nova: get_dentry_path:start .Trash
-[  374.136310] nova: get_dentry_path buf is //.Trash tem is #//.Trash
-[  374.136311] nova: get_dentry_path name /.Trash
-[  374.136312] nova: get_dentry_path ful ph is 0M6g/.Trash len 12
-[  374.136313] nova: find_dzt start 0M6g/.Trash
-[  374.136314] nova: dafs_find_direntry phname 0M6g/.Trash
-[  374.136315] nova: lookup_in_hashtable end with ret is 0
-[  374.136328] nova: dafs_find_direntry:dafs start to find direntry
-[  374.136329] nova: get_dentry_path:start .Trash-1000
-[  374.136330] nova: get_dentry_path buf is //.Trash-1000 tem is ///.Trash-1000
-[  374.136331] nova: get_dentry_path name /.Trash-1000
-[  374.136332] nova: get_dentry_path ful ph is 0M6g/.Trash/.Trash-1000 len 24
-[  374.136333] nova: find_dzt start 0M6g/.Trash/.Trash-1000
-[  374.136334] nova: dafs_find_direntry phname 0M6g/.Trash/.Trash-1000
-[  374.136335] nova: lookup_in_hashtable end with ret is 0
-[  389.614505] nova: dafs_find_direntry:dafs start to find direntry
-[  389.614508] nova: get_dentry_path:start fileb
-[  389.614509] nova: get_dentry_path buf is //fileb tem is saved_scratch_register//fileb
-[  389.614510] nova: get_dentry_path name /fileb
-[  389.614511] nova: get_dentry_path ful ph is 0irm_switch/fileb len 17
-[  389.614512] nova: find_dzt start 0irm_switch/fileb
-[  389.614513] nova: dafs_find_direntry phname 0irm_switch/fileb
-[  389.614514] nova: lookup_in_hashtable end with ret is 0
-[  389.615363] nova: dafs_find_direntry:dafs start to find direntry
-[  389.615364] nova: get_dentry_path:start filebench
-[  389.615364] nova: get_dentry_path buf is //filebench tem is ///filebench
-[  389.615365] nova: get_dentry_path name /filebench
-[  389.615366] nova: get_dentry_path ful ph is 0irm_switch/fileb/filebench len 27
-[  389.615366] nova: find_dzt start 0irm_switch/fileb/filebench
-[  389.615367] nova: dafs_find_direntry phname 0irm_switch/fileb/filebench
-[  389.615368] nova: lookup_in_hashtable end with ret is 0
-[  391.705340] nova: dafs_readdir start /
-[  391.705342] nova: get_dentry_path:start /
-[  391.705343] nova: get_dentry_path root dentry
-[  391.705344] nova: dafs_readdir file get path innitial is /
-[  391.705344] nova: find_dzt start /
-[  391.705346] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  391.705347] nova: lookup_in_hashtable find hashname 47, pos 0
-[  391.705348] nova: lookup_in_hashtable end with ret is 1
-[  391.705426] nova: dafs_readdir start /
-[  391.705427] nova: get_dentry_path:start /
-[  391.705427] nova: get_dentry_path root dentry
-[  391.705428] nova: dafs_readdir file get path innitial is /
-[  391.705428] nova: find_dzt start /
-[  391.705429] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  391.705430] nova: lookup_in_hashtable find hashname 47, pos 0
-[  391.705430] nova: lookup_in_hashtable end with ret is 1
-[  391.705490] nova: dafs_readdir start /
-[  391.705490] nova: get_dentry_path:start /
-[  391.705491] nova: get_dentry_path root dentry
-[  391.705491] nova: dafs_readdir file get path innitial is /
-[  391.705492] nova: find_dzt start /
-[  391.705492] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  391.705493] nova: lookup_in_hashtable find hashname 47, pos 0
-[  391.705493] nova: lookup_in_hashtable end with ret is 1
-[  392.521645] nova: dafs_readdir start /
-[  392.521648] nova: get_dentry_path:start /
-[  392.521649] nova: get_dentry_path root dentry
-[  392.521649] nova: dafs_readdir file get path innitial is /
-[  392.521650] nova: find_dzt start /
-[  392.521651] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  392.521652] nova: lookup_in_hashtable find hashname 47, pos 0
-[  392.521653] nova: lookup_in_hashtable end with ret is 1
-[  392.521732] nova: dafs_readdir start /
-[  392.521733] nova: get_dentry_path:start /
-[  392.521733] nova: get_dentry_path root dentry
-[  392.521734] nova: dafs_readdir file get path innitial is /
-[  392.521734] nova: find_dzt start /
-[  392.521735] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  392.521735] nova: lookup_in_hashtable find hashname 47, pos 0
-[  392.521736] nova: lookup_in_hashtable end with ret is 1
-[  392.521801] nova: dafs_readdir start /
-[  392.521801] nova: get_dentry_path:start /
-[  392.521802] nova: get_dentry_path root dentry
-[  392.521802] nova: dafs_readdir file get path innitial is /
-[  392.521803] nova: find_dzt start /
-[  392.521803] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  392.521804] nova: lookup_in_hashtable find hashname 47, pos 0
-[  392.521804] nova: lookup_in_hashtable end with ret is 1
-[  395.021412] nova: dafs_readdir start /
-[  395.021414] nova: get_dentry_path:start /
-[  395.021415] nova: get_dentry_path root dentry
-[  395.021416] nova: dafs_readdir file get path innitial is /
-[  395.021416] nova: find_dzt start /
-[  395.021418] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  395.021419] nova: lookup_in_hashtable find hashname 47, pos 0
-[  395.021419] nova: lookup_in_hashtable end with ret is 1
-[  395.021497] nova: dafs_readdir start /
-[  395.021498] nova: get_dentry_path:start /
-[  395.021499] nova: get_dentry_path root dentry
-[  395.021499] nova: dafs_readdir file get path innitial is /
-[  395.021500] nova: find_dzt start /
-[  395.021501] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  395.021501] nova: lookup_in_hashtable find hashname 47, pos 0
-[  395.021502] nova: lookup_in_hashtable end with ret is 1
-[  395.021562] nova: dafs_readdir start /
-[  395.021563] nova: get_dentry_path:start /
-[  395.021563] nova: get_dentry_path root dentry
-[  395.021564] nova: dafs_readdir file get path innitial is /
-[  395.021564] nova: find_dzt start /
-[  395.021565] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  395.021565] nova: lookup_in_hashtable find hashname 47, pos 0
-[  395.021566] nova: lookup_in_hashtable end with ret is 1
-[  395.873827] nova: dafs_readdir start /
-[  395.873829] nova: get_dentry_path:start /
-[  395.873830] nova: get_dentry_path root dentry
-[  395.873831] nova: dafs_readdir file get path innitial is /
-[  395.873831] nova: find_dzt start /
-[  395.873833] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  395.873834] nova: lookup_in_hashtable find hashname 47, pos 0
-[  395.873834] nova: lookup_in_hashtable end with ret is 1
-[  395.873913] nova: dafs_readdir start /
-[  395.873914] nova: get_dentry_path:start /
-[  395.873915] nova: get_dentry_path root dentry
-[  395.873915] nova: dafs_readdir file get path innitial is /
-[  395.873916] nova: find_dzt start /
-[  395.873916] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  395.873917] nova: lookup_in_hashtable find hashname 47, pos 0
-[  395.873917] nova: lookup_in_hashtable end with ret is 1
-[  395.873981] nova: dafs_readdir start /
-[  395.873982] nova: get_dentry_path:start /
-[  395.873982] nova: get_dentry_path root dentry
-[  395.873983] nova: dafs_readdir file get path innitial is /
-[  395.873983] nova: find_dzt start /
-[  395.873984] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  395.873984] nova: lookup_in_hashtable find hashname 47, pos 0
-[  395.873985] nova: lookup_in_hashtable end with ret is 1
-[  398.882707] nova: dafs_readdir start /
-[  398.882709] nova: get_dentry_path:start /
-[  398.882710] nova: get_dentry_path root dentry
-[  398.882711] nova: dafs_readdir file get path innitial is /
-[  398.882711] nova: find_dzt start /
-[  398.882713] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  398.882714] nova: lookup_in_hashtable find hashname 47, pos 0
-[  398.882714] nova: lookup_in_hashtable end with ret is 1
-[  398.882794] nova: dafs_readdir start /
-[  398.882795] nova: get_dentry_path:start /
-[  398.882796] nova: get_dentry_path root dentry
-[  398.882796] nova: dafs_readdir file get path innitial is /
-[  398.882797] nova: find_dzt start /
-[  398.882797] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  398.882798] nova: lookup_in_hashtable find hashname 47, pos 0
-[  398.882798] nova: lookup_in_hashtable end with ret is 1
-[  398.882869] nova: dafs_readdir start /
-[  398.882870] nova: get_dentry_path:start /
-[  398.882871] nova: get_dentry_path root dentry
-[  398.882871] nova: dafs_readdir file get path innitial is /
-[  398.882871] nova: find_dzt start /
-[  398.882872] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  398.882873] nova: lookup_in_hashtable find hashname 47, pos 0
-[  398.882873] nova: lookup_in_hashtable end with ret is 1
-[  399.951331] nova: dafs_readdir start /
-[  399.951333] nova: get_dentry_path:start /
-[  399.951334] nova: get_dentry_path root dentry
-[  399.951335] nova: dafs_readdir file get path innitial is /
-[  399.951335] nova: find_dzt start /
-[  399.951337] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  399.951338] nova: lookup_in_hashtable find hashname 47, pos 0
-[  399.951338] nova: lookup_in_hashtable end with ret is 1
-[  399.951417] nova: dafs_readdir start /
-[  399.951418] nova: get_dentry_path:start /
-[  399.951419] nova: get_dentry_path root dentry
-[  399.951419] nova: dafs_readdir file get path innitial is /
-[  399.951419] nova: find_dzt start /
-[  399.951420] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  399.951421] nova: lookup_in_hashtable find hashname 47, pos 0
-[  399.951421] nova: lookup_in_hashtable end with ret is 1
-[  399.951497] nova: dafs_readdir start /
-[  399.951498] nova: get_dentry_path:start /
-[  399.951498] nova: get_dentry_path root dentry
-[  399.951499] nova: dafs_readdir file get path innitial is /
-[  399.951499] nova: find_dzt start /
-[  399.951500] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  399.951500] nova: lookup_in_hashtable find hashname 47, pos 0
-[  399.951501] nova: lookup_in_hashtable end with ret is 1
-[  401.819702] nova: dafs_readdir start /
-[  401.819704] nova: get_dentry_path:start /
-[  401.819705] nova: get_dentry_path root dentry
-[  401.819706] nova: dafs_readdir file get path innitial is /
-[  401.819706] nova: find_dzt start /
-[  401.819708] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  401.819709] nova: lookup_in_hashtable find hashname 47, pos 0
-[  401.819709] nova: lookup_in_hashtable end with ret is 1
-[  401.819790] nova: dafs_readdir start /
-[  401.819791] nova: get_dentry_path:start /
-[  401.819791] nova: get_dentry_path root dentry
-[  401.819791] nova: dafs_readdir file get path innitial is /
-[  401.819792] nova: find_dzt start /
-[  401.819793] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  401.819793] nova: lookup_in_hashtable find hashname 47, pos 0
-[  401.819794] nova: lookup_in_hashtable end with ret is 1
-[  401.819882] nova: dafs_readdir start /
-[  401.819883] nova: get_dentry_path:start /
-[  401.819884] nova: get_dentry_path root dentry
-[  401.819884] nova: dafs_readdir file get path innitial is /
-[  401.819885] nova: find_dzt start /
-[  401.819885] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  401.819886] nova: lookup_in_hashtable find hashname 47, pos 0
-[  401.819886] nova: lookup_in_hashtable end with ret is 1
-[  402.924286] nova: dafs_readdir start /
-[  402.924288] nova: get_dentry_path:start /
-[  402.924289] nova: get_dentry_path root dentry
-[  402.924290] nova: dafs_readdir file get path innitial is /
-[  402.924290] nova: find_dzt start /
-[  402.924292] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  402.924293] nova: lookup_in_hashtable find hashname 47, pos 0
-[  402.924294] nova: lookup_in_hashtable end with ret is 1
-[  402.924374] nova: dafs_readdir start /
-[  402.924375] nova: get_dentry_path:start /
-[  402.924375] nova: get_dentry_path root dentry
-[  402.924376] nova: dafs_readdir file get path innitial is /
-[  402.924376] nova: find_dzt start /
-[  402.924377] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  402.924377] nova: lookup_in_hashtable find hashname 47, pos 0
-[  402.924378] nova: lookup_in_hashtable end with ret is 1
-[  402.924474] nova: dafs_readdir start /
-[  402.924474] nova: get_dentry_path:start /
-[  402.924475] nova: get_dentry_path root dentry
-[  402.924475] nova: dafs_readdir file get path innitial is /
-[  402.924476] nova: find_dzt start /
-[  402.924476] nova: dafs_readdir dentry name is /, len is 1, value is 47
-[  402.924477] nova: lookup_in_hashtable find hashname 47, pos 0
-[  402.924477] nova: lookup_in_hashtable end with ret is 1
-[  403.458268] nova: dafs_find_direntry:dafs start to find direntry
-[  403.458270] nova: get_dentry_path:start bigfileset
-[  403.458271] nova: get_dentry_path buf is //bigfileset tem is 
-               //bigfileset
-[  403.458272] nova: get_dentry_path name /bigfileset
-[  403.458273] nova: get_dentry_path ful ph is 0\xffffff85/bigfileset len 14
-[  403.458274] nova: find_dzt start 0\xffffff85/bigfileset
-[  403.458275] nova: dafs_find_direntry phname 0\xffffff85/bigfileset
-[  403.458276] nova: lookup_in_hashtable end with ret is 0
-[  403.464878] nova: dafs_mkdir: name bigfileset
-[  403.464879] nova: get_dentry_path:start bigfileset
-[  403.464880] nova: get_dentry_path buf is //bigfileset tem is //bigfileset
-[  403.464881] nova: get_dentry_path name 
-[  403.464882] nova: get_dentry_path ful ph is 0\xffffffe6/bigfileset len 13
-[  403.464882] nova: dafs_add_dentry full name is 0\xffffffe6/bigfileset
-[  403.464883] nova: find_dzt start 0\xffffffe6/bigfileset
-[  403.464884] nova: dafs_add_dentry phname 0\xffffffe6/bigfileset
-[  403.464885] nova: lookup_in_hashtable end with ret is 0
-[  403.464886] nova: dafs_add_dentry hash value is 294911168577087071, name is 0\xffffffe6/bigfileset
-[  403.464909] nova: dafs_find_direntry:dafs start to find direntry
-[  403.464910] nova: get_dentry_path:start 00000006
-[  403.464910] nova: get_dentry_path buf is //00000006/bigfileset tem is \xffffffb2\xffffff82//00000006/bigfileset
-[  403.464911] nova: get_dentry_path name 
-[  403.464911] nova: get_dentry_path ful ph is 0/bigfileset/00000006 len 21
-[  403.464912] nova: find_dzt start 0/bigfileset/00000006
-[  403.464912] nova: dafs_find_direntry phname 0/bigfileset/00000006
-[  403.464913] nova: lookup_in_hashtable end with ret is 0
-[  403.464918] nova: dafs_mkdir: name 00000006
-[  403.464919] nova: get_dentry_path:start 00000006
-[  403.464920] nova: get_dentry_path buf is //00000006/bigfileset tem is w\xffffffb8x//00000006/bigfileset
-[  403.464920] nova: get_dentry_path name 
-[  403.464921] nova: get_dentry_path ful ph is 0\xffffffe6/bigfileset/bigfileset/00000006 len 33
-[  403.464921] nova: dafs_add_dentry full name is 0\xffffffe6/bigfileset/bigfileset/00000006
-[  403.464922] nova: find_dzt start 0\xffffffe6/bigfileset/bigfileset/00000006
-[  403.464922] nova: dafs_add_dentry phname 0\xffffffe6/bigfileset/bigfileset/00000006
-[  403.464931] nova: lookup_in_hashtable end with ret is 0
-[  403.464932] nova: dafs_add_dentry hash value is 10909734736912793567, name is 0\xffffffe6/bigfileset/bigfileset/00000006
-[  403.464935] nova: dafs_find_direntry:dafs start to find direntry
-[  403.464936] nova: get_dentry_path:start 00000001
-[  403.464936] nova: get_dentry_path buf is //00000001/00000006/bigfileset tem is 06//00000001/00000006/bigfileset
-[  403.464937] nova: get_dentry_path name 
-[  403.464938] nova: get_dentry_path ful ph is 0\xfffffff9`/bigfileset/00000006/00000001 len 33
-[  403.464938] nova: find_dzt start 0\xfffffff9`/bigfileset/00000006/00000001
-[  403.464939] nova: dafs_find_direntry phname 0\xfffffff9`/bigfileset/00000006/00000001
-[  403.464939] nova: lookup_in_hashtable end with ret is 0
-[  403.464940] nova: dafs_mkdir: name 00000001
-[  403.464940] nova: get_dentry_path:start 00000001
-[  403.464941] nova: get_dentry_path buf is //00000001/00000006/bigfileset tem is ///00000001/00000006/bigfileset
-[  403.464942] nova: get_dentry_path name 
-[  403.464942] nova: get_dentry_path ful ph is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001 len 62
-[  403.464943] nova: dafs_add_dentry full name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001
-[  403.464943] nova: find_dzt start 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001
-[  403.464944] nova: dafs_add_dentry phname 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001
-[  403.464945] nova: lookup_in_hashtable end with ret is 0
-[  403.464946] nova: dafs_add_dentry hash value is 1723623779820305073, name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001
-[  403.464953] nova: dafs_find_direntry:dafs start to find direntry
-[  403.464954] nova: get_dentry_path:start 00000011
-[  403.464955] nova: get_dentry_path buf is //00000011/00000001/00000006/bigfileset tem is 01//00000011/00000001/00000006/bigfileset
-[  403.464956] nova: get_dentry_path name 
-[  403.464956] nova: get_dentry_path ful ph is 0\xfffffff9`/bigfileset/00000006/00000001/00000011 len 42
-[  403.464957] nova: find_dzt start 0\xfffffff9`/bigfileset/00000006/00000001/00000011
-[  403.464958] nova: dafs_find_direntry phname 0\xfffffff9`/bigfileset/00000006/00000001/00000011
-[  403.464959] nova: lookup_in_hashtable end with ret is 0
-[  403.464960] nova: dafs_mkdir: name 00000011
-[  403.464960] nova: get_dentry_path:start 00000011
-[  403.464961] nova: get_dentry_path buf is //00000011/00000001/00000006/bigfileset tem is //00000011/00000001/00000006/bigfileset
-[  403.464962] nova: get_dentry_path name 
-[  403.464963] nova: get_dentry_path ful ph is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011 len 100
-[  403.464964] nova: dafs_add_dentry full name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011
-[  403.464965] nova: find_dzt start 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011
-[  403.464966] nova: dafs_add_dentry phname 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011
-[  403.464967] nova: lookup_in_hashtable end with ret is 0
-[  403.464976] nova: dafs_add_dentry hash value is 15205685111817896720, name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011
-[  403.464980] nova: dafs_find_direntry:dafs start to find direntry
-[  403.464981] nova: get_dentry_path:start 00000006
-[  403.464982] nova: get_dentry_path buf is //00000006/00000011/00000001/00000006/bigfileset tem is 11//00000006/00000011/00000001/00000006/bigfileset
-[  403.464984] nova: get_dentry_path name 
-[  403.464984] nova: get_dentry_path ful ph is 0\xfffffff9`/bigfileset/00000006/00000001/00000011/00000006 len 51
-[  403.464986] nova: find_dzt start 0\xfffffff9`/bigfileset/00000006/00000001/00000011/00000006
-[  403.464986] nova: dafs_find_direntry phname 0\xfffffff9`/bigfileset/00000006/00000001/00000011/00000006
-[  403.464987] nova: lookup_in_hashtable end with ret is 0
-[  403.464988] nova: dafs_mkdir: name 00000006
-[  403.464989] nova: get_dentry_path:start 00000006
-[  403.464991] nova: get_dentry_path buf is //00000006/00000011/00000001/00000006/bigfileset tem is ///00000006/00000011/00000001/00000006/bigfileset
-[  403.464992] nova: get_dentry_path name 
-[  403.464993] nova: get_dentry_path ful ph is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006 len 147
-[  403.464994] nova: dafs_add_dentry full name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006
-[  403.464994] nova: find_dzt start 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006
-[  403.464995] nova: dafs_add_dentry phname 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006
-[  403.464996] nova: lookup_in_hashtable end with ret is 0
-[  403.464997] nova: dafs_add_dentry hash value is 6852412578703471078, name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006
-[  403.465000] nova: dafs_find_direntry:dafs start to find direntry
-[  403.465001] nova: get_dentry_path:start 00000001
-[  403.465002] nova: get_dentry_path buf is //00000001/00000006/00000011/00000001/00000006/bigfileset tem is 06//00000001/00000006/00000011/00000001/00000006/bigfileset
-[  403.465003] nova: get_dentry_path name 
-[  403.465003] nova: get_dentry_path ful ph is 0\xfffffff9`/bigfileset/00000006/00000001/00000011/00000006/00000001 len 60
-[  403.465004] nova: find_dzt start 0\xfffffff9`/bigfileset/00000006/00000001/00000011/00000006/00000001
-[  403.465005] nova: dafs_find_direntry phname 0\xfffffff9`/bigfileset/00000006/00000001/00000011/00000006/00000001
-[  403.465005] nova: lookup_in_hashtable end with ret is 0
-[  403.465006] nova: dafs_mkdir: name 00000001
-[  403.465006] nova: get_dentry_path:start 00000001
-[  403.465007] nova: get_dentry_path buf is //00000001/00000006/00000011/00000001/00000006/bigfileset tem is ///00000001/00000006/00000011/00000001/00000006/bigfileset
-[  403.465009] nova: get_dentry_path name 
-[  403.465009] nova: get_dentry_path ful ph is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001 len 203
-[  403.465010] nova: dafs_add_dentry full name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001
-[  403.465011] nova: find_dzt start 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001
-[  403.465012] nova: dafs_add_dentry phname 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001
-[  403.465013] nova: lookup_in_hashtable end with ret is 0
-[  403.465014] nova: dafs_add_dentry hash value is 18335265706242064096, name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001
-[  403.465019] nova: dafs_find_direntry:dafs start to find direntry
-[  403.465020] nova: get_dentry_path:start 00000001
-[  403.465021] nova: get_dentry_path buf is //00000001/00000001/00000006/00000011/00000001/00000006/bigfileset tem is 01//00000001/00000001/00000006/00000011/00000001/00000006/bigfileset
-[  403.465022] nova: get_dentry_path name 
-[  403.465023] nova: get_dentry_path ful ph is 0\xfffffff9`/bigfileset/00000006/00000001/00000011/00000006/00000001/00000001 len 69
-[  403.465023] nova: find_dzt start 0\xfffffff9`/bigfileset/00000006/00000001/00000011/00000006/00000001/00000001
-[  403.465024] nova: dafs_find_direntry phname 0\xfffffff9`/bigfileset/00000006/00000001/00000011/00000006/00000001/00000001
-[  403.465024] nova: lookup_in_hashtable end with ret is 0
-[  403.465025] nova: dafs_mkdir: name 00000001
-[  403.465026] nova: get_dentry_path:start 00000001
-[  403.465027] nova: get_dentry_path buf is //00000001/00000001/00000006/00000011/00000001/00000006/bigfileset tem is //00000001/00000001/00000006/00000011/00000001/00000006/bigfileset
-[  403.465028] nova: get_dentry_path name 
-[  403.465029] nova: get_dentry_path ful ph is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001/bigfileset/00000006/00000001/00000011/00000006/00000001/00000001 len 268
-[  403.465030] nova: dafs_add_dentry full name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001/bigfileset/00000006/00000001/00000011/00000006/00000001/00000001
-[  403.465031] nova: find_dzt start 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001/bigfileset/00000006/00000001/00000011/00000006/00000001/00000001
-[  403.465032] nova: dafs_add_dentry phname 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001/bigfileset/00000006/00000001/00000011/00000006/00000001/00000001
-[  403.465033] nova: lookup_in_hashtable end with ret is 0
-[  403.465035] nova: dafs_add_dentry hash value is 26584846345377942, name is 0\xffffffe6/bigfileset/bigfileset/00000006/bigfileset/00000006/00000001/bigfileset/00000006/00000001/00000011/bigfileset/00000006/00000001/00000011/00000006/bigfileset/00000006/00000001/00000011/00000006/00000001/bigfileset/00000006/00000001/00000011/00000006/00000001/00000001
-[  403.465046] BUG: unable to handle kernel 
-[  403.465053] paging request at ffffc91879112828
-[  403.465057] IP: [<ffffffffc05ad194>] dafs_add_dentry+0x4f4/0x8c0 [nova]
-[  403.465065] PGD 2188a1067 PUD 0 
-[  403.465069] Oops: 0000 [#1] SMP 
-[  403.465072] Modules linked in: nova(OE) nls_iso8859_1(E) dcdbas(E) snd_hda_codec_hdmi(E) snd_hda_codec_realtek(E) snd_hda_codec_generic(E) snd_hda_intel(E) snd_hda_codec(E) snd_hda_core(E) snd_hwdep(E) snd_pcm(E) intel_rapl(E) snd_seq_midi(E) x86_pkg_temp_thermal(E) snd_seq_midi_event(E) snd_rawmidi(E) intel_powerclamp(E) coretemp(E) snd_seq(E) kvm_intel(E) snd_seq_device(E) snd_timer(E) kvm(E) snd(E) joydev(E) crct10dif_pclmul(E) input_leds(E) crc32_pclmul(E) aesni_intel(E) soundcore(E) mei_me(E) serio_raw(E) mei(E) shpchp(E) aes_x86_64(E) lrw(E) lpc_ich(E) glue_helper(E) ablk_helper(E) cryptd(E) nd_pmem(E) mac_hid(E) nd_btt(E) parport_pc(E) ppdev(E) lp(E) parport(E) autofs4(E) hid_generic(E) usbhid(E) hid(E) uas(E) usb_storage(E) nouveau(E) mxm_wmi(E) wmi(E) i2c_algo_bit(E) ttm(E) drm_kms_helper(E)
-[  403.465140]  syscopyarea(E) sysfillrect(E) sysimgblt(E) fb_sys_fops(E) drm(E) e1000e(E) psmouse(E) ahci(E) ptp(E) libahci(E) pps_core(E) fjes(E) video(E)
-[  403.465154] CPU: 3 PID: 3288 Comm: filebench Tainted: G           OE   4.3.0 #1
-[  403.465158] Hardware name: Dell Inc. OptiPlex 9020/03CPWF, BIOS A09 11/20/2014
-[  403.465161] task: ffff880214261c80 ti: ffff8802145d8000 task.ti: ffff8802145d8000
-[  403.465163] RIP: 0010:[<ffffffffc05ad194>]  [<ffffffffc05ad194>] dafs_add_dentry+0x4f4/0x8c0 [nova]
-[  403.465170] RSP: 0018:ffff8802145db170  EFLAGS: 00010202
-[  403.465172] RAX: 0000001818181780 RBX: 0000000000000000 RCX: ffffc90060f8d000
-[  403.465175] RDX: 0000000000000000 RSI: 000000000000002f RDI: 0000000000000246
-[  403.465178] RBP: ffff8802145dbe30 R08: ffffffff81efc0c2 R09: 005e72c6e2d31896
-[  403.465180] R10: ffffffffc05ad4a3 R11: 0000000000000513 R12: 0000000000000104
-[  403.465183] R13: ffff880025fd0000 R14: 000000000000000d R15: 0000000000000001
-[  403.465186] FS:  00007f630fd2d700(0000) GS:ffff88021dcc0000(0000) knlGS:0000000000000000
-[  403.465189] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  403.465192] CR2: ffffc91879112828 CR3: 000000021460e000 CR4: 00000000001406e0
-[  403.465194] Stack:
-[  403.465196]  ffff8802145dba00 ffffffff00000001 0000000160f8d000 0000000000000016
-[  403.465202]  b4b23b258a9e55da ffffc90060f91700 000000000000000d ffff88006596f1e0
-[  403.465208]  ffff8802145dba00 ffffc90060f8d680 005e72c6e2d31896 ffffc90060f8d000
-[  403.465213] Call Trace:
-[  403.465221]  [<ffffffff8118e819>] ? __alloc_pages_nodemask+0x1a9/0xa10
-[  403.465224]  [<ffffffff811a557c>] ? zone_statistics+0x7c/0xa0
-[  403.465228]  [<ffffffff81187cc5>] ? mempool_alloc_slab+0x15/0x20
-[  403.465232]  [<ffffffff813d6e88>] ? put_dec+0x18/0xa0
-[  403.465236]  [<ffffffff813d8d7c>] ? number.isra.13+0x2cc/0x2f0
-[  403.465239]  [<ffffffff813d9e63>] ? vsnprintf+0x253/0x510
-[  403.465242]  [<ffffffff813da2b6>] ? sprintf+0x56/0x70
-[  403.465246]  [<ffffffff810d33bf>] ? msg_print_text+0xdf/0x1a0
-[  403.465250]  [<ffffffff813d6e88>] ? put_dec+0x18/0xa0
-[  403.465253]  [<ffffffff813d8d7c>] ? number.isra.13+0x2cc/0x2f0
-[  403.465255]  [<ffffffff813d9e63>] ? vsnprintf+0x253/0x510
-[  403.465259]  [<ffffffff813d0006>] ? dynamic_kobj_release+0x26/0x50
-[  403.465261]  [<ffffffff813da2b6>] ? sprintf+0x56/0x70
-[  403.465264]  [<ffffffff810d31f8>] ? print_prefix+0xd8/0x1c0
-[  403.465267]  [<ffffffff810d33bf>] ? msg_print_text+0xdf/0x1a0
-[  403.465271]  [<ffffffff810c5d02>] ? up+0x32/0x50
-[  403.465274]  [<ffffffff810d391d>] ? console_unlock+0x20d/0x540
-[  403.465280]  [<ffffffff810d448e>] ? vprintk_emit+0x2de/0x530
-[  403.465283]  [<ffffffff810d4869>] ? vprintk_default+0x29/0x40
-[  403.465288]  [<ffffffff81183c97>] ? printk+0x57/0x73
-[  403.465292]  [<ffffffffc05b1419>] ? dafs_lookup+0xa9/0x140 [nova]
-[  403.465296]  [<ffffffffc05b1919>] dafs_mkdir+0x139/0x260 [nova]
-[  403.465300]  [<ffffffff812093fd>] ? lookup_real+0x1d/0x60
-[  403.465303]  [<ffffffff8120b3b9>] vfs_mkdir+0xb9/0x150
-[  403.465307]  [<ffffffff81210470>] SyS_mkdir+0xd0/0x100
-[  403.465311]  [<ffffffff817ef6b2>] entry_SYSCALL_64_fastpath+0x16/0x71
-[  403.465314] Code: ca e8 d1 6a bd c0 49 83 fc 01 4c 8b 4c 24 50 0f 86 b5 01 00 00 8b 44 24 64 be 2f 00 00 00 85 c0 74 11 48 8b 4c 24 58 48 c1 e0 07 <48> 8b b4 01 a8 40 00 00 48 8b 44 24 38 4c 89 4c 24 50 48 8d 78 
-[  403.465362] RIP  [<ffffffffc05ad194>] dafs_add_dentry+0x4f4/0x8c0 [nova]
-[  403.465367]  RSP <ffff8802145db170>
-[  403.465368] CR2: ffffc91879112828
-[  403.467726] ---[ end trace 15d4258ef940d9e7 ]---
+[    0.010779] ftrace: allocating 31180 entries in 122 pages
+[    0.018995] DMAR: Host address width 39
+[    0.018996] DMAR: DRHD base: 0x000000fed90000 flags: 0x1
+[    0.019001] DMAR: dmar0: reg_base_addr fed90000 ver 1:0 cap d2008c20660462 ecap f010da
+[    0.019002] DMAR: RMRR base: 0x000000def7b000 end: 0x000000def88fff
+[    0.019004] DMAR-IR: IOAPIC id 8 under DRHD base  0xfed90000 IOMMU 0
+[    0.019004] DMAR-IR: HPET id 0 under DRHD base 0xfed90000
+[    0.019005] DMAR-IR: Queued invalidation will be enabled to support x2apic and Intr-remapping.
+[    0.019141] DMAR-IR: Enabled IRQ remapping in x2apic mode
+[    0.019142] x2apic enabled
+[    0.019147] Switched APIC routing to cluster x2apic.
+[    0.019550] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.059221] TSC deadline timer enabled
+[    0.059225] smpboot: CPU0: Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (family: 0x6, model: 0x3c, stepping: 0x3)
+[    0.059238] Performance Events: PEBS fmt2+, 16-deep LBR, Haswell events, full-width counters, Intel PMU driver.
+[    0.059251] ... version:                3
+[    0.059251] ... bit width:              48
+[    0.059252] ... generic registers:      4
+[    0.059252] ... value mask:             0000ffffffffffff
+[    0.059253] ... max period:             0000ffffffffffff
+[    0.059253] ... fixed-purpose events:   3
+[    0.059254] ... event mask:             000000070000000f
+[    0.059711] x86: Booting SMP configuration:
+[    0.059712] .... node  #0, CPUs:      #1
+[    0.073444] NMI watchdog: enabled on all CPUs, permanently consumes one hw-PMU counter.
+[    0.073491]  #2 #3 #4 #5 #6 #7
+[    0.155827] x86: Booted up 1 node, 8 CPUs
+[    0.155830] smpboot: Total of 8 processors activated (57466.96 BogoMIPS)
+[    0.162085] devtmpfs: initialized
+[    0.163250] evm: security.selinux
+[    0.163251] evm: security.SMACK64
+[    0.163252] evm: security.SMACK64EXEC
+[    0.163252] evm: security.SMACK64TRANSMUTE
+[    0.163253] evm: security.SMACK64MMAP
+[    0.163253] evm: security.ima
+[    0.163254] evm: security.capability
+[    0.163347] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    0.163402] pinctrl core: initialized pinctrl subsystem
+[    0.163479] RTC time: 14:58:56, date: 02/01/18
+[    0.163550] NET: Registered protocol family 16
+[    0.173996] cpuidle: using governor ladder
+[    0.185984] cpuidle: using governor menu
+[    0.185987] PCCT header not found.
+[    0.186050] ACPI: bus type PCI registered
+[    0.186051] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+[    0.186102] PCI: MMCONFIG for domain 0000 [bus 00-3f] at [mem 0xf8000000-0xfbffffff] (base 0xf8000000)
+[    0.186103] PCI: not using MMCONFIG
+[    0.186104] PCI: Using configuration type 1 for base access
+[    0.186108] dmi type 0xB1 record - unknown flag
+[    0.186286] perf_event_intel: PMU erratum BJ122, BV98, HSD29 worked around, HT is on
+[    0.202230] ACPI: Added _OSI(Module Device)
+[    0.202231] ACPI: Added _OSI(Processor Device)
+[    0.202232] ACPI: Added _OSI(3.0 _SCP Extensions)
+[    0.202232] ACPI: Added _OSI(Processor Aggregator Device)
+[    0.204298] ACPI: Executed 1 blocks of module-level executable AML code
+[    0.205662] [Firmware Bug]: ACPI: BIOS _OSI(Linux) query ignored
+[    0.205936] ACPI: Dynamic OEM Table Load:
+[    0.205939] ACPI: SSDT 0xFFFF880217043C00 0003D3 (v01 PmRef  Cpu0Cst  00003001 INTL 20120711)
+[    0.206299] ACPI: Dynamic OEM Table Load:
+[    0.206302] ACPI: SSDT 0xFFFF8802170E1000 0005AA (v01 PmRef  ApIst    00003000 INTL 20120711)
+[    0.206682] ACPI: Dynamic OEM Table Load:
+[    0.206684] ACPI: SSDT 0xFFFF8802170DCE00 000119 (v01 PmRef  ApCst    00003000 INTL 20120711)
+[    0.207584] ACPI: Interpreter enabled
+[    0.207589] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S1_] (20150818/hwxface-580)
+[    0.207592] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S2_] (20150818/hwxface-580)
+[    0.207603] ACPI: (supports S0 S3 S4 S5)
+[    0.207604] ACPI: Using IOAPIC for interrupt routing
+[    0.207620] PCI: MMCONFIG for domain 0000 [bus 00-3f] at [mem 0xf8000000-0xfbffffff] (base 0xf8000000)
+[    0.207911] PCI: MMCONFIG at [mem 0xf8000000-0xfbffffff] reserved in ACPI motherboard resources
+[    0.207916] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+[    0.213287] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-3e])
+[    0.213290] acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MSI]
+[    0.213637] acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME AER PCIeCapability]
+[    0.213871] PCI host bridge to bus 0000:00
+[    0.213872] pci_bus 0000:00: root bus resource [bus 00-3e]
+[    0.213873] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+[    0.213874] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+[    0.213875] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+[    0.213876] pci_bus 0000:00: root bus resource [mem 0x000dc000-0x000dffff window]
+[    0.213877] pci_bus 0000:00: root bus resource [mem 0x000e0000-0x000e3fff window]
+[    0.213878] pci_bus 0000:00: root bus resource [mem 0x000e4000-0x000e7fff window]
+[    0.213879] pci_bus 0000:00: root bus resource [mem 0xe0000000-0xfeafffff window]
+[    0.213883] pci 0000:00:00.0: [8086:0c00] type 00 class 0x060000
+[    0.213935] pci 0000:00:01.0: [8086:0c01] type 01 class 0x060400
+[    0.213955] pci 0000:00:01.0: PME# supported from D0 D3hot D3cold
+[    0.214001] pci 0000:00:01.0: System wakeup disabled by ACPI
+[    0.214049] pci 0000:00:14.0: [8086:8c31] type 00 class 0x0c0330
+[    0.214070] pci 0000:00:14.0: reg 0x10: [mem 0xf7120000-0xf712ffff 64bit]
+[    0.214109] pci 0000:00:14.0: PME# supported from D3hot D3cold
+[    0.214131] pci 0000:00:14.0: System wakeup disabled by ACPI
+[    0.214154] pci 0000:00:16.0: [8086:8c3a] type 00 class 0x078000
+[    0.214176] pci 0000:00:16.0: reg 0x10: [mem 0xf713c000-0xf713c00f 64bit]
+[    0.214217] pci 0000:00:16.0: PME# supported from D0 D3hot D3cold
+[    0.214265] pci 0000:00:19.0: [8086:153a] type 00 class 0x020000
+[    0.214285] pci 0000:00:19.0: reg 0x10: [mem 0xf7100000-0xf711ffff]
+[    0.214292] pci 0000:00:19.0: reg 0x14: [mem 0xf7139000-0xf7139fff]
+[    0.214299] pci 0000:00:19.0: reg 0x18: [io  0xf040-0xf05f]
+[    0.214334] pci 0000:00:19.0: PME# supported from D0 D3hot D3cold
+[    0.214356] pci 0000:00:19.0: System wakeup disabled by ACPI
+[    0.214380] pci 0000:00:1a.0: [8086:8c2d] type 00 class 0x0c0320
+[    0.214403] pci 0000:00:1a.0: reg 0x10: [mem 0xf7138000-0xf71383ff]
+[    0.214459] pci 0000:00:1a.0: PME# supported from D0 D3hot D3cold
+[    0.214482] pci 0000:00:1a.0: System wakeup disabled by ACPI
+[    0.214506] pci 0000:00:1b.0: [8086:8c20] type 00 class 0x040300
+[    0.214526] pci 0000:00:1b.0: reg 0x10: [mem 0xf7130000-0xf7133fff 64bit]
+[    0.214571] pci 0000:00:1b.0: PME# supported from D0 D3hot D3cold
+[    0.214593] pci 0000:00:1b.0: System wakeup disabled by ACPI
+[    0.214615] pci 0000:00:1c.0: [8086:8c10] type 01 class 0x060400
+[    0.214662] pci 0000:00:1c.0: PME# supported from D0 D3hot D3cold
+[    0.214704] pci 0000:00:1c.0: System wakeup disabled by ACPI
+[    0.214728] pci 0000:00:1c.1: [8086:8c12] type 01 class 0x060400
+[    0.214775] pci 0000:00:1c.1: PME# supported from D0 D3hot D3cold
+[    0.214815] pci 0000:00:1c.1: System wakeup disabled by ACPI
+[    0.214843] pci 0000:00:1d.0: [8086:8c26] type 00 class 0x0c0320
+[    0.214866] pci 0000:00:1d.0: reg 0x10: [mem 0xf7137000-0xf71373ff]
+[    0.214922] pci 0000:00:1d.0: PME# supported from D0 D3hot D3cold
+[    0.214945] pci 0000:00:1d.0: System wakeup disabled by ACPI
+[    0.214970] pci 0000:00:1f.0: [8086:8c4e] type 00 class 0x060100
+[    0.215089] pci 0000:00:1f.2: [8086:2822] type 00 class 0x010400
+[    0.215106] pci 0000:00:1f.2: reg 0x10: [io  0xf090-0xf097]
+[    0.215112] pci 0000:00:1f.2: reg 0x14: [io  0xf080-0xf083]
+[    0.215118] pci 0000:00:1f.2: reg 0x18: [io  0xf070-0xf077]
+[    0.215124] pci 0000:00:1f.2: reg 0x1c: [io  0xf060-0xf063]
+[    0.215129] pci 0000:00:1f.2: reg 0x20: [io  0xf020-0xf03f]
+[    0.215136] pci 0000:00:1f.2: reg 0x24: [mem 0xf7136000-0xf71367ff]
+[    0.215154] pci 0000:00:1f.2: PME# supported from D3hot
+[    0.215193] pci 0000:00:1f.3: [8086:8c22] type 00 class 0x0c0500
+[    0.215207] pci 0000:00:1f.3: reg 0x10: [mem 0xf7135000-0xf71350ff 64bit]
+[    0.215223] pci 0000:00:1f.3: reg 0x20: [io  0xf000-0xf01f]
+[    0.215298] pci 0000:01:00.0: [10de:1382] type 00 class 0x030000
+[    0.215315] pci 0000:01:00.0: reg 0x10: [mem 0xf6000000-0xf6ffffff]
+[    0.215324] pci 0000:01:00.0: reg 0x14: [mem 0xe0000000-0xefffffff 64bit pref]
+[    0.215333] pci 0000:01:00.0: reg 0x1c: [mem 0xf0000000-0xf1ffffff 64bit pref]
+[    0.215339] pci 0000:01:00.0: reg 0x24: [io  0xe000-0xe07f]
+[    0.215345] pci 0000:01:00.0: reg 0x30: [mem 0xf7000000-0xf707ffff pref]
+[    0.215384] pci 0000:01:00.0: System wakeup disabled by ACPI
+[    0.215408] pci 0000:01:00.1: [10de:0fbc] type 00 class 0x040300
+[    0.215424] pci 0000:01:00.1: reg 0x10: [mem 0xf7080000-0xf7083fff]
+[    0.222074] pci 0000:00:01.0: PCI bridge to [bus 01]
+[    0.222076] pci 0000:00:01.0:   bridge window [io  0xe000-0xefff]
+[    0.222077] pci 0000:00:01.0:   bridge window [mem 0xf6000000-0xf70fffff]
+[    0.222080] pci 0000:00:01.0:   bridge window [mem 0xe0000000-0xf1ffffff 64bit pref]
+[    0.222126] acpiphp: Slot [1] registered
+[    0.222130] pci 0000:00:1c.0: PCI bridge to [bus 02]
+[    0.222195] pci 0000:03:00.0: [104c:8240] type 01 class 0x060400
+[    0.222304] pci 0000:03:00.0: supports D1 D2
+[    0.222324] pci 0000:03:00.0: System wakeup disabled by ACPI
+[    0.230075] pci 0000:00:1c.1: PCI bridge to [bus 03-04]
+[    0.230202] pci 0000:03:00.0: PCI bridge to [bus 04]
+[    0.230669] ACPI: PCI Interrupt Link [LNKA] (IRQs 3 4 5 6 10 *11 12 14 15)
+[    0.230701] ACPI: PCI Interrupt Link [LNKB] (IRQs 3 4 5 6 *10 11 12 14 15)
+[    0.230729] ACPI: PCI Interrupt Link [LNKC] (IRQs 3 4 *5 6 10 11 12 14 15)
+[    0.230758] ACPI: PCI Interrupt Link [LNKD] (IRQs 3 4 *5 6 10 11 12 14 15)
+[    0.230788] ACPI: PCI Interrupt Link [LNKE] (IRQs *3 4 5 6 10 11 12 14 15)
+[    0.230818] ACPI: PCI Interrupt Link [LNKF] (IRQs 3 4 5 6 10 11 12 14 15) *0, disabled.
+[    0.230846] ACPI: PCI Interrupt Link [LNKG] (IRQs 3 4 5 6 10 *11 12 14 15)
+[    0.230875] ACPI: PCI Interrupt Link [LNKH] (IRQs 3 4 5 6 *10 11 12 14 15)
+[    0.230979] ACPI: Enabled 6 GPEs in block 00 to 3F
+[    0.231042] vgaarb: setting as boot device: PCI:0000:01:00.0
+[    0.231044] vgaarb: device added: PCI:0000:01:00.0,decodes=io+mem,owns=io+mem,locks=none
+[    0.231044] vgaarb: loaded
+[    0.231045] vgaarb: bridge control possible 0000:01:00.0
+[    0.231187] SCSI subsystem initialized
+[    0.231208] libata version 3.00 loaded.
+[    0.231222] ACPI: bus type USB registered
+[    0.231231] usbcore: registered new interface driver usbfs
+[    0.231236] usbcore: registered new interface driver hub
+[    0.231247] usbcore: registered new device driver usb
+[    0.231325] PCI: Using ACPI for IRQ routing
+[    0.232464] PCI: pci_cache_line_size set to 64 bytes
+[    0.232504] Expanded resource Persistent Memory (legacy) due to conflict with PCI Bus 0000:00
+[    0.232505] Expanded resource Persistent Memory (legacy) due to conflict with Persistent Memory (legacy)
+[    0.232507] e820: reserve RAM buffer [mem 0x00091800-0x0009ffff]
+[    0.232508] e820: reserve RAM buffer [mem 0x21e000000-0x21fffffff]
+[    0.232576] NetLabel: Initializing
+[    0.232577] NetLabel:  domain hash size = 128
+[    0.232577] NetLabel:  protocols = UNLABELED CIPSOv4
+[    0.232592] NetLabel:  unlabeled traffic allowed by default
+[    0.232635] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0, 0, 0, 0, 0, 0
+[    0.232638] hpet0: 8 comparators, 64-bit 14.318180 MHz counter
+[    0.234657] clocksource: Switched to clocksource hpet
+[    0.238098] AppArmor: AppArmor Filesystem Enabled
+[    0.238130] pnp: PnP ACPI init
+[    0.238172] system 00:00: [mem 0xfed40000-0xfed44fff] has been reserved
+[    0.238174] system 00:00: Plug and Play ACPI device, IDs PNP0c01 (active)
+[    0.238263] system 00:01: [io  0x0680-0x069f] has been reserved
+[    0.238265] system 00:01: [io  0xffff] has been reserved
+[    0.238265] system 00:01: [io  0xffff] has been reserved
+[    0.238266] system 00:01: [io  0xffff] has been reserved
+[    0.238267] system 00:01: [io  0x1c00-0x1cfe] has been reserved
+[    0.238268] system 00:01: [io  0x1d00-0x1dfe] has been reserved
+[    0.238269] system 00:01: [io  0x1e00-0x1efe] has been reserved
+[    0.238270] system 00:01: [io  0x1f00-0x1ffe] has been reserved
+[    0.238271] system 00:01: [io  0x1800-0x18fe] could not be reserved
+[    0.238272] system 00:01: [io  0x164e-0x164f] has been reserved
+[    0.238273] system 00:01: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.238286] pnp 00:02: Plug and Play ACPI device, IDs PNP0b00 (active)
+[    0.238310] system 00:03: [io  0x1854-0x1857] has been reserved
+[    0.238312] system 00:03: Plug and Play ACPI device, IDs INT3f0d PNP0c02 (active)
+[    0.238362] system 00:04: [io  0x0a00-0x0a0f] has been reserved
+[    0.238363] system 00:04: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.238389] system 00:05: [io  0x04d0-0x04d1] has been reserved
+[    0.238390] system 00:05: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.238703] pnp 00:06: [dma 0 disabled]
+[    0.238728] pnp 00:06: Plug and Play ACPI device, IDs PNP0501 (active)
+[    0.238949] system 00:07: [mem 0xfed1c000-0xfed1ffff] has been reserved
+[    0.238951] system 00:07: [mem 0xfed10000-0xfed17fff] has been reserved
+[    0.238952] system 00:07: [mem 0xfed18000-0xfed18fff] has been reserved
+[    0.238952] system 00:07: [mem 0xfed19000-0xfed19fff] has been reserved
+[    0.238954] system 00:07: [mem 0xf8000000-0xfbffffff] has been reserved
+[    0.238955] system 00:07: [mem 0xfed20000-0xfed3ffff] has been reserved
+[    0.238956] system 00:07: [mem 0xfed90000-0xfed93fff] could not be reserved
+[    0.238957] system 00:07: [mem 0xfed45000-0xfed8ffff] has been reserved
+[    0.238958] system 00:07: [mem 0xff000000-0xffffffff] has been reserved
+[    0.238959] system 00:07: [mem 0xfee00000-0xfeefffff] could not be reserved
+[    0.238960] system 00:07: [mem 0xf7fdf000-0xf7fdffff] has been reserved
+[    0.238961] system 00:07: [mem 0xf7fe0000-0xf7feffff] has been reserved
+[    0.238963] system 00:07: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.239076] pnp: PnP ACPI: found 8 devices
+[    0.244738] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+[    0.244766] pci 0000:00:01.0: PCI bridge to [bus 01]
+[    0.244768] pci 0000:00:01.0:   bridge window [io  0xe000-0xefff]
+[    0.244769] pci 0000:00:01.0:   bridge window [mem 0xf6000000-0xf70fffff]
+[    0.244771] pci 0000:00:01.0:   bridge window [mem 0xe0000000-0xf1ffffff 64bit pref]
+[    0.244773] pci 0000:00:1c.0: PCI bridge to [bus 02]
+[    0.244781] pci 0000:03:00.0: PCI bridge to [bus 04]
+[    0.244797] pci 0000:00:1c.1: PCI bridge to [bus 03-04]
+[    0.244806] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
+[    0.244807] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
+[    0.244808] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
+[    0.244809] pci_bus 0000:00: resource 7 [mem 0x000dc000-0x000dffff window]
+[    0.244809] pci_bus 0000:00: resource 8 [mem 0x000e0000-0x000e3fff window]
+[    0.244810] pci_bus 0000:00: resource 9 [mem 0x000e4000-0x000e7fff window]
+[    0.244811] pci_bus 0000:00: resource 10 [mem 0xe0000000-0xfeafffff window]
+[    0.244812] pci_bus 0000:01: resource 0 [io  0xe000-0xefff]
+[    0.244813] pci_bus 0000:01: resource 1 [mem 0xf6000000-0xf70fffff]
+[    0.244814] pci_bus 0000:01: resource 2 [mem 0xe0000000-0xf1ffffff 64bit pref]
+[    0.244833] NET: Registered protocol family 2
+[    0.244932] TCP established hash table entries: 65536 (order: 7, 524288 bytes)
+[    0.245020] TCP bind hash table entries: 65536 (order: 8, 1048576 bytes)
+[    0.245124] TCP: Hash tables configured (established 65536 bind 65536)
+[    0.245140] UDP hash table entries: 4096 (order: 5, 131072 bytes)
+[    0.245159] UDP-Lite hash table entries: 4096 (order: 5, 131072 bytes)
+[    0.245196] NET: Registered protocol family 1
+[    0.282679] pci 0000:01:00.0: Video device with shadowed ROM
+[    0.282690] PCI: CLS 64 bytes, default 64
+[    0.282719] Trying to unpack rootfs image as initramfs...
+[    2.914402] Freeing initrd memory: 280844K (ffff880015b6a000 - ffff880026dad000)
+[    2.914443] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+[    2.914445] software IO TLB [mem 0x7c000000-0x80000000] (64MB) mapped at [ffff88007c000000-ffff88007fffffff]
+[    2.914493] RAPL PMU detected, API unit is 2^-32 Joules, 4 fixed counters 655360 ms ovfl timer
+[    2.914494] hw unit of domain pp0-core 2^-14 Joules
+[    2.914494] hw unit of domain package 2^-14 Joules
+[    2.914495] hw unit of domain dram 2^-14 Joules
+[    2.914495] hw unit of domain pp1-gpu 2^-14 Joules
+[    2.914593] microcode: CPU0 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.914597] microcode: CPU1 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.914602] microcode: CPU2 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.914609] microcode: CPU3 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.914615] microcode: CPU4 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.914621] microcode: CPU5 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.914625] microcode: CPU6 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.914630] microcode: CPU7 sig=0x306c3, pf=0x2, revision=0x1c
+[    2.914663] microcode: Microcode Update Driver: v2.00 <tigran@aivazian.fsnet.co.uk>, Peter Oruba
+[    2.914686] Scanning for low memory corruption every 60 seconds
+[    2.914900] futex hash table entries: 2048 (order: 5, 131072 bytes)
+[    2.914926] audit: initializing netlink subsys (disabled)
+[    2.914934] audit: type=2000 audit(1517497138.900:1): initialized
+[    2.915150] Initialise system trusted keyring
+[    2.915193] HugeTLB registered 1 GB page size, pre-allocated 0 pages
+[    2.915194] HugeTLB registered 2 MB page size, pre-allocated 0 pages
+[    2.916000] zbud: loaded
+[    2.916115] VFS: Disk quotas dquot_6.6.0
+[    2.916133] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    2.916272] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    2.916391] fuse init (API version 7.23)
+[    2.916463] Key type big_key registered
+[    2.917193] Key type asymmetric registered
+[    2.917195] Asymmetric key parser 'x509' registered
+[    2.917203] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 249)
+[    2.917236] io scheduler noop registered
+[    2.917238] io scheduler deadline registered (default)
+[    2.917256] io scheduler cfq registered
+[    2.917668] pcieport 0000:00:01.0: Signaling PME through PCIe PME interrupt
+[    2.917670] pci 0000:01:00.0: Signaling PME through PCIe PME interrupt
+[    2.917671] pci 0000:01:00.1: Signaling PME through PCIe PME interrupt
+[    2.917672] pcie_pme 0000:00:01.0:pcie01: service driver pcie_pme loaded
+[    2.917703] pcieport 0000:00:1c.0: Signaling PME through PCIe PME interrupt
+[    2.917705] pcie_pme 0000:00:1c.0:pcie01: service driver pcie_pme loaded
+[    2.917719] pcieport 0000:00:1c.1: Signaling PME through PCIe PME interrupt
+[    2.917720] pci 0000:03:00.0: Signaling PME through PCIe PME interrupt
+[    2.917723] pcie_pme 0000:00:1c.1:pcie01: service driver pcie_pme loaded
+[    2.917726] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
+[    2.917730] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
+[    2.917746] vesafb: mode is 1920x1080x32, linelength=7680, pages=0
+[    2.917746] vesafb: scrolling: redraw
+[    2.917747] vesafb: Truecolor: size=8:8:8:8, shift=24:16:8:0
+[    2.917753] vesafb: framebuffer at 0xf1000000, mapped to 0xffffc90001000000, using 8128k, total 8128k
+[    3.019145] Console: switching to colour frame buffer device 240x67
+[    3.120070] fb0: VESA VGA frame buffer device
+[    3.120090] intel_idle: MWAIT substates: 0x42120
+[    3.120091] intel_idle: v0.4 model 0x3C
+[    3.120092] intel_idle: lapic_timer_reliable_states 0xffffffff
+[    3.120335] input: Power Button as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0C:00/input/input0
+[    3.120338] ACPI: Power Button [PWRB]
+[    3.120358] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input1
+[    3.120359] ACPI: Power Button [PWRF]
+[    3.120617] ACPI: Invalid active0 threshold
+[    3.120674] thermal LNXTHERM:00: registered as thermal_zone0
+[    3.120675] ACPI: Thermal Zone [TZ00] (28 C)
+[    3.120778] thermal LNXTHERM:01: registered as thermal_zone1
+[    3.120779] ACPI: Thermal Zone [TZ01] (30 C)
+[    3.120800] GHES: HEST is not enabled!
+[    3.120861] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[    3.141445] 00:06: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+[    3.142362] Linux agpgart interface v0.103
+[    3.144334] brd: module loaded
+[    3.145406] loop: module loaded
+[    3.145619] libphy: Fixed MDIO Bus: probed
+[    3.145622] tun: Universal TUN/TAP device driver, 1.6
+[    3.145622] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[    3.145664] PPP generic driver version 2.4.2
+[    3.145822] xhci_hcd 0000:00:14.0: xHCI Host Controller
+[    3.145829] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 1
+[    3.145916] xhci_hcd 0000:00:14.0: hcc params 0x200077c1 hci version 0x100 quirks 0x00009810
+[    3.145921] xhci_hcd 0000:00:14.0: cache line size of 64 is not supported
+[    3.146049] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+[    3.146050] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.146052] usb usb1: Product: xHCI Host Controller
+[    3.146053] usb usb1: Manufacturer: Linux 4.3.0 xhci-hcd
+[    3.146054] usb usb1: SerialNumber: 0000:00:14.0
+[    3.146258] hub 1-0:1.0: USB hub found
+[    3.146273] hub 1-0:1.0: 15 ports detected
+[    3.148631] xhci_hcd 0000:00:14.0: xHCI Host Controller
+[    3.148633] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 2
+[    3.148659] usb usb2: New USB device found, idVendor=1d6b, idProduct=0003
+[    3.148660] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.148661] usb usb2: Product: xHCI Host Controller
+[    3.148661] usb usb2: Manufacturer: Linux 4.3.0 xhci-hcd
+[    3.148662] usb usb2: SerialNumber: 0000:00:14.0
+[    3.148717] hub 2-0:1.0: USB hub found
+[    3.148727] hub 2-0:1.0: 6 ports detected
+[    3.149400] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    3.149404] ehci-pci: EHCI PCI platform driver
+[    3.149455] ehci-pci 0000:00:1a.0: EHCI Host Controller
+[    3.149458] ehci-pci 0000:00:1a.0: new USB bus registered, assigned bus number 3
+[    3.149466] ehci-pci 0000:00:1a.0: debug port 2
+[    3.153353] ehci-pci 0000:00:1a.0: cache line size of 64 is not supported
+[    3.153361] ehci-pci 0000:00:1a.0: irq 16, io mem 0xf7138000
+[    3.161607] ehci-pci 0000:00:1a.0: USB 2.0 started, EHCI 1.00
+[    3.161630] usb usb3: New USB device found, idVendor=1d6b, idProduct=0002
+[    3.161631] usb usb3: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.161632] usb usb3: Product: EHCI Host Controller
+[    3.161633] usb usb3: Manufacturer: Linux 4.3.0 ehci_hcd
+[    3.161634] usb usb3: SerialNumber: 0000:00:1a.0
+[    3.161771] hub 3-0:1.0: USB hub found
+[    3.161775] hub 3-0:1.0: 2 ports detected
+[    3.161899] ehci-pci 0000:00:1d.0: EHCI Host Controller
+[    3.161902] ehci-pci 0000:00:1d.0: new USB bus registered, assigned bus number 4
+[    3.161911] ehci-pci 0000:00:1d.0: debug port 2
+[    3.165798] ehci-pci 0000:00:1d.0: cache line size of 64 is not supported
+[    3.165807] ehci-pci 0000:00:1d.0: irq 23, io mem 0xf7137000
+[    3.177667] ehci-pci 0000:00:1d.0: USB 2.0 started, EHCI 1.00
+[    3.177706] usb usb4: New USB device found, idVendor=1d6b, idProduct=0002
+[    3.177707] usb usb4: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.177708] usb usb4: Product: EHCI Host Controller
+[    3.177709] usb usb4: Manufacturer: Linux 4.3.0 ehci_hcd
+[    3.177710] usb usb4: SerialNumber: 0000:00:1d.0
+[    3.177877] hub 4-0:1.0: USB hub found
+[    3.177881] hub 4-0:1.0: 2 ports detected
+[    3.177977] ehci-platform: EHCI generic platform driver
+[    3.177988] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    3.177992] ohci-pci: OHCI PCI platform driver
+[    3.178001] ohci-platform: OHCI generic platform driver
+[    3.178006] uhci_hcd: USB Universal Host Controller Interface driver
+[    3.178042] i8042: PNP: No PS/2 controller found. Probing ports directly.
+[    3.180976] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    3.180979] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    3.181211] mousedev: PS/2 mouse device common for all mice
+[    3.181375] rtc_cmos 00:02: RTC can wake from S4
+[    3.181527] rtc_cmos 00:02: rtc core: registered rtc_cmos as rtc0
+[    3.181554] rtc_cmos 00:02: alarms up to one month, y3k, 242 bytes nvram, hpet irqs
+[    3.181560] i2c /dev entries driver
+[    3.181600] device-mapper: uevent: version 1.0.3
+[    3.181679] device-mapper: ioctl: 4.33.0-ioctl (2015-8-18) initialised: dm-devel@redhat.com
+[    3.181687] Intel P-state driver initializing.
+[    3.181935] ledtrig-cpu: registered to indicate activity on CPUs
+[    3.183009] NET: Registered protocol family 10
+[    3.183463] NET: Registered protocol family 17
+[    3.183486] Key type dns_resolver registered
+[    3.184664] registered taskstats version 1
+[    3.184720] Loading compiled-in X.509 certificates
+[    3.184736] Problem loading in-kernel X.509 certificate (-74)
+[    3.186430] zswap: loaded using pool lzo/zbud
+[    3.189997] Key type trusted registered
+[    3.192015] Key type encrypted registered
+[    3.192020] AppArmor: AppArmor sha1 policy hashing enabled
+[    3.192023] ima: No TPM chip found, activating TPM-bypass!
+[    3.192036] evm: HMAC attrs: 0x1
+[    3.192309]   Magic number: 6:974:989
+[    3.192311] machinecheck machinecheck2: hash matches
+[    3.192414] rtc_cmos 00:02: setting system clock to 2018-02-01 14:58:59 UTC (1517497139)
+[    3.192458] BIOS EDD facility v0.16 2004-Jun-25, 0 devices found
+[    3.192459] EDD information not available.
+[    3.192505] PM: Hibernation image not present or could not be loaded.
+[    3.192726] Freeing unused kernel memory: 1456K (ffffffff81d3a000 - ffffffff81ea6000)
+[    3.192726] Write protecting the kernel read-only data: 12288k
+[    3.192853] Freeing unused kernel memory: 36K (ffff8800017f7000 - ffff880001800000)
+[    3.192919] Freeing unused kernel memory: 216K (ffff880001bca000 - ffff880001c00000)
+[    3.198586] random: systemd-udevd urandom read with 4 bits of entropy available
+[    3.215602] video: module verification failed: signature and/or required key missing - tainting kernel
+[    3.217421] FUJITSU Extended Socket Network Device Driver - version 1.0 - Copyright (c) 2015 FUJITSU LIMITED
+[    3.226032] pps_core: LinuxPPS API ver. 1 registered
+[    3.226034] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    3.228380] PTP clock support registered
+[    3.229106] ahci 0000:00:1f.2: version 3.0
+[    3.229210] ahci 0000:00:1f.2: AHCI 0001.0300 32 slots 6 ports 6 Gbps 0x5 impl RAID mode
+[    3.229211] ahci 0000:00:1f.2: flags: 64bit ncq pm led clo pio slum part ems apst 
+[    3.234278] scsi host0: ahci
+[    3.234365] scsi host1: ahci
+[    3.234444] scsi host2: ahci
+[    3.234516] scsi host3: ahci
+[    3.234590] scsi host4: ahci
+[    3.234658] scsi host5: ahci
+[    3.234697] ata1: SATA max UDMA/133 abar m2048@0xf7136000 port 0xf7136100 irq 29
+[    3.234698] ata2: DUMMY
+[    3.234701] ata3: SATA max UDMA/133 abar m2048@0xf7136000 port 0xf7136200 irq 29
+[    3.234702] ata4: DUMMY
+[    3.234703] ata5: DUMMY
+[    3.234704] ata6: DUMMY
+[    3.244704] e1000e: Intel(R) PRO/1000 Network Driver - 3.2.6-k
+[    3.244706] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+[    3.244821] e1000e 0000:00:19.0: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
+[    3.259465] [drm] Initialized drm 1.1.0 20060810
+[    3.282836] wmi: Mapper loaded
+[    3.412177] e1000e 0000:00:19.0 eth0: registered PHC clock
+[    3.412180] e1000e 0000:00:19.0 eth0: (PCI Express:2.5GT/s:Width x1) 98:90:96:c1:6b:85
+[    3.412181] e1000e 0000:00:19.0 eth0: Intel(R) PRO/1000 Network Connection
+[    3.412233] e1000e 0000:00:19.0 eth0: MAC: 11, PHY: 12, PBA No: FFFFFF-0FF
+[    3.412814] e1000e 0000:00:19.0 eno1: renamed from eth0
+[    3.481537] usb 3-1: new high-speed USB device number 2 using ehci-pci
+[    3.493534] usb 4-1: new high-speed USB device number 2 using ehci-pci
+[    3.549536] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[    3.550325] ata1.00: ATA-9: ST1000DM003-1ER162, CC45, max UDMA/133
+[    3.550327] ata1.00: 1953525168 sectors, multi 16: LBA48 NCQ (depth 31/32), AA
+[    3.550999] ata1.00: configured for UDMA/133
+[    3.551201] scsi 0:0:0:0: Direct-Access     ATA      ST1000DM003-1ER1 CC45 PQ: 0 ANSI: 5
+[    3.551397] sd 0:0:0:0: [sda] 1953525168 512-byte logical blocks: (1.00 TB/931 GiB)
+[    3.551398] sd 0:0:0:0: [sda] 4096-byte physical blocks
+[    3.551403] sd 0:0:0:0: Attached scsi generic sg0 type 0
+[    3.551466] sd 0:0:0:0: [sda] Write Protect is off
+[    3.551468] sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+[    3.551553] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[    3.561535] ata3: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[    3.563881] ata3.00: ATAPI: HL-DT-ST DVD+/-RW GHB0N, A1B1, max UDMA/100
+[    3.565560] ata3.00: configured for UDMA/100
+[    3.579251] scsi 2:0:0:0: CD-ROM            HL-DT-ST DVD+-RW GHB0N    A1B1 PQ: 0 ANSI: 5
+[    3.590915]  sda: sda1 sda2 < sda5 sda6 sda7 >
+[    3.591534] sd 0:0:0:0: [sda] Attached SCSI disk
+[    3.609147] sr 2:0:0:0: [sr0] scsi3-mmc drive: 48x/12x writer dvd-ram cd/rw xa/form2 cdda tray
+[    3.609149] cdrom: Uniform CD-ROM driver Revision: 3.20
+[    3.609231] sr 2:0:0:0: Attached scsi CD-ROM sr0
+[    3.609302] sr 2:0:0:0: Attached scsi generic sg1 type 5
+[    3.621868] usb 3-1: New USB device found, idVendor=8087, idProduct=8008
+[    3.621870] usb 3-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    3.622143] hub 3-1:1.0: USB hub found
+[    3.622281] hub 3-1:1.0: 6 ports detected
+[    3.625867] usb 4-1: New USB device found, idVendor=8087, idProduct=8000
+[    3.625868] usb 4-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    3.626145] hub 4-1:1.0: USB hub found
+[    3.626239] hub 4-1:1.0: 8 ports detected
+[    3.627823] checking generic (f1000000 7f0000) vs hw (e0000000 10000000)
+[    3.627824] checking generic (f1000000 7f0000) vs hw (f0000000 2000000)
+[    3.627825] fb: switching to nouveaufb from VESA VGA
+[    3.627838] Console: switching to colour dummy device 80x25
+[    3.627906] nouveau 0000:01:00.0: NVIDIA GM107 (117020a2)
+[    3.741815] nouveau 0000:01:00.0: bios: version 82.07.32.00.04
+[    3.742750] nouveau 0000:01:00.0: fb: 4096 MiB DDR3
+[    3.893355] usb 3-1.3: new high-speed USB device number 3 using ehci-pci
+[    3.917417] tsc: Refined TSC clocksource calibration: 3591.682 MHz
+[    3.917419] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x33c5a15be52, max_idle_ns: 440795280454 ns
+[    3.986486] usb 3-1.3: New USB device found, idVendor=0781, idProduct=5590
+[    3.986487] usb 3-1.3: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[    3.986488] usb 3-1.3: Product: Ultra
+[    3.986489] usb 3-1.3: Manufacturer: SanDisk
+[    3.986490] usb 3-1.3: SerialNumber: 4C531001570114103552
+[    3.994627] usb-storage 3-1.3:1.0: USB Mass Storage device detected
+[    3.995092] scsi host6: usb-storage 3-1.3:1.0
+[    3.995172] usbcore: registered new interface driver usb-storage
+[    3.996870] usbcore: registered new interface driver uas
+[    4.057324] usb 3-1.4: new full-speed USB device number 4 using ehci-pci
+[    4.151694] usb 3-1.4: New USB device found, idVendor=0483, idProduct=5710
+[    4.151696] usb 3-1.4: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+[    4.151697] usb 3-1.4: Product: USB KB
+[    4.151698] usb 3-1.4: Manufacturer: STMicroelectronics
+[    4.156899] hidraw: raw HID events driver (C) Jiri Kosina
+[    4.161745] usbcore: registered new interface driver usbhid
+[    4.161748] usbhid: USB HID core driver
+[    4.163141] input: STMicroelectronics USB KB as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.4/3-1.4:1.0/0003:0483:5710.0001/input/input5
+[    4.217401] hid-generic 0003:0483:5710.0001: input,hidraw0: USB HID v1.11 Keyboard [STMicroelectronics USB KB] on usb-0000:00:1a.0-1.4/input0
+[    4.218614] input: STMicroelectronics USB KB as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.4/3-1.4:1.1/0003:0483:5710.0002/input/input6
+[    4.221239] usb 3-1.5: new low-speed USB device number 5 using ehci-pci
+[    4.273394] hid-generic 0003:0483:5710.0002: input,hidraw1: USB HID v1.11 Keyboard [STMicroelectronics USB KB] on usb-0000:00:1a.0-1.4/input1
+[    4.317253] usb 3-1.5: New USB device found, idVendor=17ef, idProduct=6019
+[    4.317255] usb 3-1.5: New USB device strings: Mfr=0, Product=2, SerialNumber=0
+[    4.317256] usb 3-1.5: Product: Lenovo Optical USB Mouse
+[    4.320617] input: Lenovo Optical USB Mouse as /devices/pci0000:00/0000:00:1a.0/usb3/3-1/3-1.5/3-1.5:1.0/0003:17EF:6019.0003/input/input7
+[    4.320810] hid-generic 0003:17EF:6019.0003: input,hidraw2: USB HID v1.11 Mouse [Lenovo Optical USB Mouse] on usb-0000:00:1a.0-1.5/input0
+[    4.925003] clocksource: Switched to clocksource tsc
+[    4.993639] scsi 6:0:0:0: Direct-Access     SanDisk  Ultra            1.00 PQ: 0 ANSI: 6
+[    5.005129] sd 6:0:0:0: Attached scsi generic sg2 type 0
+[    5.005614] sd 6:0:0:0: [sdb] 30375936 512-byte logical blocks: (15.5 GB/14.4 GiB)
+[    5.006624] sd 6:0:0:0: [sdb] Write Protect is off
+[    5.006626] sd 6:0:0:0: [sdb] Mode Sense: 43 00 00 00
+[    5.007617] sd 6:0:0:0: [sdb] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+[    5.012483]  sdb: sdb4
+[    5.015980] sd 6:0:0:0: [sdb] Attached SCSI removable disk
+[    5.041025] [TTM] Zone  kernel: Available graphics memory: 2264764 kiB
+[    5.041026] [TTM] Zone   dma32: Available graphics memory: 2097152 kiB
+[    5.041026] [TTM] Initializing pool allocator
+[    5.041029] [TTM] Initializing DMA pool allocator
+[    5.041036] nouveau 0000:01:00.0: DRM: VRAM: 4096 MiB
+[    5.041037] nouveau 0000:01:00.0: DRM: GART: 1048576 MiB
+[    5.041040] nouveau 0000:01:00.0: DRM: TMDS table version 2.0
+[    5.041041] nouveau 0000:01:00.0: DRM: DCB version 4.0
+[    5.041042] nouveau 0000:01:00.0: DRM: DCB outp 00: 01000f02 00020030
+[    5.041043] nouveau 0000:01:00.0: DRM: DCB outp 01: 02011f62 0f420010
+[    5.041044] nouveau 0000:01:00.0: DRM: DCB outp 02: 02022f10 00000000
+[    5.041045] nouveau 0000:01:00.0: DRM: DCB conn 00: 00001031
+[    5.041045] nouveau 0000:01:00.0: DRM: DCB conn 01: 00002161
+[    5.041046] nouveau 0000:01:00.0: DRM: DCB conn 02: 00000200
+[    5.054106] [drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
+[    5.054107] [drm] Driver supports precise vblank timestamp query.
+[    5.135414] nouveau 0000:01:00.0: DRM: MM: using COPY for buffer copies
+[    5.266756] nouveau 0000:01:00.0: DRM: allocated 1920x1080 fb: 0x60000, bo ffff8800262d2800
+[    5.266802] fbcon: nouveaufb (fb0) is primary device
+[    5.502406] Console: switching to colour frame buffer device 240x67
+[    5.503969] nouveau 0000:01:00.0: fb0: nouveaufb frame buffer device
+[    5.512764] [drm] Initialized nouveau 1.3.0 20120801 for 0000:01:00.0 on minor 0
+[    5.596022] EXT4-fs (sda7): mounted filesystem with ordered data mode. Opts: (null)
+[    6.240461] random: nonblocking pool is initialized
+[    6.275212] systemd[1]: systemd 229 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ -LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN)
+[    6.275324] systemd[1]: Detected architecture x86-64.
+[    6.281869] systemd[1]: Set hostname to <cxdafs-OptiPlex-9020>.
+[    6.910885] systemd[1]: Reached target Remote File Systems (Pre).
+[    6.910919] systemd[1]: Reached target Encrypted Volumes.
+[    6.910938] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[    6.910976] systemd[1]: Listening on Journal Audit Socket.
+[    6.910989] systemd[1]: Listening on udev Kernel Socket.
+[    6.911044] systemd[1]: Created slice System Slice.
+[    6.911066] systemd[1]: Listening on Syslog Socket.
+[    6.911097] systemd[1]: Created slice User and Session Slice.
+[    6.911102] systemd[1]: Reached target Slices.
+[    6.911117] systemd[1]: Listening on udev Control Socket.
+[    6.911181] systemd[1]: Set up automount Arbitrary Executable File Formats File System Automount Point.
+[    6.911199] systemd[1]: Listening on /dev/initctl Compatibility Named Pipe.
+[    6.911204] systemd[1]: Reached target User and Group Name Lookups.
+[    6.911208] systemd[1]: Reached target Remote File Systems.
+[    6.911223] systemd[1]: Listening on Journal Socket (/dev/log).
+[    6.911232] systemd[1]: Listening on fsck to fsckd communication Socket.
+[    6.911246] systemd[1]: Listening on Journal Socket.
+[    6.911481] systemd[1]: Starting Create list of required static device nodes for the current kernel...
+[    6.911670] systemd[1]: Mounting POSIX Message Queue File System...
+[    6.914671] systemd[1]: Starting Load Kernel Modules...
+[    6.914891] systemd[1]: Starting Uncomplicated firewall...
+[    6.915102] systemd[1]: Mounting Debug File System...
+[    6.915404] systemd[1]: Mounting Huge Pages File System...
+[    6.915713] systemd[1]: Starting Set console keymap...
+[    6.915986] systemd[1]: Started Read required files in advance.
+[    6.916336] systemd[1]: Started Braille Device Support.
+[    6.916598] systemd[1]: Starting Journal Service...
+[    7.008573] systemd[1]: Started Create list of required static device nodes for the current kernel.
+[    7.008848] systemd[1]: Starting Create Static Device Nodes in /dev...
+[    7.169141] systemd[1]: Started Uncomplicated firewall.
+[    7.208603] lp: driver loaded but no devices found
+[    7.263648] ppdev: user-space parallel port driver
+[    7.304608] systemd[1]: Started Journal Service.
+[    8.574408] EXT4-fs (sda7): re-mounted. Opts: errors=remount-ro
+[    8.659416] systemd-journald[295]: Received request to flush runtime journal from PID 1
+[    9.032864] nd_pmem namespace0.0: unable to guarantee persistence of writes
+[    9.034933] pmem0: detected capacity change from 0 to 1419116544
+[    9.034949] nd_pmem namespace2.0: unable to guarantee persistence of writes
+[    9.035056] pmem2: detected capacity change from 0 to 4407296
+[    9.035062] nd_pmem namespace3.0: unable to guarantee persistence of writes
+[    9.035171] pmem3: detected capacity change from 0 to 4771840
+[    9.035186] nd_pmem namespace4.0: unable to guarantee persistence of writes
+[    9.035349] pmem4: detected capacity change from 0 to 97263616
+[    9.035359] nd_pmem namespace6.0: unable to guarantee persistence of writes
+[    9.035454] pmem6: detected capacity change from 0 to 7729152
+[    9.035463] nd_pmem namespace8.0: unable to guarantee persistence of writes
+[    9.035615] pmem8: detected capacity change from 0 to 8052736
+[    9.035644] nd_pmem namespace12.0: unable to guarantee persistence of writes
+[    9.035779] pmem12: detected capacity change from 0 to 23138304
+[    9.035794] nd_pmem namespace10.0: unable to guarantee persistence of writes
+[    9.035935] pmem10: detected capacity change from 0 to 24231936
+[    9.035947] nd_pmem namespace14.0: unable to guarantee persistence of writes
+[    9.035949] nd_pmem namespace14.0: could not reserve region [0x0x00000000df000000:0x1fc00000]
+[    9.035950] nd_pmem: probe of namespace14.0 failed with error -16
+[    9.035984] nd_pmem namespace23.0: unable to guarantee persistence of writes
+[    9.044833] pmem23: detected capacity change from 0 to 16777216
+[    9.044852] nd_pmem namespace24.0: unable to guarantee persistence of writes
+[    9.044960] pmem24: detected capacity change from 0 to 2147483648
+[    9.715828] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+[    9.843793] AVX2 version of gcm_enc/dec engaged.
+[    9.843795] AES CTR mode by8 optimization enabled
+[   11.658044] intel_rapl: Found RAPL domain package
+[   11.658046] intel_rapl: Found RAPL domain core
+[   11.658047] intel_rapl: Found RAPL domain dram
+[   12.065179] snd_hda_intel 0000:01:00.1: Disabling MSI
+[   12.065184] snd_hda_intel 0000:01:00.1: Handle VGA-switcheroo audio client
+[   12.160869] snd_hda_codec_realtek hdaudioC0D0: autoconfig for ALC3220: line_outs=1 (0x1b/0x0/0x0/0x0/0x0) type:line
+[   12.160871] snd_hda_codec_realtek hdaudioC0D0:    speaker_outs=1 (0x14/0x0/0x0/0x0/0x0)
+[   12.160872] snd_hda_codec_realtek hdaudioC0D0:    hp_outs=1 (0x15/0x0/0x0/0x0/0x0)
+[   12.160873] snd_hda_codec_realtek hdaudioC0D0:    mono: mono_out=0x0
+[   12.160874] snd_hda_codec_realtek hdaudioC0D0:    inputs:
+[   12.160875] snd_hda_codec_realtek hdaudioC0D0:      Front Mic=0x1a
+[   12.160876] snd_hda_codec_realtek hdaudioC0D0:      Rear Mic=0x18
+[   12.167976] input: HDA Intel PCH Front Mic as /devices/pci0000:00/0000:00:1b.0/sound/card0/input8
+[   12.168017] input: HDA Intel PCH Rear Mic as /devices/pci0000:00/0000:00:1b.0/sound/card0/input9
+[   12.168051] input: HDA Intel PCH Line Out as /devices/pci0000:00/0000:00:1b.0/sound/card0/input10
+[   12.168086] input: HDA Intel PCH Front Headphone as /devices/pci0000:00/0000:00:1b.0/sound/card0/input11
+[   12.594552] input: HDA NVidia HDMI/DP,pcm=3 as /devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input12
+[   12.594591] input: HDA NVidia HDMI/DP,pcm=7 as /devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input13
+[   12.996785] dcdbas dcdbas: Dell Systems Management Base Driver (version 5.6.0-3.2)
+[   18.209434] audit: type=1400 audit(1517497154.517:2): apparmor="STATUS" operation="profile_load" name="/usr/sbin/ippusbxd" pid=886 comm="apparmor_parser"
+[   18.235452] audit: type=1400 audit(1517497154.541:3): apparmor="STATUS" operation="profile_load" name="/usr/sbin/cups-browsed" pid=884 comm="apparmor_parser"
+[   18.235729] audit: type=1400 audit(1517497154.541:4): apparmor="STATUS" operation="profile_load" name="/usr/lib/snapd/snap-confine" pid=883 comm="apparmor_parser"
+[   18.235732] audit: type=1400 audit(1517497154.541:5): apparmor="STATUS" operation="profile_load" name="mount-namespace-capture-helper" pid=883 comm="apparmor_parser"
+[   18.237521] audit: type=1400 audit(1517497154.545:6): apparmor="STATUS" operation="profile_load" name="/sbin/dhclient" pid=879 comm="apparmor_parser"
+[   18.237526] audit: type=1400 audit(1517497154.545:7): apparmor="STATUS" operation="profile_load" name="/usr/lib/NetworkManager/nm-dhcp-client.action" pid=879 comm="apparmor_parser"
+[   18.237528] audit: type=1400 audit(1517497154.545:8): apparmor="STATUS" operation="profile_load" name="/usr/lib/NetworkManager/nm-dhcp-helper" pid=879 comm="apparmor_parser"
+[   18.237530] audit: type=1400 audit(1517497154.545:9): apparmor="STATUS" operation="profile_load" name="/usr/lib/connman/scripts/dhclient-script" pid=879 comm="apparmor_parser"
+[   18.238447] audit: type=1400 audit(1517497154.545:10): apparmor="STATUS" operation="profile_load" name="/usr/lib/lightdm/lightdm-guest-session" pid=878 comm="apparmor_parser"
+[   18.238450] audit: type=1400 audit(1517497154.545:11): apparmor="STATUS" operation="profile_load" name="chromium" pid=878 comm="apparmor_parser"
+[   18.394458] Adding 8328188k swap on /dev/sda5.  Priority:-1 extents:1 across:8328188k FS
+[   19.879098] IPv6: ADDRCONF(NETDEV_UP): eno1: link is not ready
+[   20.083765] IPv6: ADDRCONF(NETDEV_UP): eno1: link is not ready
+[   23.108178] e1000e: eno1 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
+[   23.108208] IPv6: ADDRCONF(NETDEV_CHANGE): eno1: link becomes ready
+[   42.577438] FAT-fs (sdb4): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+[  163.679005] nova: dafs init nova_fs
+[  163.679010] nova: init_nova_fs: 8 cpus online
+[  163.679014] nova: Arch new instructions support: PCOMMIT NO, CLWB NO
+[  163.679092] nova: dafs register file sytem nova
+[  163.679099] nova: dafs end init_fs
+[  163.730146] nova: dafs start to mount
+[  163.730161] nova: creating an empty nova of size 1419116544
+[  163.730164] nova: dafs init dzt block
+[  163.730165] nova: dafs_get dzt blk
+[  163.730167] nova: dafs_init_dzt_block: allocate log @ 0x1fb84
+[  163.730977] nova: dafs_get dzt blk
+[  163.731178] nova: dafs allocate zone blocks
+[  163.731582] nova: dafs_alloc_dir_zone: allocate zone @ 0x20f8d
+[  163.731583] nova: dafs_get dzt blk
+[  163.731584] nova: dafs start build dzt
+[  163.731585] nova: dafs finish build dzt_e
+[  163.731585] nova: dafs start init dir zones
+[  163.731586] nova: root ze addr is 553177088
+[  163.731586] nova: the root dir hashname is 47
+[  163.731587] nova: test root hash name is 47
+[  163.731587] nova: dafs finish creat root directory
+[  163.731588] nova: dafs finish init dir zones
+[  163.731589] nova: init_dir_info start
+[  163.731755] nova: init_dir_info end
+[  163.731760] nova: dafs end fill super
+[  163.731760] nova: dafs finish mount
+[  163.731993] nova: dafs_lookup:dafs start lookup .Trash 
+[  163.731997] nova: time is 1641 
+[  163.731998] nova: dafs_lookup
+[  163.732014] nova: dafs_lookup:dafs start lookup .Trash-1000 
+[  163.732015] nova: time is 588 
+[  163.732016] nova: dafs_lookup
+[  175.024610] nova: dafs_lookup:dafs start lookup 1 
+[  175.024614] nova: time is 1242 
+[  175.024614] nova: dafs_lookup
+[  175.024616] nova: dafs_mkdir: name 1
+[  175.024624] nova: time is 7108 
+[  175.024625] nova: dafs_mkdir 
+[  188.315836] nova: dafs_lookup:dafs start lookup 2 
+[  188.315839] nova: time is 1344 
+[  188.315840] nova: dafs_lookup
+[  188.315842] nova: dafs_mkdir: name 2
+[  188.315847] nova: time is 4262 
+[  188.315848] nova: dafs_mkdir 
+[  198.258195] nova: dafs_lookup:dafs start lookup 3 
+[  198.258198] nova: time is 1308 
+[  198.258200] nova: dafs_lookup
+[  198.258201] nova: dafs_mkdir: name 3
+[  198.258206] nova: time is 4204 
+[  198.258207] nova: dafs_mkdir 
+[  206.011394] nova: dafs_lookup:dafs start lookup 2 
+[  206.011397] nova: time is 1470 
+[  206.011398] nova: dafs_lookup
+[  206.011400] nova: dafs_mkdir: name 2
+[  206.011406] nova: time is 4830 
+[  206.011407] nova: dafs_mkdir 
+[  238.312757] nova: dafs_lookup:dafs start lookup 3 
+[  238.312760] nova: time is 1621 
+[  238.312762] nova: dafs_lookup
+[  238.312764] nova: dafs_mkdir: name 3
+[  238.312769] nova: time is 5019 
+[  238.312770] nova: dafs_mkdir 
+[  251.690885] nova: dafs_lookup:dafs start lookup 4 
+[  251.690889] nova: time is 1866 
+[  251.690890] nova: dafs_lookup
+[  251.690892] nova: dafs_mkdir: name 4
+[  251.690901] nova: time is 8625 
+[  251.690902] nova: dafs_mkdir 
+[  265.158039] nova: dafs_lookup:dafs start lookup 5 
+[  265.158042] nova: time is 1996 
+[  265.158044] nova: dafs_lookup
+[  265.158045] nova: dafs_mkdir: name 5
+[  265.158052] nova: time is 5256 
+[  265.158052] nova: dafs_mkdir 
+[  300.790194] nova: dafs_lookup:dafs start lookup 6 
+[  300.790197] nova: time is 2068 
+[  300.790199] nova: dafs_lookup
+[  300.790200] nova: dafs_mkdir: name 6
+[  300.790207] nova: time is 5590 
+[  300.790207] nova: dafs_mkdir 
+[  321.943159] nova: dafs_readdir start 6
+[  321.943162] nova: time is 2456 
+[  321.943164] nova: dafs_readdir 
+[  344.635277] nova: dafs_lookup:dafs start lookup 7 
+[  344.635282] nova: time is 2444 
+[  344.635282] nova: dafs_lookup
+[  344.635284] nova: dafs_mkdir: name 7
+[  344.635291] nova: time is 6186 
+[  344.635292] nova: dafs_mkdir 
+[  357.855554] nova: dafs_lookup:dafs start lookup 8 
+[  357.855558] nova: time is 2347 
+[  357.855559] nova: dafs_lookup
+[  357.855561] nova: dafs_mkdir: name 8
+[  357.855568] nova: time is 5994 
+[  357.855569] nova: dafs_mkdir 
+[  363.850142] nova: dafs_readdir start 6
+[  363.850148] nova: time is 4453 
+[  363.850150] nova: dafs_readdir 
+[  363.850154] nova: dafs_readdir start 6
+[  363.850155] nova: time is 25 
+[  363.850155] nova: dafs_readdir 
+[  363.850232] nova: dafs_readdir start 6
+[  363.850233] nova: time is 1214 
+[  363.850234] nova: dafs_readdir 
+[  363.850235] nova: dafs_readdir start 6
+[  363.850236] nova: time is 25 
+[  363.850236] nova: dafs_readdir 
+[  364.120017] nova: dafs_readdir start 6
+[  364.120023] nova: time is 4761 
+[  364.120025] nova: dafs_readdir 
+[  364.120027] nova: dafs_readdir start 6
+[  364.120028] nova: time is 25 
+[  364.120028] nova: dafs_readdir 
+[  364.120108] nova: dafs_readdir start 6
+[  364.120110] nova: time is 1258 
+[  364.120111] nova: dafs_readdir 
+[  364.120112] nova: dafs_readdir start 6
+[  364.120113] nova: time is 25 
+[  364.120113] nova: dafs_readdir 
+[  378.061932] nova: dafs_lookup:dafs start lookup 9 
+[  378.061936] nova: time is 2090 
+[  378.061938] nova: dafs_lookup
+[  378.061939] nova: dafs_mkdir: name 9
+[  378.061946] nova: time is 6028 
+[  378.061947] nova: dafs_mkdir 

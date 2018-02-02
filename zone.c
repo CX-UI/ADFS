@@ -477,6 +477,7 @@ int dafs_init_dir_zone(struct super_block *sb, struct dzt_entry_info *ei)
     test_and_set_bit_le(1, (void *)z_p->statemap);
     zone_entry->dz_no = cpu_to_le32(ei->dzt_eno);
 
+    ei->ztr = z_p;
     //dafs_append_dir_init_entries(sb, 0, ei, NOVA_ROOT_INO, NOVA_ROOT_INO, "/");
 
     nova_dbg("dafs finish init dir zones");
