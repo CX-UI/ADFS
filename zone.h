@@ -36,7 +36,7 @@
 #define SMALL_NAME_LEN 167
 #define LARGE_NAME_LEN 240
 #define DAFS_NAME_LEN 255
-#define DAFS_PATH_LEN 1024
+#define DAFS_PATH_LEN 100
 #define DAFS_DEF_DENTRY_SIZE 256
 #define DAFS_DZT_SIZE 56
 
@@ -123,9 +123,11 @@ struct fulname{
 struct dafs_dentry{
     __u8 entry_type;          
     __u8 name_len;            /*length of the dentry name*/
-    __u8 file_type;           /* file type */
+    __u8 ext_flag;     /* need extension or not*/
+    //__u8 file_type;           /* file type */
     __u8 isr_sf;           /* root subfile or not*/
-    __le16 ext_flag;     /* need extension or not*/
+    __le16 file_type;           /* file type */
+    //__le16 ext_flag;     /* need extension or not*/
     __le16 links_count;         /* links */
     __le32 mtime;
     __le32 par_pos;

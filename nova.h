@@ -435,6 +435,7 @@ struct path_tree {
 struct path_entry {
     u64 ino;
     u64 len;
+    //u64 hn;
     char path[DAFS_PATH_LEN];
 };
 /*
@@ -1093,6 +1094,7 @@ void dafs_apply_link_change_entry(struct nova_inode *pi,
 	struct nova_link_change_entry *entry);
 
 /* dafs_dir.c*/
+ino_t dafs_find_ino(struct super_block *sb, const struct dentry *dentry);
 int dafs_empty_dir(struct inode *inode, struct dentry *dentry);
 void dafs_rebuild_dir_time_and_size(struct super_block *sb,
 	struct nova_inode *pi, int link_change, struct inode *dir);

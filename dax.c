@@ -150,7 +150,7 @@ ssize_t nova_dax_file_read(struct file *filp, char __user *buf,
 	ssize_t res;
 	timing_t dax_read_time;
 
-    nova_dbg("%s:dafs start to read file",__func__);
+    //nova_dbg("%s:dafs start to read file",__func__);
 	NOVA_START_TIMING(dax_read_t, dax_read_time);
 //	rcu_read_lock();
 	res = do_dax_mapping_read(filp, buf, len, ppos);
@@ -267,8 +267,8 @@ int nova_reassign_file_tree(struct super_block *sb,
 					nova_get_block(sb, curr_p);
 
 		if (nova_get_entry_type(entry_data) != FILE_WRITE) {
-			nova_dbg("%s: entry type is not write? %d\n",
-				__func__, nova_get_entry_type(entry_data));
+			//nova_dbg("%s: entry type is not write? %d\n",
+			//	__func__, nova_get_entry_type(entry_data));
 			curr_p += entry_size;
 			continue;
 		}
@@ -308,8 +308,8 @@ static int nova_cleanup_incomplete_write(struct super_block *sb,
 					nova_get_block(sb, curr_p);
 
 		if (nova_get_entry_type(entry) != FILE_WRITE) {
-			nova_dbg("%s: entry type is not write? %d\n",
-				__func__, nova_get_entry_type(entry));
+			//nova_dbg("%s: entry type is not write? %d\n",
+			//	__func__, nova_get_entry_type(entry));
 			curr_p += entry_size;
 			continue;
 		}
@@ -359,7 +359,7 @@ ssize_t nova_cow_file_write(struct file *filp,
 	if (mapping_mapped(mapping))
 		return -EACCES;
 
-    nova_dbg("%s:dafs start to cow file write",__func__);
+    //nova_dbg("%s:dafs start to cow file write",__func__);
 	NOVA_START_TIMING(cow_write_t, cow_write_time);
 
 	sb_start_write(inode->i_sb);
@@ -406,8 +406,8 @@ ssize_t nova_cow_file_write(struct file *filp,
 						allocated, blocknr);
 
 		if (allocated <= 0) {
-			nova_dbg("%s alloc blocks failed %d\n", __func__,
-								allocated);
+			//nova_dbg("%s alloc blocks failed %d\n", __func__,
+			//					allocated);
 			ret = allocated;
 			goto out;
 		}
@@ -448,7 +448,7 @@ ssize_t nova_cow_file_write(struct file *filp,
 		curr_entry = nova_append_file_write_entry(sb, pi, inode,
 							&entry_data, temp_tail);
 		if (curr_entry == 0) {
-			nova_dbg("%s: append inode entry failed\n", __func__);
+			//nova_dbg("%s: append inode entry failed\n", __func__);
 			ret = -ENOSPC;
 			goto out;
 		}
@@ -511,14 +511,14 @@ out:
 	sb_end_write(inode->i_sb);
 	NOVA_END_TIMING(cow_write_t, cow_write_time);
 	NOVA_STATS_ADD(cow_write_bytes, written);
-    nova_dbg("%s:dafs end cow write",__func__);
+    //nova_dbg("%s:dafs end cow write",__func__);
 	return ret;
 }
 
 ssize_t nova_dax_file_write(struct file *filp, const char __user *buf,
 	size_t len, loff_t *ppos)
 {
-    nova_dbg("%s:dafs start to write",__func__);
+    //nova_dbg("%s:dafs start to write",__func__);
 	return nova_cow_file_write(filp, buf, len, ppos, true);
 }
 
@@ -597,8 +597,8 @@ static int nova_dax_get_blocks(struct inode *inode, sector_t iblock,
 	allocated = nova_new_data_blocks(sb, pi, &blocknr, num_blocks,
 						iblock, 1, 1);
 	if (allocated <= 0) {
-		nova_dbg("%s alloc blocks failed %d\n", __func__,
-							allocated);
+		//nova_dbg("%s alloc blocks failed %d\n", __func__,
+		//					allocated);
 		ret = allocated;
 		goto out;
 	}
@@ -619,7 +619,7 @@ static int nova_dax_get_blocks(struct inode *inode, sector_t iblock,
 	curr_entry = nova_append_file_write_entry(sb, pi, inode,
 						&entry_data, pi->log_tail);
 	if (curr_entry == 0) {
-		nova_dbg("%s: append inode entry failed\n", __func__);
+		//nova_dbg("%s: append inode entry failed\n", __func__);
 		ret = -ENOSPC;
 		goto out;
 	}

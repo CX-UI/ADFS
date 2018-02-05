@@ -133,20 +133,22 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
 {
     struct inode *inode = NULL;
     struct dafs_dentry *de;
+    struct super_block *sb = dir->i_sb;
     ino_t ino;
     timing_t lookup_time, st;
     
     //nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(lookup_t, lookup_time);
-    getrawmonotonic(&st); 
+    //getrawmonotonic(&st); 
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
 		/*nova_dbg("%s: namelen %u exceeds limit\n",
 			__func__, dentry->d_name.len);*/
 		return ERR_PTR(-ENAMETOOLONG);
 	}
 
-    ino = dafs_inode_by_name(dir, dentry, &de );
-	if (ino) {
+    //ino = dafs_inode_by_name(dir, dentry, &de );
+	ino = dafs_find_ino(sb, dentry);
+    if (ino) {
         //根据ino得到整个inode的数据结构
 		inode = nova_iget(dir->i_sb, ino);
 		if (inode == ERR_PTR(-ESTALE) || inode == ERR_PTR(-ENOMEM)
@@ -530,7 +532,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
     //dafs不需要rebuild dir tree
     si = NOVA_I(inode);
     sih = &si->header;
-    dafs_rebuild_dir_time_and_size(sb, pi, 1, dir);
+    //dafs_rebuild_dir_time_and_size(sb, pi, 1, dir);
     dafs_rebuild_dir_inode_tree(sb, pi, pi_addr, sih);
 
 	pidir = nova_get_inode(sb, dir);
@@ -539,11 +541,11 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	d_instantiate(dentry, inode);
 	unlock_new_inode(inode);
     //nova_dbg("test bug");
-	dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
+	//dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
-    //print_time(st);
-    //nova_dbg("%s ", __func__);
+    print_time(st);
+    nova_dbg("%s ", __func__);
 	return err;
 
 out_err:
@@ -619,13 +621,13 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     //delete_dir_log(sb);
 
     /* not decided*/
-    err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
-	if (err){
+    //err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
+	/*if (err){
         //nova_dbg("%s append link fault",__func__);
 		goto end_rmdir;
-    }
-	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
-						pi_tail, pidir_tail, 1);
+    }*/
+	//dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
+	//					pi_tail, pidir_tail, 1);
 
 	NOVA_END_TIMING(rmdir_t, rmdir_time);
 
