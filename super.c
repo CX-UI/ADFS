@@ -581,8 +581,8 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
     pe = kzalloc(sizeof(struct path_entry), GFP_KERNEL);
     pe->ino = NOVA_ROOT_INO;
     pe->len = 1;
-    //hn = BKDRHash("/",1);
-    //pe->hn = hn;
+    hn = BKDRHash("/",1);
+    pe->hn = hn;
     memcpy(pe->path, "/", 1);
     pe->path[1]='\0';
     radix_tree_insert(&pt->de_path, pe->ino, pe);

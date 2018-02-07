@@ -137,7 +137,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     ino_t ino;
     timing_t lookup_time, st;
     
-    //nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
+    nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(lookup_t, lookup_time);
     //getrawmonotonic(&st); 
 	if (dentry->d_name.len > NOVA_NAME_LEN) {

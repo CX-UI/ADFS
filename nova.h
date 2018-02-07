@@ -435,7 +435,9 @@ struct path_tree {
 struct path_entry {
     u64 ino;
     u64 len;
-    //u64 hn;
+    u64 hn;
+    struct dzt_entry_info *ei;
+    struct dir_info *d_f;
     char path[DAFS_PATH_LEN];
 };
 /*

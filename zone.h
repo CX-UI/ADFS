@@ -36,7 +36,7 @@
 #define SMALL_NAME_LEN 167
 #define LARGE_NAME_LEN 240
 #define DAFS_NAME_LEN 255
-#define DAFS_PATH_LEN 100
+#define DAFS_PATH_LEN 1024
 #define DAFS_DEF_DENTRY_SIZE 256
 #define DAFS_DZT_SIZE 56
 
@@ -298,6 +298,7 @@ struct dir_sf_info {
 
 /*record dir frequecy ,info and subfile list*/
 struct dir_info {
+    struct list_head sub_file;
     u8 r_f;
     u8 sub_s;
     u8 f_s;
@@ -305,7 +306,6 @@ struct dir_info {
     u32 dir_pos;
     u64 sub_num;
     u64 dir_hash;
-    struct list_head sub_file;
 };
 
 /*
