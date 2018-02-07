@@ -1115,7 +1115,7 @@ void clear_ext(struct zone_ptr *p, struct name_ext *de_ext);
 int dafs_rm_dir(struct dentry *dentry, int link_change);
 int dafs_append_dir_init_entries(struct super_block *sb, u32 par_pos, struct dzt_entry_info *ei,
         u64 self_ino, u64 parent_ino, const char *ful_name);
-extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type);
+extern int dafs_add_dentry(struct dentry *dentry, u64 ino, int inc_link, int file_type, umode_t mode);
 int dafs_rebuild_dir_inode_tree(struct super_block *sb, struct nova_inode *pi, u64 pi_addr,
 	struct nova_inode_info_header *sih);
 extern int dafs_remove_dentry(struct dentry *dentry);

@@ -578,6 +578,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
     pt = kzalloc(sizeof(struct path_tree), GFP_KERNEL);
     INIT_RADIX_TREE(&pt->de_path, GFP_ATOMIC);
     sbi->pt = pt;
+    /*
     pe = kzalloc(sizeof(struct path_entry), GFP_KERNEL);
     pe->ino = NOVA_ROOT_INO;
     pe->len = 1;
@@ -586,6 +587,7 @@ static int nova_fill_super(struct super_block *sb, void *data, int silent)
     memcpy(pe->path, "/", 1);
     pe->path[1]='\0';
     radix_tree_insert(&pt->de_path, pe->ino, pe);
+    */
 
     dzt_m = kzalloc(sizeof(struct dzt_manager), GFP_KERNEL);
     INIT_RADIX_TREE(&dzt_m->dzt_root, GFP_ATOMIC);

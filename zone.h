@@ -123,17 +123,18 @@ struct fulname{
 struct dafs_dentry{
     __u8 entry_type;          
     __u8 name_len;            /*length of the dentry name*/
-    __u8 ext_flag;     /* need extension or not*/
-    //__u8 file_type;           /* file type */
+    __u8 file_type;           /* file type */
     __u8 isr_sf;           /* root subfile or not*/
-    __le16 file_type;           /* file type */
-    //__le16 ext_flag;     /* need extension or not*/
+    __le16 mode;           /* file type */
+    __le16 reser;
+    __le16 ext_flag;     /* need extension or not*/
     __le16 links_count;         /* links */
+    __le32 size;
     __le32 mtime;
     __le32 par_pos;
     __le64 fname_len;
     __le64 ino;             /* inode number*/
-    __le64 size;            /* inode_size */
+    //__le32 size;            /* inode_size */
     union{
         __le64 hname;      /*if not root dir record hashname*/
         __le64 dzt_hn;      /*if root dir record dzt hn*/

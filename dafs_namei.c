@@ -76,7 +76,7 @@ static int dafs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
     else 
         file_type = 0;
 
-    err = dafs_add_dentry(dentry, ino, 0, file_type);
+    err = dafs_add_dentry(dentry, ino, 0, file_type, mode);
     
     if(err)
         goto out_err;
@@ -318,7 +318,7 @@ static int dafs_link(struct dentry *dest_dentry, struct inode *dir, struct dentr
     else 
         file_type = 0;
 
-    err = dafs_add_dentry(dentry, inode->i_ino, 0, file_type);
+    err = dafs_add_dentry(dentry, inode->i_ino, 0, file_type, inode->i_mode);
 	if (err) {
 		iput(inode);
 		goto out;
@@ -434,7 +434,7 @@ static int dafs_symlink(struct inode *dir, struct dentry *dentry, const char *sy
 	//nova_dbg("%s: name %s, symname %s\n", __func__,
 	//			dentry->d_name.name, symname);
 	//nova_dbg("%s: inode %llu, dir %lu\n", __func__, ino, dir->i_ino);
-    err = dafs_add_dentry(dentry, ino ,0, 0);
+    err = dafs_add_dentry(dentry, ino ,0, 0, S_IFLNK|S_IRWXUGO);
 
 	if (err)
 		goto out_fail1;
@@ -508,7 +508,7 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	//nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
 
     /*.文件指向目录项*/
-    err = dafs_add_dentry(dentry, ino, 1, 1);
+    err = dafs_add_dentry(dentry, ino, 1, 1, mode);
 	if (err) {
 		//nova_dbg("failed to add dir entry\n");
 		goto out_err;
@@ -668,7 +668,7 @@ static int dafs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, de
         file_type = 1;
     else
         file_type = 0;
-    err = dafs_add_dentry(dentry, ino, 0, file_type);
+    err = dafs_add_dentry(dentry, ino, 0, file_type, mode);
 
 	inode = nova_new_vfs_inode(TYPE_MKNOD, dir, pi_addr, ino, mode,
 					0, rdev, &dentry->d_name);

@@ -645,16 +645,19 @@ int dafs_init_dzt_block(struct super_block *sb)
 *build dir zone table for first time run*/
 int dafs_build_dzt_block(struct super_block *sb)
 {
-    //struct nova_sb_info *sbi = NOVA_SB(sb);
+    struct nova_sb_info *sbi = NOVA_SB(sb);
     struct dafs_dzt_block *dzt_block;
     struct dzt_entry_info *ei;
     struct dzt_ptr *dzt_p;
+    struct path_entry *pe;
+    struct path_tree *pt = sbi->pt;
+    struct dir_info *dir;
     //int allocated;
     //unsigned long blocknr;
     //u64 block;
     char *name = "/"; 
     int ret = 0;
-    u64 ht_addr;
+    u64 ht_addr, hn;
 
     /*init linux root directory '/' 
     * dir zone no is pos in bitmap*/
@@ -700,7 +703,20 @@ int dafs_build_dzt_block(struct super_block *sb)
     /*init rf_entry*/
     //init_rf_entry(sb, ei);
     init_dir_info(sb, ei);
+   
+    pe = kzalloc(sizeof(struct path_entry), GFP_KERNEL);
+    pe->ino = NOVA_ROOT_INO;
+    pe->len = 1;
+    hn = BKDRHash("/",1);
+    pe->hn = hn;
+    memcpy(pe->path, "/", 1);
+    pe->path[1]='\0';
+    pe->ei = ei;
+    dir = radix_tree_lookup(&ei->dir_tree, hn);
+    pe->d_f = dir;
+    radix_tree_insert(&pt->de_path, pe->ino, pe);
     
+
     kfree(dzt_p);
     return ret;
 }
