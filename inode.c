@@ -997,6 +997,7 @@ out:
 
 	clear_inode(inode);
 	NOVA_END_TIMING(evict_inode_t, evict_time);
+    //nova_dbg("%s end",__func__);
 }
 
 /* Returns 0 on failure */

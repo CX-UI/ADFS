@@ -754,7 +754,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             memcpy(de_ext->name, name, name_len);
             de_ext->name[name_len]='\0';
             de_ext->ext_pos = cpu_to_le32(ext_pos);
-            //de_ext->next = NULL;
+            de_ext->next = NULL;
             bitpos = ext_pos*2+1;
             test_and_set_bit_le(bitpos, (void *)p->statemap);
             nova_flush_buffer(de_ext, DAFS_DEF_DENTRY_SIZE, 0);
@@ -777,7 +777,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             de_ext->next = tem_ext;
             memcpy(tem_ext->name, name + LARGE_NAME_LEN, ext_len);
             tem_ext->name[ext_len]='\0';
-            //tem_ext->next = NULL;
+            tem_ext->next = NULL;
             tem_ext->ext_pos = cpu_to_le32(ext_pos);
             bitpos = ext_pos *2 +1;
             test_and_set_bit_le(bitpos,(void *)p->statemap);
@@ -793,7 +793,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             memcpy(de_ext->name, name, name_len);
             de_ext->name[name_len]='\0';
             de_ext->ext_pos = cpu_to_le32(ext_pos);
-            //de_ext->next = NULL;
+            de_ext->next = NULL;
             bitpos = ext_pos *2+1;
             test_and_set_bit_le(bitpos, (void *)p->statemap);
         }else {
@@ -831,7 +831,7 @@ void ext_de_name(struct super_block *sb, struct dzt_entry_info *ei, struct dafs_
             memcpy(tem_ext->name, name+ext_len, name_len);
             tem_ext->ext_pos = cpu_to_le32(ext_pos);
             tem_ext->name[name_len] = '\0';
-            //tem_ext->next = NULL;
+            tem_ext->next = NULL;
             bitpos = ext_pos *2+1;
             test_and_set_bit_le(bitpos, (void *)p->statemap);
         }
@@ -925,6 +925,7 @@ void clear_ext(struct zone_ptr *p, struct name_ext *de_ext)
 {
     u32 ext_pos, bitpos;
     
+    //nova_dbg("%s start",__func__);
     ext_pos = le32_to_cpu(de_ext->ext_pos);
     bitpos = ext_pos*2+1;
     test_and_clear_bit_le(bitpos, (void *)p->statemap);
@@ -939,7 +940,7 @@ int delete_ext(struct zone_ptr *p, struct dafs_dentry *de)
     unsigned short ext_flag;
     //struct name_ext *de_ext;
 
-    //nova_dbg("%s start",__func__);
+    //nova_dbg("%s start %s",__func__, de->name);
     ext_flag = le16_to_cpu(de->ext_flag);
     switch(ext_flag) {
     case 0:
@@ -1664,6 +1665,7 @@ NEXT:
  * 只是先将对应的状态表显示无效
  * 检查是不是根节点
  * 并不含有link的变化
+ * 1 not rm successful
  */
 int dafs_rm_dir(struct dentry *dentry, int link_change)
 {
@@ -1692,31 +1694,38 @@ int dafs_rm_dir(struct dentry *dentry, int link_change)
     //char *ph;
 	timing_t remove_dentry_time;
 
-	NOVA_START_TIMING(remove_dentry_t, remove_dentry_time);
+//	NOVA_START_TIMING(remove_dentry_t, remove_dentry_time);
 
-	if (!dentry->d_name.len){
+	/*if (!dentry->d_name.len){
         //nova_dbg("%s name is null %s",__func__,dentry->d_name.name);
 		return -EINVAL;
-    }
+    }*/
 
 
-	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
+//	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
  
     //nova_dbg("%s start",__func__);
-    ret = find_dentry_path(dentry,ph,dentry->d_inode->i_ino);
+    //ret = find_dentry_path(dentry,ph,dentry->d_inode->i_ino);
     pe = radix_tree_delete(&pt->de_path, dentry->d_inode->i_ino);
+    /*not exist*/
     if(!pe)
-        BUG();
-    kfree(pe);
-    if(ret)
+        return 1;
+    dzt_ei = pe->ei;
+    ph_hash = pe->hn;
+    rm_dir = pe->d_f;
+    /*not empty*/
+    if(rm_dir->sub_num>0)
+        return 1;
+    //kfree(pe);
+    /*if(ret)
         return -EINVAL;
+    */
+    //flen= strlen(ph);
 
-    flen= strlen(ph);
-
-    //nova_dbg("%s start dentry %s",__func__,ph);
-    dzt_ei = find_dzt(sb, ph, phn);
+    //nova_dbg("%s start dentry %s",__func__,pe->path);
+    //dzt_ei = find_dzt(sb, ph, phn);
     dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
-    phlen = strlen(phn);
+    /*phlen = strlen(phn);
 
     if(phlen==1){
         memcpy(phname, ph, flen);
@@ -1727,9 +1736,9 @@ int dafs_rm_dir(struct dentry *dentry, int link_change)
         phname[flen]='\0';
     }
 
-    dzt_eno = dzt_ei->dzt_eno;
+    //dzt_eno = dzt_ei->dzt_eno;
     //nova_dbg("%s start hash name is %s ",__func__, phname);
-    ph_hash = BKDRHash(phname, flen);
+    ph_hash = BKDRHash(phname, flen);*/
 
     /*lookup in hash table*/
     ret = lookup_in_hashtable(sb, dzt_ei->ht_head, ph_hash, 1, &de_pos);
@@ -1747,13 +1756,13 @@ int dafs_rm_dir(struct dentry *dentry, int link_change)
         free_zone_area(sb, sub_ei);
     }*/
 
-	links_count = cpu_to_le16(dir->i_nlink);
+	/*links_count = cpu_to_le16(dir->i_nlink);
 	if (links_count == 0 && link_change == -1)
 		links_count = 0;
 	else
 		links_count += link_change;
 	dafs_de->links_count = cpu_to_le16(links_count);
-
+*/
     //nova_dbg("%s dafs_de link is: %d",__func__, links_count);
     bitpos = de_pos * 2;
    
@@ -1765,12 +1774,13 @@ int dafs_rm_dir(struct dentry *dentry, int link_change)
         par_dir = radix_tree_lookup(&dzt_ei->dir_tree, par_hash);
         //BUG_ON(par_dir==NULL);
         head = &par_dir->sub_file;
+        
         list_for_each_safe(this, next, head) {
             rm_sf = list_entry(this, struct file_p, list);
             if(rm_sf->pos == de_pos){
                 par_dir->sub_num--;
                 list_del(&rm_sf->list);
-                kfree(rm_sf);
+                kfree(rm_sf);//debug
                 goto CONT;
             }
         }
@@ -1794,10 +1804,11 @@ CONT:
     }
     /*make invalid sub file only for empty dir
      * free dir_tree*/
-    this = NULL;
-    next = NULL;
+    //this = NULL;
+    //next = NULL;
     rm_dir = radix_tree_delete(&dzt_ei->dir_tree, ph_hash);
     //BUG_ON(rm_dir==NULL);
+    /*
     head = &rm_dir->sub_file;
     list_for_each_safe(this, next, head){
         //nova_dbg("%s list sub",__func__);
@@ -1813,7 +1824,7 @@ CONT:
         delete_ext(z_p, dafs_de);
         list_del(&rm_sf->list);
         kfree(rm_sf);
-    }
+    }*/
 
     if(rm_dir)
         kfree(rm_dir);
@@ -1825,8 +1836,9 @@ END:
     //kfree(phn);
     
     
-    NOVA_END_TIMING(remove_dentry_t, remove_dentry_time);
-    kfree(z_p);
+  //  NOVA_END_TIMING(remove_dentry_t, remove_dentry_time);
+    kfree(pe);//debug
+    //kfree(z_p);
     //nova_dbg("%s end",__func__);
 	return 0;
 }
@@ -2099,14 +2111,26 @@ int dafs_empty_dir(struct inode *inode, struct dentry *dentry)
     //char *ph;
     unsigned long nr_de;
     int i, ret;
+    struct path_entry *pe;
+    struct path_tree *pt = sbi->pt;
+    u64 ino = inode->i_ino;
 
     //nova_dbg("%s dafs start test empty dir",__func__);
+    if(!ino)
+        return -EINVAL;
+    pe = radix_tree_lookup(&pt->de_path, ino);
+    if(!pe)
+        return -EINVAL;
+    dzt_ei = pe->ei;
+    par_dir = pe->d_f;
+    /*
     get_dentry_path(dentry,ph,inode->i_ino);
     slen = strlen(ph)+1;
         
     //phname = kzalloc(sizeof(char)*slen, GFP_KERNEL);
     //phn = kzalloc(sizeof(char)*slen, GFP_KERNEL);
     dzt_ei = find_dzt(sb, ph, phn);
+    
     dafs_ze = (struct dafs_zone_entry *)nova_get_block(sb, dzt_ei->dz_addr);
     phlen = strlen(phn);
     dzt_eno = dzt_ei->dzt_eno;
@@ -2118,22 +2142,23 @@ int dafs_empty_dir(struct inode *inode, struct dentry *dentry)
         flen = strlen(ph)-phlen;
         memcpy(phname, ph+phlen, flen);
         phname[flen]='\0';
-    }
+    }*/
     
     //nova_dbg("%s name %s",__func__, phname);
-    ph_hash = BKDRHash(phname, flen);
+    //ph_hash = BKDRHash(phname, flen);
     //kfree(phname);
     //kfree(ph);
     //kfree(phn);
 
     /*lookup in hash table, not decided*/
+    /*
     ret = lookup_in_hashtable(sb, dzt_ei->ht_head, ph_hash, 1, &de_pos);
     if(!ret)
         return -EINVAL;
 
     //direntry = &dafs_ze->dentry[de_pos];
     
-    par_dir = radix_tree_lookup(&dzt_ei->dir_tree, ph_hash);
+    par_dir = radix_tree_lookup(&dzt_ei->dir_tree, ph_hash);*/
    /* if(par_dir){
         nova_dbg("%s dafs find par dir, num is %d",__func__,par_dir->sub_num);
     }*/
@@ -2142,7 +2167,7 @@ int dafs_empty_dir(struct inode *inode, struct dentry *dentry)
     if(nr_de > 0)
         return 0;
 
-    
+    /*
     head = &par_dir->sub_file;
 
     for(i = 0; i < nr_de; i++){
@@ -2151,9 +2176,9 @@ int dafs_empty_dir(struct inode *inode, struct dentry *dentry)
             de_pos = tem_sf->pos;
         }
         denties[i] = &dafs_ze->dentry[de_pos];
-        /*if(!is_dir_init_entry(sb, denties[i]))
-            return 0;*/
-    }
+        //if(!is_dir_init_entry(sb, denties[i]))
+        //    return 0;
+    }*/
 
     
     //nova_dbg("%s dir is empty",__func__);
@@ -3056,6 +3081,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
     dir = pe->d_f;
     if(dir->sub_num==0)
     {
+        ctx->pos = READDIR_END;
         goto OUT;
     }
     
@@ -3091,7 +3117,7 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
         }*/
 
         de = &ze->dentry[f_pos];
-        ino = __le64_to_cpu(de->ino);
+        ino = le64_to_cpu(de->ino);
         mode = le16_to_cpu(de->mode);
         /*ret = nova_get_inode_address(sb, ino, &pi_addr, 0);
         if(ret){
@@ -3101,13 +3127,11 @@ static int dafs_readdir(struct file *file, struct dir_context *ctx)
         child_pi = nova_get_block(sb, pi_addr);*/
         //pos = &tem_sf->list;
         //nova_dbg("%s:list subfile name:%s, pos %llu",__func__, de->name, pos);
-		if (prev_de &&!dir_emit(ctx, prev_de->name,
-			prev_de->name_len, ino,
-				IF2DT(mode))) {
-			//nova_dbg("Here: pos %llu\n", ctx->pos);
+		if (prev_de && !dir_emit(ctx, prev_de->name,
+			prev_de->name_len, ino, IF2DT(mode))) {
 			return 0;
 		}
-        prev_child_pi = child_pi;
+        //prev_child_pi = child_pi;
         prev_de = de;
         ctx->pos = prev_pos;
         prev_pos = pos;

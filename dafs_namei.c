@@ -137,7 +137,7 @@ static struct dentry *dafs_lookup(struct inode *dir, struct dentry *dentry,\
     ino_t ino;
     timing_t lookup_time, st;
     
-    nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
+    //nova_dbg("%s:dafs start lookup %s ",__func__, dentry->d_name.name);
 	NOVA_START_TIMING(lookup_t, lookup_time);
     //getrawmonotonic(&st); 
 	if (dentry->d_name.len > NOVA_NAME_LEN) {
@@ -357,7 +357,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
     int invalidate = 0;
     timing_t unlink_time;
 
-   // nova_dbg("%s start %s ", __func__,dentry->d_name.name);
+    //nova_dbg("%s start %s ", __func__,dentry->d_name.name);
     //BUG();
 	NOVA_START_TIMING(unlink_t, unlink_time);
 
@@ -393,6 +393,7 @@ static int dafs_unlink(struct inode *dir, struct dentry *dentry)
 					pi_tail, pidir_tail, invalidate);
 
 	NOVA_END_TIMING(unlink_t, unlink_time);
+    //nova_dbg("%s end0",__func__);
 	return 0;
 
 out:
@@ -544,8 +545,8 @@ static int dafs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	//dafs_lite_transaction_for_new_inode(sb, pi, pidir, tail);
 out:
 	NOVA_END_TIMING(mkdir_t, mkdir_time);
-    print_time(st);
-    nova_dbg("%s ", __func__);
+    //print_time(st);
+    //nova_dbg("%s ", __func__);
 	return err;
 
 out_err:
@@ -560,78 +561,47 @@ static int dafs_rmdir(struct inode *dir, struct dentry *dentry)
     //nova_dbg("%s:dafs start to rmdir",__func__);
     struct inode *inode = dentry->d_inode;
     struct super_block *sb = dir->i_sb;
-    struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
+    //struct nova_inode *pi = nova_get_inode(sb, inode), *pidir;
     u64 pidir_tail = 0, pi_tail = 0;
     int err = -ENOTEMPTY;
     timing_t rmdir_time;
     /*debug*/
 
     //nova_dbg("%s:dafs start to rmdir %s",__func__, dentry->d_name.name);
-	NOVA_START_TIMING(rmdir_t, rmdir_time);
 	if (!inode){
         BUG();
 		return -ENOENT;
     }
-
-	//nova_dbg("%s: name %s\n", __func__, dentry->d_name.name);
-	pidir = nova_get_inode(sb, dir);
-	if (!pidir){
-        BUG();
-		return -EINVAL;
-    }
-
-    //nova_dbg("%s:dafs start to rmdir",__func__);
-    /*not sure to add read hot degree*/
-    /*if(dafs_inode_by_name(dir, dentry, &de) == 0){
-        nova_dbg("%s dentry name, %s", __func__, dentry->d_name.name);
-        BUG();
-        return -ENOENT;
-    }*/
-
-    if(!dafs_empty_dir(inode, dentry)){
-        BUG();
-        return err;
-    }
-    
-    
-//	nova_dbgv("%s: inode %lu, dir %lu, link %d\n", __func__,
-//				inode->i_ino, dir->i_ino, dir->i_nlink);
-    //not decided
-	/*if (inode->i_nlink != 2)
-		nova_dbgv("empty directory %lu has nlink!=2 (%d), dir %lu",
-				inode->i_ino, inode->i_nlink, dir->i_ino);
-    */
     /*add log to dzt for suddenly shut down*/
     //record_dir_log(sb, dentry, NULL, DIR_RMDIR);
     err = dafs_rm_dir(dentry, -1);
 
 	if (err){
         //nova_dbg("%s rm fault",__func__);
-		goto end_rmdir;
+		return -ENOMEM;
     }
 	/*inode->i_version++; */
 	clear_nlink(inode);
-	inode->i_ctime = dir->i_ctime;
+	inode->i_ctime = dir->i_ctime = CURRENT_TIME_SEC;
 
-	if (dir->i_nlink)
+	if (dir->i_nlink){
 		drop_nlink(dir);
+    }
 
     //nova_dbg("%s dir links %d",__func__, dir->i_nlink);
     /*finish log make it invalid*/
     //delete_dir_log(sb);
 
     /* not decided*/
-    //err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
-	/*if (err){
+    /*err = dafs_append_link_change_entry(sb, pi, inode, 0, &pi_tail);
+	if (err){
         //nova_dbg("%s append link fault",__func__);
 		goto end_rmdir;
-    }*/
-	//dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
-	//					pi_tail, pidir_tail, 1);
+    }
+	dafs_lite_transaction_for_time_and_link(sb, pi, pidir,
+					pi_tail, pidir_tail, 1);*/
 
-	NOVA_END_TIMING(rmdir_t, rmdir_time);
-
-    
+ 
 	//nova_dbg("%s return first %d\n", __func__, err);
 	return err;
 
