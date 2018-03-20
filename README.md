@@ -5,7 +5,7 @@ Current development and releases of ADAM-NOVA will be through https://github.com
 # ADAM-NOVA is a directory accessed mechanism built on NOVA. 
 The full name of ADAM is adaptive directory access mechanismm, which utilizes the strength of both multi-level directory namespace and full name direcotry namespace mechanisms. Besides, we considered the read/write states and size of direcotries as the factor of namespace evolving, which makes the system maintain a consistent performence during system runtime.
 
-# NOVA: NOn-Volatile memory Accelerated log-structured file system
+## NOVA: NOn-Volatile memory Accelerated log-structured file system
 
 ## Introduction
 NOVA is a log-structured file system designed for byte-addressable non-volatile memories, developed by
