@@ -1,6 +1,9 @@
 # This Repository is Deprecated
 
-Current development and releases of NOVA will be through https://github.com/NVSL/linux-nova.
+Current development and releases of ADAM-NOVA will be through https://github.com/CX-UI/ADFS/.
+
+# ADAM-NOVA is a directory accessed mechanism built on NOVA. 
+The full name of ADAM is adaptive directory access mechanismm, which utilizes the strength of both multi-level directory namespace and full name direcotry namespace mechanisms. Besides, we considered the read/write states and size of direcotries as the factor of namespace evolving, which makes the system maintain a consistent performence during system runtime.
 
 # NOVA: NOn-Volatile memory Accelerated log-structured file system
 
@@ -37,10 +40,10 @@ To build NOVA, simply run a
 
 command.
 
-## Running NOVA
-NOVA runs on a physically contiguous memory region that is not used by the Linux kernel, and relies on the kernel NVDIMM support.
+## Running ADAM-NOVA
+ADAM-NOVA runs on a physically contiguous memory region that is not used by the Linux kernel, and relies on the kernel NVDIMM support.
 
-To run NOVA, first build up your kernel with NVDIMM support enabled (`CONFIG_BLK_DEV_PMEM`), and then you can
+To run ADAM-NOVA, first build up your kernel with NVDIMM support enabled (`CONFIG_BLK_DEV_PMEM`), and then you can
 reserve the memory space by booting the kernel with `memmap` command line option.
 
 For instance, adding `memmap=16G!8G` to the kernel boot parameters will reserve 16GB memory starting from 8GB address, and the kernel will create a `pmem0` block device under the `/dev` directory.
@@ -49,26 +52,5 @@ After the OS has booted, you can initialize a NOVA instance with the following c
 
 
 ~~~
-#insmod nova.ko
-#mount -t NOVA -o init /dev/pmem0 /mnt/ramdisk 
+#sudo sh insm.sh
 ~~~
-
-The above commands create a NOVA instance on pmem0 device, and mount on `/mnt/ramdisk`.
-
-To recover an existing NOVA instance, mount NOVA without the init option, for example:
-
-~~~
-#mount -t NOVA /dev/pmem0 /mnt/ramdisk 
-~~~
-
-There are two scripts provided in the source code, `setup-nova.sh` and `remount-nova.sh` to help setup NOVA.
-
-## Current limitations
-
-* NOVA only works on x86-64 kernels.
-* NOVA does not currently support extended attributes or ACL.
-* NOVA requires the underlying block device to support DAX (Direct Access) feature.
-* Applications can write to a file, or mmap a file and load/store the file directly, but not at the same time, i.e. writing to a mmaped file is disallowed, because write is copy-on-write (out-of-place) while mmap is DAX (in-place).
-
-[NVSL]: http://nvsl.ucsd.edu/ "http://nvsl.ucsd.edu"
-[POSIXtest]: http://www.tuxera.com/community/posix-test-suite/ 
